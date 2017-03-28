@@ -1,0 +1,10 @@
+.DS_STORE
+node_modules
+dist
+.module-cache
+*.log*
+*.ttf
+*.woff
+*.woff2
+*.eot
+*.otf
