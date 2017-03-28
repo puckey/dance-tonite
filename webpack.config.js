@@ -77,7 +77,6 @@ const config = {
     }),
     new CopyWebpackPlugin([
       { from: 'public', to: '../dist/public' },
-      { from: '../htaccess', to: '../dist/.htaccess', toType: 'file' },
     ]),
     new webpack.DefinePlugin({
       'process.env': {
@@ -99,11 +98,11 @@ const config = {
     }),
   ],
   devServer: {
-    contentBase: './client',
+    contentBase: './src',
     host: '0.0.0.0',
     port: 3000,
   },
-  context: path.resolve(__dirname, 'client'),
+  context: path.resolve(__dirname, 'src'),
 };
 
 if (process.env.NODE_ENV === 'production' && process.env.RG_ENV !== 'dev') {
