@@ -13,9 +13,9 @@ export default (e = []) => {
     },
 
     remove(event) {
-      const index = timeline.indexOf(event);
+      const index = events.indexOf(event);
       if (index !== -1) {
-        timeline.splice(index, 1);
+        events.splice(index, 1);
       }
     },
 
