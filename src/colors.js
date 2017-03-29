@@ -13,7 +13,7 @@ const pairs = ([
   [0x55b848, 0xef4f36],
   [0xc95fbf, 0x40a598],
   [0xef4f36, 0xe9ad21],
-]).map(pair => pair.map(Color));
+]).map(pair => pair.map(color => new Color(color)));
 
 const pairCount = pairs.length;
 
