@@ -5,8 +5,8 @@ export default function tl(initialTimeline) {
   let timeline = initialTimeline || [];
 
   return {
-    add(time, marker, callback = false) {
-      timeline.push({ time, marker, callback, hasBeenCalled: false });
+    add(time, name, callback = false) {
+      timeline.push({ time, name, callback, hasBeenCalled: false });
       timeline.sort((a, b) => a.time - b.time);
     },
 
@@ -26,16 +26,16 @@ export default function tl(initialTimeline) {
       }
     },
 
-    on(marker, callback) {
-      return emitter.on(marker, callback);
+    on(name, callback) {
+      return emitter.on(name, callback);
     },
 
     emit(timelineEvent) {
       // mark the event as called
       timelineEvent.hasBeenCalled = true;
 
-      // emit the marker as an event
-      emitter.emit(timelineEvent.marker);
+      // emit the event
+      emitter.emit(timelineEvent.name);
 
       // callback if one exists
       if (timelineEvent.callback) {
