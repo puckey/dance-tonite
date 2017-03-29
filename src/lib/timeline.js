@@ -1,10 +1,12 @@
 import mitt from 'mitt';
+import rafLoop from './rafLoop';
 
-export default function tl(initialTimeline) {
+export default (initialTimeline) => {
   const emitter = mitt();
+  const then = Date.now();
   let timeline = initialTimeline || [];
 
-  return {
+  const screenplay = {
     add(time, marker, callback = false) {
       timeline.push({ time, marker, callback });
     },
@@ -36,4 +38,11 @@ export default function tl(initialTimeline) {
       return emitter.on(marker, callback);
     },
   };
-}
+
+  rafLoop.add(() => {
+    const time = Date.now() - then;
+    screenplay.tick(time);
+  });
+
+  return screenplay;
+};
