@@ -1,0 +1,20 @@
+@import './theme/index';
+
+body {
+  margin: 0px;
+  background: $background-color;
+  color: $text-color;
+  font-family: helvetica, arial;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+body, html {
+  height: 100%;
+}
+
+a {
+  color: white;
+}
