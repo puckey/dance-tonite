@@ -21,6 +21,10 @@ const tl1 = timeline([
   },
 ]);
 
+tl1.once(4000, 'one-time-event', () => {
+  console.log('this event is triggered exactly once if the specified time has elapsed');
+});
+
 rafLoop.add(() => {
   const time = Date.now() - then;
   tl1.tick(time);
