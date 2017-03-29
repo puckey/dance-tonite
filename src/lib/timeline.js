@@ -1,46 +1,61 @@
 import mitt from 'mitt';
 
-export default function tl(initialTimeline) {
-  const emitter = mitt();
-  let timeline = initialTimeline || [];
+export default (e = []) => {
+  const timeline = mitt();
+  let lastTime;
+  let lastIndex;
+  let events;
 
-  return {
-    add(time, name, callback = false) {
-      timeline.push({ time, name, callback, hasBeenCalled: false });
+  Object.assign(timeline, {
+    add(event) {
+      timeline.push(event);
       timeline.sort((a, b) => a.time - b.time);
     },
 
-    set(newTimeline) {
-      timeline = newTimeline;
+    remove(event) {
+      const index = timeline.indexOf(event);
+      if (index !== -1) {
+        timeline.splice(index, 1);
+      }
     },
 
-    tick(timestamp) {
-      const time = timestamp || 0;
+    replace(newEvents) {
+      events = newEvents.slice(0);
+      events.sort((a, b) => a.time - b.time);
+    },
 
-      for (let i = 0; i < timeline.length; i++) {
-        const timelineEvent = timeline[i];
+    tick(time = 0) {
+      if (time === lastTime) return;
 
-        if (time > timelineEvent.time && !timelineEvent.hasBeenCalled) {
-          this.emit(timelineEvent);
+      // If we went back in time, reset the timeline:
+      // TODO: should we reset to the last event after the new time?
+      if ((lastTime !== undefined && time < lastTime) || !lastIndex) {
+        lastIndex = 0;
+        lastTime = null;
+      }
+
+      for (let i = (lastIndex || 0); i < events.length; i++) {
+        const event = events[i];
+        if (time > event.time) {
+          timeline.emit(event.name, event);
+
+          // call optional callback
+          if (event.callback) {
+            event.callback();
+          }
+
+          if (event.once) {
+            timeline.remove(event);
+          }
+
+          lastIndex = i + 1;
         }
       }
+      lastTime = time;
     },
+  });
 
-    on(name, callback) {
-      return emitter.on(name, callback);
-    },
+  timeline.replace(e);
 
-    emit(timelineEvent) {
-      // mark the event as called
-      timelineEvent.hasBeenCalled = true;
-
-      // emit the event
-      emitter.emit(timelineEvent.name);
-
-      // callback if one exists
-      if (timelineEvent.callback) {
-        timelineEvent.callback();
-      }
-    },
-  };
-}
+  return timeline;
+};
