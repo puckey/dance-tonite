@@ -6,15 +6,14 @@ import props from './props';
 import settings from './settings';
 
 props.prepare(() => {
-  const { holeHeight, depth } = settings.space;
+  const { loopLength, holeHeight, roomDepth } = settings;
   viewer.camera.position.y = holeHeight;
   props.space.position.y = settings.space.height * 0.5;
   viewer.scene.add(props.space);
   const then = Date.now();
   viewer.events.on('tick', () => {
-    const loopLength = 8000;
-    const time = (Date.now() - then) % loopLength;
-    const ratio = time / loopLength;
-    viewer.camera.position.z = -1 * ((ratio * depth) - (depth / 2));
+    const time = Date.now() - then;
+    const ratio = (time % loopLength) / loopLength;
+    viewer.camera.position.z = -((ratio * roomDepth) - (roomDepth * 0.5));
   });
 });
