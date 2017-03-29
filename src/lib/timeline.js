@@ -5,13 +5,9 @@ export default function tl(initialTimeline) {
   let timeline = initialTimeline || [];
 
   return {
-    add(time, marker, callback = false, once = false) {
-      timeline.push({ time, marker, callback, once, hasBeenCalled: false });
+    add(time, marker, callback = false) {
+      timeline.push({ time, marker, callback, hasBeenCalled: false });
       timeline.sort((a, b) => a.time - b.time);
-    },
-
-    once(time, marker, callback = false) {
-      this.add(time, marker, callback, true);
     },
 
     set(newTimeline) {
@@ -24,13 +20,8 @@ export default function tl(initialTimeline) {
       for (let i = 0; i < timeline.length; i++) {
         const timelineEvent = timeline[i];
 
-        if (time > timelineEvent.time) {
-          if (
-            (!timeline[i + 1] || (timeline[i + 1] && time <= timeline[i + 1].time)) &&
-            (!timelineEvent.once || !timelineEvent.hasBeenCalled)
-          ) {
-            this.emit(timelineEvent);
-          }
+        if (time > timelineEvent.time && !timelineEvent.hasBeenCalled) {
+          this.emit(timelineEvent);
         }
       }
     },
