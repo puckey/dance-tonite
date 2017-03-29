@@ -306,7 +306,6 @@ module.exports = function( THREE ){
 				if ( renderer.autoClear || forceClear ) renderer.clear();
 
 				if ( camera.parent === null ) camera.updateMatrixWorld();
-
 				camera.matrixWorld.decompose( cameraL.position, cameraL.quaternion, cameraL.scale );
 				camera.matrixWorld.decompose( cameraR.position, cameraR.quaternion, cameraR.scale );
 

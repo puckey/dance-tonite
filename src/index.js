@@ -1,31 +1,20 @@
-// import store from './store';
-// import rootSaga from './sagas';
-// import 'babel-polyfill';
+import 'babel-polyfill';
 
-// store.runSaga(rootSaga);
-import rafLoop from './lib/rafLoop';
-import timeline from './lib/timeline';
+import './index.scss';
+import viewer from './viewer';
+import props from './props';
+import settings from './settings';
 
-const then = Date.now();
-const tl1 = timeline([
-  {
-    time: 3000,
-    marker: 'pan-left',
-  },
-  {
-    time: 6000,
-    marker: 'top-view',
-    callback() {
-      console.log('top-view is now active');
-    },
-  },
-]);
-
-rafLoop.add(() => {
-  const time = Date.now() - then;
-  tl1.tick(time);
-});
-
-tl1.on('pan-left', () => {
-  console.log('pan-left is now active');
+props.prepare(() => {
+  const { holeHeight, depth } = settings.space;
+  viewer.camera.position.y = holeHeight;
+  props.space.position.y = settings.space.height * 0.5;
+  viewer.scene.add(props.space);
+  const then = Date.now();
+  viewer.events.on('tick', () => {
+    const loopLength = 8000;
+    const time = (Date.now() - then) % loopLength;
+    const ratio = time / loopLength;
+    viewer.camera.position.z = -1 * ((ratio * depth) - (depth / 2));
+  });
 });

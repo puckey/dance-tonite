@@ -62,7 +62,7 @@ const config = {
         loader: 'json-loader',
       },
       {
-        test: /\.(png|gif|jpg|jpeg|mp3|ttf|eot|woff|woff2|svg)$/,
+        test: /\.(png|gif|jpg|jpeg|mp3|ttf|eot|woff|woff2|svg|obj)$/,
         loader: 'file-loader',
       },
     ],
@@ -96,6 +96,7 @@ const config = {
     new ScriptExtHtmlWebpackPlugin({
       defaultAttribute: 'async',
     }),
+    new ExtractTextPlugin('style.css'),
   ],
   devServer: {
     contentBase: './src',

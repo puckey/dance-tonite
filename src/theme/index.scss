@@ -1,0 +1,14 @@
+$background-color: #000;
+$text-color: #ff0;
+
+$max-width: 1270px;
+$min-width: 600px;
+
+$margin-size: 35 / 1920 * 100vw;
+$max-margin-size: 35 / 1920 * $max-width;
+$min-margin-size: 35 / 1920 * $min-width;
+
+$font-size: 2.604vw;
+$max-font-size: 33px;
+
+$min-font-size: 4.5 / 1920 * $min-width * 11.09;

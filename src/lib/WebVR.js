@@ -69,6 +69,7 @@ module.exports = {
 
 		var button = document.createElement( 'button' );
 		button.textContent = 'ENTER VR';
+		button.className = 'enter-vr';
 		button.onclick = function() {
 			effect.isPresenting ? effect.exitPresent() : effect.requestPresent();
 		};

@@ -4,7 +4,13 @@
  */
 module.exports = function( THREE ){
 
-	THREE.VRControls = function ( object, onError ) {
+	THREE.VRControls = function (
+    object,
+    onError,
+    param = {
+      position: true
+    }
+  ) {
 
 		var scope = this;
 
@@ -108,17 +114,19 @@ module.exports = function( THREE ){
 
 				}
 
-				if ( pose.position !== null ) {
+        if (param.position) {
+          if (param.position && pose.position !== null ) {
 
-					object.position.fromArray( pose.position );
+            object.position.fromArray( pose.position );
 
-				} else {
+          } else {
 
-					object.position.set( 0, 0, 0 );
+            object.position.set( 0, 0, 0 );
 
-				}
+          }
+        }
 
-				if ( this.standing ) {
+				if ( this.standing && param.position ) {
 
 					if ( vrDisplay.stageParameters ) {
 
