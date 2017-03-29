@@ -36,7 +36,7 @@ export default (e = []) => {
 
       for (let i = (lastIndex || 0); i < events.length; i++) {
         const event = events[i];
-        if (time > event.time) {
+        if (time >= event.time) {
           timeline.emit(event.name, event);
 
           // call optional callback
