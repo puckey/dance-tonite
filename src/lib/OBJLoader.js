@@ -422,7 +422,7 @@ module.exports = function( THREE ){
 
 		parse: function ( text ) {
 
-			console.time( 'OBJLoader' );
+			// console.time( 'OBJLoader' );
 
 			var state = this._createParserState();
 
@@ -736,7 +736,7 @@ module.exports = function( THREE ){
 
 			}
 
-			console.timeEnd( 'OBJLoader' );
+			// console.timeEnd( 'OBJLoader' );
 
 			return container;
 
