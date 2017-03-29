@@ -9,8 +9,6 @@
     "build": "NODE_ENV=production webpack --progress --colors"
   },
   "dependencies": {
-    "async.eachlimit": "^0.5.2",
-    "async.eachseries": "^0.5.2",
     "events": "^1.1.1",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.12.0",
