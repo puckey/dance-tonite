@@ -8,8 +8,8 @@ export default (e = []) => {
 
   Object.assign(timeline, {
     add(event) {
-      timeline.push(event);
-      timeline.sort((a, b) => a.time - b.time);
+      events.push(event);
+      events.sort((a, b) => a.time - b.time);
     },
 
     remove(event) {
