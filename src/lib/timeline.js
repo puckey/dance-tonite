@@ -2,8 +2,8 @@ import mitt from 'mitt';
 
 export default (e = []) => {
   const timeline = mitt();
+  let lastIndex = 0;
   let lastTime;
-  let lastIndex;
   let events;
 
   Object.assign(timeline, {
@@ -12,10 +12,10 @@ export default (e = []) => {
       events.sort((a, b) => a.time - b.time);
     },
 
-    remove(event) {
-      const index = events.indexOf(event);
-      if (index !== -1) {
-        events.splice(index, 1);
+    remove(event, _index = events.indexOf(event)) {
+      if (_index !== -1) {
+        if (_index < lastIndex) lastIndex -= 1;
+        events.splice(_index, 1);
       }
     },
 
@@ -25,30 +25,23 @@ export default (e = []) => {
     },
 
     tick(time = 0) {
-      if (time === lastTime) return;
-
-      // If we went back in time, reset the timeline:
-      // TODO: should we reset to the last event after the new time?
-      if ((lastTime !== undefined && time < lastTime) || !lastIndex) {
+      if (time < lastTime) {
         lastIndex = 0;
-        lastTime = null;
       }
 
-      for (let i = (lastIndex || 0); i < events.length; i++) {
+      for (let i = lastIndex; i < events.length; i++) {
         const event = events[i];
-        if (time >= event.time) {
-          timeline.emit(event.name, event);
+        if (time < event.time) break;
+        timeline.emit(event.name, event);
 
-          // call optional callback
-          if (event.callback) {
-            event.callback();
-          }
+        // call optional callback
+        if (event.callback) {
+          event.callback(event);
+        }
 
-          if (event.once) {
-            timeline.remove(event);
-          }
-
-          lastIndex = i + 1;
+        lastIndex += 1;
+        if (event.once) {
+          timeline.remove(event, i);
         }
       }
       lastTime = time;
