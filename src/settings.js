@@ -5,4 +5,5 @@ export default {
   roomWidth: 4,
   holeHeight: 1.6,
   loopLength: 8000,
+  loopSeconds: 8,
 };

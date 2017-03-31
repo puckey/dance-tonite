@@ -1,10 +1,16 @@
 import 'babel-polyfill';
+import eachLimit from 'async/eachLimit';
 
 import './index.scss';
 import viewer from './viewer';
 import props from './props';
 import settings from './settings';
+import Room from './room';
+import * as THREE from './lib/three';
 import timeline from './lib/timeline';
+import storage from './storage';
+
+window.THREE = THREE;
 
 const tl = timeline([
   { time: 2000, name: 'rotate-camera', angle: 90 },
@@ -13,19 +19,24 @@ const tl = timeline([
 ]);
 
 props.prepare(() => {
-  const { loopLength, holeHeight, roomDepth, roomHeight } = settings;
-  viewer.camera.position.y = holeHeight;
-  props.space.position.y = roomHeight * 0.5;
-  viewer.scene.add(props.space);
-  tl.on('rotate-camera', ({ angle }) => {
-    viewer.camera.rotation.y = angle * Math.PI / 180;
-    viewer.camera.updateMatrix();
-  });
-  const then = Date.now();
-  viewer.events.on('tick', () => {
-    const time = Date.now() - then;
-    tl.tick(time % loopLength);
-    const ratio = (time % loopLength) / loopLength;
-    viewer.camera.position.z = -((ratio * roomDepth) - (roomDepth * 0.5));
+  storage.loadPlaylist('curated', (error, playlist) => {
+    if (error) console.log(error);
+    const { loopLength, holeHeight, roomDepth } = settings;
+    viewer.camera.position.y = holeHeight;
+
+
+    const rooms = playlist.map(url => new Room(url));
+    eachLimit(rooms, 4, (room, callback) => room.load(callback), () => {
+      console.log('done');
+    });
+
+    const then = Date.now();
+    viewer.events.on('tick', () => {
+      const time = Date.now() - then;
+      tl.tick(time % loopLength);
+      const ratio = (time) / loopLength;
+      viewer.camera.position.z = -(ratio * settings.roomDepth) - settings.roomOffset;
+      rooms.forEach(room => room.gotoTime(time));
+    });
   });
 });

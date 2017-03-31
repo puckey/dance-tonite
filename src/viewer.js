@@ -12,10 +12,9 @@ require('./lib/VRControls')(THREE);
 require('./lib/ViveController')(THREE);
 
 const getWindowAspect = () => window.innerWidth / window.innerHeight;
-const camera = new THREE.PerspectiveCamera(70, getWindowAspect(), 0.1, 10);
+const camera = new THREE.PerspectiveCamera(70, getWindowAspect(), 0.1, 1000);
 const events = emitter();
 
-// scene.add(camera);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setClearColor(0x000000);
 renderer.setPixelRatio(window.devicePixelRatio);

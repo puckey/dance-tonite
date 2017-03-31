@@ -11,8 +11,8 @@ const {
   OBJLoader,
   Mesh,
   MeshLambertMaterial,
-  ConeGeometry,
-  CylinderGeometry,
+  ConeBufferGeometry,
+  CylinderBufferGeometry,
   Object3D,
   BackSide,
 } = THREE;
@@ -41,11 +41,13 @@ const props = {
     const height = 0.2;
     const segments = 32;
     const cylinder = new Mesh(
-      new CylinderGeometry(radius, radius, height, segments),
+      new CylinderBufferGeometry(radius, radius, height, segments),
       new MeshLambertMaterial({ color }),
     );
 
-    cylinder.rotation.x = Math.PI * 0.5 * 7;
+    cylinder.rotation.x = Math.PI * 0.5 * -7;
+    cylinder.updateMatrix();
+    cylinder.geometry.applyMatrix(cylinder.matrix);
     const group = new Object3D();
     group.add(cylinder);
     return group;
@@ -56,11 +58,13 @@ const props = {
     const height = 0.2;
     const segments = 32;
     const cone = new Mesh(
-      new ConeGeometry(radius, height, segments),
+      new ConeBufferGeometry(radius, height, segments),
       new MeshLambertMaterial({ color }),
     );
 
-    cone.rotation.x = Math.PI * 0.5 * 7;
+    cone.rotation.x = Math.PI * 0.5 * -7;
+    cone.updateMatrix();
+    cone.geometry.applyMatrix(cone.matrix);
     const group = new Object3D();
     group.add(cone);
     return group;

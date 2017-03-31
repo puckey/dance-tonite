@@ -1,4 +1,4 @@
-import { Color } from 'three';
+import { Color } from '../lib/three';
 
 const pairs = ([
   [0x55b848, 0xef4f36],
