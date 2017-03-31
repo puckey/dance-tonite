@@ -3,8 +3,9 @@
  * Based on @mattdesl three-orbit-viewer
  */
 
-import * as THREE from 'three';
 import emitter from 'mitt';
+
+import * as THREE from './lib/three';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);

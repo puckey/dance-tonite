@@ -1,6 +1,6 @@
-import * as THREE from 'three';
-
 import asyncMap from 'async/map';
+
+import * as THREE from './lib/three';
 
 import spaceUrl from './public/models/obj/space-bigger-holes.obj';
 import isometricSpaceUrl from './public/models/obj/space-isometric.obj';

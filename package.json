@@ -17,7 +17,6 @@
     "redux": "^3.6.0",
     "redux-saga": "^0.14.3",
     "redux-thunk": "^2.0.1",
-    "three": "^0.84.0",
     "unfetch": "^2.1.2",
     "unique-s3-uploader": "0.0.2"
   },
