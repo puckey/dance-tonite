@@ -52,7 +52,7 @@ const config = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules|Source/,
+        exclude: /node_modules/,
         loaders: [
           'babel-loader',
         ],
