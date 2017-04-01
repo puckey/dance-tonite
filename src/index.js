@@ -36,7 +36,7 @@ props.prepare(() => {
     const rooms = playlist.map(url => new Room(url));
     eachLimit(rooms, 4, (room, callback) => room.load(callback), (loadError) => {
       if (error) throw loadError;
-      console.log('done loading rooms');
+      // Done loading rooms
     });
 
     const then = Date.now();
