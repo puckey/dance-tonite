@@ -13,7 +13,10 @@ let roomMesh;
 
 export default class Room {
   constructor(url) {
-    this.index = roomIndex++;
+    this.index = roomIndex;
+    roomIndex += 1;
+    this.url = url;
+    this.position = new THREE.Vector3();
 
     const costumeColor = getCostumeColor(this.index);
 
@@ -25,6 +28,11 @@ export default class Room {
       );
       viewer.scene.add(roomMesh);
     }
+
+    this.setPosition(0,
+      settings.roomHeight * 0.5,
+      settings.roomOffset + (this.index * (settings.roomDepth + 0.001)),
+    );
 
     this.handMesh = createInstancedMesh(
       200,
@@ -40,14 +48,6 @@ export default class Room {
       props.head.geometry,
     );
     viewer.scene.add(this.headMesh);
-
-
-    this.url = url;
-    this.position = new THREE.Vector3();
-    this.setPosition(0,
-      settings.roomHeight * 0.5,
-      settings.roomOffset + (this.index * (settings.roomDepth + 0.001)),
-    );
   }
 
   load(callback) {
@@ -64,21 +64,13 @@ export default class Room {
     position.y = y;
     position.z = z;
     roomMesh.setPositionAt(this.index, tempVector(x, y, z));
+    roomMesh.needsUpdate('position');
   }
 
-  moveHead(index, [x, y, z, qx, qy, qz, qw]) {
-    this.headMesh.setQuaternionAt(index, tempQuaternion(qx, qy, qz, qw));
-    this.headMesh.setPositionAt(index, tempVector(x, y, z + this.position.z - settings.roomOffset));
-  }
-
-  moveHand(index, [x, y, z, qx, qy, qz, qw]) {
-    this.handMesh.setQuaternionAt(index, tempQuaternion(qx, qy, qz, qw));
-    this.handMesh.setPositionAt(index, tempVector(x, y, z + this.position.z - settings.roomOffset));
-  }
-
-  updateLimbs() {
-    this.headMesh.needsUpdate();
-    this.handMesh.needsUpdate();
+  moveMesh(instancedMesh, index, [x, y, z, qx, qy, qz, qw]) {
+    instancedMesh.setQuaternionAt(index, tempQuaternion(qx, qy, qz, qw));
+    instancedMesh.setPositionAt(index, tempVector(x, y, z + this.position.z - settings.roomOffset));
+    instancedMesh.needsUpdate();
   }
 
   gotoTime(time) {
@@ -96,14 +88,9 @@ export default class Room {
     for (let i = 0; i < this.performances.length; i++) {
       const frames = this.performances[i];
       const [head, left, right] = frames[number % frames.length];
-      this.moveHead(i, head);
-      this.moveHand(i * 2, left);
-      this.moveHand((i * 2) - 1, right);
+      this.moveMesh(this.headMesh, i, head);
+      this.moveMesh(this.handMesh, i * 2, left);
+      this.moveMesh(this.handMesh, (i * 2) + 1, right);
     }
-    this.updateLimbs();
-  }
-
-  update() {
-    roomMesh.needsUpdate('position');
   }
 }
