@@ -7,37 +7,47 @@ import props from './props';
 import settings from './settings';
 import Room from './room';
 import * as THREE from './lib/three';
-import timeline from './lib/timeline';
 import storage from './storage';
+import timeline from './lib/timeline';
+
+const tl = timeline([
+  { time: 2000, name: 'switch-camera', camera: 'ortographic' },
+  { time: 4000, name: 'switch-camera', camera: 'perspective' },
+  { time: 6000, name: 'switch-camera', camera: 'ortographic' },
+  { time: 6000, name: 'switch-camera', camera: 'perspective' },
+]);
+
+tl.on('switch-camera', ({ camera }) => {
+  Room.switchModel(camera === 'ortographic'
+    ? 'ortographic'
+    : 'default',
+  );
+
+  viewer.switchCamera(camera);
+});
 
 window.THREE = THREE;
 
-const tl = timeline([
-  { time: 2000, name: 'rotate-camera', angle: 90 },
-  { time: 4000, name: 'rotate-camera', angle: 180 },
-  { time: 6000, name: 'rotate-camera', angle: 0 },
-]);
-
 props.prepare(() => {
   storage.loadPlaylist('curated', (error, playlist) => {
-    if (error) console.log(error);
+    if (error) throw error;
     const { loopLength, holeHeight, roomDepth, roomOffset } = settings;
     viewer.camera.position.y = holeHeight;
 
-
     const rooms = playlist.map(url => new Room(url));
-    eachLimit(rooms, 4, (room, callback) => room.load(callback), () => {
-      console.log('done');
+    eachLimit(rooms, 4, (room, callback) => room.load(callback), (loadError) => {
+      if (error) throw loadError;
+      console.log('done loading rooms');
     });
 
     const then = Date.now();
     viewer.events.on('tick', () => {
       const time = Date.now() - then;
-      tl.tick(time % loopLength);
       const offset = 0.5;
       const ratio = (time / loopLength) - offset;
       viewer.camera.position.z = (ratio * roomDepth) + roomOffset;
       rooms.forEach(room => room.gotoTime(time));
+      tl.tick(time % loopLength);
     });
   });
 });

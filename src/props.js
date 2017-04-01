@@ -2,8 +2,8 @@ import asyncMap from 'async/map';
 
 import * as THREE from './lib/three';
 
-import spaceUrl from './public/models/obj/space-bigger-holes.obj';
-import isometricSpaceUrl from './public/models/obj/space-isometric.obj';
+import roomUrl from './public/models/obj/space-bigger-holes.obj';
+import isometricRoomUrl from './public/models/obj/space-isometric.obj';
 
 require('./lib/OBJLoader')(THREE);
 
@@ -60,12 +60,12 @@ const props = {
 
   prepare: (callback) => {
     asyncMap(
-      [spaceUrl, isometricSpaceUrl],
+      [roomUrl, isometricRoomUrl],
       loadObject,
-      (error, [space, isometricSpace]) => {
+      (error, [room, isometricRoom]) => {
         if (error) return callback(error);
-        props.space = space;
-        props.isometricSpace = isometricSpace;
+        props.room = room;
+        props.ortographicRoom = isometricRoom;
         callback();
       },
     );
