@@ -46,7 +46,7 @@ export default class Room {
     this.position = new THREE.Vector3();
     this.setPosition(0,
       settings.roomHeight * 0.5,
-      -settings.roomOffset - (this.index * settings.roomDepth),
+      settings.roomOffset + (this.index * (settings.roomDepth + 0.001)),
     );
   }
 
@@ -68,12 +68,12 @@ export default class Room {
 
   moveHead(index, [x, y, z, qx, qy, qz, qw]) {
     this.headMesh.setQuaternionAt(index, tempQuaternion(qx, qy, qz, qw));
-    this.headMesh.setPositionAt(index, tempVector(x, y, z + this.position.z));
+    this.headMesh.setPositionAt(index, tempVector(x, y, z + this.position.z - settings.roomOffset));
   }
 
   moveHand(index, [x, y, z, qx, qy, qz, qw]) {
     this.handMesh.setQuaternionAt(index, tempQuaternion(qx, qy, qz, qw));
-    this.handMesh.setPositionAt(index, tempVector(x, y, z + this.position.z));
+    this.handMesh.setPositionAt(index, tempVector(x, y, z + this.position.z - settings.roomOffset));
   }
 
   updateLimbs() {

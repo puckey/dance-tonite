@@ -21,7 +21,7 @@ const tl = timeline([
 props.prepare(() => {
   storage.loadPlaylist('curated', (error, playlist) => {
     if (error) console.log(error);
-    const { loopLength, holeHeight, roomDepth } = settings;
+    const { loopLength, holeHeight, roomDepth, roomOffset } = settings;
     viewer.camera.position.y = holeHeight;
 
 
@@ -34,8 +34,9 @@ props.prepare(() => {
     viewer.events.on('tick', () => {
       const time = Date.now() - then;
       tl.tick(time % loopLength);
-      const ratio = (time) / loopLength;
-      viewer.camera.position.z = -(ratio * settings.roomDepth) - settings.roomOffset;
+      const offset = 0.5;
+      const ratio = (time / loopLength) - offset;
+      viewer.camera.position.z = (ratio * roomDepth) + roomOffset;
       rooms.forEach(room => room.gotoTime(time));
     });
   });

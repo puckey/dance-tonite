@@ -46,7 +46,7 @@ const createScene = () => {
   const scene = new THREE.Scene();
   scene.add(new THREE.HemisphereLight(0x606060, 0x404040));
   const light = new THREE.DirectionalLight(0xffffff);
-  light.position.set(1, 1, 1).normalize();
+  light.position.set(1, 0.75, -1).normalize();
   scene.add(light);
   return scene;
 };

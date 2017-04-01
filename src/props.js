@@ -45,7 +45,7 @@ const props = {
       new MeshLambertMaterial({ color }),
     );
 
-    cylinder.rotation.x = Math.PI * 0.5 * -7;
+    cylinder.rotation.x = Math.PI * 0.5 * 7;
     cylinder.updateMatrix();
     cylinder.geometry.applyMatrix(cylinder.matrix);
     const group = new Object3D();
@@ -62,7 +62,7 @@ const props = {
       new MeshLambertMaterial({ color }),
     );
 
-    cone.rotation.x = Math.PI * 0.5 * -7;
+    cone.rotation.x = Math.PI * 0.5 * 7;
     cone.updateMatrix();
     cone.geometry.applyMatrix(cone.matrix);
     const group = new Object3D();
