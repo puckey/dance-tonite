@@ -7,6 +7,7 @@ import emitter from 'mitt';
 
 import * as THREE from './lib/three';
 import { tempVector } from './utils/three';
+import settings from './settings';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
@@ -21,6 +22,7 @@ const cameras = (function () {
 
   const perspective = new THREE.PerspectiveCamera(70, aspect, 0.1, 1000);
   perspective.lookAt(tempVector(0, 0, 1));
+  perspective.position.y = settings.holeHeight;
 
   const ortographic = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, -100, 1000);
   ortographic.position.set(-0.06, 0.08, -0.08);

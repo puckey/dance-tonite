@@ -31,8 +31,7 @@ window.THREE = THREE;
 props.prepare(() => {
   storage.loadPlaylist('curated', (error, playlist) => {
     if (error) throw error;
-    const { loopLength, holeHeight, roomDepth, roomOffset } = settings;
-    viewer.camera.position.y = holeHeight;
+    const { loopLength, roomDepth, roomOffset } = settings;
 
     const rooms = playlist.map(url => new Room(url));
     eachLimit(rooms, 4, (room, callback) => room.load(callback), (loadError) => {
