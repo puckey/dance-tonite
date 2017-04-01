@@ -20,8 +20,8 @@ export default class Room {
     if (!roomMesh) {
       roomMesh = createInstancedMesh(
         num,
-        0xff0000,
-        props.space.children[0].geometry,
+        getCostumeColor(0),
+        props.space.geometry,
       );
       viewer.scene.add(roomMesh);
     }
@@ -29,7 +29,7 @@ export default class Room {
     this.handMesh = createInstancedMesh(
       200,
       costumeColor,
-      props.hand.children[0].geometry,
+      props.hand.geometry,
     );
     viewer.scene.add(this.handMesh);
 
@@ -37,7 +37,7 @@ export default class Room {
     this.headMesh = createInstancedMesh(
       200,
       costumeColor,
-      props.head.children[0].geometry,
+      props.head.geometry,
     );
     viewer.scene.add(this.headMesh);
 
@@ -83,16 +83,14 @@ export default class Room {
 
   gotoTime(time) {
     let seconds = time * 0.001;
-    const loopSeconds = 8;
-    // const cameraIsInRoom = Math.floor(seconds / loopSeconds) === this.index;
 
     // Offset every other room in time by half a loop, so whenever our floating
     // camera enters the room, we are seeing a recording:
     if (this.index % 2 === 0) {
-      seconds += loopSeconds;
+      seconds += settings.loopSeconds;
     }
 
-    const number = Math.floor((seconds % (loopSeconds * 2)) * 90);
+    const number = Math.floor((seconds % (settings.loopSeconds * 2)) * 90);
 
     if (!this.performances) return;
     for (let i = 0; i < this.performances.length; i++) {
