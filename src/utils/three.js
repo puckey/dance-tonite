@@ -10,7 +10,6 @@ export const tempQuaternion = (x = 0, y = 0, z = 0, w = 0) => QUATERNION.set(x, 
 export const createInstancedMesh = (num, color, geometry) => {
   const material = new THREE.MeshLambertMaterial({ color });
   const instancedMesh = new THREE.InstancedMesh(geometry, material, num, true);
-  const vector = tempVector(1, 1, 1);
 
   for (let i = 0; i < num; i++) {
     instancedMesh.setScaleAt(i, tempVector(1, 1, 1));
