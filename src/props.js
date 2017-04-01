@@ -20,19 +20,11 @@ const {
 const color = '#ff0000';
 
 const loadObject = (url, callback) => {
-  const loader = new OBJLoader();
-  loader.load(url, (object) => {
-    object.traverse((child) => {
-      // Colorize meshes:
-      if (child.type === 'Mesh') {
-        child.material = new MeshLambertMaterial({
-          color,
-          side: BackSide,
-        });
-      }
-    });
-    callback(null, object);
-  }, () => {}, (err) => { callback(err); });
+  new OBJLoader().load(url,
+    object => callback(null, object.children[0]),
+    () => {},
+    (err) => { callback(err); },
+  );
 };
 
 const props = {
@@ -48,9 +40,7 @@ const props = {
     cylinder.rotation.x = Math.PI * 0.5 * 7;
     cylinder.updateMatrix();
     cylinder.geometry.applyMatrix(cylinder.matrix);
-    const group = new Object3D();
-    group.add(cylinder);
-    return group;
+    return cylinder;
   }()),
 
   head: (function createHead() {
@@ -65,9 +55,7 @@ const props = {
     cone.rotation.x = Math.PI * 0.5 * 7;
     cone.updateMatrix();
     cone.geometry.applyMatrix(cone.matrix);
-    const group = new Object3D();
-    group.add(cone);
-    return group;
+    return cone;
   }()),
 
   prepare: (callback) => {
