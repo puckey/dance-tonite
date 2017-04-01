@@ -31,8 +31,9 @@ const transformMesh = (
 };
 
 export default class Room {
-  constructor(url) {
+  constructor(url, { showHead }) {
     this.index = roomIndex;
+    this.showHead = showHead;
     roomIndex += 1;
     this.url = url;
     this.position = new THREE.Vector3();
@@ -70,13 +71,14 @@ export default class Room {
     );
     viewer.scene.add(this.handMesh);
 
-
-    this.headMesh = createInstancedMesh(
-      200,
-      costumeColor,
-      props.head.geometry,
-    );
-    viewer.scene.add(this.headMesh);
+    if (showHead) {
+      this.headMesh = createInstancedMesh(
+        200,
+        costumeColor,
+        props.head.geometry,
+      );
+      viewer.scene.add(this.headMesh);
+    }
   }
 
   load(callback) {
@@ -113,7 +115,9 @@ export default class Room {
     for (let i = 0; i < this.performances.length; i++) {
       const frames = this.performances[i];
       const [head, left, right] = frames[number % frames.length];
-      transformMesh(this.headMesh, i, head, scale, this.position);
+      if (this.showHead) {
+        transformMesh(this.headMesh, i, head, scale, this.position);
+      }
       transformMesh(this.handMesh, i * 2, left, scale, this.position);
       transformMesh(this.handMesh, (i * 2) + 1, right, scale, this.position);
     }

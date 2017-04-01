@@ -33,7 +33,9 @@ props.prepare(() => {
     if (error) throw error;
     const { loopLength, roomDepth, roomOffset } = settings;
 
-    const rooms = playlist.map(url => new Room(url));
+    const rooms = playlist.map(url => new Room(url, {
+      showHead: !/head\=false/.test(url)
+    }));
     eachLimit(rooms, 4, (room, callback) => room.load(callback), (loadError) => {
       if (error) throw loadError;
       // Done loading rooms
