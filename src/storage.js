@@ -1,4 +1,5 @@
 import UniqueS3Uploader from 'unique-s3-uploader';
+import fetch from 'unfetch';
 
 const uploader = new UniqueS3Uploader('https://ymm-recorder.puckey.studio');
 
