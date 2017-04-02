@@ -9,6 +9,7 @@ import Room from './room';
 import * as THREE from './lib/three';
 import storage from './storage';
 import timeline from './lib/timeline';
+import Orb from './orb';
 
 const tl = timeline([
   { time: 2000, name: 'switch-camera', camera: 'ortographic' },
@@ -33,9 +34,12 @@ props.prepare(() => {
     if (error) throw error;
     const { loopLength, roomDepth, roomOffset } = settings;
 
+    const orb = new Orb();
+
     const rooms = playlist.map(url => new Room(url, {
       showHead: !/head\=false/.test(url)
     }));
+
     eachLimit(rooms, 4, (room, callback) => room.load(callback), (loadError) => {
       if (error) throw loadError;
       // Done loading rooms
@@ -47,6 +51,7 @@ props.prepare(() => {
       const offset = 0.5;
       const ratio = (time / loopLength) - offset;
       viewer.camera.position.z = (ratio * roomDepth) + roomOffset;
+      orb.move(viewer.camera.position.z);
       rooms.forEach(room => room.gotoTime(time));
       tl.tick(time % loopLength);
     });

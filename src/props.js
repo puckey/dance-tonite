@@ -4,6 +4,7 @@ import * as THREE from './lib/three';
 
 import roomUrl from './public/models/obj/space-bigger-holes.obj';
 import isometricRoomUrl from './public/models/obj/space-isometric.obj';
+import settings from './settings';
 
 require('./lib/OBJLoader')(THREE);
 
@@ -11,8 +12,10 @@ const {
   OBJLoader,
   Mesh,
   MeshLambertMaterial,
+  MeshBasicMaterial,
   ConeBufferGeometry,
   CylinderBufferGeometry,
+  SphereGeometry,
   Object3D,
   BackSide,
 } = THREE;
@@ -56,6 +59,17 @@ const props = {
     cone.updateMatrix();
     cone.geometry.applyMatrix(cone.matrix);
     return cone;
+  }()),
+
+  sphere: (function createSphere() {
+    const segments = 32;
+    const geometry = new SphereGeometry(
+      settings.sphereRadius,
+      segments,
+      segments,
+    );
+    const material = new MeshBasicMaterial({ color: 0xffff00 });
+    return new Mesh(geometry, material);
   }()),
 
   prepare: (callback) => {
