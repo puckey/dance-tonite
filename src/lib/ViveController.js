@@ -18,6 +18,7 @@ module.exports = function( THREE ){
     var menuIsPressed = false;
 
     function findGamepad( id ) {
+      if (!navigator.getGamepads) return;
 
       // Iterate across gamepads as Vive Controllers may not be
       // in position 0 and 1.
