@@ -1,6 +1,6 @@
 import mitt from 'mitt';
 
-export default (e = []) => {
+export default (initialEvents = []) => {
   const timeline = mitt();
   let lastIndex = 0;
   let lastTime;
@@ -20,6 +20,7 @@ export default (e = []) => {
     },
 
     replace(newEvents) {
+      // Clone array:
       events = newEvents.slice(0);
       events.sort((a, b) => a.time - b.time);
     },
@@ -48,7 +49,7 @@ export default (e = []) => {
     },
   });
 
-  timeline.replace(e);
+  timeline.replace(initialEvents);
 
   return timeline;
 };
