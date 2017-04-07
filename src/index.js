@@ -10,22 +10,8 @@ import * as THREE from './lib/three';
 import storage from './storage';
 import timeline from './lib/timeline';
 import Orb from './orb';
-
-const tl = timeline([
-  { time: 2000, name: 'switch-camera', camera: 'ortographic' },
-  { time: 4000, name: 'switch-camera', camera: 'perspective' },
-  { time: 6000, name: 'switch-camera', camera: 'ortographic' },
-  { time: 6000, name: 'switch-camera', camera: 'perspective' },
-]);
-
-tl.on('switch-camera', ({ camera }) => {
-  Room.switchModel(camera === 'ortographic'
-    ? 'ortographic'
-    : 'default',
-  );
-
-  viewer.switchCamera(camera);
-});
+import audio from './lib/audioEngine';
+import audioSrc from './public/sound/lcd-14loops.mp3';
 
 window.THREE = THREE;
 
@@ -53,7 +39,6 @@ props.prepare(() => {
       viewer.camera.position.z = (ratio * roomDepth) + roomOffset;
       orb.move(viewer.camera.position.z);
       rooms.forEach(room => room.gotoTime(time));
-      tl.tick(time % loopLength);
     });
   });
 });
