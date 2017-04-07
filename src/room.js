@@ -31,11 +31,11 @@ const transformMesh = (
 };
 
 export default class Room {
-  constructor(url, { showHead }) {
+  constructor({ showHead, url }) {
     this.index = roomIndex;
     this.showHead = showHead;
-    roomIndex += 1;
     this.url = url;
+    roomIndex += 1;
     this.position = new THREE.Vector3();
 
     const costumeColor = getCostumeColor(this.index);

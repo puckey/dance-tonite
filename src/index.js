@@ -17,31 +17,41 @@ window.THREE = THREE;
 props.prepare(() => {
   storage.loadPlaylist('curated', (error, playlist) => {
     if (error) throw error;
-    audio.load({ src: audioSrc, loops: 14 }, (loadError) => {
+    audio.load({
+      src: audioSrc,
+      loops: 16,
+    }, (loadError) => {
       if (loadError) throw loadError;
 
       audio.play();
 
       const orb = new Orb();
 
-      const rooms = playlist.map(url => new Room(url, {
-        showHead: !/head\=false/.test(url),
+      const rooms = playlist.map(url => new Room({
+        showHead: !/head=false/.test(url),
+        url
       }));
 
-      eachLimit(rooms, 4, (room, callback) => room.load(callback), (roomLoadError) => {
-        if (roomLoadError) throw roomLoadError;
-        // Done loading rooms
-      });
+      eachLimit(rooms, 4,
+        (room, callback) => room.load(callback),
+        (roomLoadError) => {
+          if (roomLoadError) throw roomLoadError;
+          // Done loading rooms
+        },
+      );
 
       const { roomDepth, roomOffset } = settings;
       const tick = () => {
         audio.tick();
-        viewer.camera.position.z = ((audio.progress - 0.5) * roomDepth) + roomOffset;
+        viewer.camera.position.z = ((audio.progress - 1.5) * roomDepth) + roomOffset;
         orb.move(viewer.camera.position.z);
         rooms.forEach(room => room.gotoTime(audio.time * 1000));
       };
 
       viewer.events.on('tick', tick);
+
+      Room.switchModel('ortographic');
+      viewer.switchCamera('ortographic');
     });
   });
 });
