@@ -18,6 +18,7 @@
     "consistent-return": 0,
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "no-mixed-operators": ["error", {"allowSamePrecedence": true}],
-    "func-names": 0
+    "func-names": 0,
+    "no-multi-assign": 0
   }
 }
