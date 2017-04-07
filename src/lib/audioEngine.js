@@ -1,98 +1,95 @@
-let context, source, gainNode;
-let lastTime = 0;
-let loopCount = 1;
+import emitter from 'mitt';
+
+let context;
+let source;
+let gainNode;
+let loopCount;
 let duration = 0;
+let loopDuration;
+let lastTime = 0;
+let startTime = 0;
 
-const tick = () => {
-  // Calculate playback time within current loop
-  const time = context.currentTime % (duration / loopCount);
-  if (source.buffer) {
+const audio = Object.assign(emitter(), {
+  tick() {
+    if (!source.buffer) return;
+
+    const time = this.time = (context.currentTime - startTime) % duration;
     // If the loop has restarted
-    if (time < lastTime && values.onLoop) {
-      // Pass the current iteration of the loop to the callback
-      values.onLoop(Math.floor(context.currentTime * loopCount / duration));
+    if (time < lastTime) {
+      const loopIndex = Math.floor(time / duration * loopCount);
+      audio.emit('loop', loopIndex);
     }
-    // Calculate percentage of loop elapsed
-    values.loopRatio = time * loopCount / duration;
+
+    // The position within the track as a multiple of loopDuration:
+    this.progress = time / loopDuration;
+
+    // The position within the individual loop as a value between 0 - 1:
+    this.loopProgress = (time % loopDuration) / loopDuration;
+
     lastTime = time;
-  }
-};
+  },
 
-// Aliases for playback control
-const play = () => {
-  context.resume();
-};
+  load: ({ src, loops = 1 }, callback) => {
+    if (context) context.close();
 
-const pause = () => {
-  context.suspend();
-};
+    context = new AudioContext();
+    source = context.createBufferSource();
+    gainNode = context.createGain();
 
-const fadeOut = callback => {
-  // Fade out the music in 2 seconds
-  gainNode.gain.exponentialRampToValueAtTime(0.00, context.currentTime + 2);
+    source.connect(gainNode);
+    gainNode.connect(context.destination);
 
-  // Suspend playback, execute callback
-  pause();
-  if (callback) callback();
-};
+    // Reset time, set loop count
+    lastTime = 0;
+    loopCount = loops;
 
-const load = ({src, loops = 1}, callback) => {
-  // Close any existing context
-  if (context) context.close();
+    const request = new XMLHttpRequest();
+    request.open('GET', src, true);
+    request.responseType = 'arraybuffer';
+    request.onload = () => {
+      context.decodeAudioData(
+        request.response,
+        (response) => {
+          // Load the file into the buffer
+          source.buffer = response;
 
-  // Create context, buffer source and gain node
-  context = new AudioContext();
-  source = context.createBufferSource();
-  gainNode = context.createGain();
+          duration = source.buffer.duration;
+          loopDuration = duration / loopCount;
+          source.loop = true;
 
-  // Chain the nodes to the audio output
-  source.connect(gain);
-  gainNode.connect(context.destination);
+          // Start audio and immediately suspend playback
+          source.start(0);
+          context.suspend();
 
-  // Reset time, index, loop count
-  lastTime = 0;
-  loopIndex = 0;
-  loopCount = loops;
+          if (callback) callback(null, src);
+          audio.emit('load', src);
+        },
+        (err) => { callback(err); },
+      );
+    };
 
-  // Send a new request to load audio failed
-  let request = new XMLHttpRequest();
-  request.open('GET', src, true);
-  request.responseType = 'arraybuffer';
-  request.onload = () => {
-    context.decodeAudioData(
-      request.response,
-      response => {
-        // Load the file into the buffer
-        source.buffer = response;
+    request.send();
+  },
 
-        // Set parameters
-        duration = source.buffer.duration;
-        source.loop = true;
+  restart() {
+    startTime = context.currentTime;
+    source.start(0);
+  },
 
-        // Start audio and immediately suspend playback
-        source.start(0);
-        context.suspend();
+  play() { context.resume(); },
 
-        // Execute callback passed to the load() function
-        callback();
-      },
-      () => {
-        console.error('The request failed.');
-      },
-    );
-  };
+  pause() { context.suspend(); },
 
-  request.send();
-};
+  fadeOut(callback) {
+    const fadeDuration = 2;
+    // Fade out the music in 2 seconds
+    gainNode.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + fadeDuration);
 
-const values = {
-  tick,
-  load,
-  play,
-  pause,
-  fadeOut,
-  onLoop,
-  loopRatio: 0
-};
+    setTimeout(callback, fadeDuration * 1000);
+    audio.emit('faded-out');
+  },
 
-export default values;
+  time: 0,
+});
+
+export default audio;
