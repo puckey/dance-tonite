@@ -1,4 +1,4 @@
-# you-move-me
+# You MOVE Me
 
 ## Installing & developing
 
