@@ -19,6 +19,9 @@ const audio = Object.assign(emitter(), {
     // The position within the track as a multiple of loopDuration:
     this.progress = time / loopDuration;
 
+    // The position within the individual loop as a value between 0 - 1:
+    this.loopProgress = (time % loopDuration) / loopDuration;
+
     // True when the audio looped, false otherwise:
     this.looped = time < lastTime;
 
