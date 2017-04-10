@@ -7,6 +7,4 @@ import props from './props';
 
 window.THREE = THREE;
 
-props.on('loaded', () => {
-  installRouter();
-});
+props.on('loaded', installRouter);
