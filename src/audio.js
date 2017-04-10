@@ -61,6 +61,7 @@ const audio = Object.assign(emitter(), {
           this.loopDuration = duration / loopCount;
           source.loop = true;
           // Start audio and immediately suspend playback
+          source.start(0);
           context.suspend();
           startTime = context.currentTime;
           if (callback) callback(null, param.src);
@@ -74,7 +75,6 @@ const audio = Object.assign(emitter(), {
   },
 
   play() {
-    source.start(0);
     context.resume();
   },
 
