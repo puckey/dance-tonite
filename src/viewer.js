@@ -29,7 +29,7 @@ const cameras = (function () {
   ortographic.position.set(-0.06, 0.08, -0.08);
   ortographic.lookAt(tempVector(0, 0, 0));
 
-  return { perspective, ortographic };
+  return { default: perspective, ortographic };
 }());
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -46,7 +46,7 @@ document.body.appendChild(containerEl);
 
 const vrEffect = new THREE.VREffect(renderer);
 
-const controls = new THREE.VRControls(cameras.perspective);
+const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
 
 const controller1 = new THREE.ViveController(0);
@@ -79,7 +79,7 @@ window.addEventListener('resize', () => {
 }, false);
 
 const viewer = {
-  camera: cameras.perspective,
+  camera: cameras.default,
   cameras,
   scene: createScene(),
   controllers: [controller1, controller2],
@@ -91,7 +91,7 @@ const viewer = {
     Room.switchModel(
       name === 'ortographic'
         ? 'ortographic'
-        : 'default'
+        : 'default',
     );
     viewer.camera = cameras[name];
   },
