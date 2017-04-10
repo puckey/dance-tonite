@@ -1,4 +1,5 @@
 import asyncMap from 'async/map';
+import emitter from 'mitt';
 
 import * as THREE from './lib/three';
 
@@ -30,7 +31,7 @@ const loadObject = (url, callback) => {
   );
 };
 
-const props = {
+const props = Object.assign(emitter(), {
   hand: (function createHand() {
     const radius = 0.02;
     const height = 0.2;
@@ -71,19 +72,17 @@ const props = {
     const material = new MeshBasicMaterial({ color: 0xffff00 });
     return new Mesh(geometry, material);
   }()),
+});
 
-  prepare: (callback) => {
-    asyncMap(
-      [roomUrl, isometricRoomUrl],
-      loadObject,
-      (error, [room, isometricRoom]) => {
-        if (error) return callback(error);
-        props.room = room;
-        props.ortographicRoom = isometricRoom;
-        callback();
-      },
-    );
+asyncMap(
+  [roomUrl, isometricRoomUrl],
+  loadObject,
+  (error, [room, isometricRoom]) => {
+    if (error) throw error;
+    props.room = room;
+    props.ortographicRoom = isometricRoom;
+    props.emit('loaded');
   },
-};
+);
 
 export default props;

@@ -31,6 +31,23 @@ const transformMesh = (
   instancedMesh.needsUpdate();
 };
 
+props.on('loaded', () => {
+  roomMeshes = {
+    default: createInstancedMesh(
+      num,
+      getCostumeColor(0),
+      props.room.geometry,
+    ),
+    ortographic: createInstancedMesh(
+      num,
+      getCostumeColor(0),
+      props.ortographicRoom.geometry,
+    ),
+  };
+  roomMesh = roomMeshes.default;
+  viewer.scene.add(roomMesh);
+});
+
 export default class Room {
   constructor({ showHead, url }) {
     this.index = roomIndex;
@@ -40,23 +57,6 @@ export default class Room {
     this.position = new THREE.Vector3();
 
     const costumeColor = getCostumeColor(this.index);
-
-    if (!roomMesh) {
-      roomMeshes = {
-        default: createInstancedMesh(
-          num,
-          getCostumeColor(0),
-          props.room.geometry,
-        ),
-        ortographic: createInstancedMesh(
-          num,
-          getCostumeColor(0),
-          props.ortographicRoom.geometry,
-        ),
-      };
-      roomMesh = roomMeshes.default;
-      viewer.scene.add(roomMesh);
-    }
 
     this.position.set(
       0,
