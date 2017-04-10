@@ -62,7 +62,7 @@ const config = {
         loader: 'json-loader',
       },
       {
-        test: /\.(png|gif|jpg|jpeg|mp3|ttf|eot|woff|woff2|svg|obj)$/,
+        test: /\.(png|gif|jpg|jpeg|mp3|otf|woff|woff2|svg|obj)$/,
         loader: 'file-loader',
       },
     ],

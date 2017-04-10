@@ -9,5 +9,46 @@
     <link href="style.css" rel="stylesheet" />
   </head>
   <body class="mod-loading">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve">
+      <defs>
+        <g id="add-icon">
+        	<path fill="none" stroke="#ff0" stroke-width="3" d="M38.175,5.609V33.33 M29.255,40.532l8.901-7.235l34.496,15.708
+        		 M41.834,73.885l-0.06-27.717L7.348,30.504 M41.834,73.885L7.348,58.236V30.504L38.175,5.609l34.492,15.665l-0.015,27.732
+        		L41.834,73.885z"/>
+        	<polygon fill="#ff0" stroke="#ff0" points="18.305,47.63 31.94,53.988 31.94,56.59 18.305,50.231"/>
+        	<polygon fill="#ff0" stroke="#ff0" points="24.148,42.924 26.096,43.832 26.096,61.296 24.148,60.388"/>
+        </g>
+        <g id="vr-icon">
+        	<g display="inline">
+        		<path fill="none" stroke="#ff0" stroke-width="3" d="M78.444,50.841V29.16c0,0,0-7.295-7.295-7.295H8.88
+			c0,0-7.295,0-7.295,7.295v21.681c0,0,0,7.295,7.295,7.295h18.145c0,0,5.874,0.01,6.903-7.307l2.804-18.299
+			c0.261-1.703,1.984-1.703,1.984-1.703h1.775c1.723,0,1.984,1.703,1.984,1.703l2.832,18.481c1.119,7.22,7.073,7.125,7.073,7.125
+			h18.769C71.149,58.135,78.444,58.135,78.444,50.841z"/>
+        		<circle fill="none" stroke="#ff0" stroke-width="3" cx="18.423" cy="40.055" r="7.258"/>
+        		<circle fill="none" stroke="#ff0" stroke-width="3" cx="60.471" cy="40.055" r="7.258"/>
+        	</g>
+        </g>
+      </defs>
+    </svg>
+    <div class="menu">
+      <ul class="menu-list">
+        <li class="menu-item">
+          <span class="menu-label">
+            View in VR
+          </span>
+          <svg viewBox="0 0 80 80" class="menu-icon" xmlns="http://www.w3.org/2000/svg">
+            <use xlink:href="#vr-icon" />
+          </svg>
+        </li>
+        <li class="menu-item">
+          <span class="menu-label">
+            Add VR performance
+          </span>
+          <svg viewBox="0 0 80 80" class="menu-icon" xmlns="http://www.w3.org/2000/svg">
+            <use xlink:href="#add-icon" />
+          </svg>
+        </li>
+      </ul>
+    </div>
   </body>
 </html>

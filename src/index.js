@@ -1,7 +1,7 @@
 import 'babel-polyfill';
 import eachLimit from 'async/eachLimit';
 
-import './index.scss';
+import './theme/index.scss';
 import viewer from './viewer';
 import props from './props';
 import settings from './settings';
