@@ -7,6 +7,7 @@ let loopCount;
 let duration = 0;
 let lastTime = 0;
 let startTime;
+const ZERO = 1e-25;
 
 const audio = Object.assign(emitter(), {
   tick() {
@@ -81,7 +82,7 @@ const audio = Object.assign(emitter(), {
     const fadeDuration = 2;
     // Fade out the music in 2 seconds
     gainNode.gain.exponentialRampToValueAtTime(
-      0.00001,
+      ZERO,
       context.currentTime + fadeDuration,
     );
 
