@@ -81,6 +81,7 @@ const audio = Object.assign(emitter(), {
   pause() { context.suspend(); },
 
   fadeOut(callback) {
+    if (!context) return;
     const fadeDuration = 2;
     // Fade out the music in 2 seconds
     gainNode.gain.exponentialRampToValueAtTime(

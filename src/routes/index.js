@@ -3,6 +3,7 @@ import playback from './playback';
 import record from './record';
 import notFound from './not-found';
 import hud from '../hud';
+import audio from '../audio';
 
 let current;
 
@@ -28,6 +29,7 @@ export default () => {
         if (!route || event.parent()) return;
         route.mount(req);
         hud(route.hud);
+        audio.fadeOut();
         current = route;
       });
     });
