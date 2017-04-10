@@ -15,6 +15,7 @@ const routes = {
 
 router.on('navigate', () => {
   if (current) {
+    audio.fadeOut();
     current.unmount();
     current = null;
   }
@@ -29,7 +30,6 @@ export default () => {
         if (!route || event.parent()) return;
         route.mount(req);
         hud(route.hud);
-        audio.fadeOut();
         current = route;
       });
     });
