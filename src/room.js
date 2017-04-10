@@ -114,6 +114,12 @@ export default class Room {
       transformMesh(this.handMesh, (i * 2) + 1, right, scale, this.position);
     }
   }
+
+  destroy() {
+    viewer.scene.remove(this.headMesh);
+    viewer.scene.remove(this.handMesh);
+    viewer.scene.remove(roomMesh);
+  }
 }
 
 Room.switchModel = (model) => {
