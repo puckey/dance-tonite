@@ -3,7 +3,9 @@ import Orb from '../orb';
 import audio from '../audio';
 import audioSrc from '../public/sound/lcd-loop.ogg';
 import viewer from '../viewer';
-import { roomDepth, roomOffset } from '../settings';
+import settings from '../settings';
+
+const { roomDepth, roomOffset } = settings;
 
 let room;
 let orb;
@@ -30,7 +32,8 @@ export default {
 
     tick = () => {
       audio.tick();
-      const z = (audio.progress * roomDepth) + roomOffset;
+      // TODO: fix coordinates
+      const z = ((audio.progress - 1) * roomDepth) + roomOffset;
       orb.move(z);
     };
 
