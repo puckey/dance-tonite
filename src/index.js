@@ -45,7 +45,16 @@ props.prepare(() => {
         audio.tick();
         viewer.camera.position.z = ((audio.progress - 1.5) * roomDepth) + roomOffset;
         orb.move(viewer.camera.position.z);
-        rooms.forEach(room => room.gotoTime(audio.time * 1000));
+        rooms.forEach(room => {
+          // Offset every other room in time by a loop, so whenever our floating
+          // camera enters the room, we are seeing a recording:
+          let time = audio.time;
+          const oddRoom = room.index % 2 === 1;
+          if (oddRoom) {
+            time += audio.loopDuration;
+          }
+          room.gotoTime(time);
+        });
       };
 
       viewer.events.on('tick', tick);

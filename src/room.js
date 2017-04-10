@@ -4,6 +4,7 @@ import props from './props';
 import { tempQuaternion, tempVector, createInstancedMesh } from './utils/three';
 import viewer from './viewer';
 import settings from './settings';
+import audio from './audio';
 import storage from './storage';
 import { getCostumeColor } from './theme/colors';
 
@@ -97,24 +98,15 @@ export default class Room {
     }
   }
 
-  gotoTime(time) {
-    let seconds = time * 0.001;
-
-    // Offset every other room in time by half a loop, so whenever our floating
-    // camera enters the room, we are seeing a recording:
-    if (this.index % 2 === 0) {
-      seconds += settings.loopSeconds;
-    }
-
-    const number = Math.floor((seconds % (settings.loopSeconds * 2)) * 90);
-
+  gotoTime(seconds) {
     if (!this.performances) return;
 
+    const frameNumber = Math.floor((seconds % (audio.loopDuration * 2)) * 90);
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.ortographic ? 1.3 : 1;
     for (let i = 0; i < this.performances.length; i++) {
       const frames = this.performances[i];
-      const [head, left, right] = frames[number % frames.length];
+      const [head, left, right] = frames[frameNumber % frames.length];
       if (this.showHead) {
         transformMesh(this.headMesh, i, head, scale, this.position);
       }
