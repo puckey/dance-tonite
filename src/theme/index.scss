@@ -1,5 +1,6 @@
 @import './theme';
 @import './lars';
+@import './util';
 
 body {
   background: $background-color;
@@ -43,65 +44,6 @@ a {
 //   display: none;
 // }
 
-.loading-message, .uploading-message {
-  display: none;
-}
-
-body.mod-loading .loading-message {
-  display: flex;
-}
-
-body.mod-uploading .uploading-message {
-  display: flex;
-}
-
-.recordings-container {
-  margin-bottom: 2em;
-  padding-left: 1em;
-}
-
-.recordings h1 {
-  margin-top: 1.5em;
-  margin-botto: 0.5em;
-}
-
-.menu {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  z-index: $interface-layer;
-}
-
-.menu-list {
-  list-style: none;
-  text-align: right;
-}
-
-.menu-list li {
-  margin: 0;
-  padding: 0 1em 0 0;
-  cursor: pointer;
-}
-
-.menu-label {
-  font-size: 1.25em;
-  opacity: 0;
-}
-
-.menu-item:hover .menu-label {
-  opacity: 1;
-  pointer-events: none;
-  user-select: none;
-}
-
-.menu-icon {
-  margin-left: 0.5em;
-  position: relative;
-  top: 0.5em;
-  width: 2em;
-  height: 2em;
-}
-
 @media screen and (max-width: 1920px) {
   body {
     font-size: 30px;
@@ -128,4 +70,42 @@ body.mod-uploading .uploading-message {
   p {
     font-size: 1.25em;
   }
+}
+
+.menu {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: $interface-layer;
+}
+
+.menu-list {
+  list-style: none;
+  text-align: right;
+  transition: opacity 0.3s;
+}
+
+.menu-list li {
+  margin: 0;
+  padding: 0 1em 0 0;
+  cursor: pointer;
+}
+
+.menu-label {
+  font-size: 1.25em;
+  opacity: 0;
+}
+
+.menu-item:hover .menu-label {
+  opacity: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.menu-icon {
+  margin-left: 0.5em;
+  position: relative;
+  top: 0.5em;
+  width: 2em;
+  height: 2em;
 }

@@ -1,9 +1,3 @@
-/**
- * Colors
- */
-$background-color: #000;
-$text-color: #ff0;
-
 $max-width: 1920px;
 $mobile-width: 750px;
 
@@ -11,9 +5,11 @@ $font-size: 1.56vw;
 $min-font-size: 40px;
 $mobile-font-size: 20px;
 
-/**
- * Z indeces
- */
-$scene-layer: 100;
-$interface-layer: 200;
-$popover-layer: 300;
+// Colors
+$background-color: #000;
+$text-color: #ff0;
+
+// Z indices
+$scene-layer: 10;
+$interface-layer: 20;
+$popover-layer: 30;
