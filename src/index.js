@@ -1,5 +1,4 @@
 import 'babel-polyfill';
-import eachLimit from 'async/eachLimit';
 
 import './theme/index.scss';
 import viewer from './viewer';
@@ -7,7 +6,6 @@ import props from './props';
 import settings from './settings';
 import Room from './room';
 import * as THREE from './lib/three';
-import storage from './storage';
 import Orb from './orb';
 import audio from './audio';
 import audioSrc from './public/sound/lcd-14loops.mp3';
@@ -35,8 +33,9 @@ props.on('loaded', () => {
     const tick = () => {
       audio.tick();
       playlist.tick();
-      viewer.camera.position.z = ((audio.progress - 1.5) * roomDepth) + roomOffset;
-      orb.move(viewer.camera.position.z);
+      const z = ((audio.progress - 1.5) * roomDepth) + roomOffset;
+      viewer.camera.position.z = z;
+      orb.move(z);
     };
 
     viewer.events.on('tick', tick);
