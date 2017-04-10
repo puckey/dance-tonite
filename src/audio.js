@@ -22,8 +22,10 @@ const audio = Object.assign(emitter(), {
     // True when the audio looped, false otherwise:
     this.looped = time < lastTime;
 
-    // The position within the individual loop as a value between 0 - 1:
-    this.loopProgress = (time % loopDuration) / loopDuration;
+    if (this.looped) {
+      // The index of the loop, used when the audio has more than one loops:
+      this.loopIndex = Math.floor(this.progress * loopCount);
+    }
 
     lastTime = time;
   },
@@ -88,6 +90,7 @@ const audio = Object.assign(emitter(), {
   },
 
   time: 0,
+  loopIndex: 0,
 });
 
 export default audio;
