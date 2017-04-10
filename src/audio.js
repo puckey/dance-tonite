@@ -5,15 +5,17 @@ let source;
 let gainNode;
 let loopCount;
 let duration = 0;
-let loopDuration;
 let lastTime = 0;
 let startTime;
+const ZERO = 1e-25;
 
 const audio = Object.assign(emitter(), {
   tick() {
     if (!source.buffer) return;
 
     const time = this.time = (context.currentTime - startTime) % duration;
+    const { loopDuration } = this;
+
     // The position within the track as a multiple of loopDuration:
     this.progress = time / loopDuration;
 
@@ -29,7 +31,7 @@ const audio = Object.assign(emitter(), {
     lastTime = time;
   },
 
-  load: (param, callback) => {
+  load(param, callback) {
     if (context) context.close();
 
     context = new AudioContext();
@@ -54,7 +56,7 @@ const audio = Object.assign(emitter(), {
           source.buffer = response;
 
           duration = source.buffer.duration;
-          loopDuration = duration / loopCount;
+          this.loopDuration = duration / loopCount;
           source.loop = true;
           // Start audio and immediately suspend playback
           context.suspend();
@@ -80,7 +82,7 @@ const audio = Object.assign(emitter(), {
     const fadeDuration = 2;
     // Fade out the music in 2 seconds
     gainNode.gain.exponentialRampToValueAtTime(
-      0.00001,
+      ZERO,
       context.currentTime + fadeDuration,
     );
 

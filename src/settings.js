@@ -6,6 +6,4 @@ export default {
   holeHeight: 1.6,
   holeRadius: 0.18,
   sphereRadius: 0.18 * 0.8,
-  loopLength: 8000,
-  loopSeconds: 8,
 };
