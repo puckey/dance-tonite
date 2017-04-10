@@ -49,7 +49,7 @@ props.on('loaded', () => {
 });
 
 export default class Room {
-  constructor({ showHead, url }) {
+  constructor({ showHead, url } = { showHead: true }) {
     this.index = roomIndex;
     this.showHead = showHead;
     this.url = url;
