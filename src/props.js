@@ -17,8 +17,6 @@ const {
   ConeBufferGeometry,
   CylinderBufferGeometry,
   SphereGeometry,
-  Object3D,
-  BackSide,
 } = THREE;
 
 const color = '#ff0000';
