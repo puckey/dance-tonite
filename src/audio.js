@@ -89,7 +89,9 @@ const audio = Object.assign(emitter(), {
       context.currentTime + fadeDuration,
     );
 
-    setTimeout(callback, fadeDuration * 1000);
+    if (callback) {
+      setTimeout(callback, fadeDuration * 1000);
+    }
     audio.emit('faded-out');
   },
 
