@@ -8,6 +8,7 @@ import emitter from 'mitt';
 import * as THREE from './lib/three';
 import { tempVector } from './utils/three';
 import settings from './settings';
+import Room from './room';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
@@ -87,6 +88,11 @@ const viewer = {
   events,
   renderer,
   switchCamera: (name) => {
+    Room.switchModel(
+      name === 'ortographic'
+        ? 'ortographic'
+        : 'default'
+    );
     viewer.camera = cameras[name];
   },
   toggleVR: () => vrEffect[

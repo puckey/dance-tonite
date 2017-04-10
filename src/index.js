@@ -14,7 +14,6 @@ import Playlist from './playlist';
 window.THREE = THREE;
 
 props.on('loaded', () => {
-  Room.switchModel('ortographic');
   viewer.switchCamera('ortographic');
 
   audio.load({
