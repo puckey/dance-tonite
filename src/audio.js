@@ -7,11 +7,15 @@ let loopCount;
 let duration = 0;
 let lastTime = 0;
 let startTime;
+let audioElement;
 const ZERO = 1e-25;
 
 const audio = Object.assign(emitter(), {
   tick() {
-    const time = this.time = (context.currentTime - startTime) % duration;
+    const currentTime = audioElement
+      ? audioElement.currentTime
+      : (context.currentTime - startTime);
+    const time = this.time = (currentTime) % duration;
     const { loopDuration } = this;
 
     // The position within the track as a multiple of loopDuration:
@@ -54,7 +58,7 @@ const audio = Object.assign(emitter(), {
     }
 
     if (param.progressive) {
-      const audioElement = document.createElement('audio');
+      audioElement = document.createElement('audio');
       source = context.createMediaElementSource(audioElement);
       audioElement.src = param.src;
       audioElement.loop = true;
