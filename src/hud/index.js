@@ -1,6 +1,6 @@
 import router from '../router';
-import addIconSvg from './icons/add-icon.svg'
-import enterIconSvg from './icons/enter-icon.svg'
+import addIconSvg from './icons/add-icon.svg';
+import enterIconSvg from './icons/enter-icon.svg';
 
 const defaultState = {
   menuAdd: false,
