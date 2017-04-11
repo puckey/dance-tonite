@@ -38,7 +38,7 @@ props.on('loaded', () => {
       getCostumeColor(0),
       props.room.geometry,
     ),
-    ortographic: createInstancedMesh(
+    orthographic: createInstancedMesh(
       num,
       getCostumeColor(0),
       props.orthographicRoom.geometry,
