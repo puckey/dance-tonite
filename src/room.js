@@ -31,23 +31,6 @@ const transformMesh = (
   instancedMesh.needsUpdate();
 };
 
-props.on('loaded', () => {
-  roomMeshes = {
-    default: createInstancedMesh(
-      num,
-      getCostumeColor(0),
-      props.room.geometry,
-    ),
-    orthographic: createInstancedMesh(
-      num,
-      getCostumeColor(0),
-      props.orthographicRoom.geometry,
-    ),
-  };
-  roomMesh = roomMeshes.default;
-  viewer.scene.add(roomMesh);
-});
-
 export default class Room {
   constructor({ showHead, url, recording } = { showHead: true }) {
     this.index = roomIndex;
@@ -132,3 +115,24 @@ Room.switchModel = (model) => {
   roomMesh = roomMeshes[model];
   viewer.scene.add(roomMesh);
 };
+
+Room.reset = () => {
+  if (roomMesh) viewer.scene.remove(roomMesh);
+  roomIndex = 0;
+  roomMeshes = {
+    default: createInstancedMesh(
+      num,
+      getCostumeColor(0),
+      props.room.geometry,
+    ),
+    orthographic: createInstancedMesh(
+      num,
+      getCostumeColor(0),
+      props.orthographicRoom.geometry,
+    ),
+  };
+  roomMesh = roomMeshes.default;
+  viewer.scene.add(roomMesh);
+};
+
+props.on('loaded', Room.reset);

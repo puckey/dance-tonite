@@ -4,6 +4,7 @@ import record from './record';
 import notFound from './not-found';
 import hud from '../hud';
 import audio from '../audio';
+import Room from '../room';
 
 let current;
 
@@ -17,6 +18,7 @@ router.on('navigate', () => {
   if (current) {
     audio.fadeOut();
     current.unmount();
+    Room.reset();
     current = null;
   }
 });
