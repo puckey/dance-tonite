@@ -49,10 +49,13 @@ props.on('loaded', () => {
 });
 
 export default class Room {
-  constructor({ showHead, url } = { showHead: true }) {
+  constructor({ showHead, url, recording } = { showHead: true }) {
     this.index = roomIndex;
     this.showHead = showHead;
     this.url = url;
+    if (recording) {
+      this.layers = recording.layers;
+    }
     roomIndex += 1;
     this.position = new THREE.Vector3();
 
@@ -83,9 +86,9 @@ export default class Room {
   }
 
   load(callback) {
-    storage.load(this.url, (error, performances) => {
+    storage.load(this.url, (error, layers) => {
       if (error) return callback(error);
-      this.performances = performances;
+      this.layers = layers;
       callback();
     });
   }
@@ -99,12 +102,12 @@ export default class Room {
   }
 
   gotoTime(seconds) {
-    if (!this.performances) return;
+    const { layers } = this;
+    if (!layers) return;
 
     const frameNumber = Math.floor((seconds % (audio.loopDuration * 2)) * 90);
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
-
     for (let i = 0; i < layers.length; i++) {
       const frames = layers[i];
       if (frames.length <= frameNumber) continue;
