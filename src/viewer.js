@@ -16,16 +16,23 @@ require('./lib/ViveController')(THREE);
 
 const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
+const orthographicDistance = 4;
 
 const cameras = (function () {
-  const d = 4;
   const aspect = getWindowAspect();
 
   const perspective = new THREE.PerspectiveCamera(70, aspect, 0.1, 1000);
   perspective.lookAt(tempVector(0, 0, 1));
   perspective.position.y = settings.holeHeight;
 
-  const ortographic = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, -100, 1000);
+  const ortographic = new THREE.OrthographicCamera(
+    -orthographicDistance * aspect,
+    orthographicDistance * aspect,
+    orthographicDistance,
+    -orthographicDistance,
+    -100,
+    1000,
+  );
   ortographic.position.set(-0.06, 0.08, -0.08);
   ortographic.lookAt(tempVector(0, 0, 0));
 
@@ -68,14 +75,23 @@ const createScene = () => {
 
 window.addEventListener('resize', () => {
   const aspect = getWindowAspect();
+  const { orthographic } = cameras;
+  Object.assign(
+    orthographic,
+    {
+      left: -orthographicDistance * aspect,
+      right: orthographicDistance * aspect,
+    },
+  );
+
+  const { innerWidth, innerHeight } = window;
+  vrEffect.setSize(innerWidth, innerHeight);
   Object
     .values(cameras)
     .forEach((camera) => {
       camera.aspect = aspect;
       camera.updateProjectionMatrix();
     });
-  const { innerWidth, innerHeight } = window;
-  vrEffect.setSize(innerWidth, innerHeight);
 }, false);
 
 const viewer = {
