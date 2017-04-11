@@ -111,11 +111,16 @@ const viewer = {
     );
     viewer.camera = cameras[name];
   },
-  toggleVR: () => vrEffect[
-    vrEffect.isPresenting
-      ? 'exitPresent'
-      : 'requestPresent'
-    ](),
+  toggleVR: () => {
+    if (vrEffect.isPresenting) {
+      vrEffect.exitPresent();
+      viewer.switchCamera('orthographic');
+    } else {
+      vrEffect.requestPresent().then(() => {
+        viewer.switchCamera('default');
+      });
+    }
+  },
   vrEffect,
 };
 
