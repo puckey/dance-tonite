@@ -29,6 +29,12 @@ export default {
     moveCamera(0);
 
     playlist = new Playlist('curated', () => {
+      tick = () => {
+        audio.tick();
+        playlist.tick();
+        moveCamera(audio.progress);
+      };
+
       // Audio plays after playlist is done loading:
       audio.load({
         src: audioSrc,
@@ -36,15 +42,8 @@ export default {
       }, (loadError) => {
         if (loadError) throw loadError;
         audio.play();
+        viewer.events.on('tick', tick);
       });
-
-      tick = () => {
-        audio.tick();
-        playlist.tick();
-        moveCamera(audio.progress);
-      };
-
-      viewer.events.on('tick', tick);
     });
   },
 
