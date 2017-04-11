@@ -24,7 +24,6 @@
     "unique-s3-uploader": "0.0.2"
   },
   "devDependencies": {
-    "@epegzz/sass-vars-loader": "^1.0.2",
     "autoprefixer-loader": "^3.2.0",
     "babel-core": "^6.5.2",
     "babel-eslint": "^7.2.1",

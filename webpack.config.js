@@ -1,32 +1,13 @@
 /* eslint global-require: 0 */
 const webpack = require('webpack');
 const path = require('path');
-require('@epegzz/sass-vars-loader');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
-const querystring = require('querystring');
-require('html-loader');
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const CDN_RESOURCES = process.env.CDN_RESOURCES;
-const CDN_API = process.env.CDN_API;
-
-const sassVarsConfig = querystring.stringify({
-  vars: [JSON.stringify({
-    production: NODE_ENV === 'production',
-  })],
-});
-
-const svgoConfig = JSON.stringify({
-  plugins: [
-    {removeTitle: true},
-    {convertColors: {shorthex: false}},
-    {convertPathData: false}
-  ]
-});
 
 const config = {
   devtool: process.env.NODE_ENV === 'production' ? null : 'source-map',
@@ -55,7 +36,6 @@ const config = {
           'css-loader?minimize',
           'autoprefixer',
           'sass',
-          `@epegzz/sass-vars-loader?${sassVarsConfig}`,
         ]),
       },
       {
@@ -77,8 +57,14 @@ const config = {
         test: /.*\.svg$/,
         loaders: [
           'string-loader',
-          'svgo-loader?' + svgoConfig
-        ]
+          `svgo-loader?${JSON.stringify({
+            plugins: [
+              { removeTitle: true },
+              { convertColors: { shorthex: false } },
+              { convertPathData: false },
+            ],
+          })}`,
+        ],
       },
     ],
   },
@@ -96,8 +82,6 @@ const config = {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(NODE_ENV),
-        CDN_RESOURCES: JSON.stringify(CDN_RESOURCES),
-        CDN_API: JSON.stringify(CDN_API),
       },
     }),
     new HtmlWebpackPlugin({
@@ -127,7 +111,7 @@ if (process.env.NODE_ENV === 'production' && process.env.RG_ENV !== 'dev') {
       output: {
         comments: false,
       },
-    }) // eslint-disable-line comma-dangle
+    })
   );
 }
 
