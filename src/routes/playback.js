@@ -24,6 +24,8 @@ export default {
     const moveCamera = (progress) => {
       const z = ((progress - 1.5) * roomDepth) + roomOffset;
       viewer.camera.position.z = z;
+      viewer.camera.position.y = 1.6;
+      viewer.camera.position.x = 0;
       orb.move(z);
     };
 
