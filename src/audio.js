@@ -45,7 +45,9 @@ const audio = Object.assign(emitter(), {
 
     // Reset time, set loop count
     lastTime = 0;
-    loopCount = param.loops;
+    loopCount = param.loops === undefined
+      ? 1
+      : param.loops;
 
     const request = new XMLHttpRequest();
     request.open('GET', param.src, true);

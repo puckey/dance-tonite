@@ -24,3 +24,18 @@ export const createInstancedMesh = (num, color, geometry) => {
   instancedMesh.receiveShadow = false;
   return instancedMesh;
 };
+
+// TODO: figure the optimal rounding of these values:
+const compressNumber = number => Math.round(number * 10000) / 10000;
+
+// Serializes a matrix into an array with rounded position x, y, z
+// & quaternion x, y, z, w values:
+const SERIALIZE_POSITION = new THREE.Vector3();
+const SERIALIZE_ROTATION = new THREE.Quaternion();
+const SERIALIZE_SCALE = new THREE.Vector3();
+export const serializeMatrix = (matrix) => {
+  matrix.decompose(SERIALIZE_POSITION, SERIALIZE_ROTATION, SERIALIZE_SCALE);
+  return SERIALIZE_POSITION.toArray()
+    .concat(SERIALIZE_ROTATION.toArray())
+    .map(compressNumber);
+};

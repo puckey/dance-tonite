@@ -10,12 +10,12 @@ export default class Playlist {
 
     storage.loadPlaylist(id, (error, urls) => {
       if (error) throw error;
-
       this.rooms = urls.map(
-        url => new Room(
+        (url, index) => new Room(
           {
             url,
             showHead: !/head=false/.test(url),
+            index,
           },
         ),
       );
@@ -36,7 +36,7 @@ export default class Playlist {
       if (oddRoom) {
         time += audio.loopDuration;
       }
-      room.gotoTime(time);
+      room.gotoTime(time % (audio.loopDuration * 2));
     }
   }
 
