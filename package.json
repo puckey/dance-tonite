@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=development webpack-dev-server --display-error-details -d --history-api-fallback --inline --progress --colors --port 3000",
+    "start": "NODE_ENV=development webpack-dev-server --display-error-details -d --debug --devtool cheap-eval-source-map --history-api-fallback --inline --progress --colors --port 3000",
     "build": "NODE_ENV=production webpack --progress --colors"
   },
   "dependencies": {
@@ -18,6 +18,8 @@
     "redux": "^3.6.0",
     "redux-saga": "^0.14.3",
     "redux-thunk": "^2.0.1",
+    "string-loader": "0.0.1",
+    "svgo-loader": "^1.2.1",
     "unfetch": "^2.1.2",
     "unique-s3-uploader": "0.0.2"
   },

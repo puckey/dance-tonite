@@ -20,6 +20,14 @@ const sassVarsConfig = querystring.stringify({
   })],
 });
 
+const svgoConfig = JSON.stringify({
+  plugins: [
+    {removeTitle: true},
+    {convertColors: {shorthex: false}},
+    {convertPathData: false}
+  ]
+});
+
 const config = {
   devtool: process.env.NODE_ENV === 'production' ? null : 'source-map',
   entry: {
@@ -62,8 +70,15 @@ const config = {
         loader: 'json-loader',
       },
       {
-        test: /\.(png|gif|jpg|jpeg|mp3|otf|woff|woff2|svg|obj|ogg)$/,
+        test: /\.(png|gif|jpg|jpeg|mp3|otf|woff|woff2|obj|ogg)$/,
         loader: 'file-loader',
+      },
+      {
+        test: /.*\.svg$/,
+        loaders: [
+          'string-loader',
+          'svgo-loader?' + svgoConfig
+        ]
       },
     ],
   },
