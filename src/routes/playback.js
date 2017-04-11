@@ -15,7 +15,7 @@ export default {
   },
 
   mount: () => {
-    viewer.switchCamera('ortographic');
+    viewer.switchCamera('orthographic');
 
     audio.load({
       src: audioSrc,

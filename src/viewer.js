@@ -25,7 +25,7 @@ const cameras = (function () {
   perspective.lookAt(tempVector(0, 0, 1));
   perspective.position.y = settings.holeHeight;
 
-  const ortographic = new THREE.OrthographicCamera(
+  const orthographic = new THREE.OrthographicCamera(
     -orthographicDistance * aspect,
     orthographicDistance * aspect,
     orthographicDistance,
@@ -33,10 +33,10 @@ const cameras = (function () {
     -100,
     1000,
   );
-  ortographic.position.set(-0.06, 0.08, -0.08);
-  ortographic.lookAt(tempVector(0, 0, 0));
+  orthographic.position.set(-0.06, 0.08, -0.08);
+  orthographic.lookAt(tempVector(0, 0, 0));
 
-  return { default: perspective, ortographic };
+  return { default: perspective, orthographic };
 }());
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -105,8 +105,8 @@ const viewer = {
   renderer,
   switchCamera: (name) => {
     Room.switchModel(
-      name === 'ortographic'
-        ? 'ortographic'
+      name === 'orthographic'
+        ? 'orthographic'
         : 'default',
     );
     viewer.camera = cameras[name];

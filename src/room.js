@@ -38,10 +38,10 @@ props.on('loaded', () => {
       getCostumeColor(0),
       props.room.geometry,
     ),
-    ortographic: createInstancedMesh(
+    orthographic: createInstancedMesh(
       num,
       getCostumeColor(0),
-      props.ortographicRoom.geometry,
+      props.orthographicRoom.geometry,
     ),
   };
   roomMesh = roomMeshes.default;
@@ -103,7 +103,7 @@ export default class Room {
 
     const frameNumber = Math.floor((seconds % (audio.loopDuration * 2)) * 90);
     // In orthographic mode, scale up the meshes:
-    const scale = roomMesh === roomMeshes.ortographic ? 1.3 : 1;
+    const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
     for (let i = 0; i < this.performances.length; i++) {
       const frames = this.performances[i];
       const [head, left, right] = frames[frameNumber % frames.length];

@@ -78,7 +78,7 @@ asyncMap(
   (error, [room, isometricRoom]) => {
     if (error) throw error;
     props.room = room;
-    props.ortographicRoom = isometricRoom;
+    props.orthographicRoom = isometricRoom;
     props.emit('loaded');
   },
 );
