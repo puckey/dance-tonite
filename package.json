@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=development webpack-dev-server --display-error-details -d --debug --devtool cheap-eval-source-map --history-api-fallback --inline --progress --colors --port 3000",
+    "start": "NODE_ENV=development webpack-dev-server --display-error-details -d --history-api-fallback --inline --progress --colors --port 3000",
     "build": "NODE_ENV=production webpack --progress --colors"
   },
   "dependencies": {
