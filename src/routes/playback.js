@@ -14,6 +14,7 @@ let tick;
 export default {
   hud: {
     menuAdd: true,
+    menuEnter: viewer.toggleVR,
   },
 
   mount: () => {

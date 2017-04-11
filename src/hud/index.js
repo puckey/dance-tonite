@@ -9,7 +9,8 @@ const defaultState = {
 };
 
 const elements = {
-  menuList: document.querySelector('.menu-list'),
+  menuAdd: document.querySelector('.menu-item-add'),
+  menuEnter: document.querySelector('.menu-item-enter'),
   // aboutButton: document.querySelector('.about-button'),
 };
 
@@ -19,9 +20,9 @@ const selectorToRoute = {
   '.menu-item-add': '/record',
 };
 
-// Render icons
-document.querySelector('.menu-icon-add').innerHTML = addIconSvg;
-document.querySelector('.menu-icon-enter').innerHTML = enterIconSvg;
+// Add icons
+document.querySelector('.menu-item-add .menu-item-icon').innerHTML = addIconSvg;
+document.querySelector('.menu-item-enter .menu-item-icon').innerHTML = enterIconSvg;
 
 Object.keys(selectorToRoute)
   .forEach((className) => {
@@ -32,16 +33,31 @@ Object.keys(selectorToRoute)
       });
   });
 
-export default (param = {}) => {
-  const newState = Object.assign(
-    {},
-    defaultState,
-    param,
-  );
-  for (const key in newState) {
-    const visible = newState[key];
-    if (visible !== state[key]) {
-      elements[key].classList[visible ? 'remove' : 'add']('mod-hidden');
+export default {
+  update: (param = {}) => {
+    const newState = Object.assign(
+      {},
+      defaultState,
+      param,
+    );
+    // Remove any handlers:
+    for (const key in state) {
+      const handler = state[key];
+      if (typeof handler === 'function') {
+        elements[key].removeEventListener('click', handler);
+      }
     }
-  }
+    for (const key in newState) {
+      const handler = newState[key];
+      const visible = !!handler;
+      const el = elements[key];
+      if (typeof handler === 'function') {
+        el.addEventListener('click', handler);
+      }
+      if (visible !== state[key]) {
+        el.classList[visible ? 'remove' : 'add']('mod-hidden');
+      }
+    }
+  },
+  elements,
 };

@@ -29,7 +29,7 @@ export default () => {
         const route = routes[url];
         if (!route || event.parent()) return;
         route.mount(req);
-        hud(route.hud);
+        hud.update(route.hud);
         current = route;
       });
     });
