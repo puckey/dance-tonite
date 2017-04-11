@@ -55,7 +55,7 @@ const audio = Object.assign(emitter(), {
       if (callback) callback(null, param.src);
 
       audio.emit('load', param.src);
-    }
+    };
 
     if (param.progressive) {
       audioElement = document.createElement('audio');
@@ -68,7 +68,7 @@ const audio = Object.assign(emitter(), {
         duration = audioElement.duration;
         audioElement.play();
         canPlay();
-      })
+      });
     } else {
       source = context.createBufferSource();
       const request = new XMLHttpRequest();
