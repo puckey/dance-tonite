@@ -3,7 +3,8 @@ import addIconSvg from './icons/add-icon.svg'
 import enterIconSvg from './icons/enter-icon.svg'
 
 const defaultState = {
-  menuList: false,
+  menuAdd: false,
+  menuEnter: false,
   // aboutButton: true,
 };
 

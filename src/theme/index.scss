@@ -37,13 +37,6 @@ a {
   color: $text-color;
 }
 
-// body.mod-loading canvas,
-// body.mod-loading button,
-// body.mod-uploading canvas,
-// body.mod-uploading button {
-//   display: none;
-// }
-
 @media screen and (max-width: 1920px) {
   body {
     font-size: 30px;
@@ -72,55 +65,52 @@ a {
   }
 }
 
+.viewer {
+  position: absolute;
+  top: 0;
+}
+
 .menu {
   position: fixed;
   right: 0;
   bottom: 0;
   z-index: $interface-layer;
-}
-
-.menu-list {
   list-style: none;
   text-align: right;
   transition: opacity 0.3s;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  svg * {
+    stroke: $text-color;
+  }
 }
 
-.menu-list li {
+.menu li {
   margin: 0;
   padding: 0 1em 0 0;
   cursor: pointer;
 }
 
-.menu-label {
+.menu-item-label {
   font-size: 1.25em;
   opacity: 0;
 }
 
-.menu-item:hover .menu-label {
+.menu-item:hover .menu-item-label {
   opacity: 1;
   pointer-events: none;
   user-select: none;
 }
 
-.menu-icon {
+.menu-item-icon {
   display: inline-block;
   margin-left: 0.5em;
   position: relative;
   top: 0.5em;
   width: 2em;
   height: 2em;
-}
-
-.viewer {
-  position: absolute;
-  top: 0;
-}
-
-svg {
-  width: 100%;
-  height: 100%;
-}
-
-svg * {
-  stroke: $text-color;
 }

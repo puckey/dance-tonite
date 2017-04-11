@@ -14,9 +14,7 @@ let tick;
 let recording;
 
 export default {
-  hud: {
-    menuList: false,
-  },
+  hud: { },
 
   mount: () => {
     viewer.camera.position.z = 0;

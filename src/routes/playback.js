@@ -13,7 +13,7 @@ let tick;
 
 export default {
   hud: {
-    menuList: true,
+    menuAdd: true,
   },
 
   mount: () => {
