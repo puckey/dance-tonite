@@ -111,6 +111,11 @@ a {
   height: 2em;
 }
 
+.viewer {
+  position: absolute;
+  top: 0;
+}
+
 svg * {
   stroke: $text-color;
 }
