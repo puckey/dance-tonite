@@ -11,8 +11,6 @@ const ZERO = 1e-25;
 
 const audio = Object.assign(emitter(), {
   tick() {
-    if (!source.buffer) return;
-
     const time = this.time = (context.currentTime - startTime) % duration;
     const { loopDuration } = this;
 
@@ -35,13 +33,8 @@ const audio = Object.assign(emitter(), {
 
   load(param, callback) {
     if (context) context.close();
-
     context = new AudioContext();
-    source = context.createBufferSource();
     gainNode = context.createGain();
-
-    source.connect(gainNode);
-    gainNode.connect(context.destination);
 
     // Reset time, set loop count
     lastTime = 0;
@@ -49,31 +42,54 @@ const audio = Object.assign(emitter(), {
       ? 1
       : param.loops;
 
-    const request = new XMLHttpRequest();
-    request.open('GET', param.src, true);
-    request.responseType = 'arraybuffer';
-    request.onload = () => {
-      context.decodeAudioData(
-        request.response,
-        (response) => {
-          // Load the file into the buffer
-          source.buffer = response;
+    const canPlay = () => {
+      this.loopDuration = duration / loopCount;
+      startTime = context.currentTime;
 
-          duration = source.buffer.duration;
-          this.loopDuration = duration / loopCount;
-          source.loop = true;
-          // Start audio and immediately suspend playback
-          source.start(0);
-          context.suspend();
-          startTime = context.currentTime;
-          if (callback) callback(null, param.src);
-          audio.emit('load', param.src);
-        },
-        (err) => { callback(err); },
-      );
-    };
+      context.suspend();
 
-    request.send();
+      if (callback) callback(null, param.src);
+
+      audio.emit('load', param.src);
+    }
+
+    if (param.progressive) {
+      const audioElement = document.createElement('audio');
+      source = context.createMediaElementSource(audioElement);
+      audioElement.src = param.src;
+      audioElement.loop = true;
+      audioElement.type = 'audio/mpeg';
+
+      audioElement.addEventListener('canplaythrough', () => {
+        duration = audioElement.duration;
+        audioElement.play();
+        canPlay();
+      })
+    } else {
+      source = context.createBufferSource();
+      const request = new XMLHttpRequest();
+      request.open('GET', param.src, true);
+      request.responseType = 'arraybuffer';
+      request.onload = () => {
+        context.decodeAudioData(
+          request.response,
+          (response) => {
+            // Load the file into the buffer
+            source.buffer = response;
+            duration = source.buffer.duration;
+            source.loop = true;
+            source.start(0);
+            canPlay();
+          },
+          (err) => { callback(err); },
+        );
+      };
+
+      request.send();
+    }
+
+    source.connect(gainNode);
+    gainNode.connect(context.destination);
   },
 
   play() {

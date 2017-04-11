@@ -39,6 +39,7 @@ export default {
       audio.load({
         src: audioSrc,
         loops: 16,
+        progressive: true,
       }, (loadError) => {
         if (loadError) throw loadError;
         audio.play();
