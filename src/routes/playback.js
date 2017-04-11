@@ -5,6 +5,8 @@ import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
 
+const { roomDepth, roomOffset } = settings;
+
 let orb;
 let playlist;
 let tick;
@@ -16,27 +18,30 @@ export default {
 
   mount: () => {
     viewer.switchCamera('orthographic');
+    orb = new Orb();
 
-    audio.load({
-      src: audioSrc,
-      loops: 16,
-    }, (loadError) => {
-      if (loadError) throw loadError;
+    const moveCamera = (progress) => {
+      const z = ((progress - 1.5) * roomDepth) + roomOffset;
+      viewer.camera.position.z = z;
+      orb.move(z);
+    }
 
-      orb = new Orb();
+    moveCamera(0);
 
-      playlist = new Playlist('curated', () => {
-        // Audio plays after playlist is done loading:
+    playlist = new Playlist('curated', () => {
+      // Audio plays after playlist is done loading:
+      audio.load({
+        src: audioSrc,
+        loops: 16,
+      }, (loadError) => {
+        if (loadError) throw loadError;
         audio.play();
       });
 
-      const { roomDepth, roomOffset } = settings;
       tick = () => {
         audio.tick();
         playlist.tick();
-        const z = ((audio.progress - 1.5) * roomDepth) + roomOffset;
-        viewer.camera.position.z = z;
-        orb.move(z);
+        moveCamera(audio.progress);
       };
 
       viewer.events.on('tick', tick);
