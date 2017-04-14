@@ -6,7 +6,7 @@ import viewer from './viewer';
 import settings from './settings';
 import audio from './audio';
 import storage from './storage';
-import { getCostumeColor } from './theme/colors';
+import { getCostumeColor, getRoomColor } from './theme/colors';
 
 const num = 20;
 let roomIndex = 0;
@@ -42,8 +42,6 @@ export default class Room {
     roomIndex += 1;
     this.position = new THREE.Vector3();
 
-    const costumeColor = getCostumeColor(this.index);
-
     this.position.set(
       0,
       0,
@@ -51,19 +49,21 @@ export default class Room {
     );
     this.updatePosition();
 
-    this.handMesh = createInstancedMesh(
-      200,
-      costumeColor,
-      props.hand.geometry,
-    );
+    const color = getCostumeColor(this.index);
+
+    this.handMesh = createInstancedMesh({
+      count: 30,
+      geometry: props.hand.geometry,
+      color,
+    });
     viewer.scene.add(this.handMesh);
 
     if (showHead) {
-      this.headMesh = createInstancedMesh(
-        200,
-        costumeColor,
-        props.head.geometry,
-      );
+      this.headMesh = createInstancedMesh({
+        count: 30,
+        geometry: props.head.geometry,
+        color,
+      });
       viewer.scene.add(this.headMesh);
     }
   }
@@ -120,16 +120,16 @@ Room.reset = () => {
   if (roomMesh) viewer.scene.remove(roomMesh);
   roomIndex = 0;
   roomMeshes = {
-    default: createInstancedMesh(
-      num,
-      getCostumeColor(0),
-      props.room.geometry,
-    ),
-    orthographic: createInstancedMesh(
-      num,
-      getCostumeColor(0),
-      props.orthographicRoom.geometry,
-    ),
+    default: createInstancedMesh({
+      count: num,
+      geometry: props.room.geometry,
+      color: getRoomColor,
+    }),
+    orthographic: createInstancedMesh({
+      count: num,
+      geometry: props.orthographicRoom.geometry,
+      color: getRoomColor,
+    }),
   };
   roomMesh = roomMeshes.default;
   viewer.scene.add(roomMesh);

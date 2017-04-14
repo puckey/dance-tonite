@@ -5607,13 +5607,13 @@
 
 	var clipping_planes_vertex = "#if NUM_CLIPPING_PLANES > 0 && ! defined( PHYSICAL ) && ! defined( PHONG )\n\tvViewPosition = - mvPosition.xyz;\n#endif\n";
 
-	var color_fragment = "#ifdef USE_COLOR\n\tdiffuseColor.rgb *= vColor;\n#endif";
+	var color_fragment = "#if defined(USE_COLOR) || defined(INSTANCE_COLOR)\n\tdiffuseColor.rgb *= vColor;\n#endif";
 
-	var color_pars_fragment = "#ifdef USE_COLOR\n\tvarying vec3 vColor;\n#endif\n";
+	var color_pars_fragment = "#if defined(USE_COLOR) || defined(INSTANCE_COLOR)\n\tvarying vec3 vColor;\n#endif\n";
 
-	var color_pars_vertex = "#ifdef USE_COLOR\n\tvarying vec3 vColor;\n#endif";
+	var color_pars_vertex = "#if defined(USE_COLOR) || defined(INSTANCE_COLOR)\n\tvarying vec3 vColor;\n#endif\n";
 
-	var color_vertex = "#ifdef USE_COLOR\n\tvColor.xyz = color.xyz;\n#endif";
+	var color_vertex = "#ifdef INSTANCE_COLOR\n\tvColor.xyz = instanceColor.xyz;\n#elif defined(USE_COLOR)\n\tvColor.xyz = color.xyz;\n#endif\n";
 
 	var common = "#define PI 3.14159265359\n#define PI2 6.28318530718\n#define PI_HALF 1.5707963267949\n#define RECIPROCAL_PI 0.31830988618\n#define RECIPROCAL_PI2 0.15915494\n#define LOG2 1.442695\n#define EPSILON 1e-6\n#define saturate(a) clamp( a, 0.0, 1.0 )\n#define whiteCompliment(a) ( 1.0 - saturate( a ) )\nfloat pow2( const in float x ) { return x*x; }\nfloat pow3( const in float x ) { return x*x*x; }\nfloat pow4( const in float x ) { float x2 = x*x; return x2*x2; }\nfloat average( const in vec3 color ) { return dot( color, vec3( 0.3333 ) ); }\nhighp float rand( const in vec2 uv ) {\n\tconst highp float a = 12.9898, b = 78.233, c = 43758.5453;\n\thighp float dt = dot( uv.xy, vec2( a,b ) ), sn = mod( dt, PI );\n\treturn fract(sin(sn) * c);\n}\nstruct IncidentLight {\n\tvec3 color;\n\tvec3 direction;\n\tbool visible;\n};\nstruct ReflectedLight {\n\tvec3 directDiffuse;\n\tvec3 directSpecular;\n\tvec3 indirectDiffuse;\n\tvec3 indirectSpecular;\n};\nstruct GeometricContext {\n\tvec3 position;\n\tvec3 normal;\n\tvec3 viewDir;\n};\nvec3 transformDirection( in vec3 dir, in mat4 matrix ) {\n\treturn normalize( ( matrix * vec4( dir, 0.0 ) ).xyz );\n}\nvec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {\n\treturn normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );\n}\nvec3 projectOnPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal ) {\n\tfloat distance = dot( planeNormal, point - pointOnPlane );\n\treturn - distance * planeNormal + point;\n}\nfloat sideOfPlane( in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal ) {\n\treturn sign( dot( point - pointOnPlane, planeNormal ) );\n}\nvec3 linePlaneIntersect( in vec3 pointOnLine, in vec3 lineDirection, in vec3 pointOnPlane, in vec3 planeNormal ) {\n\treturn lineDirection * ( dot( planeNormal, pointOnPlane - pointOnLine ) / dot( planeNormal, lineDirection ) ) + pointOnLine;\n}\nmat3 transpose( const in mat3 v ) {\n\tmat3 tmp;\n\ttmp[0] = vec3(v[0].x, v[1].x, v[2].x);\n\ttmp[1] = vec3(v[0].y, v[1].y, v[2].y);\n\ttmp[2] = vec3(v[0].z, v[1].z, v[2].z);\n\treturn tmp;\n}\n";
 
@@ -5737,7 +5737,7 @@
 
 	var uv_pars_fragment = "#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )\n\tvarying vec2 vUv;\n#endif";
 
-	var uv_pars_vertex = "#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )\n\tvarying vec2 vUv;\n\tuniform vec4 offsetRepeat;\n#endif\n#if defined ( INSTANCE_TRANSFORM )\nmat3 inverse(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\nattribute vec3 instancePosition;\nattribute vec4 instanceQuaternion;\nattribute vec3 instanceScale;\nmat4 getInstanceMatrix(){\n  vec4 q = instanceQuaternion;\n  vec3 s = instanceScale;\n  float x2 = q.x + q.x;\n  float y2 = q.y + q.y;\n  float z2 = q.z + q.z;\n  float xx = q.x * x2;\n  float xy = q.x * y2;\n  float xz = q.x * z2;\n  float yy = q.y * y2;\n  float yz = q.y * z2;\n  float zz = q.z * z2;\n  float wx = q.w * x2;\n  float wy = q.w * y2;\n  float wz = q.w * z2;\n  return mat4(\n      (1.0 - (yy + zz)) * s.x                  ,    (xy + wz)  * s.x                            ,   (xz - wy)  * s.x                             , 0.0 ,\n      (xy - wz) * s.y                             ,   (1.0 - (xx + zz)) * s.y                  ,   (yz + wx) * s.y                             , 0.0 ,\n      (xz + wy) * s.z                             ,   (yz - wx) * s.z                             ,   (1.0 - (xx + yy)) * s.z                     , 0.0 ,\n      instancePosition.x                  ,   instancePosition.y                  ,   instancePosition.z                  , 1.0\n  );\n}\n#endif\n";
+	var uv_pars_vertex = "#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )\n\tvarying vec2 vUv;\n\tuniform vec4 offsetRepeat;\n#endif\n#if defined ( INSTANCE_COLOR )\nattribute vec3 instanceColor;\n#endif\n#if defined ( INSTANCE_TRANSFORM )\nmat3 inverse(mat3 m) {\n\tfloat a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n\tfloat a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n\tfloat a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n\tfloat b01 = a22 * a11 - a12 * a21;\n\tfloat b11 = -a22 * a10 + a12 * a20;\n\tfloat b21 = a21 * a10 - a11 * a20;\n\tfloat det = a00 * b01 + a01 * b11 + a02 * b21;\n\treturn mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n\t\t\t\t\t\t\tb11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n\t\t\t\t\t\t\tb21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\nattribute vec3 instancePosition;\nattribute vec4 instanceQuaternion;\nattribute vec3 instanceScale;\nmat4 getInstanceMatrix(){\n\tvec4 q = instanceQuaternion;\n\tvec3 s = instanceScale;\n\tvec3 v = instancePosition;\n\tfloat x2 = q.x + q.x;\n\tfloat y2 = q.y + q.y;\n\tfloat z2 = q.z + q.z;\n\tfloat xx = q.x * x2;\n\tfloat xy = q.x * y2;\n\tfloat xz = q.x * z2;\n\tfloat yy = q.y * y2;\n\tfloat yz = q.y * z2;\n\tfloat zz = q.z * z2;\n\tfloat wx = q.w * x2;\n\tfloat wy = q.w * y2;\n\tfloat wz = q.w * z2;\n\treturn mat4(\n\t\t\t(1.0 - (yy + zz)) * s.x\t,\t (xy + wz)\t* s.x\t\t\t\t ,\t (xz - wy)\t* s.x\t\t\t\t\t, 0.0 ,\n\t\t\t(xy - wz)\t* s.y\t\t\t\t ,\t (1.0 - (xx + zz)) * s.y\t,\t(yz + wx) * s.y\t\t\t\t\t\t, 0.0 ,\n\t\t\t(xz + wy) * s.z\t\t\t\t\t,\t (yz - wx) * s.z\t\t\t\t\t,\t (1.0 - (xx + yy)) * s.z\t , 0.0 ,\n\t\t\tv.x\t\t\t\t\t\t\t\t\t\t\t,\t v.y\t\t\t\t\t\t\t\t\t\t\t,\t v.z\t\t\t\t\t\t\t\t\t\t\t , 1.0\n\t);\n}\n#endif";
 
 	var uv_vertex = "#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )\n\tvUv = uv * offsetRepeat.zw + offsetRepeat.xy;\n#endif";
 
@@ -19755,7 +19755,7 @@
 			}
 
 			scope.numPlanes = nPlanes;
-
+			
 			return dstArray;
 
 		}
@@ -23585,24 +23585,27 @@
 			clipping: true
 		});
 
-	function InstancedMesh ( bufferGeometry , material , numInstances , uniformScale ) {
+	function InstancedMesh ( bufferGeometry , material , numInstances , dynamic , color, uniformScale ) {
 
 		Mesh.call( this , (new InstancedBufferGeometry()).copy( bufferGeometry ) );
 
+		this._dynamic = !!dynamic;
 
 		this.numInstances = numInstances;
 
 		this._setAttributes();
 
+	 	this._uniformScale = !!uniformScale;
+
+	 	this._color = !!color;
+
 		//use the setter to decorate this material
 		this.material = material.clone();
-
-	 	this._uniformScale = !!uniformScale;
 
 		this.frustumCulled = false; //you can uncheck this if you generate your own bounding info
 
 		//work with depth effects
-		this.customDepthMaterial = depthMaterialTemplate;
+		this.customDepthMaterial = depthMaterialTemplate; 
 
 		this.customDistanceMaterial = distanceMaterialTemplate;
 
@@ -23618,22 +23621,12 @@
 		'material': {
 
 			set: function( m ){
+				if (!m.defines) m.defines = {};
 
-				if ( m.defines ) {
+				m.defines.INSTANCE_TRANSFORM = '';
+				if ( this._uniformScale ) m.defines.INSTANCE_UNIFORM = '';
 
-					m.defines.INSTANCE_TRANSFORM = '';
-
-					if( this._uniformScale) m.defines.INSTANCE_UNIFORM = '';
-
-				}
-
-				else{
-
-					m.defines = { INSTANCE_TRANSFORM: '' };
-
-					if ( this._uniformScale ) m.defines.INSTANCE_UNIFORM = '';
-
-				}
+				if ( this._color ) m.defines.INSTANCE_COLOR = '';
 
 				this._material = m;
 
@@ -23645,7 +23638,7 @@
 
 		'numInstances': {
 
-			set: function( v ){
+			set: function( v ){ 
 
 				this._numInstances = v;
 
@@ -23661,7 +23654,7 @@
 
 		'geometry':{
 
-			set: function( g ){
+			set: function( g ){ 
 
 				//if its not already instanced attach buffers
 				if ( !!g.attributes.instancePosition ) {
@@ -23670,9 +23663,9 @@
 
 					this._setAttributes();
 
-				}
+				} 
 
-				else
+				else 
 
 					this._geometry = g;
 
@@ -23702,9 +23695,15 @@
 
 	};
 
-	InstancedMesh.prototype.needsUpdate = function( attribute ){
+	InstancedMesh.prototype.setColorAt = function ( index , color ) {
 
-		switch ( attribute ){
+		this.geometry.attributes.instanceColor.setXYZ( index , color.r , color.g , color.b );
+
+	};
+
+	InstancedMesh.prototype.needsUpdate = function( attribute ) {
+
+		switch ( attribute ) {
 
 			case 'position' :
 
@@ -23724,11 +23723,18 @@
 
 				break;
 
+			case 'color' :
+
+				this.geometry.attributes.instanceColor.needsUpdate = 		true;
+
+				break;
+
 			default:
 
 				this.geometry.attributes.instancePosition.needsUpdate = 	true;
 				this.geometry.attributes.instanceQuaternion.needsUpdate = 	true;
 				this.geometry.attributes.instanceScale.needsUpdate = 		true;
+				this.geometry.attributes.instanceColor.needsUpdate = 		true;
 
 				break;
 
@@ -23738,10 +23744,16 @@
 
 	InstancedMesh.prototype._setAttributes = function(){
 
-		this.geometry.addAttribute( 'instancePosition' , 	new InstancedBufferAttribute( new Float32Array( this.numInstances * 3 ) , 3 , 1 ) );
-		this.geometry.addAttribute( 'instanceQuaternion' , 	new InstancedBufferAttribute( new Float32Array( this.numInstances * 4 ) , 4 , 1 ) );
-		this.geometry.addAttribute( 'instanceScale' , 		new InstancedBufferAttribute( new Float32Array( this.numInstances * 3 ) , 3 , 1 ) );
+		this.geometry.addAttribute( 'instanceColor', new THREE.InstancedBufferAttribute( new Float32Array( this.numInstances * 3 ), 3, 1 ) );
+		this.geometry.addAttribute( 'instancePosition', new THREE.InstancedBufferAttribute( new Float32Array( this.numInstances * 3 ), 3, 1 ) );
+		this.geometry.addAttribute( 'instanceQuaternion', new THREE.InstancedBufferAttribute( new Float32Array( this.numInstances * 4 ), 4, 1 ) );
+		this.geometry.addAttribute( 'instanceScale', new THREE.InstancedBufferAttribute( new Float32Array( this.numInstances * 3 ), 3, 1 ) );
 
+		this.geometry.attributes.instanceColor.dynamic = this._dynamic;
+		this.geometry.attributes.instancePosition.dynamic = this._dynamic;
+		this.geometry.attributes.instanceQuaternion.dynamic = this._dynamic;
+		this.geometry.attributes.instanceScale.dynamic = this._dynamic;
+		
 	};
 
 	/**
@@ -26434,7 +26446,7 @@
 	 *
 	 * }
 	 **/
-
+	 
 	 function ExtrudeGeometry( shapes, options ) {
 
 		Geometry.call( this );
@@ -26455,7 +26467,7 @@
 	ExtrudeGeometry.prototype = Object.create( Geometry.prototype );
 	ExtrudeGeometry.prototype.constructor = ExtrudeGeometry;
 
-
+	 
 
 	function ExtrudeBufferGeometry( shapes, options ) {
 
@@ -26972,7 +26984,7 @@
 		/////  Internal functions
 
 		function buildLidFaces() {
-
+			
 			var start = verticesArray.length/3;
 
 			if ( bevelEnabled ) {
@@ -27022,7 +27034,7 @@
 				}
 
 			}
-
+			
 			scope.addGroup( start, verticesArray.length/3 -start, options.material !== undefined ? options.material : 0);
 
 		}
@@ -27045,7 +27057,7 @@
 				layeroffset += ahole.length;
 
 			}
-
+			
 
 			scope.addGroup( start, verticesArray.length/3 -start, options.extrudeMaterial !== undefined ? options.extrudeMaterial : 1);
 
@@ -27236,7 +27248,7 @@
 	 *  bevelSize: <float> // how far from text outline is bevel
 	 * }
 	 */
-
+	 
 
 	function TextGeometry(  text, parameters ) {
 
@@ -36422,7 +36434,7 @@
 			return this.gain.gain.value;
 
 		},
-
+		
 		setVolume: function ( value ) {
 
 			this.gain.gain.value = value;

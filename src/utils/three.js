@@ -3,6 +3,7 @@ import * as THREE from '../lib/three';
 const VECTOR = new THREE.Vector3();
 const QUATERNION = new THREE.Quaternion();
 const COLOR = new THREE.Color();
+const LAMBERT_MATERIAL = new THREE.MeshLambertMaterial();
 
 export const tempVector = (x = 0, y = 0, z = 0) => VECTOR.set(x, y, z);
 
@@ -10,13 +11,31 @@ export const tempQuaternion = (x = 0, y = 0, z = 0, w = 0) => QUATERNION.set(x, 
 
 export const tempColor = (r = 0, g = 0, b = 0) => COLOR.set(r, g, b);
 
-export const createInstancedMesh = (num, color, geometry) => {
-  const material = new THREE.MeshLambertMaterial({ color });
-  const instancedMesh = new THREE.InstancedMesh(geometry, material, num, true);
+export const createInstancedMesh = ({
+  count,
+  geometry,
+  color,
+  material = LAMBERT_MATERIAL,
+}) => {
+  const instancedMesh = new THREE.InstancedMesh(
+    geometry,
+    material,
+    count,
+    true,
+    true,
+  );
+  const colorIsFunction = typeof color === 'function';
 
-  for (let i = 0; i < num; i++) {
+  for (let i = 0; i < count; i++) {
     instancedMesh.setScaleAt(i, tempVector(1, 1, 1));
     instancedMesh.setPositionAt(i, tempVector(-1000, 0, 0));
+    if (color) {
+      instancedMesh.setColorAt(i,
+        colorIsFunction
+          ? color(i)
+          : color,
+      );
+    }
   }
 
   instancedMesh.visible = true;
