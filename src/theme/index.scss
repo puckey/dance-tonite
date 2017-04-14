@@ -10,7 +10,7 @@ body {
   font-family: 'Lars';
   overflow: hidden;
   margin: 0;
-  @include val('font-size', 1);
+  @include resp('font-size', 1);
 }
 
 body, html {
