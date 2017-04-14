@@ -1,9 +1,9 @@
 $max-width: 1920px;
-$mobile-width: 750px;
+$min-width: 1024px;
 
-$font-size: 1.56vw;
-$min-font-size: 40px;
-$mobile-font-size: 20px;
+$font-size: 1.95vw;
+$max-font-size: 40px;
+$min-font-size: 20px;
 
 // Colors
 $background-color: #000;
@@ -13,3 +13,16 @@ $text-color: #ff0;
 $scene-layer: 10;
 $interface-layer: 20;
 $popover-layer: 30;
+
+// Responsive property values
+@mixin val($property, $factor) {
+  #{$property}: $factor * $font-size;
+
+  @media (min-width: $max-width) {
+    #{$property}: $factor * $max-font-size;
+  }
+
+  @media (max-width: $min-width) {
+    #{$property}: $factor * $min-font-size;
+  }
+}

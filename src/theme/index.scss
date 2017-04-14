@@ -1,116 +1,27 @@
 @import './theme';
 @import './lars';
 @import './util';
+@import './about';
+@import './hud';
 
 body {
   background: $background-color;
   color: $text-color;
-  font-size: $font-size;
   font-family: 'Lars';
-  display: flex;
-  justify-content: center;
-  align-items: center;
   overflow: hidden;
-  -webkit-font-smoothing: antialiased;
   margin: 0;
+  @include val('font-size', 1);
 }
 
 body, html {
   height: 100%;
 }
 
-h1 {
-  font-size: 1.75em;
-}
-
-h2 {
-  font-size: 1.25em;
-}
-
-h3 {
-  font-size: 1em;
-  padding-bottom: 8.5px;
-  border-bottom: 2.5px;
-}
-
 a {
   color: $text-color;
-}
-
-@media screen and (max-width: 1920px) {
-  body {
-    font-size: 30px;
-  }
-}
-
-@media screen and (max-width: 750px) {
-  body {
-    font-size: 20px;
-  }
-
-  h1 {
-    font-size: 1.75em;
-  }
-
-  h2 {
-    font-size: 1.4em;
-  }
-
-  h3 {
-    font-size: 1.25em;
-  }
-
-  p {
-    font-size: 1.25em;
-  }
 }
 
 .viewer {
   position: absolute;
   top: 0;
-}
-
-.menu {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  z-index: $interface-layer;
-  list-style: none;
-  text-align: right;
-  transition: opacity 0.3s;
-
-  svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  svg * {
-    stroke: $text-color;
-  }
-}
-
-.menu li {
-  margin: 0;
-  padding: 0 1em 0 0;
-  cursor: pointer;
-}
-
-.menu-item-label {
-  font-size: 1.25em;
-  opacity: 0;
-}
-
-.menu-item:hover .menu-item-label {
-  opacity: 1;
-  pointer-events: none;
-  user-select: none;
-}
-
-.menu-item-icon {
-  display: inline-block;
-  margin-left: 0.5em;
-  position: relative;
-  top: 0.5em;
-  width: 2em;
-  height: 2em;
 }
