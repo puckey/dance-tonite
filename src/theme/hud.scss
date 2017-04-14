@@ -21,19 +21,19 @@
 .menu li {
   margin: 0;
   cursor: pointer;
-  @include resp('padding-right', 1);
+  padding-right: 1rem;
 }
 
 .menu li + li {
-  @include resp('padding-bottom', 1.5);
+  padding-bottom: 1.5rem;
 }
 
 .menu-item-label {
   display: none;
   pointer-events: none;
   user-select: none;
-  @include resp('font-size', 1.25);
-  @include resp('height', 2);
+  font-size: 1.25rem;
+  height: 2rem;
 }
 
 .menu-item:hover .menu-item-label {
@@ -43,10 +43,10 @@
 .menu-item-icon {
   display: inline-block;
   position: relative;
-  @include resp('margin-left', 0.5);
-  @include resp('top', 0.5);
-  @include resp('width', 2);
-  @include resp('height', 2);
+  margin-left: 0.5rem;
+  top: 0.5rem;
+  width: 2rem;
+  height: 2rem;
 }
 
 .mod-fill {

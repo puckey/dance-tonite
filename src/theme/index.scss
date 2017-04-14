@@ -4,13 +4,16 @@
 @import './about';
 @import './hud';
 
+html {
+  font-size: $base-factor;
+}
+
 body {
   background: $background-color;
   color: $text-color;
   font-family: 'Lars';
   overflow: hidden;
   margin: 0;
-  @include resp('font-size', 1);
 }
 
 body, html {
@@ -24,4 +27,16 @@ a {
 .viewer {
   position: absolute;
   top: 0;
+}
+
+@media (min-width: $max-width) {
+  html {
+    font-size: $max-base-factor;
+  }
+}
+
+@media (max-width: $min-width) {
+  html {
+    font-size: $min-base-factor;
+  }
 }

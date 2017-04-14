@@ -1,9 +1,9 @@
 $max-width: 1920px;
 $min-width: 1024px;
 
-$max-font-size: 40px;
-$min-font-size: 20px;
-$font-size: ($min-font-size / $min-width) * 100vw;
+$max-base-factor: 40px;
+$min-base-factor: 20px;
+$base-factor: ($min-base-factor / $min-width) * 100vw;
 
 // Colors
 $background-color: #000;
@@ -13,16 +13,3 @@ $text-color: #ff0;
 $scene-layer: 10;
 $interface-layer: 20;
 $popover-layer: 30;
-
-// Responsive property values
-@mixin resp($property, $factor) {
-  #{$property}: $factor * $font-size;
-
-  @media (min-width: $max-width) {
-    #{$property}: $factor * $max-font-size;
-  }
-
-  @media (max-width: $min-width) {
-    #{$property}: $factor * $min-font-size;
-  }
-}
