@@ -84,6 +84,14 @@ export default class Room {
     }
   }
 
+  changeColor(color) {
+    for (const i in roomMeshes) {
+      const mesh = roomMeshes[i];
+      mesh.setColorAt(this.index, color);
+      mesh.needsUpdate('color');
+    }
+  }
+
   gotoTime(seconds) {
     const { layers } = this;
     if (!layers) return;

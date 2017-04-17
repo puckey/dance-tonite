@@ -5,16 +5,37 @@ import audioSrc from '../public/sound/lcd-loop.ogg';
 import viewer from '../viewer';
 import settings from '../settings';
 import Recording from '../recording';
+import { Color } from '../lib/three';
+import createTimeline from '../lib/timeline';
+
+const RECORD_COLOR = new Color(0, 1, 0);
+const WAIT_COLOR = new Color(0, 0, 1);
 
 const { roomDepth, roomOffset } = settings;
 
 let room;
 let orb;
+let orb2;
 let tick;
 let recording;
+const timeline = createTimeline([
+  {
+    time: 0,
+    callback: () => {
+      room.changeColor(WAIT_COLOR);
+      orb2.fadeOut();
+    },
+  },
+  {
+    time: 1,
+    callback: () => {
+      room.changeColor(RECORD_COLOR);
+    },
+  },
+]);
 
 export default {
-  hud: { },
+  hud: {},
 
   mount: () => {
     viewer.camera.position.z = 0;
@@ -22,22 +43,30 @@ export default {
     recording = new Recording();
     room = new Room({ recording });
     orb = new Orb();
-
-    audio.load({
-      src: audioSrc,
-      loops: 2,
-    }, (loadError) => {
-      if (loadError) throw loadError;
-      audio.play();
-      viewer.events.on('tick', tick);
-    });
+    orb2 = new Orb();
+    orb2.mesh.material.color = new Color(1, 0.5, 1);
+    audio.load(
+      {
+        src: audioSrc,
+        loops: 2,
+      },
+      loadError => {
+        if (loadError) throw loadError;
+        audio.play();
+        viewer.events.on('tick', tick);
+      }
+    );
 
     tick = () => {
       audio.tick();
       room.gotoTime(audio.time);
-      // TODO: fix coordinates
-      const z = ((audio.progress - 1) * roomDepth) + roomOffset;
+      const progress = audio.progress - 1; // value between -1 and 1
+      timeline.tick(audio.progress);
+
+      const z = (progress - 0.5) * roomDepth + roomOffset;
       orb.move(z);
+      orb2.move(z + roomDepth * 2);
+
       recording.tick();
     };
   },

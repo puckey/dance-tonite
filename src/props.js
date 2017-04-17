@@ -67,7 +67,9 @@ const props = Object.assign(emitter(), {
       segments,
       segments,
     );
-    const material = new MeshBasicMaterial({ color: 0xffff00 });
+    const material = new MeshBasicMaterial({
+      color: settings.sphereColor.clone(),
+    });
     return new Mesh(geometry, material);
   }()),
 });

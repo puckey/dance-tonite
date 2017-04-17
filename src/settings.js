@@ -1,3 +1,5 @@
+import { Color } from './lib/three';
+
 export default {
   roomDepth: 6,
   roomHeight: 4,
@@ -6,4 +8,5 @@ export default {
   holeHeight: 1.6,
   holeRadius: 0.18,
   sphereRadius: 0.18 * 0.8,
+  sphereColor: new Color(1, 1, 0),
 };
