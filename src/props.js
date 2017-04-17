@@ -17,6 +17,7 @@ const {
   ConeBufferGeometry,
   CylinderBufferGeometry,
   SphereGeometry,
+  Object3D,
 } = THREE;
 
 const color = '#ff0000';
@@ -43,6 +44,21 @@ const props = Object.assign(emitter(), {
     cylinder.updateMatrix();
     cylinder.geometry.applyMatrix(cylinder.matrix);
     return cylinder;
+  }()),
+
+  controller: (function createHand() {
+    const radius = 0.02;
+    const height = 0.2;
+    const segments = 32;
+    const cylinder = new Mesh(
+      new CylinderBufferGeometry(radius, radius, height, segments),
+      new MeshLambertMaterial({ color }),
+    );
+    const group = new Object3D();
+    cylinder.rotation.x = Math.PI * 0.5 * 7;
+    cylinder.updateMatrix();
+    group.add(cylinder);
+    return group;
   }()),
 
   head: (function createHead() {

@@ -5,8 +5,10 @@ import audioSrc from '../public/sound/lcd-loop.ogg';
 import viewer from '../viewer';
 import settings from '../settings';
 import Recording from '../recording';
+import Props from '../props';
 import { Color } from '../lib/three';
 import createTimeline from '../lib/timeline';
+import * as SDFText from '../sdftext';
 
 const RECORD_COLOR = new Color(0, 1, 0);
 const WAIT_COLOR = new Color(0, 0, 1);
@@ -57,6 +59,12 @@ export default {
       }
     );
 
+    const textCreator = SDFText.creator();
+    const { rhand, lhand } = createHandsInstructions( textCreator );
+
+    viewer.controllers[ 0 ].add( rhand );
+    viewer.controllers[ 1 ].add( lhand );
+
     tick = () => {
       audio.tick();
       room.gotoTime(audio.time);
@@ -77,3 +85,12 @@ export default {
     viewer.events.off('tick', tick);
   },
 };
+
+function createHandsInstructions( textCreator ){
+
+  const rhand = Props.controller.clone();
+  const lhand = Props.controller.clone();
+  rhand.add( textCreator.create('press to record'.toUpperCase() ) );
+
+  return { rhand, lhand };
+}

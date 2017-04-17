@@ -95,7 +95,7 @@ const config = {
     new ScriptExtHtmlWebpackPlugin({
       defaultAttribute: 'async',
     }),
-    new ExtractTextPlugin('style.css'),
+    new ExtractTextPlugin('style.css')
   ],
   devServer: {
     contentBase: './src',

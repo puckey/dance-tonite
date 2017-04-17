@@ -58,7 +58,6 @@ controls.standing = true;
 
 const controller1 = new THREE.ViveController(0);
 const controller2 = new THREE.ViveController(1);
-// scene.add(controller1, controller2);
 
 // Use controllers:
 controller1.standingMatrix = controls.getStandingMatrix();
@@ -70,6 +69,7 @@ const createScene = () => {
   const light = new THREE.DirectionalLight(0xffffff);
   light.position.set(1, 0.75, -1).normalize();
   scene.add(light);
+  scene.add(controller1, controller2);
   return scene;
 };
 
