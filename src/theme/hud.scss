@@ -7,15 +7,15 @@
   list-style: none;
   text-align: right;
   transition: opacity 0.3s;
+}
 
-  svg {
-    width: 100%;
-    height: 100%;
-  }
+svg {
+  width: 100%;
+  height: 100%;
+}
 
-  svg * {
-    stroke: $text-color;
-  }
+svg * {
+  stroke: $text-color;
 }
 
 .menu li {
@@ -51,4 +51,16 @@
 
 .mod-fill {
   fill: $text-color;
+}
+
+.mod-no-stroke {
+  stroke: 0;
+}
+
+.about-button {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: $interface-layer;
+  cursor: pointer;
 }

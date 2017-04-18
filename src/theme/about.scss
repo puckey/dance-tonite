@@ -27,7 +27,7 @@
   padding-top: 28.125%;
   height: 0;
   overflow: hidden;
-  margin-bottom: 2rem;
+  margin: 1rem auto 2rem;
 
   @media screen and (max-width: $min-width) {
     width: 90vw;
@@ -50,20 +50,17 @@ h3 {
   font-weight: normal;
 }
 
-h1 {
+h1,
+h2 {
   font-size: 1.75rem;
   font-feature-settings: 'ss01';
-}
-
-h2 {
-  font-size: 1.25rem;
 }
 
 h3 {
   // display: inline-block;
   font-size: 1rem;
   // border-bottom: 1px solid $background-color;
-  // padding-bottom: 0!important;
+  padding-bottom: 0!important;
   // margin-bottom: 1rem!important;
   text-decoration: underline;
 }

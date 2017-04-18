@@ -1,5 +1,9 @@
 # Dance Tonight is a music video concept featuring a collaborative VR experience
 
+<div class="video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/aRsWk4JZa5k?ecver=1" frameborder="0" allowfullscreen></iframe>
+</div>
+
 ## Technology
 
 ### Line Detection
@@ -15,9 +19,5 @@ We used Pixi.js, an open source library built upon the WebGL API, to rapidly dra
 All images are hosted on Google Cloud Storage so images are served quickly to users worldwide.
 
 ## Credits
-
-<div class="video-container">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/aRsWk4JZa5k?ecver=1" frameborder="0" allowfullscreen></iframe>
-</div>
 
 ## Terms and privacy

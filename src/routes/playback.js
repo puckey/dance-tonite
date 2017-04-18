@@ -15,6 +15,7 @@ export default {
   hud: {
     menuAdd: true,
     menuEnter: viewer.toggleVR,
+    aboutButton: true,
   },
 
   mount: () => {
@@ -50,6 +51,7 @@ export default {
   },
 
   unmount: () => {
+    audio.reset();
     viewer.events.off('tick', tick);
     orb.destroy();
     playlist.destroy();
