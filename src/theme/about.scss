@@ -7,6 +7,11 @@
   width: 100%;
   min-height: 100%;
   padding-top: 2rem;
+  transition: top 0.4s ease-in-out;
+}
+
+.mod-closed {
+  top: 100%;
 }
 
 .about * {

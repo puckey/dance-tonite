@@ -19,7 +19,6 @@ const state = { };
 
 const selectorToRoute = {
   '.menu-item-add': '/record',
-  '.about-button': '/about',
 };
 
 // Add icons
@@ -28,7 +27,8 @@ document.querySelector('.menu-item-enter .menu-item-icon').innerHTML = enterIcon
 document.querySelector('.about-button .menu-item-icon').innerHTML = aboutIconSvg;
 
 Object.keys(selectorToRoute)
-  .forEach((className) => {
+  .filter(className => !!selectorToRoute[className])
+  .forEach(className => {
     document
       .querySelector(className)
       .addEventListener('click', () => {

@@ -4,7 +4,6 @@ import record from './record';
 import about from './about';
 import notFound from './not-found';
 import hud from '../hud';
-import audio from '../audio';
 import Room from '../room';
 
 let current;
@@ -12,7 +11,6 @@ let current;
 const routes = {
   '/': playback,
   '/record': record,
-  '/about': about,
   '/*': notFound,
 };
 

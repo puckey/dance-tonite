@@ -1,21 +1,33 @@
+import fetch from 'unfetch';
 import Orb from '../orb';
 import audio from '../audio';
 import audioSrc from '../public/sound/lcd-14loops.ogg';
 import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
+import aboutContent from '../content/about.md';
 
 const { roomDepth, roomOffset } = settings;
+
+const about = document.createElement('div');
+const closeButton = document.createElement('div');
+
+const togglePopover = () => {
+  popoverVisible = !popoverVisible;
+  about.classList[popoverVisible ? 'remove' : 'add']('mod-hidden');
+  audio[popoverVisible ? 'pause' : 'play']();
+};
 
 let orb;
 let playlist;
 let tick;
+let popoverVisible = false;
 
 export default {
   hud: {
     menuAdd: true,
     menuEnter: viewer.toggleVR,
-    aboutButton: true,
+    aboutButton: togglePopover,
   },
 
   mount: () => {
@@ -48,6 +60,23 @@ export default {
         viewer.events.on('tick', tick);
       });
     });
+
+    // Set up about popover
+    document.body.appendChild(about);
+    about.className = 'about mod-hidden';
+
+    // Fetch content for about popover
+    fetch(aboutContent)
+      .then(response => response.text())
+      .then(data => {
+        about.innerHTML = data;
+
+        // Display close button
+        closeButton.innerHTML = '&times';
+        closeButton.className = 'about-close-button';
+        closeButton.addEventListener('click', togglePopover);
+        about.appendChild(closeButton);
+      });
   },
 
   unmount: () => {
