@@ -1,17 +1,18 @@
 import router from '../router';
-import addIconSvg from './icons/add-icon.svg';
-import enterIconSvg from './icons/enter-icon.svg';
+import addIconSvg from './icons/addvr.svg';
+import enterIconSvg from './icons/entervr.svg';
+import aboutIconSvg from './icons/about.svg';
 
 const defaultState = {
   menuAdd: false,
   menuEnter: false,
-  // aboutButton: true,
+  aboutButton: false,
 };
 
 const elements = {
   menuAdd: document.querySelector('.menu-item-add'),
   menuEnter: document.querySelector('.menu-item-enter'),
-  // aboutButton: document.querySelector('.about-button'),
+  aboutButton: document.querySelector('.about-button'),
 };
 
 const state = { };
@@ -23,9 +24,11 @@ const selectorToRoute = {
 // Add icons
 document.querySelector('.menu-item-add .menu-item-icon').innerHTML = addIconSvg;
 document.querySelector('.menu-item-enter .menu-item-icon').innerHTML = enterIconSvg;
+document.querySelector('.about-button .menu-item-icon').innerHTML = aboutIconSvg;
 
 Object.keys(selectorToRoute)
-  .forEach((className) => {
+  .filter(className => !!selectorToRoute[className])
+  .forEach(className => {
     document
       .querySelector(className)
       .addEventListener('click', () => {

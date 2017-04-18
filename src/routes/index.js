@@ -1,9 +1,9 @@
 import router from '../router';
 import playback from './playback';
 import record from './record';
+import about from './about';
 import notFound from './not-found';
 import hud from '../hud';
-import audio from '../audio';
 import Room from '../room';
 
 let current;

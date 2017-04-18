@@ -20,6 +20,15 @@
     "func-names": 0,
     "no-multi-assign": 0,
     "no-restricted-syntax": 0,
-    "guard-for-in": 0
+    "guard-for-in": 0,
+    "no-mixed-operators": 0,
+    "comma-dangle": ["error", {
+      "arrays": "always-multiline",
+      "objects": "always-multiline",
+      "imports": "always-multiline",
+      "exports": "always-multiline",
+      "functions": "ignore",
+    }],
+    "arrow-parens": 0
   }
 }

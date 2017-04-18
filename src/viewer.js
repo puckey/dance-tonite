@@ -44,7 +44,7 @@ renderer.setClearColor(0x000000);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.sortObjects = false;
-renderer.shadowMapEnabled = false;
+renderer.shadowMap.enabled = false;
 
 const containerEl = document.createElement('div');
 containerEl.className = 'viewer';

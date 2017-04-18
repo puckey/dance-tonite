@@ -57,6 +57,7 @@ export default class Room {
       color,
     });
     viewer.scene.add(this.handMesh);
+    this.handMesh.castShadow = true;
 
     if (showHead) {
       this.headMesh = createInstancedMesh({
