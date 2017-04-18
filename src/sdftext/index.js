@@ -79,7 +79,7 @@ export function creator(){
   }
 
 
-  function create( str, { color=0xffffff, scale=1.0 } = {} ){
+  function create( str = '', { color=0xffffff, scale=1.0 } = {} ){
     const group = new THREE.Group();
 
     let mesh = createText( str, font, color, scale );
