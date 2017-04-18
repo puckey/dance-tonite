@@ -16,4 +16,8 @@ All images are hosted on Google Cloud Storage so images are served quickly to us
 
 ## Credits
 
+<div class="video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/aRsWk4JZa5k?ecver=1" frameborder="0" allowfullscreen></iframe>
+</div>
+
 ## Terms and privacy

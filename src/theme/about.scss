@@ -21,8 +21,27 @@
   }
 }
 
-.about .img {
+.video-container {
+  position: relative;
   width: 50%;
+  padding-top: 28.125%;
+  height: 0;
+  overflow: hidden;
+  margin-bottom: 2rem;
+
+  @media screen and (max-width: $min-width) {
+    width: 90vw;
+    max-width: $mobile-wrapper-width;
+    padding-top: 50.625vw;
+  }
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 h1,
