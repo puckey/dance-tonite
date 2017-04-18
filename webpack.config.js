@@ -66,6 +66,15 @@ const config = {
           })}`,
         ],
       },
+      {
+          test: /\.md$/,
+          loaders: [
+            'file-loader',
+            `markdown-loader?${JSON.stringify({
+              smartypants: true,
+            })}`,
+          ],
+      },
     ],
   },
   resolve: {

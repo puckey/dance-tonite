@@ -14,6 +14,7 @@
     "events": "^1.1.1",
     "grapnel": "^0.6.4",
     "lodash": "^4.12.0",
+    "markdown-loader": "^2.0.0",
     "mitt": "^1.1.0",
     "redux": "^3.6.0",
     "redux-saga": "^0.14.3",
