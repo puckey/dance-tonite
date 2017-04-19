@@ -30,8 +30,10 @@ const audio = Object.assign(emitter(), {
     if (this.looped) {
       // The index of the loop, used when the audio has more than one loops:
       this.loopIndex = Math.floor(this.progress * loopCount);
+      this.loopCount++;
     }
 
+    this.totalProgress = this.loopCount * loopCount + this.progress;
     lastTime = time;
   },
 
@@ -45,7 +47,7 @@ const audio = Object.assign(emitter(), {
     loopCount = param.loops === undefined
       ? 1
       : param.loops;
-
+    this.loopCount = 0;
     const canPlay = () => {
       this.loopDuration = duration / loopCount;
       startTime = context.currentTime;
