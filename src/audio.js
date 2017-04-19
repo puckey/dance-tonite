@@ -106,10 +106,6 @@ const audio = Object.assign(emitter(), {
     if (context) context.suspend();
   },
 
-  reset() {
-    if (context) context.close();
-  },
-
   fadeOut(callback) {
     if (!context) return;
     const fadeDuration = 2;

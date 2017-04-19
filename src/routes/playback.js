@@ -110,7 +110,7 @@ export default {
   },
 
   unmount: () => {
-    audio.reset();
+    audio.fadeOut();
     viewer.events.off('tick', tick);
     orb.destroy();
     playlist.destroy();
