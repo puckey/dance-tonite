@@ -9,14 +9,29 @@ import aboutContent from '../content/about.md';
 
 const { roomDepth, roomOffset } = settings;
 
-const about = document.createElement('div');
-const closeButton = document.createElement('div');
-
 const togglePopover = () => {
   popoverVisible = !popoverVisible;
   about.classList[popoverVisible ? 'remove' : 'add']('mod-hidden');
   audio[popoverVisible ? 'pause' : 'play']();
+  // Fetch content for about popover
+  fetch(aboutContent)
+    .then(response => response.text())
+    .then(data => {
+      about.innerHTML = data;
+
+      // Display close button
+      about.appendChild(closeButton);
+    });
 };
+
+const about = document.createElement('div');
+document.body.appendChild(about);
+about.className = 'about mod-hidden';
+
+const closeButton = document.createElement('div');
+closeButton.innerHTML = '&times';
+closeButton.className = 'about-close-button';
+closeButton.addEventListener('click', togglePopover);
 
 let orb;
 let playlist;
@@ -29,8 +44,8 @@ export default {
     menuEnter: viewer.toggleVR,
     aboutButton: togglePopover,
   },
-
-  mount: () => {
+  
+  mount: (req) => {
     viewer.switchCamera('orthographic');
     orb = new Orb();
 
@@ -41,8 +56,10 @@ export default {
     };
 
     moveCamera(0);
-
-    playlist = new Playlist('curated', () => {
+    playlist = new Playlist({
+      url: 'curated.json',
+      pathRecording: req.params.id,
+    }, () => {
       tick = () => {
         audio.tick();
         playlist.tick();
@@ -60,23 +77,6 @@ export default {
         viewer.events.on('tick', tick);
       });
     });
-
-    // Set up about popover
-    document.body.appendChild(about);
-    about.className = 'about mod-hidden';
-
-    // Fetch content for about popover
-    fetch(aboutContent)
-      .then(response => response.text())
-      .then(data => {
-        about.innerHTML = data;
-
-        // Display close button
-        closeButton.innerHTML = '&times';
-        closeButton.className = 'about-close-button';
-        closeButton.addEventListener('click', togglePopover);
-        about.appendChild(closeButton);
-      });
   },
 
   unmount: () => {
