@@ -16,13 +16,6 @@ const splashTitleDance = document.querySelector('.splash-title-dance');
 const splashTitleLCD = document.querySelector('.splash-title-lcd');
 const chromeExperiment = document.querySelector('.chrome-experiment');
 
-// Set up elements for about page
-document.body.appendChild(about);
-about.className = 'about mod-hidden';
-closeButton.innerHTML = '&times';
-closeButton.className = 'about-close-button';
-closeButton.addEventListener('click', togglePopover);
-
 const timeline = createTimeline([
   {
     time: 0.1,
@@ -66,6 +59,13 @@ let orb;
 let playlist;
 let tick;
 let popoverVisible = false;
+
+// Set up elements for about page
+document.body.appendChild(about);
+about.className = 'about mod-hidden';
+closeButton.innerHTML = '&times';
+closeButton.className = 'about-close-button';
+closeButton.addEventListener('click', togglePopover);
 
 export default {
   hud: {

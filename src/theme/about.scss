@@ -7,12 +7,7 @@
   width: 100%;
   min-height: 100%;
   padding-top: 2rem;
-  transition: top 0.4s ease-in-out;
   z-index: $popover-layer;
-}
-
-.mod-closed {
-  top: 100%;
 }
 
 .about * {
