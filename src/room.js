@@ -35,11 +35,13 @@ export default class Room {
   constructor({ showHead, url, recording } = { showHead: true }) {
     this.index = roomIndex;
     this.showHead = showHead;
+    this.isRecording = !!recording;
     this.url = url;
+    roomIndex += 1;
     if (recording) {
       this.layers = recording.layers;
+      this.createMeshes();
     }
-    roomIndex += 1;
     this.position = new THREE.Vector3();
 
     this.position.set(
@@ -48,20 +50,23 @@ export default class Room {
       settings.roomOffset + (this.index * (settings.roomDepth + 0.001)),
     );
     this.updatePosition();
+  }
 
+  createMeshes() {
     const color = getCostumeColor(this.index);
-
+    const count = this.isRecording
+      ? 20
+      : this.layers.length;
     this.handMesh = createInstancedMesh({
-      count: 30,
+      count: count * 2,
       geometry: props.hand.geometry,
       color,
     });
     viewer.scene.add(this.handMesh);
-    this.handMesh.castShadow = true;
 
-    if (showHead) {
+    if (this.showHead) {
       this.headMesh = createInstancedMesh({
-        count: 30,
+        count,
         geometry: props.head.geometry,
         color,
       });
@@ -73,6 +78,7 @@ export default class Room {
     storage.load(this.url, (error, layers) => {
       if (error) return callback(error);
       this.layers = layers;
+      this.createMeshes();
       callback();
     });
   }
@@ -100,7 +106,12 @@ export default class Room {
     const frameNumber = Math.floor((seconds % (audio.loopDuration * 2)) * 90);
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
-    for (let i = 0; i < layers.length; i++) {
+    const layerCount = layers.length;
+    if (this.headMesh) {
+      this.headMesh.geometry.maxInstancedCount = layerCount;
+    }
+    this.handMesh.geometry.maxInstancedCount = layerCount * 2;
+    for (let i = 0; i < layerCount; i++) {
       const frames = layers[i];
       if (frames.length <= frameNumber) continue;
       const [head, left, right] = frames[frameNumber];

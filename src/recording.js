@@ -3,20 +3,22 @@ import { serializeMatrix } from './utils/three';
 import audio from './audio';
 import viewer from './viewer';
 
-export default class Recording {
-  constructor() {
-    this.layers = [];
-  }
+let stopped = false;
+let frames;
+let frameNumber;
 
+const recording = {
   tick() {
-    if (!this.frames || audio.looped) {
-      this.frameNumber = 0;
-      this.frames = [];
-      this.layers.push(this.frames);
+    if (stopped) return;
+    if (!frames || audio.looped) {
+      frameNumber = 0;
+      if (frames) {
+        this.layers.push(frames);
+      }
+      frames = [];
     } else {
-      this.frameNumber++;
+      frameNumber++;
     }
-    const { frameNumber, frames } = this;
     const head = serializeMatrix(viewer.camera.matrixWorld);
     const left = serializeMatrix(viewer.controllers[0].matrixWorld);
     const right = serializeMatrix(viewer.controllers[1].matrixWorld);
@@ -30,5 +32,24 @@ export default class Recording {
       frame[1] = left;
       frame[2] = right;
     }
-  }
-}
+  },
+
+  stop() {
+    stopped = true;
+  },
+
+  toJson() {
+    return JSON.stringify(this.layers);
+  },
+
+  reset() {
+    this.layers = [];
+    frames = null;
+    frameNumber = null;
+    stopped = false;
+  },
+};
+
+recording.reset();
+
+export default recording;

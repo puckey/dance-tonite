@@ -5,26 +5,31 @@ import Room from './room';
 import audio from './audio';
 
 export default class Playlist {
-  constructor(id, onLoad) {
-    this.id = id;
-
-    storage.loadPlaylist(id, (error, urls) => {
-      if (error) throw error;
-      this.rooms = urls.map(
-        (url, index) => new Room(
-          {
-            url,
-            showHead: !/head=false/.test(url),
+  constructor({ recording, url, pathRecording }, onLoad) {
+    if (url) {
+      storage.loadPlaylist(url, (error, urls) => {
+        if (error) throw error;
+        if (pathRecording) urls[1] = `${pathRecording}.json`;
+        this.rooms = urls.map(
+          (recordingUrl, index) => new Room({
+            url: recordingUrl,
+            showHead: !/head=false/.test(recordingUrl),
             index,
-          },
-        ),
-      );
-      asyncEach(
-        this.rooms,
-        (room, callback) => room.load(callback),
-        onLoad,
-      );
-    });
+          }),
+        );
+        asyncEach(
+          this.rooms,
+          (room, callback) => room.load(callback),
+          onLoad,
+        );
+      });
+    }
+    if (recording) {
+      const rooms = this.rooms = [];
+      for (let i = 0; i < 10; i++) {
+        rooms.push(new Room({ recording }));
+      }
+    }
   }
 
   tick() {

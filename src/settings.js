@@ -9,4 +9,5 @@ export default {
   holeRadius: 0.18,
   sphereRadius: 0.18 * 0.9,
   sphereColor: new Color(1, 1, 0),
+  loopCount: 13,
 };

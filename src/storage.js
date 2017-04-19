@@ -17,7 +17,7 @@ const load = (key, callback) => {
 };
 
 const loadPlaylist = (filename, callback) => {
-  fetch(`public/playlists/${filename}.json`).then(
+  fetch(`public/playlists/${filename}`).then(
     response => (response
       .json()
       .then((json) => {
