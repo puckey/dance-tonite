@@ -11,7 +11,7 @@
   },
   "rules": {
     "no-param-reassign": ["error", { "props": false }],
-    "no-use-before-define": ["error", { "functions": true, "classes": true, "variables": false }],
+    "no-use-before-define": ["error", { "functions": false, "classes": true, "variables": false }],
     "no-nested-ternary": 0,
     "no-underscore-dangle": 0,
     "object-shorthand": 0,
