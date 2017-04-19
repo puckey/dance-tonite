@@ -21,13 +21,39 @@ export default (goto) => {
     },
   };
 
+  const pressToStart = {
+    right: {
+      text: 'press to start',
+      removeOnPress: true,
+      onPress: () => {
+        // TODO: preload audio
+        audio.load(
+          {
+            src: `/public/sound/room-${recording.room}.ogg`,
+            loops: 2,
+          },
+          loadError => {
+            if (loadError) throw loadError;
+            audio.play();
+            viewer.events.on('tick', tick);
+          }
+        );
+      },
+    },
+  };
+
+  controllers.update(pressToStart);
+
   const timeline = createTimeline([
     {
       time: 0,
       callback: () => {
         room.changeColor(WAIT_COLOR);
         orb2.fadeOut();
-        controllers.update(pressToFinish);
+        orb.fadeIn();
+        if (audio.totalProgress > 1) {
+          controllers.update(pressToFinish);
+        }
       },
     },
     {
@@ -63,17 +89,6 @@ export default (goto) => {
   const orb = new Orb();
   const orb2 = new Orb();
 
-  audio.load(
-    {
-      src: `/public/sound/room-${recording.room}.ogg`,
-      loops: 2,
-    },
-    loadError => {
-      if (loadError) throw loadError;
-      audio.play();
-      viewer.events.on('tick', tick);
-    }
-  );
   const destroy = () => {
     audio.reset();
     Room.reset();
