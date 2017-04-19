@@ -75,6 +75,7 @@ export default (goto) => {
     }
   );
   const destroy = () => {
+    audio.reset();
     Room.reset();
     audio.fadeOut();
     room.destroy();

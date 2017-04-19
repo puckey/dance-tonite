@@ -1,4 +1,7 @@
 import emitter from 'mitt';
+import audioPool from './utils/audio-pool';
+
+audioPool.fill();
 
 let context;
 let source;
@@ -9,6 +12,8 @@ let lastTime = 0;
 let startTime;
 let audioElement;
 const ZERO = 1e-25;
+let request;
+let onPlay;
 
 const audio = Object.assign(emitter(), {
   tick() {
@@ -38,7 +43,6 @@ const audio = Object.assign(emitter(), {
   },
 
   load(param, callback) {
-    if (context) context.close();
     context = new AudioContext();
     gainNode = context.createGain();
 
@@ -60,20 +64,20 @@ const audio = Object.assign(emitter(), {
     };
 
     if (param.progressive) {
-      audioElement = document.createElement('audio');
+      audioElement = audioPool.get();
       source = context.createMediaElementSource(audioElement);
       audioElement.src = param.src;
       audioElement.loop = true;
       audioElement.type = 'audio/mpeg';
-
-      audioElement.addEventListener('canplaythrough', () => {
+      onPlay = () => {
         duration = audioElement.duration;
         audioElement.play();
         canPlay();
-      });
+      };
+      audioElement.addEventListener('canplaythrough', onPlay);
     } else {
       source = context.createBufferSource();
-      const request = new XMLHttpRequest();
+      request = new XMLHttpRequest();
       request.open('GET', param.src, true);
       request.responseType = 'arraybuffer';
       request.onload = () => {
@@ -104,6 +108,25 @@ const audio = Object.assign(emitter(), {
 
   pause() {
     if (context) context.suspend();
+  },
+
+  reset() {
+    if (context) {
+      context.close();
+      context = null;
+    }
+    // Cancel loading of audioElement:
+    if (audioElement) {
+      audioElement.removeEventListener('canplaythrough', onPlay);
+      audioPool.release(audioElement);
+      audioElement = null;
+      onPlay = null;
+    }
+    if (request) {
+      request.abort();
+      request.onload = null;
+      request = null;
+    }
   },
 
   fadeOut(callback) {

@@ -1,4 +1,4 @@
-import asyncEach from 'async/each';
+import asyncEach from 'async/eachLimit';
 
 import storage from './storage';
 import Room from './room';
@@ -19,8 +19,17 @@ export default class Playlist {
         );
         asyncEach(
           this.rooms,
-          (room, callback) => room.load(callback),
-          onLoad,
+          4,
+          (room, callback) => {
+            // If destroyed, callback with error to stop loading further files:
+            if (this.destroyed) {
+              return callback(Error('playlist was destroyed'));
+            }
+            room.load(callback);
+          },
+          () => {
+            if (!this.destroyed) onLoad();
+          },
         );
       });
     }
@@ -47,5 +56,6 @@ export default class Playlist {
 
   destroy() {
     this.rooms.forEach(room => room.destroy());
+    this.destroyed = true;
   }
 }
