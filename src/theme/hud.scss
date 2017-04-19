@@ -64,3 +64,23 @@ svg * {
   z-index: $interface-layer;
   cursor: pointer;
 }
+
+.splash-title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 2rem;
+  font-size: 20vw;
+  text-transform: uppercase;
+  font-feature-settings: 'ss01';
+  z-index: $interface-layer
+}
+
+.chrome-experiment {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  padding: 1rem;
+  z-index: $interface-layer;
+}

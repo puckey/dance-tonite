@@ -5,9 +5,39 @@ import audioSrc from '../public/sound/lcd-14loops.ogg';
 import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
+import createTimeline from '../lib/timeline';
 import aboutContent from '../content/about.md';
 
 const { roomDepth, roomOffset } = settings;
+
+const about = document.createElement('div');
+const closeButton = document.createElement('div');
+const splashTitleDance = document.querySelector('.splash-title-dance');
+const splashTitleLCD = document.querySelector('.splash-title-lcd');
+const chromeExperiment = document.querySelector('.chrome-experiment');
+
+const timeline = createTimeline([
+  {
+    time: 0.1,
+    callback: () => {
+      chromeExperiment.classList.remove('mod-hidden');
+    },
+  },
+  {
+    time: 0.3,
+    callback: () => {
+      splashTitleDance.classList.add('mod-hidden');
+      splashTitleLCD.classList.remove('mod-hidden');
+    },
+  },
+  {
+    time: 0.8,
+    callback: () => {
+      chromeExperiment.classList.add('mod-hidden');
+      splashTitleLCD.classList.add('mod-hidden');
+    },
+  },
+]);
 
 const togglePopover = () => {
   popoverVisible = !popoverVisible;
@@ -44,7 +74,7 @@ export default {
     menuEnter: viewer.toggleVR,
     aboutButton: togglePopover,
   },
-  
+
   mount: (req) => {
     viewer.switchCamera('orthographic');
     orb = new Orb();
@@ -63,6 +93,7 @@ export default {
       tick = () => {
         audio.tick();
         playlist.tick();
+        timeline.tick(audio.progress);
         moveCamera(audio.progress);
       };
 
