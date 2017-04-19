@@ -99,14 +99,15 @@ const audio = Object.assign(emitter(), {
   },
 
   play() {
-    context.resume();
+    if (context) context.resume();
   },
 
-  pause() { context.suspend(); },
+  pause() {
+    if (context) context.suspend();
+  },
 
   reset() {
-    if (!context) return;
-    context.close();
+    if (context) context.close();
   },
 
   fadeOut(callback) {
