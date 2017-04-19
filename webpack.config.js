@@ -79,6 +79,9 @@ const config = {
   },
   resolve: {
     extensions: ['', '.js'],
+    alias: {
+      THREE: path.resolve(__dirname, './src/lib/three.js'),
+    },
   },
   plugins: [
     new CleanWebpackPlugin(['dist'], {
@@ -104,7 +107,10 @@ const config = {
     new ScriptExtHtmlWebpackPlugin({
       defaultAttribute: 'async',
     }),
-    new ExtractTextPlugin('style.css')
+    new ExtractTextPlugin('style.css'),
+    new webpack.ProvidePlugin({
+      THREE: 'THREE',
+    }),
   ],
   devServer: {
     contentBase: './src',
