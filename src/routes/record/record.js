@@ -8,8 +8,8 @@ import { Color } from '../../lib/three';
 import createTimeline from '../../lib/timeline';
 import controllers from '../../controllers';
 
-const RECORD_COLOR = new Color(0, 1, 0);
-const WAIT_COLOR = new Color(0, 0, 1);
+const RECORD_COLOR = new Color(0x55b848);
+const WAIT_COLOR = new Color(0xcccccc);
 
 const { roomDepth, roomOffset } = settings;
 
