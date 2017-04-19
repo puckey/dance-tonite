@@ -1,4 +1,3 @@
-import fetch from 'unfetch';
 import Orb from '../orb';
 import audio from '../audio';
 import audioSrc from '../public/sound/lcd-14loops.ogg';
@@ -6,12 +5,10 @@ import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
 import createTimeline from '../lib/timeline';
-import aboutContent from '../content/about.md';
+import about from '../about';
 
 const { roomDepth, roomOffset } = settings;
 
-const about = document.createElement('div');
-const closeButton = document.createElement('div');
 const splashTitleDance = document.querySelector('.splash-title-dance');
 const splashTitleLCD = document.querySelector('.splash-title-lcd');
 const chromeExperiment = document.querySelector('.chrome-experiment');
@@ -39,39 +36,16 @@ const timeline = createTimeline([
   },
 ]);
 
-const togglePopover = () => {
-  popoverVisible = !popoverVisible;
-  document.body.classList[popoverVisible ? 'remove' : 'add']('mod-overflow-hidden');
-  about.classList[popoverVisible ? 'remove' : 'add']('mod-hidden');
-  audio[popoverVisible ? 'pause' : 'play']();
-  // Fetch content for about popover
-  fetch(aboutContent)
-    .then(response => response.text())
-    .then(data => {
-      about.innerHTML = data;
-
-      // Display close button
-      about.appendChild(closeButton);
-    });
-};
 
 let orb;
 let playlist;
 let tick;
-let popoverVisible = false;
-
-// Set up elements for about page
-document.body.appendChild(about);
-about.className = 'about mod-hidden';
-closeButton.innerHTML = '&times';
-closeButton.className = 'about-close-button';
-closeButton.addEventListener('click', togglePopover);
 
 export default {
   hud: {
     menuAdd: true,
     menuEnter: viewer.toggleVR,
-    aboutButton: togglePopover,
+    aboutButton: about.toggle,
   },
 
   mount: (req) => {
