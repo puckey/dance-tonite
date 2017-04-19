@@ -26,7 +26,6 @@ export default (goto) => {
     audio.tick();
     playlist.tick();
     moveCamera(audio.totalProgress);
-    console.log(audio.totalProgress);
   };
 
   audio.load({
