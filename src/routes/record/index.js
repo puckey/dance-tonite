@@ -1,6 +1,7 @@
 import record from './record';
 import review from './review';
 import controllers from '../../controllers';
+import viewer from '../../viewer';
 
 let unmountStep;
 
@@ -17,7 +18,9 @@ const goto = (step) => {
 };
 
 export default {
-  hud: {},
+  hud: {
+    menuEnter: viewer.toggleVR,
+  },
 
   mount: () => {
     controllers.add();
