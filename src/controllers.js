@@ -16,11 +16,11 @@ lhand.add(lText);
 let leftPress;
 let rightPress;
 
-leftController.addEventListener('menudown', () => {
+leftController.addEventListener('thumbpaddown', () => {
   if (leftPress) leftPress();
 });
 
-rightController.addEventListener('menudown', () => {
+rightController.addEventListener('thumbpaddown', () => {
   if (rightPress) rightPress();
 });
 
