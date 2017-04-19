@@ -28,7 +28,13 @@ export default {
   update({ left, right } = {}) {
     if (left) {
       lText.updateLabel(left.text);
-      leftPress = left.onPress;
+      leftPress = () => {
+        if (left.removeOnPress) {
+          lText.updateLabel('');
+          leftPress = null;
+        }
+        left.onPress();
+      };
     } else {
       lText.updateLabel('');
       leftPress = null;
@@ -36,7 +42,13 @@ export default {
 
     if (right) {
       rText.updateLabel(right.text);
-      rightPress = right.onPress;
+      rightPress = () => {
+        if (right.removeOnPress) {
+          rText.updateLabel('');
+          rightPress = null;
+        }
+        right.onPress();
+      };
     } else {
       rText.updateLabel('');
       rightPress = null;
