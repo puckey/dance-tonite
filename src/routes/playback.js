@@ -48,6 +48,7 @@ const timeline = createTimeline([
 
 const togglePopover = () => {
   popoverVisible = !popoverVisible;
+  document.body.classList[popoverVisible ? 'remove' : 'add']('mod-overflow-hidden');
   about.classList[popoverVisible ? 'remove' : 'add']('mod-hidden');
   audio[popoverVisible ? 'pause' : 'play']();
   // Fetch content for about popover
