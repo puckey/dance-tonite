@@ -45,6 +45,11 @@ export default (goto) => {
     right: {
       text: 'press to submit',
       onPress: () => {
+        controllers.update({
+          right: {
+            text: 'submitting',
+          },
+        });
         storage.persist(
           recording.toJson(),
           (error, uri) => {
