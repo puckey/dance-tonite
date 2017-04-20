@@ -126,7 +126,6 @@ export default class Room {
   destroy() {
     viewer.scene.remove(this.headMesh);
     viewer.scene.remove(this.handMesh);
-    viewer.scene.remove(roomMesh);
   }
 }
 
