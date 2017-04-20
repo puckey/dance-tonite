@@ -33,7 +33,9 @@ export default {
           lText.updateLabel('');
           leftPress = null;
         }
-        left.onPress();
+        if (left.onPress) {
+          left.onPress();
+        }
       };
     } else {
       lText.updateLabel('');
@@ -47,7 +49,9 @@ export default {
           rText.updateLabel('');
           rightPress = null;
         }
-        right.onPress();
+        if (right.onPress) {
+          right.onPress();
+        }
       };
     } else {
       rText.updateLabel('');
