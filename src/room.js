@@ -32,7 +32,7 @@ const transformMesh = (
 };
 
 export default class Room {
-  constructor({ showHead, url, recording } = { showHead: true }) {
+  constructor({ showHead = true, url, recording }) {
     this.index = roomIndex;
     this.showHead = showHead;
     this.isRecording = !!recording;
