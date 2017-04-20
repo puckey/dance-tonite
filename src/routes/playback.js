@@ -7,7 +7,7 @@ import settings from '../settings';
 import createTimeline from '../lib/timeline';
 import about from '../about';
 
-const { roomDepth, roomOffset } = settings;
+const { roomDepth, roomOffset, holeHeight } = settings;
 
 const splashTitleDance = document.querySelector('.splash-title-dance');
 const splashTitleLCD = document.querySelector('.splash-title-lcd');
@@ -54,7 +54,7 @@ export default {
 
     const moveCamera = (progress) => {
       const z = ((progress - 1.5) * roomDepth) + roomOffset;
-      viewer.camera.position.set(0, 1.6, z);
+      viewer.camera.position.set(0, holeHeight, z);
       orb.move(z);
     };
 
