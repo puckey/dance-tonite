@@ -4,38 +4,10 @@ import audioSrc from '../public/sound/lcd-14loops.ogg';
 import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
-import createTimeline from '../lib/timeline';
 import about from '../about';
+import titles from '../titles';
 
 const { roomDepth, roomOffset, holeHeight } = settings;
-
-const splashTitleDance = document.querySelector('.splash-title-dance');
-const splashTitleLCD = document.querySelector('.splash-title-lcd');
-const chromeExperiment = document.querySelector('.chrome-experiment');
-
-const timeline = createTimeline([
-  {
-    time: 0.1,
-    callback: () => {
-      chromeExperiment.classList.remove('mod-hidden');
-    },
-  },
-  {
-    time: 0.3,
-    callback: () => {
-      splashTitleDance.classList.add('mod-hidden');
-      splashTitleLCD.classList.remove('mod-hidden');
-    },
-  },
-  {
-    time: 0.8,
-    callback: () => {
-      chromeExperiment.classList.add('mod-hidden');
-      splashTitleLCD.classList.add('mod-hidden');
-    },
-  },
-]);
-
 
 let orb;
 let playlist;
@@ -66,7 +38,6 @@ export default {
       tick = () => {
         audio.tick();
         playlist.tick();
-        timeline.tick(audio.progress);
         moveCamera(audio.progress);
       };
 

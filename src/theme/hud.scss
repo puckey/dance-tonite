@@ -83,4 +83,16 @@ svg * {
   bottom: 0;
   padding: 1rem;
   z-index: $interface-layer;
+  transition: opacity 1s ease-out;
+}
+
+.chrome-experiment img {
+  width: 5rem;
+}
+
+.chrome-experiment img + img {
+  border-left: 1px solid $text-color;
+  padding-left: 0.5rem;
+  margin-left: 0.5rem;
+  opacity: 1;
 }
