@@ -26,16 +26,11 @@ elements.chromeExperiment.className = 'chrome-experiment';
 elements.chromeExperiment.appendChild(webVRExperimentImg);
 elements.chromeExperiment.appendChild(friendsWithGoogleImg);
 
-for (const element in elements) {
-  hudEl.appendChild(elements[element]);
-}
-
 const timeline = createTimeline([
   {
     time: 0.3,
     callback: () => {
       elements.splashTitleLCD.classList.remove('mod-hidden');
-      elements.chromeExperiment.classList.add('mod-hidden');
     },
   },
   {
@@ -51,16 +46,26 @@ const timeline = createTimeline([
       elements.splashTitleDance.classList.add('mod-hidden');
     },
   },
+  {
+    time: 1.2,
+    callback: () => {
+      elements.chromeExperiment.classList.add('mod-hidden');
+    },
+  },
 ]);
 
-viewer.events.on('tick', () => {
-  timeline.tick(audio.progress);
-});
-
 export default {
-    destroy: () => {
-      for (const element in elements) {
-        hudEl.removeChild(elements[element]);
-      }
+  mount: () => {
+    for (const element in elements) {
+      hudEl.appendChild(elements[element]);
     }
+  },
+  destroy: () => {
+    for (const element in elements) {
+      hudEl.removeChild(elements[element]);
+    }
+  },
+  tick: () => {
+    timeline.tick(audio.progress);
+  },
 }

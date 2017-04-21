@@ -18,13 +18,13 @@ svg * {
   stroke: $text-color;
 }
 
-.menu li {
+.menu-item {
   margin: 0;
   cursor: pointer;
   padding-right: 1rem;
 }
 
-.menu li + li {
+.menu-item + .menu-item {
   padding-bottom: 1.5rem;
 }
 
@@ -49,8 +49,12 @@ svg * {
   height: 2rem;
 }
 
-.mod-disabled {
-  cursor: not-allowed!important;
+.menu-item.mod-disabled {
+  cursor: not-allowed;
+}
+
+.menu-item.mod-disabled * {
+  pointer-events: none;
 }
 
 .mod-fill {
@@ -75,7 +79,7 @@ svg * {
   left: 0;
   width: 100%;
   padding: 2rem;
-  font-size: 19vw;
+  font-size: 10vw;
   letter-spacing: 1vw;
   text-transform: uppercase;
   font-feature-settings: 'ss01';
@@ -89,6 +93,7 @@ svg * {
   bottom: 0;
   padding: 1rem;
   z-index: $interface-layer;
+  transition: opacity 1s ease-out;
 }
 
 .chrome-experiment img {

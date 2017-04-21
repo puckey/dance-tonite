@@ -3,6 +3,7 @@ import addIconSvg from './icons/addvr.svg';
 import enterIconSvg from './icons/entervr.svg';
 import enterIconDisabledSvg from './icons/x_entervr.svg';
 import aboutIconSvg from './icons/about.svg';
+import viewer from '../viewer';
 
 const defaultState = {
   menuAdd: false,
@@ -25,16 +26,13 @@ const selectorToRoute = {
 const loaderOverlay = document.querySelector('.loader-overlay');
 const loaderOverlayText = document.querySelector('.loader-overlay-text');
 
-let vrSupported = false;
-
 // Check if VR device is connected
-if (typeof navigator.getVRDevices === 'function') {
-  navigator.getVRDevices().then(devices => {
+if (typeof navigator.getVRDisplays === 'function') {
+  navigator.getVRDisplays().then(devices => {
     if (devices.length > 0) {
       elements.menuEnter.classList.remove('mod-disabled');
       elements.menuEnter.querySelector('.menu-item-label').innerHTML = 'Enter VR';
       elements.menuEnter.querySelector('.menu-item-icon').innerHTML = enterIconSvg;
-      vrSupported = true;
     }
   });
 }
@@ -53,7 +51,7 @@ Object.keys(selectorToRoute)
       });
   });
 
-export default {
+const hud = {
   update: (param = {}) => {
     const newState = Object.assign(
       {},
@@ -75,7 +73,6 @@ export default {
         el.classList[visible ? 'remove' : 'add']('mod-hidden');
       }
       if (typeof handler === 'function') {
-        if (el.id === 'enterVR' && !vrSupported) continue;
         el.addEventListener('click', handler);
       }
     }
@@ -89,3 +86,5 @@ export default {
   },
   elements,
 };
+
+export default hud;

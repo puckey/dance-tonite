@@ -22,6 +22,7 @@ export default {
   },
 
   mount: (req) => {
+    titles.mount();
     viewer.switchCamera('orthographic');
     orb = new Orb();
 
@@ -41,6 +42,7 @@ export default {
       tick = () => {
         audio.tick();
         playlist.tick();
+        titles.tick();
         moveCamera(audio.progress);
       };
 
