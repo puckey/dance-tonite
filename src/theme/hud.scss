@@ -79,7 +79,8 @@ svg * {
   letter-spacing: 1vw;
   text-transform: uppercase;
   font-feature-settings: 'ss01';
-  z-index: $interface-layer
+  z-index: $interface-layer;
+  pointer-events: none;
 }
 
 .chrome-experiment {
