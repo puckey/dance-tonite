@@ -2,7 +2,7 @@ import audio from './audio';
 import viewer from './viewer';
 import createTimeline from './lib/timeline';
 
-const hud = document.querySelector('.hud');
+const hudEl = document.querySelector('.hud');
 const elements = {
   'splashTitleLCD': document.createElement('div'),
   'splashTitleDance': document.createElement('div'),
@@ -27,7 +27,7 @@ elements.chromeExperiment.appendChild(webVRExperimentImg);
 elements.chromeExperiment.appendChild(friendsWithGoogleImg);
 
 for (const element in elements) {
-  hud.appendChild(elements[element]);
+  hudEl.appendChild(elements[element]);
 }
 
 const timeline = createTimeline([
@@ -56,3 +56,11 @@ const timeline = createTimeline([
 viewer.events.on('tick', () => {
   timeline.tick(audio.progress);
 });
+
+export default {
+    destroy: () => {
+      for (const element in elements) {
+        hudEl.removeChild(elements[element]);
+      }
+    }
+}

@@ -22,9 +22,6 @@ export default {
   },
 
   mount: (req) => {
-    // Show the spinner
-    hud.showLoader('Turning on the lights...');
-
     viewer.switchCamera('orthographic');
     orb = new Orb();
 
@@ -66,6 +63,7 @@ export default {
     audio.reset();
     viewer.events.off('tick', tick);
     orb.destroy();
+    titles.destroy();
     playlist.destroy();
   },
 };
