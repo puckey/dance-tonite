@@ -101,3 +101,50 @@ svg * {
   margin-left: 0.5rem;
   opacity: 1;
 }
+
+.loader-overlay-text {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  margin-top: 2rem;
+  text-align: center;
+  z-index: $popover-layer;
+  pointer-events: none;
+}
+
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -0.75rem;
+  border-radius: 100%;
+  border: 1rem solid $text-color;
+  box-sizing: border-box;
+  z-index: $popover-layer;
+  animation: ripple 2s infinite;
+  background: black;
+}
+
+.spinner-inner {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  border-radius: 100%;
+  background: $text-color;
+  animation: grow 2s infinite;
+}
+
+@keyframes ripple {
+  0% { border-width: 0.75rem; }
+  50% { border-width: 2px; }
+  100% { border-width: 2px; }
+}
+
+@keyframes grow {
+  0% { width: 0; height: 0; margin: 0; }
+  50% { width: 0; height: 0; margin: 0; }
+  100% { width: 1.5rem; height: 1.5rem; margin: -0.75rem; }
+}

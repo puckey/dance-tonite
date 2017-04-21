@@ -22,6 +22,9 @@ const selectorToRoute = {
   '.menu-item-add': '/record',
 };
 
+const loaderOverlay = document.querySelector('.loader-overlay');
+const loaderOverlayText = document.querySelector('.loader-overlay-text');
+
 let vrSupported = false;
 
 // Check if VR device is connected
@@ -76,6 +79,13 @@ export default {
         el.addEventListener('click', handler);
       }
     }
+  },
+  showLoader: (label = 'Just a sec...') => {
+    loaderOverlayText.innerHTML = label;
+    loaderOverlay.classList.remove('mod-hidden');
+  },
+  hideLoader: () => {
+    loaderOverlay.classList.add('mod-hidden');
   },
   elements,
 };

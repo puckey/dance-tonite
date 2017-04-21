@@ -6,6 +6,7 @@ import viewer from '../viewer';
 import settings from '../settings';
 import about from '../about';
 import titles from '../titles';
+import hud from '../hud';
 
 const { roomDepth, roomOffset, holeHeight } = settings;
 
@@ -21,6 +22,9 @@ export default {
   },
 
   mount: (req) => {
+    // Show the spinner
+    hud.showLoader('Turning on the lights...');
+
     viewer.switchCamera('orthographic');
     orb = new Orb();
 
@@ -31,6 +35,8 @@ export default {
     };
 
     moveCamera(0);
+
+    hud.showLoader('Loading performances...');
     playlist = new Playlist({
       url: 'curated.json',
       pathRecording: req.params.id,
@@ -42,12 +48,14 @@ export default {
       };
 
       // Audio plays after playlist is done loading:
+      hud.showLoader('Spinning up the track...');
       audio.load({
         src: audioSrc,
         loops: 16,
         progressive: true,
       }, (loadError) => {
         if (loadError) throw loadError;
+        hud.hideLoader();
         audio.play();
         viewer.events.on('tick', tick);
       });
