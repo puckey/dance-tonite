@@ -67,7 +67,7 @@ h3 {
 }
 
 .about-close-button {
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   font-size: 1.5rem;
@@ -76,4 +76,8 @@ h3 {
   height: 1rem;
   background: none;
   cursor: pointer;
+
+  @media screen and (max-width: $min-width) {
+    position: absolute;
+  }
 }
