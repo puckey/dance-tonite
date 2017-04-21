@@ -30,6 +30,7 @@ export default () => {
       router.get(url, (req, event) => {
         const route = routes[url];
         if (!route || event.parent()) return;
+        hud.hideLoader();
         route.mount(req);
         hud.update(route.hud);
         current = route;
