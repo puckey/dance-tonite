@@ -22,12 +22,16 @@ const selectorToRoute = {
   '.menu-item-add': '/record',
 };
 
+let vrSupported = false;
+
 // Check if VR device is connected
 if (typeof navigator.getVRDevices === 'function') {
   navigator.getVRDevices().then(devices => {
     if (devices.length > 0) {
+      elements.menuEnter.classList.remove('mod-disabled');
       elements.menuEnter.querySelector('.menu-item-label').innerHTML = 'Enter VR';
       elements.menuEnter.querySelector('.menu-item-icon').innerHTML = enterIconSvg;
+      vrSupported = true;
     }
   });
 }
@@ -64,11 +68,12 @@ export default {
       const handler = newState[key];
       const visible = !!handler;
       const el = elements[key];
-      if (typeof handler === 'function') {
-        el.addEventListener('click', handler);
-      }
       if (visible !== state[key]) {
         el.classList[visible ? 'remove' : 'add']('mod-hidden');
+      }
+      if (typeof handler === 'function') {
+        if (el.id === 'enterVR' && !vrSupported) continue;
+        el.addEventListener('click', handler);
       }
     }
   },

@@ -49,6 +49,10 @@ svg * {
   height: 2rem;
 }
 
+.mod-disabled {
+  cursor: not-allowed!important;
+}
+
 .mod-fill {
   fill: $text-color;
 }
