@@ -1,3 +1,14 @@
+Use AngelCode BMFont tool (Bitmap font generator) for font file to bitmap.
+
+Apply .bmfc settings file and select font.
+
+Then, downscale using
 https://www.npmjs.com/package/image-sdf
 
-image-sdf roboto_0.png --spread 96 --downscale 6 > roboto.png
+image-sdf angelcode_output.png --spread 96 --downscale 6 > sdffont.png
+
+The process might take a few minutes.
+
+Then Base64 encode the image into js and copy into font.js (img.src=...)
+
+Then copy contents of the .fnt file into font.js. (fnt(){ return...})

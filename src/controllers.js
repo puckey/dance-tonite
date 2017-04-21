@@ -8,10 +8,24 @@ const textCreator = SDFText.creator();
 
 const rhand = Props.controller.clone();
 const lhand = Props.controller.clone();
-const rText = textCreator.create('');
-const lText = textCreator.create('');
+const rText = textCreator.create('', {
+  wrapWidth: 800,
+  scale: 0.5,
+  align: 'left',
+  color: 0xffff07
+});
+const lText = textCreator.create('', {
+  wrapWidth: 800,
+  scale: 0.5,
+  align: 'right',
+  color: 0xffff07
+});
 rhand.add(rText);
 lhand.add(lText);
+
+rText.rotation.x = lText.rotation.x = -Math.PI * 0.5;
+rText.position.set( 0.03, 0, -0.022 );
+lText.position.set(-0.12, 0, -0.022 );
 
 let leftPress;
 let rightPress;

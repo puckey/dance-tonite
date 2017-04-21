@@ -49,12 +49,12 @@ export function creator(){
 
   const colorMaterials = {};
 
-  function createText( str, font, color = 0xffffff, scale = 1.0 ){
+  function createText( str, font, color, scale, wrapWidth, align ){
 
     const geometry = createGeometry({
       text: str,
-      align: 'left',
-      width: 10000,
+      align,
+      width: wrapWidth,
       flipY: true,
       font
     });
@@ -79,15 +79,15 @@ export function creator(){
   }
 
 
-  function create( str = '', { color=0xffffff, scale=1.0 } = {} ){
+  function create( str = '', { color=0xffffff, scale=1.0, wrapWidth=10000, align='left' } = {} ){
     const group = new THREE.Group();
 
-    let mesh = createText( str, font, color, scale );
+    let mesh = createText( str.toUpperCase, font, color, scale, wrapWidth, align );
     group.add( mesh );
     group.layout = mesh.geometry.layout;
 
     group.updateLabel = function( str ){
-      mesh.geometry.update( str );
+      mesh.geometry.update( str.toUpperCase() );
     };
 
     return group;
