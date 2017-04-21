@@ -1,6 +1,7 @@
 import router from '../router';
 import addIconSvg from './icons/addvr.svg';
 import enterIconSvg from './icons/entervr.svg';
+import enterIconDisabledSvg from './icons/x_entervr.svg';
 import aboutIconSvg from './icons/about.svg';
 
 const defaultState = {
@@ -21,10 +22,19 @@ const selectorToRoute = {
   '.menu-item-add': '/record',
 };
 
-// Add icons
-document.querySelector('.menu-item-add .menu-item-icon').innerHTML = addIconSvg;
-document.querySelector('.menu-item-enter .menu-item-icon').innerHTML = enterIconSvg;
-document.querySelector('.about-button .menu-item-icon').innerHTML = aboutIconSvg;
+// Check if VR device is connected
+if (typeof navigator.getVRDevices === 'function') {
+  navigator.getVRDevices().then(devices => {
+    if (devices.length > 0) {
+      elements.menuEnter.querySelector('.menu-item-label').innerHTML = 'Enter VR';
+      elements.menuEnter.querySelector('.menu-item-icon').innerHTML = enterIconSvg;
+    }
+  });
+}
+
+elements.menuAdd.querySelector('.menu-item-icon').innerHTML = addIconSvg;
+elements.aboutButton.querySelector('.menu-item-icon').innerHTML = aboutIconSvg;
+elements.menuEnter.querySelector('.menu-item-icon').innerHTML = enterIconDisabledSvg;
 
 Object.keys(selectorToRoute)
   .filter(className => !!selectorToRoute[className])
