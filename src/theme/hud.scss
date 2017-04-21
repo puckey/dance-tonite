@@ -73,6 +73,15 @@ svg * {
   cursor: pointer;
 }
 
+.audio-progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 0.25rem;
+  background: $text-color;
+  z-index: $interface-layer;
+}
+
 .splash-title {
   position: absolute;
   top: 0;
@@ -94,6 +103,7 @@ svg * {
   padding: 1rem;
   z-index: $interface-layer;
   transition: opacity 1s ease-out;
+  pointer-events: none;
 }
 
 .chrome-experiment img {

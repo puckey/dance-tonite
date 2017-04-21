@@ -9,6 +9,8 @@ import titles from '../titles';
 import hud from '../hud';
 
 const { roomDepth, roomOffset, holeHeight } = settings;
+const progressBar = document.querySelector('.audio-progress-bar');
+const loopCount = 16;
 
 let orb;
 let playlist;
@@ -43,6 +45,7 @@ export default {
         audio.tick();
         playlist.tick();
         titles.tick();
+        progressBar.style.width = (100 * audio.progress) / loopCount + '%';
         moveCamera(audio.progress);
       };
 
@@ -50,7 +53,7 @@ export default {
       hud.showLoader('Spinning up the track...');
       audio.load({
         src: audioSrc,
-        loops: 16,
+        loops: loopCount,
         progressive: true,
       }, (loadError) => {
         if (loadError) throw loadError;
@@ -62,6 +65,7 @@ export default {
   },
 
   unmount: () => {
+    progressBar.style.width = 0;
     audio.reset();
     viewer.events.off('tick', tick);
     orb.destroy();
