@@ -12,8 +12,13 @@ const recording = {
     if (stopped) return;
     if (!frames || audio.looped) {
       frameNumber = 0;
-      for (let i = 0; i < frames.length; i++) {
-        this.frames[i] = this.frames[i].concat(frames[i]);
+      if (frames) {
+        for (let i = 0; i < frames.length; i++) {
+          const frame = frames[i];
+          this.frames[i] = this.frames[i]
+            ? this.frames[i].concat(frame)
+            : frame;
+        }
       }
       frames = [];
     } else {

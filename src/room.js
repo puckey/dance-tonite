@@ -119,24 +119,27 @@ export default class Room {
   }
 
   gotoTime(seconds) {
-    const { frames, layerCount } = this;
+    const { frames } = this;
     if (!frames) return;
 
     const frameNumber = Math.floor((seconds % (audio.loopDuration * 2)) * 90);
 
     if (frames.length <= frameNumber) return;
+    let positions = frames[frameNumber];
+
+    // TODO: figure out why we can't use just 'positions.length / PERFORMANCE_ELEMENT_COUNT' here:
+    const count = this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
+
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
     if (this.headMesh) {
-      this.headMesh.geometry.maxInstancedCount = layerCount;
+      this.headMesh.geometry.maxInstancedCount = count;
     }
-    this.handMesh.geometry.maxInstancedCount = layerCount * 2;
-    let positions = frames[frameNumber];
+    this.handMesh.geometry.maxInstancedCount = count * 2;
     // Check if data is still a string:
     if (positions[0] === '[') {
       positions = frames[frameNumber] = JSON.parse(positions);
     }
-    const count = positions.length / PERFORMANCE_ELEMENT_COUNT;
     for (let i = 0; i < count; i++) {
       if (this.showHead) {
         transformMesh(
