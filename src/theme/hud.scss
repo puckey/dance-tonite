@@ -40,6 +40,10 @@ svg * {
   display: inline;
 }
 
+.mod-mobile .menu-item:hover .menu-item-label {
+  display: none;
+}
+
 .menu-item-icon {
   display: inline-block;
   position: relative;

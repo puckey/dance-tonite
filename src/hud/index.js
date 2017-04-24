@@ -1,9 +1,10 @@
 import router from '../router';
+import viewer from '../viewer';
+import feature from '../lib/feature';
 import addIconSvg from './icons/addvr.svg';
 import enterIconSvg from './icons/entervr.svg';
 import enterIconDisabledSvg from './icons/x_entervr.svg';
 import aboutIconSvg from './icons/about.svg';
-import viewer from '../viewer';
 
 const defaultState = {
   menuAdd: false,
@@ -25,6 +26,11 @@ const selectorToRoute = {
 
 const loaderOverlay = document.querySelector('.loader-overlay');
 const loaderOverlayText = document.querySelector('.loader-overlay-text');
+
+// Add .mod-mobile identifier to body on mobile to disable hover effects
+if (feature.isMobile) {
+  document.body.classList.add('mod-mobile');
+}
 
 // Check if VR device is connected
 if (typeof navigator.getVRDisplays === 'function') {
