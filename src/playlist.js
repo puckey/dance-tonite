@@ -5,7 +5,7 @@ import Room from './room';
 import audio from './audio';
 
 export default class Playlist {
-  constructor({ recording, url, pathRecording }, onLoad) {
+  constructor({ recording, url, pathRecording }) {
     if (url) {
       storage.loadPlaylist(url, (error, urls) => {
         if (error) throw error;
@@ -19,7 +19,7 @@ export default class Playlist {
         );
         asyncEach(
           this.rooms,
-          4,
+          3,
           (room, callback) => {
             // If destroyed, callback with error to stop loading further files:
             if (this.destroyed) {
@@ -28,7 +28,7 @@ export default class Playlist {
             room.load(callback);
           },
           () => {
-            if (!this.destroyed) onLoad();
+            console.log('done loading');
           },
         );
       });

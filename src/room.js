@@ -5,8 +5,11 @@ import { tempQuaternion, tempVector, createInstancedMesh } from './utils/three';
 import viewer from './viewer';
 import settings from './settings';
 import audio from './audio';
-import storage from './storage';
 import { getCostumeColor, getRoomColor } from './theme/colors';
+import streamJson from './stream-json';
+
+const PERFORMANCE_ELEMENT_COUNT = 21;
+const LIMB_ELEMENT_COUNT = 7;
 
 const num = 20;
 let roomIndex = 0;
@@ -17,16 +20,24 @@ const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
 
 const transformMesh = (
   instancedMesh,
+  positions,
   index,
-  [x, y, z, qx, qy, qz, qw],
+  arrayOffset,
   scale,
   offset,
 ) => {
-  instancedMesh.setQuaternionAt(index, tempQuaternion(qx, qy, qz, qw));
+  const x = positions[arrayOffset] * 0.0001;
+  const y = positions[arrayOffset + 1] * 0.0001;
+  const z = positions[arrayOffset + 2] * 0.0001;
+  const qx = positions[arrayOffset + 3] * 0.0001;
+  const qy = positions[arrayOffset + 4] * 0.0001;
+  const qz = positions[arrayOffset + 5] * 0.0001;
+  const qw = positions[arrayOffset + 6] * 0.0001;
   instancedMesh.setPositionAt(
     index,
     tempVector(x, y, z - settings.roomOffset).add(offset),
   );
+  instancedMesh.setQuaternionAt(index, tempQuaternion(qx, qy, qz, qw));
   instancedMesh.setScaleAt(index, tempVector(scale, scale, scale));
   instancedMesh.needsUpdate();
 };
@@ -39,7 +50,7 @@ export default class Room {
     this.url = url;
     roomIndex += 1;
     if (recording) {
-      this.layers = recording.layers;
+      this.frames = recording.frames;
       this.createMeshes();
     }
     this.position = new THREE.Vector3();
@@ -56,7 +67,7 @@ export default class Room {
     const color = getCostumeColor(this.index);
     const count = this.isRecording
       ? 20
-      : this.layers.length;
+      : this.layerCount;
     this.handMesh = createInstancedMesh({
       count: count * 2,
       geometry: props.hand.geometry,
@@ -75,12 +86,20 @@ export default class Room {
   }
 
   load(callback) {
-    storage.load(this.url, (error, layers) => {
-      if (error) return callback(error);
-      this.layers = layers;
+    const streamer = streamJson(this.url, callback);
+    streamer.on('meta', (meta) => {
+      let { hideHead, count } = meta;
+      this.frames = streamer.frames;
+      this.showHead = !hideHead;
+      this.layerCount = count;
       this.createMeshes();
-      callback();
     });
+    // storage.load(this.url, (error, layers) => {
+    //   if (error) return callback(error);
+    //   this.layers = layers;
+    //   this.createMeshes();
+    //   callback();
+    // });
   }
 
   updatePosition() {
@@ -100,26 +119,51 @@ export default class Room {
   }
 
   gotoTime(seconds) {
-    const { layers } = this;
-    if (!layers) return;
+    const { frames, layerCount } = this;
+    if (!frames) return;
 
     const frameNumber = Math.floor((seconds % (audio.loopDuration * 2)) * 90);
+
+    if (frames.length <= frameNumber) return;
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
-    const layerCount = layers.length;
     if (this.headMesh) {
       this.headMesh.geometry.maxInstancedCount = layerCount;
     }
     this.handMesh.geometry.maxInstancedCount = layerCount * 2;
-    for (let i = 0; i < layerCount; i++) {
-      const frames = layers[i];
-      if (frames.length <= frameNumber) continue;
-      const [head, left, right] = frames[frameNumber];
+    let positions = frames[frameNumber];
+    // Check if data is still a string:
+    if (positions[0] === '[') {
+      positions = frames[frameNumber] = JSON.parse(positions);
+    }
+    const count = positions.length / PERFORMANCE_ELEMENT_COUNT;
+    for (let i = 0; i < count; i++) {
       if (this.showHead) {
-        transformMesh(this.headMesh, i, head, scale, this.position);
+        transformMesh(
+          this.headMesh,
+          positions,
+          i,
+          i * PERFORMANCE_ELEMENT_COUNT,
+          scale,
+          this.position
+        );
       }
-      transformMesh(this.handMesh, i * 2, left, scale, this.position);
-      transformMesh(this.handMesh, (i * 2) + 1, right, scale, this.position);
+      transformMesh(
+        this.handMesh,
+        positions,
+        i * 2,
+        i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT,
+        scale,
+        this.position
+      );
+      transformMesh(
+        this.handMesh,
+        positions,
+        i * 2 + 1,
+        i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT * 2,
+        scale,
+        this.position
+      );
     }
   }
 

@@ -11,7 +11,7 @@ const persist = (json, callback) => {
 };
 
 const load = (key, callback) => {
-  fetch(`https://s3-eu-west-1.amazonaws.com/ymm-recorder/${key}`)
+  fetch(`https://s3-eu-west-1.amazonaws.com/ymm-recorder-new/${key}`)
     .then(response => response.json())
     .then(data => callback(null, data));
 };

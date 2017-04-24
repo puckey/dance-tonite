@@ -12,8 +12,8 @@ const recording = {
     if (stopped) return;
     if (!frames || audio.looped) {
       frameNumber = 0;
-      if (frames) {
-        this.layers.push(frames);
+      for (let i = 0; i < frames.length; i++) {
+        this.frames[i] = this.frames[i].concat(frames[i]);
       }
       frames = [];
     } else {
@@ -24,13 +24,19 @@ const recording = {
     const right = serializeMatrix(viewer.controllers[1].matrixWorld);
     let frame;
     if (frames.length <= frameNumber) {
-      frame = [head, left, right];
+      frame = [...head, ...left, ...right];
       frames.push(frame);
     } else {
       frame = frames[frameNumber];
-      frame[0] = head;
-      frame[1] = left;
-      frame[2] = right;
+      for (let i = 0; i < head.length; i++) {
+        frame.push(head[i]);
+      }
+      for (let i = 0; i < left.length; i++) {
+        frame.push(left[i]);
+      }
+      for (let i = 0; i < right.length; i++) {
+        frame.push(right[i]);
+      }
     }
   },
 
@@ -39,11 +45,13 @@ const recording = {
   },
 
   toJson() {
-    return JSON.stringify(this.layers);
+    return JSON.stringify([{
+      count: this.frames[0].length / 21,
+    }].concat(this.frames));
   },
 
   reset() {
-    this.layers = [];
+    this.frames = [];
     frames = null;
     frameNumber = null;
     stopped = false;

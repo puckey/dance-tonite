@@ -40,15 +40,15 @@ export default {
     playlist = new Playlist({
       url: 'curated.json',
       pathRecording: req.params.id,
-    }, () => {
-      tick = () => {
-        audio.tick();
-        playlist.tick();
-        titles.tick();
-        progressBar.style.width = (100 * audio.progress) / loopCount + '%';
-        moveCamera(audio.progress);
-      };
-
+    });
+    tick = () => {
+      audio.tick();
+      playlist.tick();
+      titles.tick();
+      progressBar.style.width = `${(100 * audio.progress) / loopCount}%`;
+      moveCamera(audio.progress);
+    };
+    setTimeout(() => {
       // Audio plays after playlist is done loading:
       hud.showLoader('Spinning up the track...');
       audio.load({
@@ -61,7 +61,7 @@ export default {
         audio.play();
         viewer.events.on('tick', tick);
       });
-    });
+    }, 3000);
   },
 
   unmount: () => {
