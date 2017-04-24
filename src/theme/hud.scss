@@ -98,6 +98,7 @@ svg * {
   font-feature-settings: 'ss01';
   z-index: $interface-layer;
   pointer-events: none;
+  box-sizing: border-box;
 }
 
 .chrome-experiment {

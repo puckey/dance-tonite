@@ -41,5 +41,7 @@ a {
 }
 
 .mod-overflow-hidden {
+  position: relative;
   overflow: hidden;
+  position: fixed;
 }
