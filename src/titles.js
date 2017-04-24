@@ -1,30 +1,30 @@
+import h from 'hyperscript';
 import audio from './audio';
 import viewer from './viewer';
 import createTimeline from './lib/timeline';
 
 const hudEl = document.querySelector('.hud');
 const elements = {
-  'splashTitleLCD': document.createElement('div'),
-  'splashTitleDance': document.createElement('div'),
-  'chromeExperiment': document.createElement('div'),
+  'splashTitleLCD': h(
+    'div.splash-title.splash-title-lcd.mod-hidden',
+    'LCD Sound\nsystem'
+  ),
+  'splashTitleDance': h(
+    'div.splash-title.splash-title-dance.mod-hidden',
+    'Dance To–\nnight'
+  ),
+  'chromeExperiment': h(
+    'div.chrome-experiment',
+    h('img', {
+      src: '/public/colophon/webVR_experiment@3x.png',
+      alt: 'This is a WebVR experiment'
+    }),
+    h('img', {
+      src: '/public/colophon/friends_with_g@3x.png',
+      alt: 'Made with some friends from Google'
+    }),
+  ),
 };
-
-const webVRExperimentImg = document.createElement('img');
-const friendsWithGoogleImg = document.createElement('img');
-webVRExperimentImg.src = '/public/colophon/webVR_experiment@3x.png';
-webVRExperimentImg.alt = 'This is a WebVR experiment';
-friendsWithGoogleImg.src = '/public/colophon/friends_with_g@3x.png';
-friendsWithGoogleImg.alt = 'Made with some friends from Google';
-
-elements.splashTitleLCD.className = 'splash-title splash-title-lcd mod-hidden';
-elements.splashTitleLCD.innerHTML = 'LCD Sound<br>system';
-
-elements.splashTitleDance.className = 'splash-title splash-title-dance mod-hidden';
-elements.splashTitleDance.innerHTML = 'Dance To&ndash;<br>night';
-
-elements.chromeExperiment.className = 'chrome-experiment';
-elements.chromeExperiment.appendChild(webVRExperimentImg);
-elements.chromeExperiment.appendChild(friendsWithGoogleImg);
 
 const timeline = createTimeline([
   {

@@ -87,7 +87,7 @@ svg * {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 2rem;
+  padding: 4rem 1rem;
   font-size: 10vw;
   letter-spacing: 1vw;
   text-transform: uppercase;
@@ -104,6 +104,7 @@ svg * {
   z-index: $interface-layer;
   transition: opacity 1s ease-out;
   pointer-events: none;
+  user-select: none;
 }
 
 .chrome-experiment img {

@@ -2,7 +2,7 @@
  * @author mflux / http://minmax.design
  * Based on @mattdesl three-orbit-viewer
  */
-
+import h from 'hyperscript';
 import emitter from 'mitt';
 
 import * as THREE from './lib/three';
@@ -46,9 +46,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.sortObjects = false;
 renderer.shadowMap.enabled = false;
 
-const containerEl = document.createElement('div');
-containerEl.className = 'viewer';
-containerEl.appendChild(renderer.domElement);
+const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);
 
 const vrEffect = new THREE.VREffect(renderer);
