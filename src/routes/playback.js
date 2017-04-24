@@ -13,7 +13,6 @@ const progressBar = document.querySelector('.audio-progress-bar');
 const loopCount = 16;
 
 const toggleVR = () => {
-
   if (viewer.vrEffect.isPresenting) {
     hud.exitVR();
     viewer.vrEffect.exitPresent();
@@ -41,6 +40,7 @@ export default {
     menuAdd: true,
     menuEnter: toggleVR,
     aboutButton: about.toggle,
+    colophon: true,
   },
 
   mount: (req) => {
