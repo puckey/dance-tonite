@@ -20,6 +20,7 @@ const defaultState = {
   menuAdd: false,
   menuEnter: false,
   aboutButton: false,
+  colophon: false,
 };
 
 const state = { };
@@ -80,7 +81,7 @@ const hud = {
       const handler = newState[key];
       const visible = !!handler;
       const el = elements[key];
-      if (visible !== state[key]) {
+      if (el && visible !== state[key]) {
         el.classList[visible ? 'remove' : 'add']('mod-hidden');
       }
       if (typeof handler === 'function') {
@@ -90,6 +91,8 @@ const hud = {
         });
       }
     }
+    if (newState.colophon) return;
+    document.querySelector('.chrome-experiment').classList.add('mod-hidden');
   },
   showLoader: (label = 'Just a sec...') => {
     elements.loaderOverlayText.innerHTML = label;
