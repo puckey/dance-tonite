@@ -9,6 +9,7 @@ import * as THREE from './lib/three';
 import { tempVector } from './utils/three';
 import settings from './settings';
 import Room from './room';
+import hud from './hud';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
@@ -108,16 +109,6 @@ const viewer = {
         : 'default',
     );
     viewer.camera = cameras[name];
-  },
-  toggleVR: () => {
-    if (vrEffect.isPresenting) {
-      vrEffect.exitPresent();
-      viewer.switchCamera('orthographic');
-    } else {
-      vrEffect.requestPresent().then(() => {
-        viewer.switchCamera('default');
-      });
-    }
   },
   vrEffect,
 };
