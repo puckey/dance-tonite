@@ -13,17 +13,6 @@ const elements = {
     'div.splash-title.splash-title-dance.mod-hidden',
     'Dance To–\nnight'
   ),
-  'chromeExperiment': h(
-    'div.chrome-experiment',
-    h('img', {
-      src: '/public/colophon/webVR_experiment@3x.png',
-      alt: 'This is a WebVR experiment'
-    }),
-    h('img', {
-      src: '/public/colophon/friends_with_g@3x.png',
-      alt: 'Made with some friends from Google'
-    }),
-  ),
 };
 
 const timeline = createTimeline([
@@ -59,6 +48,7 @@ export default {
     for (const element in elements) {
       hudEl.appendChild(elements[element]);
     }
+    elements.chromeExperiment = document.querySelector('.chrome-experiment');
   },
   destroy: () => {
     for (const element in elements) {
