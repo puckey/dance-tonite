@@ -65,33 +65,29 @@ const mount = (req) => {
     orb.move(z);
   };
 
-  moveCamera(0);
-
   hud.showLoader('Loading performances...');
   playlist = new Playlist({
     url: 'curated.json',
     pathRecording: req.params.id,
-  }, () => {
-    tick = () => {
-      audio.tick();
-      playlist.tick();
-      titles.tick();
-      progressBar.style.transform = 'scale(' + audio.progress / loopCount + ', 1)';
-      moveCamera(audio.progress);
-    };
+  });
+  tick = () => {
+    audio.tick();
+    playlist.tick();
+    titles.tick();
+    progressBar.style.transform = 'scale(' + audio.progress / loopCount + ', 1)';
+    moveCamera(audio.progress);
+  };
 
-    // Audio plays after playlist is done loading:
-    hud.showLoader('Spinning up the track...');
-    audio.load({
-      src: audioSrc,
-      loops: loopCount,
-      progressive: true,
-    }, (loadError) => {
-      if (loadError) throw loadError;
-      hud.hideLoader();
-      audio.play();
-      viewer.events.on('tick', tick);
-    });
+  hud.showLoader('Spinning up the track...');
+  audio.load({
+    src: audioSrc,
+    loops: loopCount,
+    progressive: true,
+  }, (loadError) => {
+    if (loadError) throw loadError;
+    hud.hideLoader();
+    audio.play();
+    viewer.events.on('tick', tick);
   });
 };
 

@@ -45,7 +45,7 @@ export const createInstancedMesh = ({
 };
 
 // TODO: figure the optimal rounding of these values:
-const compressNumber = number => Math.round(number * 10000) / 10000;
+const compressNumber = number => Math.round(number * 10000);
 
 // Serializes a matrix into an array with rounded position x, y, z
 // & quaternion x, y, z, w values:
