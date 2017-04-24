@@ -24,6 +24,8 @@ const defaultState = {
 
 const state = { };
 
+let hasVR;
+
 elements.menuAdd.addEventListener('click', () => {
   router.navigate('/record');
 });
@@ -36,7 +38,8 @@ if (feature.isMobile) {
 // Check if VR device is connected
 if (typeof navigator.getVRDisplays === 'function') {
   navigator.getVRDisplays().then(devices => {
-    if (devices.length > 0) {
+    hasVR = devices.length > 0;
+    if (hasVR) {
       elements.menuEnter.classList.remove('mod-disabled');
       elements.menuEnter.querySelector('.menu-item-label').innerHTML = 'Enter VR';
       elements.menuEnter.querySelector('.menu-item-icon').innerHTML = enterIconSvg;
@@ -81,7 +84,10 @@ const hud = {
         el.classList[visible ? 'remove' : 'add']('mod-hidden');
       }
       if (typeof handler === 'function') {
-        el.addEventListener('click', handler);
+        el.addEventListener('click', (event) => {
+          if (key === 'menuEnter' && !hasVR) return;
+          handler(event);
+        });
       }
     }
   },

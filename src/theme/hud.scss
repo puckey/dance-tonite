@@ -57,10 +57,6 @@ svg * {
   cursor: not-allowed;
 }
 
-.menu-item.mod-disabled * {
-  pointer-events: none;
-}
-
 .mod-fill {
   fill: $text-color;
 }

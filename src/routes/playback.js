@@ -11,7 +11,9 @@ import hud from '../hud';
 const { roomDepth, roomOffset, holeHeight } = settings;
 const progressBar = document.querySelector('.audio-progress-bar');
 const loopCount = 16;
+
 const toggleVR = () => {
+
   if (viewer.vrEffect.isPresenting) {
     hud.exitVR();
     viewer.vrEffect.exitPresent();
