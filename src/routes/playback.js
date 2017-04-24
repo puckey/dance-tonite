@@ -11,6 +11,24 @@ import hud from '../hud';
 const { roomDepth, roomOffset, holeHeight } = settings;
 const progressBar = document.querySelector('.audio-progress-bar');
 const loopCount = 16;
+const toggleVR = () => {
+  if (viewer.vrEffect.isPresenting) {
+    hud.exitVR();
+    viewer.vrEffect.exitPresent();
+    viewer.switchCamera('orthographic');
+  } else {
+    hud.enterVR();
+    audio.fadeOut();
+    setTimeout(() => {
+      viewer.vrEffect.requestPresent().then(() => {
+        viewer.switchCamera('default');
+        setTimeout(() => {
+          audio.rewind();
+        }, 4000);
+      });
+    }, 600);
+  }
+};
 
 let orb;
 let playlist;
@@ -19,7 +37,7 @@ let tick;
 export default {
   hud: {
     menuAdd: true,
-    menuEnter: viewer.toggleVR,
+    menuEnter: toggleVR,
     aboutButton: about.toggle,
   },
 
@@ -45,7 +63,7 @@ export default {
         audio.tick();
         playlist.tick();
         titles.tick();
-        progressBar.style.width = (100 * audio.progress) / loopCount + '%';
+        progressBar.style.transform = 'scale(' + audio.progress / loopCount + ', 1)';
         moveCamera(audio.progress);
       };
 

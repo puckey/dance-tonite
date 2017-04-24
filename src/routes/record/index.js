@@ -17,9 +17,20 @@ const goto = (step) => {
   unmountStep = components[step](goto);
 };
 
+const toggleVR = () => {
+  if (viewer.vrEffect.isPresenting) {
+    viewer.vrEffect.exitPresent();
+    viewer.switchCamera('orthographic');
+  } else {
+    viewer.vrEffect.requestPresent().then(() => {
+      viewer.switchCamera('default');
+    });
+  }
+};
+
 export default {
   hud: {
-    menuEnter: viewer.toggleVR,
+    menuEnter: toggleVR,
   },
 
   mount: () => {
@@ -33,4 +44,3 @@ export default {
     unmountStep = null;
   },
 };
-

@@ -129,6 +129,13 @@ const audio = Object.assign(emitter(), {
     }
   },
 
+  rewind() {
+    if (audioElement) {
+      audioElement.currentTime = 0;
+      gainNode.gain.value = 1;
+    }
+  },
+
   fadeOut(callback) {
     if (!context) return;
     const fadeDuration = 2;

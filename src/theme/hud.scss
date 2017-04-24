@@ -81,9 +81,12 @@ svg * {
   position: fixed;
   bottom: 0;
   left: 0;
+  width: 100vw;
   height: 0.1rem;
   background: $text-color;
   z-index: $interface-layer;
+  transform: scaleX(0);
+  transform-origin: left;
 }
 
 .splash-title {
@@ -99,6 +102,10 @@ svg * {
   z-index: $interface-layer;
   pointer-events: none;
   box-sizing: border-box;
+}
+
+.mod-in-vr .splash-title {
+  display: none;
 }
 
 .chrome-experiment {
@@ -133,7 +140,8 @@ svg * {
   pointer-events: none;
 }
 
-.spinner {
+.spinner,
+.vr-info-overlay {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -141,30 +149,88 @@ svg * {
   height: 1.5rem;
   margin: -0.75rem;
   border-radius: 100%;
-  border: 1rem solid $text-color;
   box-sizing: border-box;
   z-index: $popover-layer;
-  animation: ripple 2s infinite;
-  background: black;
+  background: $text-color;
 }
 
 .spinner-inner {
-  position: relative;
+  position: absolute;
   top: 50%;
   left: 50%;
   border-radius: 100%;
   background: $text-color;
-  animation: grow 2s infinite;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -0.75rem;
+  animation: grow1 2s infinite;
 }
 
-@keyframes ripple {
-  0% { border-width: 0.75rem; }
-  50% { border-width: 2px; }
-  100% { border-width: 2px; }
+.spinner-inner-negative {
+  width: 1.4rem;
+  height: 1.4rem;
+  margin: -0.70rem;
+  background: $background-color;
+  animation: grow2 2s infinite;
 }
 
-@keyframes grow {
-  0% { width: 0; height: 0; margin: 0; }
-  50% { width: 0; height: 0; margin: 0; }
-  100% { width: 1.5rem; height: 1.5rem; margin: -0.75rem; }
+.vr-info-overlay {
+  width: 150vw;
+  height: 150vw;
+  margin: -75vw;
+  transform: scale(0);
+
+  @media screen and (max-aspect-ratio: 1/1) {
+    width: 150vh;
+    height: 150vh;
+    margin: -75vh;
+  }
+}
+
+.vr-info-overlay-text {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  margin-top: -2rem;
+  font-size: 2rem;
+  text-align: center;
+  text-transform: uppercase;
+  font-feature-settings: 'ss01';
+  color: $background-color;
+  opacity: 0;
+}
+
+.vr-info-overlay.mod-entering-vr {
+  animation: splash 7s ease-in;
+}
+
+.mod-entering-vr .vr-info-overlay-text {
+  animation: textFade 6s 1s;
+}
+
+@keyframes grow1 {
+  0% { transform: scale(0); }
+  50% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+@keyframes grow2 {
+  0% { transform: scale(0); }
+  50% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes splash {
+  0% { transform: scale(0); }
+  10% { transform: scale(1); }
+  95% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+@keyframes textFade {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
 }

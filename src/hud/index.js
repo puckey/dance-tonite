@@ -6,26 +6,26 @@ import enterIconSvg from './icons/entervr.svg';
 import enterIconDisabledSvg from './icons/x_entervr.svg';
 import aboutIconSvg from './icons/about.svg';
 
+const elements = {
+  menuAdd: document.querySelector('.menu-item-add'),
+  menuEnter: document.querySelector('.menu-item-enter'),
+  aboutButton: document.querySelector('.about-button'),
+  loaderOverlay: document.querySelector('.loader-overlay'),
+  loaderOverlayText: document.querySelector('.loader-overlay-text'),
+  vrInfoOverlay: document.querySelector('.vr-info-overlay'),
+};
+
 const defaultState = {
   menuAdd: false,
   menuEnter: false,
   aboutButton: false,
 };
 
-const elements = {
-  menuAdd: document.querySelector('.menu-item-add'),
-  menuEnter: document.querySelector('.menu-item-enter'),
-  aboutButton: document.querySelector('.about-button'),
-};
-
 const state = { };
 
-const selectorToRoute = {
-  '.menu-item-add': '/record',
-};
-
-const loaderOverlay = document.querySelector('.loader-overlay');
-const loaderOverlayText = document.querySelector('.loader-overlay-text');
+elements.menuAdd.addEventListener('click', () => {
+  router.navigate('/record');
+});
 
 // Add .mod-mobile identifier to body on mobile to disable hover effects
 if (feature.isMobile) {
@@ -43,20 +43,12 @@ if (typeof navigator.getVRDisplays === 'function') {
   });
 }
 
+// Add icons
 elements.menuAdd.querySelector('.menu-item-icon').innerHTML = addIconSvg;
 elements.aboutButton.querySelector('.menu-item-icon').innerHTML = aboutIconSvg;
 elements.menuEnter.querySelector('.menu-item-icon').innerHTML = enterIconDisabledSvg;
 
-Object.keys(selectorToRoute)
-  .filter(className => !!selectorToRoute[className])
-  .forEach(className => {
-    document
-      .querySelector(className)
-      .addEventListener('click', () => {
-        router.navigate(selectorToRoute[className]);
-      });
-  });
-
+// Interface methods
 const hud = {
   update: (param = {}) => {
     const newState = Object.assign(
@@ -84,11 +76,19 @@ const hud = {
     }
   },
   showLoader: (label = 'Just a sec...') => {
-    loaderOverlayText.innerHTML = label;
-    loaderOverlay.classList.remove('mod-hidden');
+    elements.loaderOverlayText.innerHTML = label;
+    elements.loaderOverlay.classList.remove('mod-hidden');
   },
   hideLoader: () => {
-    loaderOverlay.classList.add('mod-hidden');
+    elements.loaderOverlay.classList.add('mod-hidden');
+  },
+  enterVR: () => {
+    elements.vrInfoOverlay.classList.add('mod-entering-vr');
+    document.body.classList.add('mod-in-vr');
+  },
+  exitVR: () => {
+    elements.vrInfoOverlay.classList.remove('mod-entering-vr');
+    document.body.classList.remove('mod-in-vr');
   },
   elements,
 };
