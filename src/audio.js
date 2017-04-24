@@ -1,8 +1,6 @@
 import emitter from 'mitt';
 import audioPool from './utils/audio-pool';
 
-audioPool.fill();
-
 let context;
 let source;
 let gainNode;
@@ -16,6 +14,10 @@ let request;
 let onPlay;
 
 const audio = Object.assign(emitter(), {
+  fill() {
+    audioPool.fill();
+  },
+
   tick() {
     const currentTime = audioElement
       ? audioElement.currentTime

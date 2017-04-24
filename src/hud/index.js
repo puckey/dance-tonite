@@ -1,20 +1,24 @@
 import router from '../router';
-import viewer from '../viewer';
-import feature from '../lib/feature';
+import feature from '../utils/feature';
 import addIconSvg from './icons/addvr.svg';
 import enterIconSvg from './icons/entervr.svg';
 import enterIconDisabledSvg from './icons/x_entervr.svg';
 import aboutIconSvg from './icons/about.svg';
 
 const elements = {
-  menuAdd: document.querySelector('.menu-item-add'),
-  menuEnter: document.querySelector('.menu-item-enter'),
-  menuEnterLabel: document.querySelector('.menu-item-enter .menu-item-label'),
-  aboutButton: document.querySelector('.about-button'),
-  loaderOverlay: document.querySelector('.loader-overlay'),
-  loaderOverlayText: document.querySelector('.loader-overlay-text'),
-  vrInfoOverlay: document.querySelector('.vr-info-overlay'),
+  menuAdd: '.menu-item-add',
+  menuEnter: '.menu-item-enter',
+  menuEnterLabel: '.menu-item-enter .menu-item-label',
+  aboutButton: '.about-button',
+  loaderOverlay: '.loader-overlay',
+  loaderOverlayText: '.loader-overlay-text',
+  vrInfoOverlay: '.vr-info-overlay',
+  playButton: '.play-button',
 };
+
+for (const i in elements) {
+  elements[i] = document.querySelector(elements[i]);
+}
 
 const defaultState = {
   menuAdd: false,
@@ -59,8 +63,8 @@ const toggleVRLabel = () => {
   vr = !vr;
   elements.menuEnter.onmouseleave = () => {
     elements.menuEnterLabel.innerHTML = vr ? 'Exit VR' : 'Enter VR';
-  }
-}
+  };
+};
 
 // Interface methods
 const hud = {
@@ -85,9 +89,10 @@ const hud = {
         el.classList[visible ? 'remove' : 'add']('mod-hidden');
       }
       if (typeof handler === 'function') {
-        el.addEventListener('click', (event) => {
+        // NOTE: using function here to keep this === el:
+        el.addEventListener('click', function (event) {
           if (key === 'menuEnter' && !hasVR) return;
-          handler(event);
+          handler.call(this, event);
         });
       }
     }
