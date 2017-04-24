@@ -1,5 +1,7 @@
 import emitter from 'mitt';
 
+const PROTOCOL = location.protocol;
+
 const streamJSON = (url, callback) => {
   const xhr = new XMLHttpRequest();
   let pos = 0;
@@ -43,7 +45,7 @@ export default (url, callback) => {
       frames,
     }
   );
-  streamJSON(`https://d1nylz9ljdxzkb.cloudfront.net/${url}`, (error, json) => {
+  streamJSON(`${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${url}`, (error, json) => {
     if (error || !json) {
       return callback(error);
     }
