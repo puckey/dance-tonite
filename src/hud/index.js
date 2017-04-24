@@ -9,6 +9,7 @@ import aboutIconSvg from './icons/about.svg';
 const elements = {
   menuAdd: document.querySelector('.menu-item-add'),
   menuEnter: document.querySelector('.menu-item-enter'),
+  menuEnterLabel: document.querySelector('.menu-item-enter .menu-item-label'),
   aboutButton: document.querySelector('.about-button'),
   loaderOverlay: document.querySelector('.loader-overlay'),
   loaderOverlayText: document.querySelector('.loader-overlay-text'),
@@ -48,6 +49,15 @@ elements.menuAdd.querySelector('.menu-item-icon').innerHTML = addIconSvg;
 elements.aboutButton.querySelector('.menu-item-icon').innerHTML = aboutIconSvg;
 elements.menuEnter.querySelector('.menu-item-icon').innerHTML = enterIconDisabledSvg;
 
+// VR state
+let vr = false;
+const toggleVRLabel = () => {
+  vr = !vr;
+  elements.menuEnter.onmouseleave = () => {
+    elements.menuEnterLabel.innerHTML = vr ? 'Exit VR' : 'Enter VR';
+  }
+}
+
 // Interface methods
 const hud = {
   update: (param = {}) => {
@@ -85,10 +95,12 @@ const hud = {
   enterVR: () => {
     elements.vrInfoOverlay.classList.add('mod-entering-vr');
     document.body.classList.add('mod-in-vr');
+    toggleVRLabel();
   },
   exitVR: () => {
     elements.vrInfoOverlay.classList.remove('mod-entering-vr');
     document.body.classList.remove('mod-in-vr');
+    toggleVRLabel();
   },
   elements,
 };
