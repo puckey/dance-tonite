@@ -17,6 +17,7 @@ const {
   ConeBufferGeometry,
   CylinderBufferGeometry,
   SphereGeometry,
+  GridHelper,
   Object3D,
 } = THREE;
 
@@ -87,6 +88,10 @@ const props = Object.assign(emitter(), {
       color: settings.sphereColor.clone(),
     });
     return new Mesh(geometry, material);
+  }()),
+
+  grid: (function createGrid() {
+    return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
   }()),
 });
 
