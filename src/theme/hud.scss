@@ -97,6 +97,11 @@ svg * {
   font-feature-settings: 'ss01';
   z-index: $interface-layer;
   pointer-events: none;
+  box-sizing: border-box;
+}
+
+.mod-in-vr .splash-title {
+  display: none;
 }
 
 .mod-in-vr .splash-title {
