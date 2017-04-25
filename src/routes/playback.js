@@ -74,7 +74,7 @@ const mount = (req) => {
     audio.tick();
     playlist.tick();
     titles.tick();
-    progressBar.style.transform = 'scale(' + audio.progress / loopCount + ', 1)';
+    progressBar.style.transform = `scaleX(${audio.progress / loopCount})`;
     moveCamera(audio.progress);
   };
 
