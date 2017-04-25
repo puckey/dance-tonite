@@ -1,5 +1,6 @@
 import emitter from 'mitt';
 import audioPool from './utils/audio-pool';
+import feature from './utils/feature';
 
 let context;
 let source;
@@ -70,12 +71,14 @@ const audio = Object.assign(emitter(), {
       source = context.createMediaElementSource(audioElement);
       audioElement.src = param.src;
       audioElement.loop = true;
-      audioElement.type = 'audio/mpeg';
       onPlay = () => {
         duration = audioElement.duration;
         audioElement.play();
         canPlay();
       };
+      if (feature.isMobile) {
+        audioElement.play();
+      }
       audioElement.addEventListener('canplaythrough', onPlay);
     } else {
       source = context.createBufferSource();
