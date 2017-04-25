@@ -94,12 +94,6 @@ export default class Room {
       this.layerCount = count;
       this.createMeshes();
     });
-    // storage.load(this.url, (error, layers) => {
-    //   if (error) return callback(error);
-    //   this.layers = layers;
-    //   this.createMeshes();
-    //   callback();
-    // });
   }
 
   updatePosition() {
