@@ -18,10 +18,12 @@ const {
   CylinderBufferGeometry,
   SphereGeometry,
   GridHelper,
+  Group,
   Object3D,
 } = THREE;
 
 const color = '#ff0000';
+const color_yellow = '#ffff07'
 
 const loadObject = (url, callback) => {
   new OBJLoader().load(url,
@@ -55,10 +57,22 @@ const props = Object.assign(emitter(), {
       new CylinderBufferGeometry(radius, radius, height, segments),
       new MeshLambertMaterial({ color }),
     );
-    const group = new Object3D();
     cylinder.rotation.x = Math.PI * 0.5 * 7;
     cylinder.updateMatrix();
-    group.add(cylinder);
+
+    const thumbpadRadius = 0.015;
+    const thumbpadHeight = 0.02;
+    const thumbpad = new THREE.Mesh(
+      new CylinderBufferGeometry(thumbpadRadius, thumbpadRadius, thumbpadHeight, segments),
+      new MeshLambertMaterial({ color: color_yellow })
+    );
+    thumbpad.position.z = -0.05;
+    thumbpad.position.y = 0.01;
+    thumbpad.updateMatrix();
+
+    const group = new Group();
+
+    group.add(cylinder, thumbpad);
     return group;
   }()),
 
