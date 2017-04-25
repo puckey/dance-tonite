@@ -7,6 +7,7 @@ import recording from '../../recording';
 import { Color } from '../../lib/three';
 import createTimeline from '../../lib/timeline';
 import controllers from '../../controllers';
+import transition from '../../transition';
 
 const RECORD_COLOR = new Color(0x55b848);
 const WAIT_COLOR = new Color(0xcccccc);
@@ -14,10 +15,19 @@ const WAIT_COLOR = new Color(0xcccccc);
 const { roomDepth, roomOffset } = settings;
 
 export default (goto) => {
+  transition.exit();
+
   const pressToFinish = {
     right: {
       text: 'press to finish',
-      onPress: () => goto('review'),
+      removeOnPress: true,
+      onPress: () => {
+        transition.enter({ text: 'Let\'s review your performance', duration: 5000 },
+          () => {
+            goto('review');
+          }
+        );
+      },
     },
   };
 
