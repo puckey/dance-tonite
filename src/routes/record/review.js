@@ -59,7 +59,12 @@ export default (goto) => {
               recording.toJson(),
               (error, uri) => {
                 if (error) return console.log(error);
-                router.navigate(`/${uri.replace('.json', '')}`);
+                viewer.events.off('tick', tick);
+                transition.enter({ text: 'Please take off your headset', duration: 2000 },
+                  () => {
+                    router.navigate(`/${uri.replace('.json', '')}`);
+                  }
+                );
               }
             );
           },
