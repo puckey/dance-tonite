@@ -17,8 +17,8 @@
 * limitations under the License.
 */
 
-import SDFShader from '../lib/three-bmfont-text/shaders/sdf';
-import createGeometry from '../lib/three-bmfont-text';
+import SDFShader from 'three-bmfont-text/shaders/sdf';
+import createGeometry from 'three-bmfont-text';
 import parseASCII from 'parse-bmfont-ascii';
 
 import * as Font from './font';
