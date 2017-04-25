@@ -1,6 +1,7 @@
 import record from './record';
 import review from './review';
 import controllers from '../../controllers';
+import instructions from '../../instructions';
 import viewer from '../../viewer';
 
 let unmountStep;
@@ -40,6 +41,7 @@ export default {
 
   unmount: () => {
     controllers.remove();
+    instructions.remove();
     unmountStep();
     unmountStep = null;
   },

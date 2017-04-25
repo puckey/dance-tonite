@@ -22,9 +22,6 @@ const {
   Object3D,
 } = THREE;
 
-const color = '#ff0000';
-const color_yellow = '#ffff07'
-
 const loadObject = (url, callback) => {
   new OBJLoader().load(url,
     object => callback(null, object.children[0]),
@@ -40,7 +37,7 @@ const props = Object.assign(emitter(), {
     const segments = 32;
     const cylinder = new Mesh(
       new CylinderBufferGeometry(radius, radius, height, segments),
-      new MeshLambertMaterial({ color }),
+      new MeshLambertMaterial({ color: settings.controllerColor }),
     );
 
     cylinder.rotation.x = Math.PI * 0.5 * 7;
@@ -55,7 +52,7 @@ const props = Object.assign(emitter(), {
     const segments = 32;
     const cylinder = new Mesh(
       new CylinderBufferGeometry(radius, radius, height, segments),
-      new MeshLambertMaterial({ color }),
+      new MeshLambertMaterial({ color: settings.controllerColor }),
     );
     cylinder.rotation.x = Math.PI * 0.5 * 7;
     cylinder.updateMatrix();
@@ -64,7 +61,7 @@ const props = Object.assign(emitter(), {
     const thumbpadHeight = 0.02;
     const thumbpad = new THREE.Mesh(
       new CylinderBufferGeometry(thumbpadRadius, thumbpadRadius, thumbpadHeight, segments),
-      new MeshLambertMaterial({ color: color_yellow })
+      new MeshLambertMaterial({ color: settings.textColor })
     );
     thumbpad.position.z = -0.05;
     thumbpad.position.y = 0.01;
@@ -82,7 +79,7 @@ const props = Object.assign(emitter(), {
     const segments = 32;
     const cone = new Mesh(
       new ConeBufferGeometry(radius, height, segments),
-      new MeshLambertMaterial({ color }),
+      new MeshLambertMaterial({ color: settings.controllerColor }),
     );
 
     cone.rotation.x = Math.PI * 0.5 * 7;

@@ -79,7 +79,7 @@ export function creator(){
   }
 
 
-  function create( str = '', { color=0xffffff, scale=1.0, wrapWidth=10000, align='left' } = {} ){
+  function create( str = '', { color=0xffffff, scale=1.0, wrapWidth=undefined, align='left' } = {} ){
     const group = new THREE.Group();
 
     let mesh = createText( str.toUpperCase, font, color, scale, wrapWidth, align );
@@ -88,7 +88,25 @@ export function creator(){
 
     group.updateLabel = function( str ){
       mesh.geometry.update( str.toUpperCase() );
+
+      if( align === 'center' ){
+        //  center alignment doesn't seem to be working in BMFontText
+        mesh.geometry.computeBoundingBox();
+        const width = mesh.geometry.boundingBox.getSize().x;
+
+        mesh.position.x = -width * 0.5 * textScale * scale;
+      }
     };
+
+    group.getMaterial = function(){
+      return mesh.material;
+    };
+
+    group.getGeometry = function(){
+      return mesh.geometry;
+    };
+
+    group.updateLabel( str );
 
     return group;
   }

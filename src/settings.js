@@ -10,4 +10,6 @@ export default {
   sphereRadius: 0.18 * 0.9,
   sphereColor: new Color(1, 1, 0),
   loopCount: 13,
+  controllerColor: '#ff0000',
+  textColor: '#ffff07'
 };
