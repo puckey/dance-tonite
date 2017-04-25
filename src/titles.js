@@ -11,7 +11,7 @@ const elements = {
   ),
   'splashTitleDance': h(
     'div.splash-title.splash-title-dance.mod-hidden',
-    'Dance To–\nnight'
+    'Dance Tonight'
   ),
 };
 
