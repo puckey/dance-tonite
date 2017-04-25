@@ -65,6 +65,8 @@ const mount = (req) => {
     orb.move(z);
   };
 
+  moveCamera(0);
+
   hud.showLoader('Loading performances...');
   playlist = new Playlist({
     url: 'curated.json',
