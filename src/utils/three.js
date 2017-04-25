@@ -44,6 +44,10 @@ export const createInstancedMesh = ({
   return instancedMesh;
 };
 
+export const offsetFrom = (object, x, y, z) => tempVector(x, y, z)
+    .applyQuaternion(object.quaternion)
+    .add(object.position);
+
 // TODO: figure the optimal rounding of these values:
 const compressNumber = number => Math.round(number * 10000);
 

@@ -9,7 +9,7 @@ import * as THREE from './lib/three';
 import { tempVector } from './utils/three';
 import settings from './settings';
 import Room from './room';
-import hud from './hud';
+import { tween } from 'shifty';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
@@ -62,14 +62,29 @@ const controller2 = new THREE.ViveController(1);
 controller1.standingMatrix = controls.getStandingMatrix();
 controller2.standingMatrix = controls.getStandingMatrix();
 
+const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
+const light = new THREE.DirectionalLight(0xffffff);
+
 const createScene = () => {
   const scene = new THREE.Scene();
-  scene.add(new THREE.HemisphereLight(0x606060, 0x404040));
-  const light = new THREE.DirectionalLight(0xffffff);
   light.position.set(1, 0.75, -1).normalize();
+  scene.add(hemisphereLight);
   scene.add(light);
   scene.add(controller1, controller2);
+  scene.fog = new THREE.Fog(0x000000, 0, 25);
   return scene;
+};
+
+const fadeToBlack = () => {
+  tween({
+    from: { far: 25 },
+    to: { far: 0 },
+    duration: 2000,
+    easing: 'easeOutCubic',
+    step: ({ far }) => {
+      viewer.scene.fog.far = far;
+    },
+  });
 };
 
 window.addEventListener('resize', () => {
@@ -101,6 +116,9 @@ const viewer = {
   controls,
   createScene,
   events,
+  fadeToBlack,
+  hemisphereLight,
+  light,
   renderer,
   switchCamera: (name) => {
     Room.switchModel(
