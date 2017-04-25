@@ -10,12 +10,6 @@ const persist = (json, callback) => {
   });
 };
 
-const load = (key, callback) => {
-  fetch(`https://s3-eu-west-1.amazonaws.com/ymm-recorder-new/${key}`)
-    .then(response => response.json())
-    .then(data => callback(null, data));
-};
-
 const loadPlaylist = (filename, callback) => {
   fetch(`public/playlists/${filename}`).then(
     response => (response
@@ -28,5 +22,5 @@ const loadPlaylist = (filename, callback) => {
 };
 
 export default {
-  load, persist, loadPlaylist,
+  persist, loadPlaylist,
 };
