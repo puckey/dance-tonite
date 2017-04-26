@@ -54,36 +54,33 @@ const fadeIn = (maxFogDistance, callback) => {
 };
 
 export default {
-  enter(param, callback) {
-    // welcome to callback hell
-    fadeOut(() => {
-      // Flip the scenes
-      mainScene = viewer.scene;
-      viewer.scene = transitionScene;
-      viewer.scene.fog = new THREE.Fog(0x000000, 0, 0);
+  async enter(param, callback) {
+    await fadeOut();
+    mainScene = viewer.scene;
+    viewer.scene = transitionScene;
+    viewer.scene.fog = new THREE.Fog(0x000000, 0, 0);
 
-      floatingOrb = new Orb();
-      floatingOrb.fadeIn();
-      viewer.events.on('tick', tick);
-      text.updateLabel(param.text);
-      text.position.copy(offsetFrom(viewer.camera, -5, 2, -10));
-      text.lookAt(viewer.camera.position);
-      floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
-      floatingOrb.mesh.scale.set(4, 4, 4);
+    floatingOrb = new Orb();
+    floatingOrb.fadeIn();
+    viewer.events.on('tick', tick);
+    text.updateLabel(param.text);
+    text.position.copy(offsetFrom(viewer.camera, -5, 2, -10));
+    text.lookAt(viewer.camera.position);
+    floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
+    floatingOrb.mesh.scale.set(4, 4, 4);
 
-      fadeIn(25, () => {
-        setTimeout(() => {
-          fadeOut(() => {
-            // Flip the scenes again
-            floatingOrb.destroy();
-            viewer.scene = mainScene;
-            callback();
-          });
-        }, param.duration);
-      });
-    });
+    await fadeIn(25);
+
+    setTimeout(async () => {
+      await fadeOut();
+      // Flip the scenes again
+      floatingOrb.destroy();
+      viewer.scene = mainScene;
+      callback();
+    }, param.duration);
   },
-  exit(callback) {
-    fadeIn(300, callback);
+  async exit(callback) {
+    fadeIn(300);
+    callback();
   },
 };
