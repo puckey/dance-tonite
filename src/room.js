@@ -196,6 +196,7 @@ Room.reset = () => {
       count: num,
       geometry: props.room.geometry,
       color: getRoomColor,
+      material: props.room.material
     }),
     orthographic: createInstancedMesh({
       count: num,
