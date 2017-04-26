@@ -6,6 +6,7 @@ Then, downscale using
 https://www.npmjs.com/package/image-sdf
 
 image-sdf angelcode_output.png --spread 96 --downscale 6 > sdffont.png
+image-sdf LarsVRC-Light_0.png --spread 96 --downscale 3 > larsvrc-light.png
 
 The process might take a few minutes.
 

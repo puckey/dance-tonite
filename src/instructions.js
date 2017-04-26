@@ -14,21 +14,19 @@ const group = new Group();
 // group.add( mesh );
 
 const subtext = textCreator.create('START IN', {
-  scale: 4.5,
+  scale: 2.25,
   align: 'center',
   color: textColor,
   mode: 'nowrap'
 });
 
 const mainText = textCreator.create('8', {
-  scale: 15,
+  scale: 7.5,
   align: 'center',
   color: textColor,
   mode: 'nowrap'
 });
 
-//  BMFontText refusing to align center
-mainText.position.x = 0.1;
 mainText.position.y = -0.65;
 
 group.add( subtext, mainText );

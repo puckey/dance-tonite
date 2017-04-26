@@ -5,7 +5,7 @@ fileVersion=1
 fontName=Lars VRC Light
 fontFile=
 charSet=0
-fontSize=256
+fontSize=512
 aa=1
 scaleH=100
 useSmoothing=1
@@ -20,18 +20,18 @@ renderFromOutline=0
 useClearType=1
 
 # character alignment
-paddingDown=64
-paddingUp=64
-paddingRight=64
-paddingLeft=64
-spacingHoriz=8
-spacingVert=8
+paddingDown=32
+paddingUp=32
+paddingRight=32
+paddingLeft=32
+spacingHoriz=4
+spacingVert=4
 useFixedHeight=0
 forceZero=0
 
 # output file
-outWidth=8192
-outHeight=4096
+outWidth=4096
+outHeight=2048
 outBitDepth=8
 fontDescFormat=0
 fourChnlPacked=0

@@ -10,14 +10,14 @@ const textCreator = SDFText.creator();
 const rhand = Props.controller.clone();
 const lhand = Props.controller.clone();
 const rText = textCreator.create('', {
-  wrapWidth: 800,
-  scale: 0.5,
+  wrapWidth: 1600,
+  scale: 0.25,
   align: 'left',
   color: settings.textColor
 });
 const lText = textCreator.create('', {
-  wrapWidth: 800,
-  scale: 0.5,
+  wrapWidth: 1600,
+  scale: 0.25,
   align: 'right',
   color: settings.textColor
 });
