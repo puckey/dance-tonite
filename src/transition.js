@@ -81,7 +81,7 @@ export default {
     if (callback) callback();
   },
   async exit(callback) {
-    fadeIn(300);
+    await fadeIn(300);
     if (callback) callback();
   },
 };
