@@ -5,40 +5,36 @@ import Room from './room';
 import audio from './audio';
 
 export default class Playlist {
-  constructor({ recording, url, pathRecording }) {
-    if (url) {
-      storage.loadPlaylist(url, (error, urls) => {
-        if (error) throw error;
-        if (pathRecording) urls[1] = `${pathRecording}.json`;
-        this.rooms = urls.map(
-          (recordingUrl, index) => new Room({
-            url: recordingUrl,
-            showHead: !/head=false/.test(recordingUrl),
-            index,
-          }),
-        );
-        asyncEach(
-          this.rooms,
-          3,
-          (room, callback) => {
-            // If destroyed, callback with error to stop loading further files:
-            if (this.destroyed) {
-              return callback(Error('playlist was destroyed'));
-            }
-            room.load(callback);
-          },
-          () => {
-            console.log('done loading');
-          },
-        );
-      });
-    }
+  constructor({ recording } = {}) {
     if (recording) {
       const rooms = this.rooms = [];
       for (let i = 0; i < 10; i++) {
         rooms.push(new Room({ recording }));
       }
     }
+  }
+
+  async load({ url, pathRecording }) {
+    const urls = await storage.loadPlaylist(url);
+    if (pathRecording) urls[1] = `${pathRecording}.json`;
+    this.rooms = urls.map(
+      (recordingUrl, index) => new Room({
+        url: recordingUrl,
+        showHead: !/head=false/.test(recordingUrl),
+        index,
+      }),
+    );
+    asyncEach(
+      this.rooms,
+      3,
+      (room, callback) => {
+        // If destroyed, callback with error to stop loading further files:
+        if (this.destroyed) {
+          return callback(Error('playlist was destroyed'));
+        }
+        room.load(callback);
+      },
+    );
   }
 
   tick() {

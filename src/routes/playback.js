@@ -77,7 +77,8 @@ export default {
 
     moveCamera(0);
 
-    playlist = new Playlist({
+    playlist = new Playlist();
+    playlist.load({
       url: 'curated.json',
       pathRecording: req.params.id,
     });
