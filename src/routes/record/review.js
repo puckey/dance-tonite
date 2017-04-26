@@ -17,7 +17,7 @@ const POSITION = new THREE.Vector3();
 const ROTATION = new THREE.Quaternion();
 const SCALE = new THREE.Vector3();
 
-export default (goto) => {
+export default async (goto) => {
 
   const moveCamera = (progress) => {
     const zPos = ((progress - 1.5) * roomDepth) + roomOffset;
@@ -41,55 +41,58 @@ export default (goto) => {
     moveCamera(audio.totalProgress);
   };
 
-  audio.load({
+  await audio.load({
     src: `/public/sound/room-${recording.room}.ogg`,
     loops: 2,
-  }, (loadError) => {
-    if (loadError) throw loadError;
-    transition.exit(() => {
-      controllers.update({
-        left: {
-          text: 'press to redo',
-          onPress: () => {
-            viewer.events.off('tick', tick);
-            transition.enter({ text: 'Okay, here we go again', duration: 2000 },
-              () => {
-                goto('record');
-              }
-            );
-          },
-        },
-        right: {
-          text: 'press to submit',
-          onPress: () => {
-            controllers.update({
-              right: {
-                text: 'submitting',
-              },
-            });
-            storage.persist(
-              recording.toJson(),
-              (error, uri) => {
-                if (error) return console.log(error);
-                viewer.events.off('tick', tick);
-                transition.enter({ text: 'Please take off your headset', duration: 2000 },
-                  () => {
-                    router.navigate(`/${uri.replace('.json', '')}`);
-                  }
-                );
-              }
-            );
-          },
-        },
-      });
-    });
-    audio.play();
-    viewer.events.on('tick', tick);
   });
+
+  await transition.exit();
+  controllers.update({
+    left: {
+      text: 'press to redo',
+      onPress: () => {
+        viewer.events.off('tick', tick);
+        transition.enter({ text: 'Okay, here we go again', duration: 2000 },
+          () => {
+            goto('record');
+          }
+        );
+      },
+    },
+    right: {
+      text: 'press to submit',
+      onPress: async () => {
+        controllers.update({
+          right: {
+            text: 'submitting',
+          },
+        });
+        let redirectUri;
+        const storing = storage.persist(recording.toJson())
+          .then((uri) => {
+            redirectUri = uri.replace('.json', '');
+          });
+        // TODO: avoid set timeout here:
+        setTimeout(() => {
+          viewer.events.off('tick', tick);
+        }, 2000);
+        audio.fadeOut();
+        await Promise.all([
+          storing,
+          transition.enter(
+            { text: 'Please take off your headset', duration: 2000 }
+          ),
+        ]);
+        router.navigate(`/${redirectUri}`);
+      },
+    },
+  });
+  audio.play();
+  viewer.events.on('tick', tick);
+
 
   return () => {
     Room.reset();
-    audio.fadeOut();
     playlist.destroy();
   };
 };
