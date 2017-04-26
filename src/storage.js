@@ -3,10 +3,12 @@ import fetch from 'unfetch';
 
 const uploader = new UniqueS3Uploader('https://ymm-recorder.puckey.studio/new/');
 
-const persist = (json, callback) => {
-  uploader.upload(json, (error, data) => {
-    if (error) return callback(error);
-    callback(null, data.uri);
+const persist = (json) => {
+  return new Promise((resolve, reject) => {
+    uploader.upload(json, (error, data) => {
+      if (error) return reject(error);
+      resolve(data.uri);
+    });
   });
 };
 
