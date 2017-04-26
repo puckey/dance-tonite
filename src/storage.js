@@ -10,15 +10,10 @@ const persist = (json, callback) => {
   });
 };
 
-const loadPlaylist = (filename, callback) => {
-  fetch(`public/playlists/${filename}`).then(
-    response => (response
-      .json()
-      .then((json) => {
-        callback(null, json);
-      })
-    ),
-  );
+const loadPlaylist = async (filename, callback) => {
+  const response = await fetch(`public/playlists/${filename}`);
+  const data = await response.json();
+  callback(null, data);
 };
 
 export default {
