@@ -16,6 +16,7 @@
     "mitt": "^1.1.0",
     "parse-bmfont-ascii": "^1.0.6",
     "three-bmfont-text": "^2.2.1",
+    "tweenr": "^2.2.1",
     "unfetch": "^2.1.2",
     "unique-s3-uploader": "0.0.2"
   },
@@ -25,7 +26,6 @@
     "babel-eslint": "^7.2.1",
     "babel-loader": "^6.2.3",
     "babel-plugin-transform-runtime": "^6.5.2",
-    "shifty": "^2.0.2",
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-runtime": "^6.5.0",

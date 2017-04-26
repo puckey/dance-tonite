@@ -1,4 +1,4 @@
-import { tween } from 'shifty';
+import tween from './utils/tween';
 import Orb from './orb';
 import viewer from './viewer';
 import props from './props';
@@ -29,30 +29,27 @@ const tick = dt => {
   floatingOrb.mesh.position.y = Math.sin(time * 2) / 4 + 2;
 };
 
+const tweenFog = (from, to, callback) => {
+  viewer.scene.fog.far = from;
+  const tweener = tween(
+    viewer.scene.fog,
+    {
+      far: to,
+      ease: 'easeOutCubic',
+      duration: 2,
+    }
+  );
+  if (callback) {
+    tweener.on('complete', callback);
+  }
+};
+
 const fadeOut = callback => {
-  tween({
-    from: { far: 25 },
-    to: { far: 0 },
-    duration: 2000,
-    easing: 'easeOutCubic',
-    step: ({ far }) => {
-      viewer.scene.fog.far = far;
-    },
-  }).then(callback);
+  tweenFog(25, 0, callback);
 };
 
 const fadeIn = (maxFogDistance, callback) => {
-  tween({
-    from: { far: 0 },
-    to: { far: maxFogDistance },
-    duration: 2000,
-    easing: 'easeOutCubic',
-    step: ({ far }) => {
-      viewer.scene.fog.far = far;
-    },
-  }).then(() => {
-    if (callback) callback();
-  });
+  tweenFog(0, maxFogDistance, callback);
 };
 
 export default {
