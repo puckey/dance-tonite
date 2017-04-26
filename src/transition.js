@@ -6,7 +6,6 @@ import * as SDFText from './sdftext';
 import * as THREE from './lib/three';
 import { offsetFrom } from './utils/three';
 import settings from './settings';
-import sleep from './utils/async';
 
 // Scene storage
 const transitionScene = new THREE.Scene();
@@ -81,7 +80,7 @@ export default {
     }, param.duration);
   },
   async exit(callback) {
-    fadeIn(300);
-    callback();
+    await fadeIn(300);
+    if (callback) callback();
   },
 };
