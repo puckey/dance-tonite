@@ -36,20 +36,17 @@ export default (goto) => {
     right: {
       text: 'press to start',
       removeOnPress: true,
-      onPress: () => {
+      onPress: async () => {
         // TODO: preload audio
-        audio.load(
-          {
-            src: `/public/sound/room-${recording.room}.ogg`,
-            loops: 2,
-          },
-          loadError => {
-            if (loadError) throw loadError;
-
-            audio.play();
-            viewer.events.on('tick', tick);
-          }
-        );
+        await audio.load({
+          src: `/public/sound/room-${recording.room}.ogg`,
+          loops: 2,
+        });
+        instructions.add();
+        await instructions.beginCountdown(8);
+        audio.play();
+        viewer.events.on('tick', tick);
+        instructions.remove();
       },
     },
   };
@@ -67,7 +64,7 @@ export default (goto) => {
           controllers.update(pressToFinish);
         }
         instructions.add();
-        instructions.beginCountdown( audio.loopDuration );
+        instructions.beginCountdown(audio.loopDuration);
       },
     },
     {
