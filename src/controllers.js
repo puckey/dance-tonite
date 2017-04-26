@@ -1,6 +1,7 @@
 import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
+import settings from './settings';
 
 const [leftController, rightController] = viewer.controllers;
 
@@ -12,13 +13,13 @@ const rText = textCreator.create('', {
   wrapWidth: 800,
   scale: 0.5,
   align: 'left',
-  color: 0xffff07
+  color: settings.textColor
 });
 const lText = textCreator.create('', {
   wrapWidth: 800,
   scale: 0.5,
   align: 'right',
-  color: 0xffff07
+  color: settings.textColor
 });
 rhand.add(rText);
 lhand.add(lText);

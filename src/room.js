@@ -6,7 +6,9 @@ import viewer from './viewer';
 import settings from './settings';
 import audio from './audio';
 import { getCostumeColor, getRoomColor } from './theme/colors';
-import streamJson from './stream-json';
+import streamJSON from './lib/stream-json';
+
+const PROTOCOL = location.protocol;
 
 const PERFORMANCE_ELEMENT_COUNT = 21;
 const LIMB_ELEMENT_COUNT = 7;
@@ -86,14 +88,24 @@ export default class Room {
   }
 
   load(callback) {
-    const streamer = streamJson(this.url, callback);
-    streamer.on('meta', (meta) => {
-      let { hideHead, count } = meta;
-      this.frames = streamer.frames;
-      this.showHead = !hideHead;
-      this.layerCount = count;
-      this.createMeshes();
-    });
+    const frames = [];
+    streamJSON(`${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.url}`,
+      (error, json) => {
+        if (error || !json) {
+          return callback(error);
+        }
+        if (!this.frames) {
+          // First JSON is meta object:
+          const meta = JSON.parse(json);
+          this.frames = frames;
+          this.showHead = !meta.hideHead;
+          this.layerCount = meta.count;
+          this.createMeshes();
+        } else {
+          frames.push(json);
+        }
+      }
+    );
   }
 
   updatePosition() {

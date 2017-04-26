@@ -1,4 +1,4 @@
-import { tween } from 'shifty';
+import tween from './utils/tween';
 
 import props from './props';
 import viewer from './viewer';
@@ -18,16 +18,13 @@ export default class Orb {
   }
 
   _fade(from, to) {
-    this.mesh.material.color.copy(from);
-    tween({
-      from,
-      to,
-      duration: 2000,
-      easing: 'easeOutCubic',
-      step: color => {
-        this.mesh.material.color.copy(color);
-      },
-    });
+    tween(
+      this.mesh.material.color.copy(from),
+      Object.assign({
+        ease: 'easeOutCubic',
+        duration: 2,
+      }, to)
+    );
   }
 
   fadeOut() {

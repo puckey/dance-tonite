@@ -65,7 +65,8 @@ const mount = (req) => {
     orb.move(z);
   };
 
-  hud.showLoader('Loading performances...');
+  moveCamera(0);
+
   playlist = new Playlist({
     url: 'curated.json',
     pathRecording: req.params.id,
@@ -78,7 +79,6 @@ const mount = (req) => {
     moveCamera(audio.progress);
   };
 
-  hud.showLoader('Spinning up the track...');
   audio.load({
     src: audioSrc,
     loops: loopCount,

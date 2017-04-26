@@ -8,6 +8,7 @@ import { Color } from '../../lib/three';
 import createTimeline from '../../lib/timeline';
 import controllers from '../../controllers';
 import transition from '../../transition';
+import instructions from '../../instructions';
 
 const RECORD_COLOR = new Color(0x55b848);
 const WAIT_COLOR = new Color(0xcccccc);
@@ -44,8 +45,13 @@ export default (goto) => {
           },
           loadError => {
             if (loadError) throw loadError;
-            audio.play();
-            viewer.events.on('tick', tick);
+
+            instructions.add();
+            instructions.beginCountdown(8).then(() => {
+              audio.play();
+              viewer.events.on('tick', tick);
+              instructions.remove();
+            });
           }
         );
       },

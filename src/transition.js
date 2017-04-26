@@ -1,4 +1,4 @@
-import { tween } from 'shifty';
+import tween from './utils/tween';
 import Orb from './orb';
 import viewer from './viewer';
 import props from './props';
@@ -24,33 +24,35 @@ transitionScene.add(props.grid);
 
 let time = 0;
 let floatingOrb;
+
+const sleep = (duration = 0) => new Promise(r => setTimeout(r, duration));
+
 const tick = dt => {
   time += dt;
   floatingOrb.mesh.position.y = Math.sin(time * 2) / 4 + 2;
 };
 
-const fadeOut = async () => {
-  await tween({
-    from: { far: 25 },
-    to: { far: 0 },
-    duration: 2000,
-    easing: 'easeOutCubic',
-    step: ({ far }) => {
-      viewer.scene.fog.far = far;
-    },
+const tweenFog = (from, to) => {
+  viewer.scene.fog.far = from;
+  const tweener = tween(
+    viewer.scene.fog,
+    {
+      far: to,
+      ease: 'easeOutCubic',
+      duration: 2,
+    }
+  );
+  return new Promise(resolve => {
+    tweener.on('complete', resolve);
   });
 };
 
+const fadeOut = async () => {
+  await tweenFog(25, 0);
+};
+
 const fadeIn = async maxFogDistance => {
-  tween({
-    from: { far: 0 },
-    to: { far: maxFogDistance },
-    duration: 2000,
-    easing: 'easeOutCubic',
-    step: ({ far }) => {
-      viewer.scene.fog.far = far;
-    },
-  });
+  await tweenFog(0, maxFogDistance);
 };
 
 export default {
@@ -69,18 +71,18 @@ export default {
     floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
     floatingOrb.mesh.scale.set(4, 4, 4);
 
+    // Welcome to The Transition Space
     await fadeIn(25);
+    await sleep(param.duration);
+    await fadeOut();
 
-    setTimeout(async () => {
-      await fadeOut();
-      // Flip the scenes again
-      floatingOrb.destroy();
-      viewer.scene = mainScene;
-      callback();
-    }, param.duration);
+    // Flip the scenes again
+    floatingOrb.destroy();
+    viewer.scene = mainScene;
+    if (callback) callback();
   },
   async exit(callback) {
     fadeIn(300);
-    callback();
+    if (callback) callback();
   },
 };
