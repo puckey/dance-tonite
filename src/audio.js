@@ -1,3 +1,4 @@
+import fetch from 'unfetch';
 import emitter from 'mitt';
 import audioPool from './utils/audio-pool';
 import feature from './utils/feature';
@@ -45,7 +46,7 @@ const audio = Object.assign(emitter(), {
     lastTime = time;
   },
 
-  load(param, callback) {
+  async load(param, callback) {
     context = new AudioContext();
     gainNode = context.createGain();
 
@@ -82,25 +83,25 @@ const audio = Object.assign(emitter(), {
       audioElement.addEventListener('canplaythrough', onPlay);
     } else {
       source = context.createBufferSource();
-      request = new XMLHttpRequest();
-      request.open('GET', param.src, true);
-      request.responseType = 'arraybuffer';
-      request.onload = () => {
-        context.decodeAudioData(
-          request.response,
-          (response) => {
-            // Load the file into the buffer
-            source.buffer = response;
-            duration = source.buffer.duration;
-            source.loop = true;
-            source.start(0);
-            canPlay();
-          },
-          (err) => { callback(err); },
-        );
-      };
 
-      request.send();
+      let response;
+      try {
+        response = await fetch(param.src);
+      } catch (err) {
+        callback(err);
+      }
+      const buffer = await response.arrayBuffer();
+
+      context.decodeAudioData(
+        buffer,
+        decodedBuffer => {
+          source.buffer = decodedBuffer;
+          duration = source.buffer.duration;
+          source.loop = true;
+          source.start(0);
+          canPlay();
+        }
+      );
     }
 
     source.connect(gainNode);
