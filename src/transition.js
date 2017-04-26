@@ -5,6 +5,7 @@ import props from './props';
 import * as SDFText from './sdftext';
 import * as THREE from './lib/three';
 import { offsetFrom } from './utils/three';
+import sleep from './utils/async';
 
 // Scene storage
 const transitionScene = new THREE.Scene();
@@ -24,8 +25,6 @@ transitionScene.add(props.grid);
 
 let time = 0;
 let floatingOrb;
-
-const sleep = (duration = 0) => new Promise(r => setTimeout(r, duration));
 
 const tick = dt => {
   time += dt;
