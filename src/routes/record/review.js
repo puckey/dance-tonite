@@ -1,4 +1,4 @@
-import Orb from '../../orb';
+import * as THREE from '../../lib/three';
 import audio from '../../audio';
 import Playlist from '../../playlist';
 import viewer from '../../viewer';
@@ -9,16 +9,28 @@ import router from '../../router';
 import controllers from '../../controllers';
 import transition from '../../transition';
 import Room from '../../room';
+import { tempVector } from '../../utils/three';
 
 const { roomDepth, roomOffset } = settings;
+const MATRIX = new THREE.Matrix4();
+const POSITION = new THREE.Vector3();
+const ROTATION = new THREE.Quaternion();
+const SCALE = new THREE.Vector3();
 
 export default (goto) => {
-  const orb = new Orb();
 
   const moveCamera = (progress) => {
-    const z = ((progress - 1.5) * roomDepth) + roomOffset;
-    viewer.camera.position.set(0, 1.6, z);
-    orb.move(z);
+    const zPos = ((progress - 1.5) * roomDepth) + roomOffset;
+    const fixedPosition = tempVector(0, 1.6, zPos);
+
+    // Move controllers relative to fixed camera:
+    viewer.controllers.forEach(controller => {
+      controller.matrix.decompose(POSITION, ROTATION, SCALE);
+      const { x, y, z } = POSITION.add(fixedPosition).sub(viewer.camera.position);
+      controller.matrix.copyPosition(MATRIX.makeTranslation(x, y, z));
+    });
+
+    viewer.camera.position.copy(fixedPosition);
   };
 
   moveCamera(0);
@@ -78,7 +90,6 @@ export default (goto) => {
   return () => {
     Room.reset();
     audio.fadeOut();
-    orb.destroy();
     playlist.destroy();
   };
 };

@@ -34,7 +34,7 @@ const cameras = (function () {
     1000,
   );
   orthographic.position.set(-0.06, 0.08, -0.08);
-  orthographic.lookAt(tempVector(0, 0, 0));
+  orthographic.lookAt(tempVector());
 
   return { default: perspective, orthographic };
 }());

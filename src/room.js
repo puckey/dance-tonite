@@ -109,7 +109,7 @@ export default class Room {
   }
 
   updatePosition() {
-    const position = tempVector(0, 0, 0).add(this.position).add(roomOffset);
+    const position = tempVector().add(this.position).add(roomOffset);
     for (const i in roomMeshes) {
       roomMeshes[i].setPositionAt(this.index, position);
       roomMeshes[i].needsUpdate('position');
