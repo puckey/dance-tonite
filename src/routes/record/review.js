@@ -1,4 +1,3 @@
-import Orb from '../../orb';
 import audio from '../../audio';
 import Playlist from '../../playlist';
 import viewer from '../../viewer';
@@ -13,7 +12,6 @@ import Room from '../../room';
 const { roomDepth, roomOffset } = settings;
 
 export default (goto) => {
-  const orb = new Orb();
 
   const moveCamera = (progress) => {
     const z = ((progress - 1.5) * roomDepth) + roomOffset;
@@ -78,7 +76,6 @@ export default (goto) => {
   return () => {
     Room.reset();
     audio.fadeOut();
-    orb.destroy();
     playlist.destroy();
   };
 };
