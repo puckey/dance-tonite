@@ -93,6 +93,7 @@ export default async (goto) => {
   viewer.events.on('tick', tick);
   return () => {
     Room.reset();
+    audio.fadeOut();
     playlist.destroy();
   };
 };
