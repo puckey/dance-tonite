@@ -117,21 +117,17 @@ asyncMap(
     if (error) throw error;
     props.room = room;
 
+    props.room.material = new THREE.MeshLambertMaterial();
     textureLoader.load('public/models/obj/bake/baked_tpAmbient_cubeMesh.png', function( texture ){
-
-      // props.room.material = new THREE.MeshBasicMaterial({
-      //   map: texture
-      // });
-
-      // console.log( props.room.material );
-
       props.room.material.map = texture;
-      props.room.material.name = 'room material';
 
+      //  TODO / BUG / FIXME
+      //  if 'loaded' is fired before this, reloading record mode
+      //  will result in the room material to not have this texture
+      props.emit('loaded');
     });
 
     props.orthographicRoom = isometricRoom;
-    props.emit('loaded');
   },
 );
 

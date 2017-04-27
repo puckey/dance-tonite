@@ -3,3 +3,4 @@ node_modules
 dist
 .module-cache
 *.log*
+.mayaSwatches
