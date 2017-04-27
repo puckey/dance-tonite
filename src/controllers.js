@@ -52,13 +52,15 @@ export default {
 
     if (left) {
       lText.updateLabel(left.text);
-      if( left.removeOnPress ){
+      if( left.onPress ){
         showButton();
       }
+
       leftPress = () => {
         if (left.removeOnPress) {
           lText.updateLabel('');
           leftPress = null;
+          hideButton();
         }
         if (left.onPress) {
           left.onPress();
@@ -71,14 +73,15 @@ export default {
 
     if (right) {
       rText.updateLabel(right.text);
-      if( right.removeOnPress ){
+      if( right.onPress ){
         showButton();
       }
+
       rightPress = () => {
         if (right.removeOnPress) {
-          showButton();
           rText.updateLabel('');
           rightPress = null;
+          hideButton();
         }
         if (right.onPress) {
           right.onPress();

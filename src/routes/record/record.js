@@ -23,7 +23,6 @@ export default (goto) => {
       text: 'press to finish',
       removeOnPress: true,
       onPress: () => {
-        controllers.hideButton();
         transition.enter({ text: 'Let\'s review your performance', duration: 5000 },
           () => {
             goto('review');
@@ -38,7 +37,6 @@ export default (goto) => {
       text: 'press to start',
       removeOnPress: true,
       onPress: () => {
-        controllers.hideButton();
         // TODO: preload audio
         audio.load(
           {
