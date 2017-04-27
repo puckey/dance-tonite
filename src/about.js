@@ -10,7 +10,16 @@ const toggle = async () => {
   visible = !visible;
   document.body.classList[visible ? 'remove' : 'add']('mod-overflow-hidden');
   about.classList[visible ? 'remove' : 'add']('mod-hidden');
-  audio[visible ? 'pause' : 'play']();
+  if (visible) {
+    audio.fadeOut().then(() => {
+      if (visible) {
+        audio.pause();
+      }
+    });
+  } else {
+    audio.play();
+    audio.fadeIn(0.5);
+  }
   if (!fetched) {
     fetched = true;
     const response = await fetch(aboutSrc);

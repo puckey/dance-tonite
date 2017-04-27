@@ -8,13 +8,13 @@ import { Color } from './lib/three';
 const BLACK = new Color(0, 0, 0);
 
 export default class Orb {
-  constructor() {
+  constructor(scene) {
     this.mesh = props.sphere.clone();
     this.mesh.material = this.mesh.material.clone();
     const position = this.mesh.position;
     position.y = settings.holeHeight;
     position.z = 1000;
-    viewer.scene.add(this.mesh);
+    (scene || viewer.scene).add(this.mesh);
   }
 
   _fade(from, to) {

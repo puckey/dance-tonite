@@ -15,20 +15,33 @@ const WAIT_COLOR = new Color(0xcccccc);
 
 const { roomDepth, roomOffset } = settings;
 
-export default (goto) => {
-  transition.exit();
+export default async (goto) => {
+  const performFinish = async () => {
+    await transition.fadeOut();
+    goto('review');
+    await transition.enter({
+      text: 'Let\'s review your performance',
+    });
+  };
+
+  const performStart = async () => {
+    // TODO: preload audio
+    await audio.load({
+      src: `/public/sound/room-${recording.room}.ogg`,
+      loops: 2,
+    });
+    instructions.add();
+    await instructions.beginCountdown(8);
+    audio.play();
+    viewer.events.on('tick', tick);
+    instructions.remove();
+  };
 
   const pressToFinish = {
     right: {
       text: 'press to finish',
       removeOnPress: true,
-      onPress: () => {
-        transition.enter({ text: 'Let\'s review your performance', duration: 5000 },
-          () => {
-            goto('review');
-          }
-        );
-      },
+      onPress: performFinish,
     },
   };
 
@@ -36,22 +49,9 @@ export default (goto) => {
     right: {
       text: 'press to start',
       removeOnPress: true,
-      onPress: async () => {
-        // TODO: preload audio
-        await audio.load({
-          src: `/public/sound/room-${recording.room}.ogg`,
-          loops: 2,
-        });
-        instructions.add();
-        await instructions.beginCountdown(8);
-        audio.play();
-        viewer.events.on('tick', tick);
-        instructions.remove();
-      },
+      onPress: performStart,
     },
   };
-
-  controllers.update(pressToStart);
 
   const timeline = createTimeline([
     {
@@ -90,6 +90,10 @@ export default (goto) => {
     recording.tick();
   };
 
+  await transition.exit();
+
+  controllers.update(pressToStart);
+
   recording.reset();
   recording.room = Math.floor(Math.random() * settings.loopCount) + 1;
   viewer.camera.position.z = 0;
@@ -110,6 +114,8 @@ export default (goto) => {
     orb2.destroy();
     viewer.events.off('tick', tick);
   };
+
+  await performStart();
 
   return destroy;
 };
