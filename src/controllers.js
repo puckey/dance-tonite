@@ -39,10 +39,22 @@ rightController.addEventListener('thumbpaddown', () => {
   if (rightPress) rightPress();
 });
 
+function showButton(){
+  Props.thumbpadMaterial.visible = true;
+}
+
+function hideButton(){
+  Props.thumbpadMaterial.visible = false;
+}
+
 export default {
   update({ left, right } = {}) {
+
     if (left) {
       lText.updateLabel(left.text);
+      if( left.removeOnPress ){
+        showButton();
+      }
       leftPress = () => {
         if (left.removeOnPress) {
           lText.updateLabel('');
@@ -59,8 +71,12 @@ export default {
 
     if (right) {
       rText.updateLabel(right.text);
+      if( right.removeOnPress ){
+        showButton();
+      }
       rightPress = () => {
         if (right.removeOnPress) {
+          showButton();
           rText.updateLabel('');
           rightPress = null;
         }
@@ -84,4 +100,8 @@ export default {
     leftController.remove(lhand);
     rightController.remove(rhand);
   },
+
+  showButton,
+  hideButton
+
 };

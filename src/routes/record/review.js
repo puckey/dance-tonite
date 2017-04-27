@@ -47,10 +47,12 @@ export default (goto) => {
   }, (loadError) => {
     if (loadError) throw loadError;
     transition.exit(() => {
+      controllers.showButton();
       controllers.update({
         left: {
           text: 'press to redo',
           onPress: () => {
+            controllers.hideButton();
             viewer.events.off('tick', tick);
             transition.enter({ text: 'Okay, here we go again', duration: 2000 },
               () => {
@@ -62,6 +64,7 @@ export default (goto) => {
         right: {
           text: 'press to submit',
           onPress: () => {
+            controllers.hideButton();
             controllers.update({
               right: {
                 text: 'submitting',

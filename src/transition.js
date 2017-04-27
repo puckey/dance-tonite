@@ -5,6 +5,7 @@ import props from './props';
 import * as SDFText from './sdftext';
 import * as THREE from './lib/three';
 import { offsetFrom } from './utils/three';
+import settings from './settings';
 
 // Scene storage
 const transitionScene = new THREE.Scene();
@@ -13,10 +14,10 @@ let mainScene;
 // Set up stage
 const textCreator = SDFText.creator();
 const text = textCreator.create('', {
-  wrapWidth: 2000,
+  wrapWidth: 4000,
   scale: 15,
   align: 'center',
-  color: 0xffff07,
+  color: settings.textColor,
 });
 
 transitionScene.add(text);

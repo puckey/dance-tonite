@@ -32,6 +32,9 @@ const loadObject = (url, callback) => {
   );
 };
 
+const thumbpadMaterial = new MeshLambertMaterial({ color: settings.textColor });
+const controllerMaterial = new MeshLambertMaterial({ color: settings.controllerColor });
+
 const props = Object.assign(emitter(), {
   hand: (function createHand() {
     const radius = 0.02;
@@ -54,7 +57,7 @@ const props = Object.assign(emitter(), {
     const segments = 32;
     const cylinder = new Mesh(
       new CylinderBufferGeometry(radius, radius, height, segments),
-      new MeshLambertMaterial({ color: settings.controllerColor }),
+      controllerMaterial,
     );
     cylinder.rotation.x = Math.PI * 0.5 * 7;
     cylinder.updateMatrix();
@@ -63,7 +66,7 @@ const props = Object.assign(emitter(), {
     const thumbpadHeight = 0.02;
     const thumbpad = new THREE.Mesh(
       new CylinderBufferGeometry(thumbpadRadius, thumbpadRadius, thumbpadHeight, segments),
-      new MeshLambertMaterial({ color: settings.textColor })
+      thumbpadMaterial
     );
     thumbpad.position.z = -0.05;
     thumbpad.position.y = 0.01;
@@ -72,6 +75,7 @@ const props = Object.assign(emitter(), {
     const group = new Group();
 
     group.add(cylinder, thumbpad);
+
     return group;
   }()),
 
@@ -106,6 +110,8 @@ const props = Object.assign(emitter(), {
   grid: (function createGrid() {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
   }()),
+
+  thumbpadMaterial
 });
 
 const textureLoader = new TextureLoader();
