@@ -23,45 +23,54 @@ const text = textCreator.create('', {
 transitionScene.add(text);
 transitionScene.add(props.grid);
 
-let time = 0;
-let floatingOrb;
+const floatingOrb = new Orb(transitionScene);
 
-const tick = dt => {
+let time = 0;
+let fadedOut = false;
+let insideTransition = false;
+
+const tick = (dt) => {
   time += dt;
   floatingOrb.mesh.position.y = Math.sin(time * 2) / 4 + 2;
 };
 
-const tweenFog = (from, to) => {
-  viewer.scene.fog.far = from;
-  const tweener = tween(
-    viewer.scene.fog,
-    {
-      far: to,
-      ease: 'easeOutCubic',
-      duration: 2,
-    }
-  );
+const tweenFog = (from, to, duration = 2) => {
+  viewer.renderScene.fog.far = from;
   return new Promise(resolve => {
-    tweener.on('complete', resolve);
+    tween(
+      viewer.renderScene.fog,
+      {
+        far: to,
+        ease: 'easeOutCubic',
+        duration,
+      }
+    ).on('complete', resolve);
   });
 };
 
-const fadeOut = async () => {
-  await tweenFog(25, 0);
+const fadeOut = async (duration) => {
+  fadedOut = true;
+  await tweenFog(25, 0, duration);
 };
 
-const fadeIn = async maxFogDistance => {
-  await tweenFog(0, maxFogDistance);
+const fadeIn = async (maxFogDistance, duration) => {
+  fadedOut = false;
+  await tweenFog(0, maxFogDistance, duration);
 };
 
 export default {
-  async enter(param, callback) {
-    await fadeOut();
-    mainScene = viewer.scene;
-    viewer.scene = transitionScene;
-    viewer.scene.fog = new THREE.Fog(0x000000, 0, 0);
+  fadeOut,
 
-    floatingOrb = new Orb();
+  async enter(param) {
+    // If fadeOut wasn't called before enter:
+    if (!fadedOut) {
+      await fadeOut();
+    }
+    insideTransition = true;
+    mainScene = viewer.scene;
+    viewer.renderScene = transitionScene;
+    transitionScene.fog = new THREE.Fog(0x000000, 0, 0);
+
     floatingOrb.fadeIn();
     viewer.events.on('tick', tick);
     text.updateLabel(param.text);
@@ -69,19 +78,21 @@ export default {
     text.lookAt(viewer.camera.position);
     floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
     floatingOrb.mesh.scale.set(4, 4, 4);
-
-    // Welcome to The Transition Space
+    // Fade in the transition space:
     await fadeIn(25);
-    await sleep(param.duration);
-    await fadeOut();
-
-    // Flip the scenes again
-    floatingOrb.destroy();
-    viewer.scene = mainScene;
-    if (callback) callback();
   },
-  async exit(callback) {
-    await fadeIn(300);
-    if (callback) callback();
+
+  async exit({ immediate } = {}) {
+    if (!insideTransition) return;
+    if (!fadedOut) {
+      await fadeOut();
+    }
+    viewer.events.off('tick', tick);
+
+    // Switch scenes:
+    viewer.renderScene = mainScene;
+
+    insideTransition = false;
+    await fadeIn(300, immediate ? 0 : undefined);
   },
 };

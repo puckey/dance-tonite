@@ -8,27 +8,24 @@ import about from '../about';
 import titles from '../titles';
 import hud from '../hud';
 import feature from '../utils/feature';
+import sleep from '../utils/async';
 
 const { roomDepth, roomOffset, holeHeight } = settings;
 let progressBar;
 const loopCount = 16;
 
-const toggleVR = () => {
+const toggleVR = async () => {
   if (viewer.vrEffect.isPresenting) {
     hud.exitVR();
     viewer.vrEffect.exitPresent();
     viewer.switchCamera('orthographic');
   } else {
     hud.enterVR();
-    audio.fadeOut();
-    setTimeout(() => {
-      viewer.vrEffect.requestPresent().then(() => {
-        viewer.switchCamera('default');
-        setTimeout(() => {
-          audio.rewind();
-        }, 4000);
-      });
-    }, 600);
+    await audio.fadeOut();
+    await viewer.vrEffect.requestPresent();
+    viewer.switchCamera('default');
+    await sleep(4000);
+    audio.rewind();
   }
 };
 

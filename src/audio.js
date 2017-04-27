@@ -18,6 +18,8 @@ let onPlay;
 const FADE_OUT_SECONDS = 2;
 const ALMOST_ZERO = 1e-4;
 
+let scheduledTime;
+
 const audio = Object.assign(emitter(), {
   fill() {
     audioPool.fill();
@@ -140,13 +142,30 @@ const audio = Object.assign(emitter(), {
     }
   },
 
-  fadeOut() {
+  async fadeOut(fadeDuration = FADE_OUT_SECONDS) {
     if (!context) return;
-    gainNode.gain.cancelScheduledValues(context.currentTime);
+    if (scheduledTime) {
+      gainNode.gain.cancelScheduledValues(scheduledTime);
+    }
+    scheduledTime = context.currentTime;
     gainNode.gain.exponentialRampToValueAtTime(
       ALMOST_ZERO,
-      context.currentTime + FADE_OUT_SECONDS
+      scheduledTime + fadeDuration
     );
+    return sleep(fadeDuration * 1000);
+  },
+
+  async fadeIn(fadeDuration = FADE_OUT_SECONDS) {
+    if (!context) return;
+    if (scheduledTime) {
+      gainNode.gain.cancelScheduledValues(scheduledTime);
+    }
+    scheduledTime = context.currentTime;
+    gainNode.gain.exponentialRampToValueAtTime(
+      1,
+      scheduledTime + fadeDuration
+    );
+    return sleep(fadeDuration * 1000);
   },
 
   time: 0,

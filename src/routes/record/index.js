@@ -3,6 +3,8 @@ import review from './review';
 import controllers from '../../controllers';
 import instructions from '../../instructions';
 import viewer from '../../viewer';
+import router from '../../router';
+import transition from '../../transition';
 
 let unmountStep;
 
@@ -11,11 +13,18 @@ const components = {
   review,
 };
 
-const goto = (step) => {
+const goto = async (step) => {
   if (unmountStep) {
     unmountStep();
+    unmountStep = null;
   }
-  unmountStep = components[step](goto);
+  const component = components[step];
+  if (component) {
+    unmountStep = await components[step](goto);
+  } else {
+    transition.exit({ immediate: true });
+    router.navigate(step);
+  }
 };
 
 const toggleVR = () => {
@@ -42,7 +51,9 @@ export default {
   unmount: () => {
     controllers.remove();
     instructions.remove();
-    unmountStep();
-    unmountStep = null;
+    if (unmountStep) {
+      unmountStep();
+      unmountStep = null;
+    }
   },
 };
