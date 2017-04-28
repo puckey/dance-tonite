@@ -8,27 +8,24 @@ import about from '../about';
 import titles from '../titles';
 import hud from '../hud';
 import feature from '../utils/feature';
+import sleep from '../utils/async';
 
 const { roomDepth, roomOffset, holeHeight } = settings;
-const progressBar = document.querySelector('.audio-progress-bar');
+let progressBar;
 const loopCount = 16;
 
-const toggleVR = () => {
+const toggleVR = async () => {
   if (viewer.vrEffect.isPresenting) {
     hud.exitVR();
     viewer.vrEffect.exitPresent();
     viewer.switchCamera('orthographic');
   } else {
     hud.enterVR();
-    audio.fadeOut();
-    setTimeout(() => {
-      viewer.vrEffect.requestPresent().then(() => {
-        viewer.switchCamera('default');
-        setTimeout(() => {
-          audio.rewind();
-        }, 4000);
-      });
-    }, 600);
+    await audio.fadeOut();
+    await viewer.vrEffect.requestPresent();
+    viewer.switchCamera('default');
+    await sleep(4000);
+    audio.rewind();
   }
 };
 
@@ -43,67 +40,61 @@ const hudSettings = {
   colophon: true,
 };
 
-let mountComponent;
+let playClicked;
 if (feature.isMobile) {
-  hudSettings.playButton = function () {
-    audio.fill();
-    mountComponent();
-    this.classList.add('mod-hidden');
-  };
+  playClicked = new Promise((resolve) => {
+    hudSettings.playButton = function () {
+      audio.fill();
+      resolve();
+    };
+  });
 } else {
   audio.fill();
 }
 
-const mount = (req) => {
-  titles.mount();
-  viewer.switchCamera('orthographic');
-  orb = new Orb();
-
-  const moveCamera = (progress) => {
-    const z = ((progress - 1.5) * roomDepth) + roomOffset;
-    viewer.camera.position.set(0, holeHeight, z);
-    orb.move(z);
-  };
-
-  moveCamera(0);
-
-  playlist = new Playlist({
-    url: 'curated.json',
-    pathRecording: req.params.id,
-  });
-  tick = () => {
-    audio.tick();
-    playlist.tick();
-    titles.tick();
-    progressBar.style.transform = `scaleX(${audio.progress / loopCount})`;
-    moveCamera(audio.progress);
-  };
-
-  audio.load({
-    src: audioSrc,
-    loops: loopCount,
-    progressive: true,
-  }, (loadError) => {
-    if (loadError) throw loadError;
-    hud.hideLoader();
-    audio.play();
-    viewer.events.on('tick', tick);
-  });
-};
-
 export default {
   hud: hudSettings,
 
-  mount: (req) => {
-    if (feature.isMobile) {
-      if (feature.isMobile) {
-        mountComponent = () => {
-          mount(req);
-        };
-      }
-    } else {
-      mount(req);
+  mount: async (req) => {
+    if (!progressBar) {
+      progressBar = document.querySelector('.audio-progress-bar');
     }
+    if (feature.isMobile) {
+      await playClicked;
+    }
+    titles.mount();
+    viewer.switchCamera('orthographic');
+    orb = new Orb();
+
+    const moveCamera = (progress) => {
+      const z = ((progress - 1.5) * roomDepth) + roomOffset;
+      viewer.camera.position.set(0, holeHeight, z);
+      orb.move(z);
+    };
+
+    moveCamera(0);
+
+    playlist = new Playlist();
+    playlist.load({
+      url: 'curated.json',
+      pathRecording: req.params.id,
+    });
+    tick = () => {
+      audio.tick();
+      playlist.tick();
+      titles.tick();
+      progressBar.style.transform = `scaleX(${audio.progress / loopCount})`;
+      moveCamera(audio.progress);
+    };
+
+    await audio.load({
+      src: audioSrc,
+      loops: loopCount,
+      progressive: true,
+    });
+    audio.play();
+    hud.hideLoader();
+    viewer.events.on('tick', tick);
   },
 
   unmount: () => {

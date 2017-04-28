@@ -13,20 +13,20 @@ const rText = textCreator.create('', {
   wrapWidth: 1600,
   scale: 0.25,
   align: 'left',
-  color: settings.textColor
+  color: settings.textColor,
 });
 const lText = textCreator.create('', {
   wrapWidth: 1600,
   scale: 0.25,
   align: 'right',
-  color: settings.textColor
+  color: settings.textColor,
 });
 rhand.add(rText);
 lhand.add(lText);
 
 rText.rotation.x = lText.rotation.x = -Math.PI * 0.5;
-rText.position.set( 0.03, 0, -0.022 );
-lText.position.set(-0.12, 0, -0.022 );
+rText.position.set(0.03, 0, -0.022);
+lText.position.set(-0.12, 0, -0.022);
 
 let leftPress;
 let rightPress;
@@ -39,27 +39,25 @@ rightController.addEventListener('thumbpaddown', () => {
   if (rightPress) rightPress();
 });
 
-function showButton(){
+const showButton = () => {
   Props.thumbpadMaterial.visible = true;
-}
+};
 
-function hideButton(){
+const hideButton = () => {
   Props.thumbpadMaterial.visible = false;
-}
+};
 
 export default {
   update({ left, right } = {}) {
-
-    if( !left && !right ){
+    if (!left && !right) {
       hideButton();
     }
 
     if (left) {
       lText.updateLabel(left.text);
-      if( left.onPress ){
+      if (left.onPress) {
         showButton();
       }
-
       leftPress = () => {
         if (left.removeOnPress) {
           lText.updateLabel('');
@@ -77,10 +75,9 @@ export default {
 
     if (right) {
       rText.updateLabel(right.text);
-      if( right.onPress ){
+      if (right.onPress) {
         showButton();
       }
-
       rightPress = () => {
         if (right.removeOnPress) {
           rText.updateLabel('');
@@ -109,6 +106,5 @@ export default {
   },
 
   showButton,
-  hideButton
-
+  hideButton,
 };

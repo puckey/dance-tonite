@@ -15,20 +15,27 @@ const WAIT_COLOR = new Color(0xcccccc);
 
 const { roomDepth, roomOffset } = settings;
 
-export default (goto) => {
-  transition.exit();
+export default async (goto) => {
+  const performFinish = async () => {
+    await transition.fadeOut();
+    goto('review');
+    transition.enter({
+      text: 'Let’s review your performance',
+    });
+  };
+
+  const performStart = async () => {
+    audio.play();
+    audio.mute();
+    audio.fadeIn();
+    viewer.events.on('tick', tick);
+  };
 
   const pressToFinish = {
     right: {
       text: 'press to finish',
       removeOnPress: true,
-      onPress: () => {
-        transition.enter({ text: 'Let\'s review your performance', duration: 5000 },
-          () => {
-            goto('review');
-          }
-        );
-      },
+      onPress: performFinish,
     },
   };
 
@@ -36,25 +43,9 @@ export default (goto) => {
     right: {
       text: 'press to start',
       removeOnPress: true,
-      onPress: () => {
-        // TODO: preload audio
-        audio.load(
-          {
-            src: `/public/sound/room-${recording.room}.ogg`,
-            loops: 2,
-          },
-          loadError => {
-            if (loadError) throw loadError;
-
-            audio.play();
-            viewer.events.on('tick', tick);
-          }
-        );
-      },
+      onPress: performStart,
     },
   };
-
-  controllers.update(pressToStart);
 
   const timeline = createTimeline([
     {
@@ -66,14 +57,12 @@ export default (goto) => {
         if (audio.totalProgress > 1) {
           controllers.update(pressToFinish);
         }
-        instructions.add();
-        instructions.beginCountdown( audio.loopDuration );
+        instructions.beginCountdown(audio.loopDuration);
       },
     },
     {
       time: 1,
       callback: () => {
-        instructions.remove();
         room.changeColor(RECORD_COLOR);
         controllers.update();
       },
@@ -95,6 +84,15 @@ export default (goto) => {
 
   recording.reset();
   recording.room = Math.floor(Math.random() * settings.loopCount) + 1;
+
+  await audio.load({
+    src: `/public/sound/room-${recording.room}.ogg`,
+    loops: 2,
+  });
+  await transition.exit();
+
+  controllers.update(pressToStart);
+
   viewer.camera.position.z = 0;
   viewer.switchCamera('default');
 
@@ -104,15 +102,13 @@ export default (goto) => {
   const orb = new Orb();
   const orb2 = new Orb();
 
-  const destroy = () => {
+  return () => {
+    viewer.events.off('tick', tick);
     audio.reset();
     Room.reset();
     audio.fadeOut();
     room.destroy();
     orb.destroy();
     orb2.destroy();
-    viewer.events.off('tick', tick);
   };
-
-  return destroy;
 };

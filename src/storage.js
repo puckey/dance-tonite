@@ -3,22 +3,17 @@ import fetch from 'unfetch';
 
 const uploader = new UniqueS3Uploader('https://ymm-recorder.puckey.studio/new/');
 
-const persist = (json, callback) => {
+const persist = (json) => new Promise((resolve, reject) => {
   uploader.upload(json, (error, data) => {
-    if (error) return callback(error);
-    callback(null, data.uri);
+    if (error) return reject(error);
+    resolve(data.uri);
   });
-};
+});
 
-const loadPlaylist = (filename, callback) => {
-  fetch(`public/playlists/${filename}`).then(
-    response => (response
-      .json()
-      .then((json) => {
-        callback(null, json);
-      })
-    ),
-  );
+const loadPlaylist = async (filename) => {
+  const response = await fetch(`public/playlists/${filename}`);
+  const data = await response.json();
+  return data;
 };
 
 export default {
