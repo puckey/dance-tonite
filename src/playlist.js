@@ -1,3 +1,5 @@
+import asyncEach from 'async/eachLimit';
+
 import storage from './storage';
 import Room from './room';
 import audio from './audio';
