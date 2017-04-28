@@ -1,6 +1,7 @@
 import emitter from 'mitt';
 import audioPool from './utils/audio-pool';
 import feature from './utils/feature';
+import sleep from './utils/async';
 
 let context;
 let source;
@@ -10,9 +11,13 @@ let duration = 0;
 let lastTime = 0;
 let startTime;
 let audioElement;
-const ZERO = 1e-25;
 let request;
 let onPlay;
+
+const FADE_OUT_SECONDS = 2;
+const ALMOST_ZERO = 1e-4;
+
+let scheduledTime;
 
 const audio = Object.assign(emitter(), {
   fill() {
@@ -45,66 +50,61 @@ const audio = Object.assign(emitter(), {
     lastTime = time;
   },
 
-  load(param, callback) {
-    context = new AudioContext();
-    gainNode = context.createGain();
-
-    // Reset time, set loop count
-    lastTime = 0;
-    loopCount = param.loops === undefined
-      ? 1
-      : param.loops;
-    this.loopCount = 0;
-    const canPlay = () => {
-      this.loopDuration = duration / loopCount;
-      startTime = context.currentTime;
-
-      context.suspend();
-
-      if (callback) callback(null, param.src);
-
-      audio.emit('load', param.src);
-    };
-
-    if (param.progressive) {
-      audioElement = audioPool.get();
-      source = context.createMediaElementSource(audioElement);
-      audioElement.src = param.src;
-      audioElement.loop = true;
-      onPlay = () => {
-        duration = audioElement.duration;
-        audioElement.play();
-        canPlay();
+  load(param) {
+    return new Promise((resolve, reject) => {
+      context = new AudioContext();
+      gainNode = context.createGain();
+      // Reset time, set loop count
+      lastTime = 0;
+      loopCount = param.loops === undefined
+        ? 1
+        : param.loops;
+      this.loopCount = 0;
+      const canPlay = () => {
+        this.loopDuration = duration / loopCount;
+        startTime = context.currentTime;
+        context.suspend();
+        resolve(param.src);
       };
-      if (feature.isMobile) {
-        audioElement.play();
+
+      if (param.progressive) {
+        audioElement = audioPool.get();
+        source = context.createMediaElementSource(audioElement);
+        audioElement.src = param.src;
+        audioElement.loop = true;
+        onPlay = () => {
+          duration = audioElement.duration;
+          audioElement.play();
+          canPlay();
+        };
+        if (feature.isMobile) {
+          audioElement.play();
+        }
+        audioElement.addEventListener('canplaythrough', onPlay);
+      } else {
+        source = context.createBufferSource();
+        request = new XMLHttpRequest();
+        request.open('GET', param.src, true);
+        request.responseType = 'arraybuffer';
+        request.onload = () => {
+          context.decodeAudioData(
+            request.response,
+            (response) => {
+              // Load the file into the buffer
+              source.buffer = response;
+              duration = source.buffer.duration;
+              source.loop = true;
+              source.start(0);
+              canPlay();
+            },
+            reject
+          );
+        };
+        request.send();
       }
-      audioElement.addEventListener('canplaythrough', onPlay);
-    } else {
-      source = context.createBufferSource();
-      request = new XMLHttpRequest();
-      request.open('GET', param.src, true);
-      request.responseType = 'arraybuffer';
-      request.onload = () => {
-        context.decodeAudioData(
-          request.response,
-          (response) => {
-            // Load the file into the buffer
-            source.buffer = response;
-            duration = source.buffer.duration;
-            source.loop = true;
-            source.start(0);
-            canPlay();
-          },
-          (err) => { callback(err); },
-        );
-      };
-
-      request.send();
-    }
-
-    source.connect(gainNode);
-    gainNode.connect(context.destination);
+      source.connect(gainNode);
+      gainNode.connect(context.destination);
+    });
   },
 
   play() {
@@ -141,19 +141,34 @@ const audio = Object.assign(emitter(), {
     }
   },
 
-  fadeOut(callback) {
-    if (!context) return;
-    const fadeDuration = 2;
-    // Fade out the music in 2 seconds
-    gainNode.gain.exponentialRampToValueAtTime(
-      ZERO,
-      context.currentTime + fadeDuration,
-    );
+  mute() {
+    gainNode.gain.value = 0.001;
+  },
 
-    if (callback) {
-      setTimeout(callback, fadeDuration * 1000);
+  async fadeOut(fadeDuration = FADE_OUT_SECONDS) {
+    if (!context) return;
+    if (scheduledTime) {
+      gainNode.gain.cancelScheduledValues(scheduledTime);
     }
-    audio.emit('faded-out');
+    scheduledTime = context.currentTime;
+    gainNode.gain.exponentialRampToValueAtTime(
+      ALMOST_ZERO,
+      scheduledTime + fadeDuration
+    );
+    return sleep(fadeDuration * 1000);
+  },
+
+  async fadeIn(fadeDuration = FADE_OUT_SECONDS) {
+    if (!context) return;
+    if (scheduledTime) {
+      gainNode.gain.cancelScheduledValues(scheduledTime);
+    }
+    scheduledTime = context.currentTime;
+    gainNode.gain.exponentialRampToValueAtTime(
+      1,
+      scheduledTime + fadeDuration
+    );
+    return sleep(fadeDuration * 1000);
   },
 
   time: 0,

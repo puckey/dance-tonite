@@ -93,10 +93,13 @@ window.addEventListener('resize', () => {
     });
 }, false);
 
+const scene = createScene();
+
 const viewer = {
   camera: cameras.default,
   cameras,
-  scene: createScene(),
+  scene,
+  renderScene: scene,
   controllers: [controller1, controller2],
   controls,
   createScene,
@@ -123,7 +126,7 @@ const animate = () => {
   controller2.update();
   controls.update();
   events.emit('tick', dt);
-  vrEffect.render(viewer.scene, viewer.camera);
+  vrEffect.render(viewer.renderScene, viewer.camera);
   events.emit('render', dt);
 };
 

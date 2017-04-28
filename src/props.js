@@ -1,10 +1,9 @@
-import asyncMap from 'async/map';
 import emitter from 'mitt';
 
 import * as THREE from './lib/three';
 
 // import roomUrl from './public/models/obj/space-bigger-holes.obj';
-import roomUrl from './public/models/obj/space-bigger-holes-ao.obj';
+import roomUrl from './public/models/obj/space-bigger-holes-AO.obj';
 import isometricRoomUrl from './public/models/obj/space-isometric.obj';
 import settings from './settings';
 
@@ -21,16 +20,31 @@ const {
   SphereGeometry,
   GridHelper,
   Group,
-  Object3D,
 } = THREE;
 
-const loadObject = (url, callback) => {
-  new OBJLoader().load(url,
-    object => callback(null, object.children[0]),
-    () => {},
-    (err) => { callback(err); },
-  );
-};
+const loadObject = (url) => new Promise(
+  (resolve, reject) => {
+    new OBJLoader().load(url,
+      object => resolve(object.children[0]),
+      () => {},
+      reject,
+    );
+  }
+);
+
+const preloadTexture = (url) => new Promise(
+  (resolve, reject) => {
+    new TextureLoader().load(
+      url,
+      resolve,
+      () => {},
+      reject
+    );
+  }
+);
+
+const thumbpadMaterial = new MeshLambertMaterial({ color: settings.textColor });
+const controllerMaterial = new MeshLambertMaterial({ color: settings.controllerColor });
 
 const props = Object.assign(emitter(), {
   hand: (function createHand() {
@@ -54,7 +68,7 @@ const props = Object.assign(emitter(), {
     const segments = 32;
     const cylinder = new Mesh(
       new CylinderBufferGeometry(radius, radius, height, segments),
-      new MeshLambertMaterial({ color: settings.controllerColor }),
+      controllerMaterial,
     );
     cylinder.rotation.x = Math.PI * 0.5 * 7;
     cylinder.updateMatrix();
@@ -63,7 +77,7 @@ const props = Object.assign(emitter(), {
     const thumbpadHeight = 0.02;
     const thumbpad = new THREE.Mesh(
       new CylinderBufferGeometry(thumbpadRadius, thumbpadRadius, thumbpadHeight, segments),
-      new MeshLambertMaterial({ color: settings.textColor })
+      thumbpadMaterial
     );
     thumbpad.position.z = -0.05;
     thumbpad.position.y = 0.01;
@@ -72,6 +86,7 @@ const props = Object.assign(emitter(), {
     const group = new Group();
 
     group.add(cylinder, thumbpad);
+
     return group;
   }()),
 
@@ -106,33 +121,26 @@ const props = Object.assign(emitter(), {
   grid: (function createGrid() {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
   }()),
+
+  thumbpadMaterial,
 });
 
-const textureLoader = new TextureLoader();
+Promise.all([
+  loadObject(roomUrl),
+  loadObject(isometricRoomUrl),
+  preloadTexture('public/models/obj/bake/baked_tpAmbient_cubeMesh.png'),
+])
+  .then(([room, isometricRoom, texture]) => {
+    room.material = new THREE.MeshLambertMaterial();
+    room.material.map = texture;
 
-asyncMap(
-  [roomUrl, isometricRoomUrl],
-  loadObject,
-  (error, [room, isometricRoom]) => {
-    if (error) throw error;
     props.room = room;
-
-    textureLoader.load('public/models/obj/bake/baked_tpAmbient_cubeMesh.png', function( texture ){
-
-      // props.room.material = new THREE.MeshBasicMaterial({
-      //   map: texture
-      // });
-
-      // console.log( props.room.material );
-
-      props.room.material.map = texture;
-      props.room.material.name = 'room material';
-
-    });
-
     props.orthographicRoom = isometricRoom;
     props.emit('loaded');
-  },
-);
+  })
+  .catch((error) => {
+    // TODO: goto error screen
+    console.log(error);
+  });
 
 export default props;

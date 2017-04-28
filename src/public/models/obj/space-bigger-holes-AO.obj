@@ -828,7 +828,7 @@ vn 0.939693 0.342020 0.000000
 vn 0.939693 0.342020 0.000000
 s 1
 g TurtleDefaultBakeLayer cube
-usemtl ilrOccSampler1SG
+usemtl phong2SG
 f 29/29/1 20/20/2 28/28/3
 f 28/28/3 20/20/2 27/27/4
 f 20/20/2 21/21/5 27/27/4
