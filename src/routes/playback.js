@@ -21,11 +21,20 @@ const toggleVR = async () => {
     viewer.switchCamera('orthographic');
   } else {
     hud.enterVR();
+    // TODO: figure out if we can build in a timeout before entering vr:
+    viewer.vrEffect.requestPresent();
     await audio.fadeOut();
-    await viewer.vrEffect.requestPresent();
     viewer.switchCamera('default');
-    await sleep(4000);
-    audio.rewind();
+    await Promise.all([
+      sleep(4000),
+      // TODO: for some reason audio.rewind does not work here:
+      audio.load({
+        src: audioSrc,
+        loops: loopCount,
+        progressive: true,
+      }),
+    ]);
+    audio.play();
   }
 };
 
