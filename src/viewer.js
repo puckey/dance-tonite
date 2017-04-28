@@ -6,6 +6,7 @@ import h from 'hyperscript';
 import emitter from 'mitt';
 
 import * as THREE from './lib/three';
+import Stats from './lib/stats';
 import { tempVector } from './utils/three';
 import settings from './settings';
 import Room from './room';
@@ -17,6 +18,8 @@ require('./lib/ViveController')(THREE);
 const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
 const orthographicDistance = 4;
+
+const showStats = (window.location.hash.indexOf('fps') == -1) ? false : true;
 
 const cameras = (function () {
   const aspect = getWindowAspect();
@@ -95,6 +98,20 @@ window.addEventListener('resize', () => {
 
 const scene = createScene();
 
+let stats;
+const statsMeshOffsetPosition = new THREE.Vector3(0.3,0.15,1);
+
+if (showStats) {
+  stats = new Stats();
+  document.body.appendChild( stats.dom );
+
+  scene.add( stats.mesh );
+  stats.mesh.scale.set( 2.5, 2.5, 2.5 );
+  stats.mesh.rotation.set( 0.0, -Math.PI, 0 );
+}
+
+
+
 const viewer = {
   camera: cameras.default,
   cameras,
@@ -120,14 +137,17 @@ const clock = new THREE.Clock();
 clock.start();
 
 const animate = () => {
+  if (showStats) stats.begin();
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
   controller1.update();
   controller2.update();
   controls.update();
   events.emit('tick', dt);
+  if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
   vrEffect.render(viewer.renderScene, viewer.camera);
   events.emit('render', dt);
+  if (showStats) stats.end();
 };
 
 animate();
