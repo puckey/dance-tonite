@@ -1,4 +1,3 @@
-import fetch from 'unfetch';
 import emitter from 'mitt';
 import audioPool from './utils/audio-pool';
 import feature from './utils/feature';
