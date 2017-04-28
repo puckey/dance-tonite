@@ -39,13 +39,13 @@ rightController.addEventListener('thumbpaddown', () => {
   if (rightPress) rightPress();
 });
 
-function showButton() {
+const showButton = () => {
   Props.thumbpadMaterial.visible = true;
-}
+};
 
-function hideButton() {
+const hideButton = () => {
   Props.thumbpadMaterial.visible = false;
-}
+};
 
 export default {
   update({ left, right } = {}) {

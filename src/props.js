@@ -1,4 +1,3 @@
-import asyncMap from 'async/map';
 import emitter from 'mitt';
 
 import * as THREE from './lib/three';
@@ -23,26 +22,26 @@ const {
   Group,
 } = THREE;
 
-const loadObject = (url) => {
-  return new Promise((resolve, reject) => {
+const loadObject = (url) => new Promise(
+  (resolve, reject) => {
     new OBJLoader().load(url,
       object => resolve(object.children[0]),
       () => {},
       reject,
     );
-  });
-};
+  }
+);
 
-const preloadTexture = (url) => {
-  return new Promise((resolve, reject) => {
+const preloadTexture = (url) => new Promise(
+  (resolve, reject) => {
     new TextureLoader().load(
       url,
       resolve,
       () => {},
       reject
     );
-  });
-}
+  }
+);
 
 const thumbpadMaterial = new MeshLambertMaterial({ color: settings.textColor });
 const controllerMaterial = new MeshLambertMaterial({ color: settings.controllerColor });
