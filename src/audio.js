@@ -142,6 +142,10 @@ const audio = Object.assign(emitter(), {
     }
   },
 
+  mute() {
+    gainNode.gain.value = 0.001;
+  },
+
   async fadeOut(fadeDuration = FADE_OUT_SECONDS) {
     if (!context) return;
     if (scheduledTime) {

@@ -33,6 +33,8 @@ export default async (goto) => {
     instructions.add();
     await instructions.beginCountdown(8);
     audio.play();
+    audio.mute();
+    audio.fadeIn();
     viewer.events.on('tick', tick);
   };
 
