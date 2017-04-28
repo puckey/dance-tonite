@@ -21,16 +21,28 @@ const {
   SphereGeometry,
   GridHelper,
   Group,
-  Object3D,
 } = THREE;
 
-const loadObject = (url, callback) => {
-  new OBJLoader().load(url,
-    object => callback(null, object.children[0]),
-    () => {},
-    (err) => { callback(err); },
-  );
+const loadObject = (url) => {
+  return new Promise((resolve, reject) => {
+    new OBJLoader().load(url,
+      object => resolve(object.children[0]),
+      () => {},
+      reject,
+    );
+  });
 };
+
+const preloadTexture = (url) => {
+  return new Promise((resolve, reject) => {
+    new TextureLoader().load(
+      url,
+      resolve,
+      () => {},
+      reject
+    );
+  });
+}
 
 const thumbpadMaterial = new MeshLambertMaterial({ color: settings.textColor });
 const controllerMaterial = new MeshLambertMaterial({ color: settings.controllerColor });
@@ -111,30 +123,25 @@ const props = Object.assign(emitter(), {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
   }()),
 
-  thumbpadMaterial
+  thumbpadMaterial,
 });
 
-const textureLoader = new TextureLoader();
+Promise.all([
+  loadObject(roomUrl),
+  loadObject(isometricRoomUrl),
+  preloadTexture('public/models/obj/bake/baked_tpAmbient_cubeMesh.png'),
+])
+  .then(([room, isometricRoom, texture]) => {
+    room.material = new THREE.MeshLambertMaterial();
+    room.material.map = texture;
 
-asyncMap(
-  [roomUrl, isometricRoomUrl],
-  loadObject,
-  (error, [room, isometricRoom]) => {
-    if (error) throw error;
     props.room = room;
-
-    props.room.material = new THREE.MeshLambertMaterial();
-    textureLoader.load('public/models/obj/bake/baked_tpAmbient_cubeMesh.png', function( texture ){
-      props.room.material.map = texture;
-
-      //  TODO / BUG / FIXME
-      //  if 'loaded' is fired before this, reloading record mode
-      //  will result in the room material to not have this texture
-      props.emit('loaded');
-    });
-
     props.orthographicRoom = isometricRoom;
-  },
-);
+    props.emit('loaded');
+  })
+  .catch((error) => {
+    // TODO: goto error screen
+    console.log(error);
+  });
 
 export default props;
