@@ -132,7 +132,6 @@ export default class Room {
 
     if (frames.length <= frameNumber) return;
     let positions = frames[frameNumber];
-
     // TODO: figure out why we can't use just 'positions.length / PERFORMANCE_ELEMENT_COUNT' here:
     const count = this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
 
@@ -196,7 +195,7 @@ Room.reset = () => {
       count: num,
       geometry: props.room.geometry,
       color: getRoomColor,
-      material: props.room.material
+      material: props.room.material,
     }),
     orthographic: createInstancedMesh({
       count: num,

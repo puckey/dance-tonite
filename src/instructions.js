@@ -18,37 +18,37 @@ const subtext = textCreator.create('START IN', {
   scale: 2.25,
   align: 'center',
   color: textColor,
-  mode: 'nowrap'
+  mode: 'nowrap',
 });
 
 const mainText = textCreator.create('8', {
   scale: 7.5,
   align: 'center',
   color: textColor,
-  mode: 'nowrap'
+  mode: 'nowrap',
 });
 
 mainText.position.y = -0.65;
 
-group.add( subtext, mainText );
+group.add(subtext, mainText);
 
-group.position.set( 0, 2, -4 );
+group.position.set(0, 2, -4);
 
 const instructions = {
   add() {
-    scene.add( group );
+    scene.add(group);
   },
 
   remove() {
-    scene.remove( group );
+    scene.remove(group);
   },
 
-  setSubText( str ){
-    subtext.updateLabel( str );
+  setSubText(str) {
+    subtext.updateLabel(str);
   },
 
-  setMainText( str ){
-    mainText.updateLabel( str );
+  setMainText(str) {
+    mainText.updateLabel(str);
   },
 
   async beginCountdown(seconds) {
