@@ -46,12 +46,8 @@ export default (goto) => {
           loadError => {
             if (loadError) throw loadError;
 
-            instructions.add();
-            instructions.beginCountdown( 8 ).then( function(){
-              audio.play();
-              viewer.events.on('tick', tick);
-              instructions.remove();
-            });
+            audio.play();
+            viewer.events.on('tick', tick);
           }
         );
       },
@@ -70,11 +66,14 @@ export default (goto) => {
         if (audio.totalProgress > 1) {
           controllers.update(pressToFinish);
         }
+        instructions.add();
+        instructions.beginCountdown( audio.loopDuration );
       },
     },
     {
       time: 1,
       callback: () => {
+        instructions.remove();
         room.changeColor(RECORD_COLOR);
         controllers.update();
       },

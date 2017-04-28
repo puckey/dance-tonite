@@ -50,6 +50,10 @@ function hideButton(){
 export default {
   update({ left, right } = {}) {
 
+    if( !left && !right ){
+      hideButton();
+    }
+
     if (left) {
       lText.updateLabel(left.text);
       if( left.onPress ){

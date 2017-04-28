@@ -51,14 +51,15 @@ export default {
   },
 
   beginCountdown( seconds ){
-    mainText.updateLabel( seconds.toString() );
+    scene.add( group );
+    mainText.updateLabel( Math.floor( seconds ).toString() );
 
     return new Promise( function( resolve ){
       let secondsRemaining = seconds;
 
       let interval = window.setInterval( function(){
         secondsRemaining--;
-        mainText.updateLabel( secondsRemaining.toString() );
+        mainText.updateLabel( Math.floor( secondsRemaining ).toString() );
         if( secondsRemaining <= 0 ){
           window.clearInterval( interval );
           resolve();
