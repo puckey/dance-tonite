@@ -32,7 +32,6 @@ const moveCamera = (progress) => {
 };
 
 export default async (goto) => {
-  moveCamera(0);
   const playlist = new Playlist({ recording });
   const tick = () => {
     audio.tick();
@@ -41,6 +40,7 @@ export default async (goto) => {
   };
 
   const performSubmit = async () => {
+    controllers.update();
     const persisting = storage.persist(recording.toJson());
     audio.fadeOut();
     await transition.fadeOut();
@@ -52,7 +52,9 @@ export default async (goto) => {
       }),
       sleep(5000),
     ]);
+    await transition.fadeOut();
     goto(`/${uri.replace('.json', '')}`);
+    transition.exit({ immediate: true });
   };
 
   const performRedo = async () => {
@@ -75,22 +77,24 @@ export default async (goto) => {
       sleep(5000),
     ]
   );
-
-  await transition.exit();
-
+  await transition.fadeOut();
+  audio.play();
+  viewer.events.on('tick', tick);
+  controllers.showButton();
   controllers.update({
     left: {
       text: 'press to redo',
       onPress: performRedo,
+      removeOnPress: true,
     },
     right: {
       text: 'press to submit',
       onPress: performSubmit,
+      removeOnPress: true,
     },
   });
+  transition.exit();
 
-  audio.play();
-  viewer.events.on('tick', tick);
   return () => {
     Room.reset();
     audio.fadeOut();

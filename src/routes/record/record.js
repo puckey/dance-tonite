@@ -25,13 +25,6 @@ export default async (goto) => {
   };
 
   const performStart = async () => {
-    // TODO: preload audio
-    await audio.load({
-      src: `/public/sound/room-${recording.room}.ogg`,
-      loops: 2,
-    });
-    instructions.add();
-    await instructions.beginCountdown(8);
     audio.play();
     audio.mute();
     audio.fadeIn();
@@ -89,12 +82,17 @@ export default async (goto) => {
     recording.tick();
   };
 
+  recording.reset();
+  recording.room = Math.floor(Math.random() * settings.loopCount) + 1;
+
+  await audio.load({
+    src: `/public/sound/room-${recording.room}.ogg`,
+    loops: 2,
+  });
   await transition.exit();
 
   controllers.update(pressToStart);
 
-  recording.reset();
-  recording.room = Math.floor(Math.random() * settings.loopCount) + 1;
   viewer.camera.position.z = 0;
   viewer.switchCamera('default');
 
@@ -104,17 +102,13 @@ export default async (goto) => {
   const orb = new Orb();
   const orb2 = new Orb();
 
-  const destroy = () => {
+  return () => {
+    viewer.events.off('tick', tick);
     audio.reset();
     Room.reset();
     audio.fadeOut();
     room.destroy();
     orb.destroy();
     orb2.destroy();
-    viewer.events.off('tick', tick);
   };
-
-  await performStart();
-
-  return destroy;
 };

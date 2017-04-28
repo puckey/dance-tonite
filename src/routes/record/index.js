@@ -22,7 +22,6 @@ const goto = async (step) => {
   if (component) {
     unmountStep = await components[step](goto);
   } else {
-    transition.exit({ immediate: true });
     router.navigate(step);
   }
 };
