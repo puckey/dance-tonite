@@ -2,6 +2,7 @@ import { Group } from './lib/three';
 import * as SDFText from './sdftext';
 import viewer from './viewer';
 import settings from './settings';
+import sleep from './utils/async';
 
 const { scene } = viewer;
 const textCreator = SDFText.creator();
@@ -33,7 +34,7 @@ group.add( subtext, mainText );
 
 group.position.set( 0, 2, -4 );
 
-export default {
+const instructions = {
   add() {
     scene.add( group );
   },
@@ -50,21 +51,17 @@ export default {
     mainText.updateLabel( str );
   },
 
-  beginCountdown( seconds ){
-    scene.add( group );
-    mainText.updateLabel( Math.floor( seconds ).toString() );
-
-    return new Promise( function( resolve ){
-      let secondsRemaining = seconds;
-
-      let interval = window.setInterval( function(){
-        secondsRemaining--;
-        mainText.updateLabel( Math.floor( secondsRemaining ).toString() );
-        if( secondsRemaining <= 0 ){
-          window.clearInterval( interval );
-          resolve();
-        }
-      }, 1000 );
-    });
-  }
+  async beginCountdown(seconds) {
+    instructions.add();
+    let remaining = seconds;
+    while (remaining > 0) {
+      instructions.setMainText(Math.floor(remaining).toString());
+      const pause = 1 + remaining % 1;
+      remaining -= pause;
+      await sleep(pause * 1000);
+    }
+    instructions.remove();
+  },
 };
+
+export default instructions;

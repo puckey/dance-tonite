@@ -34,7 +34,6 @@ export default async (goto) => {
     await instructions.beginCountdown(8);
     audio.play();
     viewer.events.on('tick', tick);
-    instructions.remove();
   };
 
   const pressToFinish = {
@@ -63,14 +62,12 @@ export default async (goto) => {
         if (audio.totalProgress > 1) {
           controllers.update(pressToFinish);
         }
-        instructions.add();
         instructions.beginCountdown(audio.loopDuration);
       },
     },
     {
       time: 1,
       callback: () => {
-        instructions.remove();
         room.changeColor(RECORD_COLOR);
         controllers.update();
       },
