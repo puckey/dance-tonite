@@ -19,8 +19,8 @@ export default async (goto) => {
   const performFinish = async () => {
     await transition.fadeOut();
     goto('review');
-    await transition.enter({
-      text: 'Let\'s review your performance',
+    transition.enter({
+      text: 'Let’s review your performance',
     });
   };
 
