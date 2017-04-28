@@ -3,7 +3,7 @@ import emitter from 'mitt';
 import * as THREE from './lib/three';
 
 // import roomUrl from './public/models/obj/space-bigger-holes.obj';
-import roomUrl from './public/models/obj/space-bigger-holes-ao.obj';
+import roomUrl from './public/models/obj/space-bigger-holes-AO.obj';
 import isometricRoomUrl from './public/models/obj/space-isometric.obj';
 import settings from './settings';
 
