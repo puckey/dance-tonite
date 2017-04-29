@@ -53,6 +53,7 @@ let playClicked;
 if (feature.isMobile) {
   playClicked = new Promise((resolve) => {
     hudSettings.playButton = function () {
+      this.classList.add('mod-hidden');
       audio.fill();
       resolve();
     };
