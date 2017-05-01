@@ -93,6 +93,11 @@ export default {
     viewer.renderScene = mainScene;
 
     insideTransition = false;
-    await fadeIn(300, immediate ? 0 : undefined);
+    const far = 300;
+    if (immediate) {
+      viewer.renderScene.fog.far = far;
+    } else {
+      await fadeIn(far);
+    }
   },
 };
