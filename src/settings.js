@@ -11,5 +11,5 @@ export default {
   sphereColor: new Color(1, 1, 0),
   loopCount: 13,
   controllerColor: '#ff0000',
-  textColor: '#ffff07'
+  textColor: '#ffff07',
 };
