@@ -5,21 +5,21 @@ const green = new Color(0x55b848);
 const red = new Color(0xef4f36);
 const orange = new Color(0xe9ad21);
 const purple = new Color(0xcc44b9);
-const teal = new Color(0x40a598);
+const blue = new Color(0x40a598);
 const pink = new Color(0xc95fbf);
 
 const pairs = ([
   [green, red],
   [orange, purple],
-  [teal, red],
+  [blue, red],
   [pink, orange],
-  [red, teal],
+  [red, blue],
   [green, purple],
-  [orange, teal],
+  [orange, blue],
   [pink, green],
-  [teal, orange],
+  [blue, orange],
   [green, red],
-  [pink, teal],
+  [pink, blue],
   [red, orange],
 ]);
 
@@ -27,7 +27,7 @@ const pairCount = pairs.length;
 
 export const getRoomColor = roomIndex => pairs[roomIndex % pairCount][0];
 export const getCostumeColor = roomIndex => pairs[roomIndex % pairCount][1];
-export const namedColors = { green, red, orange, purple, teal, pink };
+export const namedColors = { green, red, orange, purple, blue, pink };
 
 const pairColor = (color) => pairs.filter(
   ([controllerColor]) => controllerColor === color
