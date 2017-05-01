@@ -96,6 +96,7 @@ export default async (goto) => {
   transition.exit();
 
   return () => {
+    controllers.remove();
     Room.reset();
     audio.fadeOut();
     playlist.destroy();

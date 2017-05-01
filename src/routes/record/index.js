@@ -48,7 +48,6 @@ export default {
   },
 
   unmount: () => {
-    controllers.remove();
     instructions.remove();
     if (unmountStep) {
       unmountStep();
