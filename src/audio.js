@@ -3,6 +3,8 @@ import audioPool from './utils/audio-pool';
 import feature from './utils/feature';
 import { sleep } from './utils/async';
 
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+
 let context;
 let source;
 let gainNode;
@@ -48,7 +50,7 @@ const audio = Object.assign(emitter(), {
 
   load(param) {
     return new Promise((resolve, reject) => {
-      context = new (window.AudioContext || window.webkitAudioContext)();
+      context = new AudioContext();
       gainNode = context.createGain();
       // Reset time, set loop count
       lastTime = 0;
