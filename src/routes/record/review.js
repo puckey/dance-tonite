@@ -41,7 +41,7 @@ export default async (goto) => {
 
   const performSubmit = async () => {
     controllers.update();
-    const persisting = storage.persist(recording.toJson());
+    const persisting = storage.persist(recording.serialize());
     audio.fadeOut();
     await transition.fadeOut();
     viewer.events.off('tick', tick);

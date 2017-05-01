@@ -49,10 +49,10 @@ const recording = {
     stopped = true;
   },
 
-  toJson() {
-    return JSON.stringify([{
+  serialize() {
+    return `${JSON.stringify([{
       count: this.frames[0].length / 21,
-    }].concat(this.frames));
+    }])}\n${this.frames.join('\n')}`;
   },
 
   reset() {
