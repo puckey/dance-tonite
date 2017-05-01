@@ -50,9 +50,10 @@ const recording = {
   },
 
   serialize() {
-    return `${JSON.stringify([{
-      count: this.frames[0].length / 21,
-    }])}\n${this.frames.join('\n')}`;
+    return [{ count: this.frames[0].length / 21 }]
+      .concat(this.frames)
+      .map(JSON.stringify)
+      .join('\n');
   },
 
   reset() {
