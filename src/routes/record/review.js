@@ -19,7 +19,7 @@ const SCALE = new THREE.Vector3();
 
 const moveCamera = (progress) => {
   const zPos = roomOffset + ((progress - 1.5) * roomDepth);
-  const fixedPosition = tempVector(0, settings.holeHeight, zPos);
+  const fixedPosition = tempVector(0, settings.holeHeight, -zPos);
 
   // Move controllers relative to fixed camera:
   viewer.controllers.forEach(controller => {
@@ -32,6 +32,7 @@ const moveCamera = (progress) => {
 };
 
 export default async (goto) => {
+  Room.rotate180();
   const playlist = new Playlist({ recording });
   const tick = () => {
     audio.tick();

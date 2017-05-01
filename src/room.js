@@ -19,6 +19,14 @@ let roomMesh;
 let roomMeshes;
 
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
+const roomsGroup = new THREE.Group();
+roomsGroup.matrixAutoUpdate = false;
+
+const ROTATION_MATRIX = new THREE.Matrix4().makeRotationAxis(
+  new THREE.Vector3(0, 1, 0).normalize(),
+  Math.PI
+);
+const IDENTITY_MATRIX = new THREE.Matrix4();
 
 const transformMesh = (
   instancedMesh,
@@ -77,7 +85,7 @@ export default class Room {
       geometry: props.hand.geometry,
       color,
     });
-    viewer.scene.add(this.handMesh);
+    roomsGroup.add(this.handMesh);
 
     if (this.showHead) {
       this.headMesh = createInstancedMesh({
@@ -85,7 +93,7 @@ export default class Room {
         geometry: props.head.geometry,
         color,
       });
-      viewer.scene.add(this.headMesh);
+      roomsGroup.add(this.headMesh);
     }
   }
 
@@ -178,19 +186,20 @@ export default class Room {
   }
 
   destroy() {
-    viewer.scene.remove(this.headMesh);
-    viewer.scene.remove(this.handMesh);
+    roomsGroup.remove(this.headMesh);
+    roomsGroup.remove(this.handMesh);
   }
 }
 
 Room.switchModel = (model) => {
-  viewer.scene.remove(roomMesh);
+  roomsGroup.remove(roomMesh);
   roomMesh = roomMeshes[model];
-  viewer.scene.add(roomMesh);
+  roomsGroup.add(roomMesh);
 };
 
 Room.reset = () => {
-  if (roomMesh) viewer.scene.remove(roomMesh);
+  roomsGroup.matrix.copy(IDENTITY_MATRIX);
+  if (roomMesh) roomsGroup.remove(roomMesh);
   roomIndex = 0;
   roomMeshes = {
     default: createInstancedMesh({
@@ -206,7 +215,12 @@ Room.reset = () => {
     }),
   };
   roomMesh = roomMeshes.default;
-  viewer.scene.add(roomMesh);
+  roomsGroup.add(roomMesh);
+  viewer.scene.add(roomsGroup);
+};
+
+Room.rotate180 = () => {
+  roomsGroup.matrix.copy(ROTATION_MATRIX);
 };
 
 props.on('loaded', Room.reset);

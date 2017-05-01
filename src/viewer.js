@@ -36,7 +36,7 @@ const cameras = (function () {
     -100,
     1000,
   );
-  orthographic.position.set(-0.06, 0.08, -0.08);
+  orthographic.position.set(0.06, 0.08, 0.08);
   orthographic.lookAt(tempVector());
 
   return { default: perspective, orthographic };
@@ -67,7 +67,7 @@ controller2.standingMatrix = controls.getStandingMatrix();
 const createScene = () => {
   const scene = new THREE.Scene();
   const light = new THREE.DirectionalLight(0xffffff);
-  light.position.set(1, 0.75, -1).normalize();
+  light.position.set(-1, 0.75, 1).normalize();
   scene.add(new THREE.HemisphereLight(0x606060, 0x404040));
   scene.add(light);
   scene.add(controller1, controller2);

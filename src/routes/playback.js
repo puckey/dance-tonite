@@ -11,6 +11,7 @@ import titles from '../titles';
 import hud from '../hud';
 import feature from '../utils/feature';
 import { sleep } from '../utils/async';
+import Room from '../room';
 
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { roomDepth, roomOffset, holeHeight } = settings;
@@ -76,12 +77,13 @@ export default {
 
     const moveCamera = (progress) => {
       const z = ((progress - 1.5) * roomDepth) + roomOffset;
-      viewer.camera.position.set(0, holeHeight, z);
-      orb.move(z);
+      viewer.camera.position.set(0, holeHeight, -z);
+      orb.move(-z);
     };
 
     moveCamera(0);
 
+    Room.rotate180();
     playlist = new Playlist();
     playlist.load({
       url: 'curated.json',
