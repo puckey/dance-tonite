@@ -27,7 +27,7 @@ const defaultState = {
   colophon: false,
 };
 
-const state = { };
+let state = { };
 
 let hasVR;
 
@@ -89,14 +89,12 @@ const hud = {
         el.classList[visible ? 'remove' : 'add']('mod-hidden');
       }
       if (typeof handler === 'function') {
-        // NOTE: using function here to keep this === el:
-        el.addEventListener('click', function (event) {
-          if (key === 'menuEnter' && !hasVR) return;
-          handler.call(this, event);
-        });
+        if (!(key === 'menuEnter' && !hasVR)) {
+          el.addEventListener('click', handler);
+        }
       }
     }
-    if (newState.colophon) return;
+    state = newState;
     document.querySelector('.chrome-experiment').classList.add('mod-hidden');
   },
   showLoader: (label = 'Just a sec...') => {
