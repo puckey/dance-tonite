@@ -54,6 +54,7 @@ export default async (goto) => {
         if (audio.totalProgress > 1) {
           controllers.update(pressToFinish);
         }
+        instructions.setSubText('start in');
         instructions.beginCountdown(audio.loopDuration);
       },
     },
@@ -88,6 +89,10 @@ export default async (goto) => {
   });
   await transition.exit();
 
+  instructions.add();
+  instructions.setMainText('');
+  instructions.setSubText('turn on your controllers');
+
   controllers.update(pressToStart);
 
   viewer.camera.position.z = 0;
@@ -100,6 +105,7 @@ export default async (goto) => {
   const orb2 = new Orb();
 
   return () => {
+    instructions.remove();
     controllers.remove();
     viewer.events.off('tick', tick);
     audio.reset();

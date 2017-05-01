@@ -21,7 +21,7 @@ const subtext = textCreator.create('START IN', {
   mode: 'nowrap',
 });
 
-const mainText = textCreator.create('8', {
+const mainText = textCreator.create('', {
   scale: 7.5,
   align: 'center',
   color: textColor,
