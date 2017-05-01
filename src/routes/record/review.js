@@ -9,7 +9,7 @@ import controllers from '../../controllers';
 import transition from '../../transition';
 import Room from '../../room';
 import { tempVector } from '../../utils/three';
-import sleep from '../../utils/async';
+import { sleep } from '../../utils/async';
 
 const { roomDepth, roomOffset } = settings;
 const MATRIX = new THREE.Matrix4();

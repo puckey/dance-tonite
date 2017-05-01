@@ -2,7 +2,7 @@ import { Group } from './lib/three';
 import * as SDFText from './sdftext';
 import viewer from './viewer';
 import settings from './settings';
-import sleep from './utils/async';
+import { sleep } from './utils/async';
 
 const { scene } = viewer;
 const textCreator = SDFText.creator();

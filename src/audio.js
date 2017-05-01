@@ -1,7 +1,7 @@
 import emitter from 'mitt';
 import audioPool from './utils/audio-pool';
 import feature from './utils/feature';
-import sleep from './utils/async';
+import { sleep } from './utils/async';
 
 let context;
 let source;

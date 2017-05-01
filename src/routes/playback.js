@@ -8,7 +8,7 @@ import about from '../about';
 import titles from '../titles';
 import hud from '../hud';
 import feature from '../utils/feature';
-import sleep from '../utils/async';
+import { sleep } from '../utils/async';
 
 const { roomDepth, roomOffset, holeHeight } = settings;
 let progressBar;
