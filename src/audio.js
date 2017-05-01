@@ -76,6 +76,7 @@ const audio = Object.assign(emitter(), {
           duration = audioElement.duration;
           audioElement.play();
           canPlay();
+          audioElement.removeEventListener('canplaythrough', onPlay);
         };
         if (feature.isMobile) {
           audioElement.play();

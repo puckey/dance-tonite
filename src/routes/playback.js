@@ -25,15 +25,8 @@ const toggleVR = async () => {
     viewer.vrEffect.requestPresent();
     await audio.fadeOut();
     viewer.switchCamera('default');
-    await Promise.all([
-      sleep(4000),
-      // TODO: for some reason audio.rewind does not work here:
-      audio.load({
-        src: audioSrc,
-        loops: loopCount,
-        progressive: true,
-      }),
-    ]);
+    await sleep(5000);
+    audio.rewind();
     audio.play();
   }
 };
