@@ -21,6 +21,8 @@ const timeline = createTimeline([
     time: 0,
     callback: () => {
       chromeExperiment.classList.remove('mod-hidden');
+      elements.splashTitleLCD.classList.add('mod-hidden');
+      elements.splashTitleDance.classList.add('mod-hidden');
     },
   },
   {

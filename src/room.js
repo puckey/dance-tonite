@@ -5,7 +5,7 @@ import { tempQuaternion, tempVector, createInstancedMesh } from './utils/three';
 import viewer from './viewer';
 import settings from './settings';
 import audio from './audio';
-import { getCostumeColor, getRoomColor } from './theme/colors';
+import { getCostumeColor, getRoomColor, recordCostumeColor } from './theme/colors';
 import streamJSON from './lib/stream-json';
 
 const PROTOCOL = location.protocol;
@@ -66,7 +66,9 @@ export default class Room {
   }
 
   createMeshes() {
-    const color = getCostumeColor(this.index);
+    const color = this.isRecording
+      ? recordCostumeColor
+      : getCostumeColor(this.index);
     const count = this.isRecording
       ? 20
       : this.layerCount;

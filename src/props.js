@@ -6,6 +6,7 @@ import * as THREE from './lib/three';
 import roomUrl from './public/models/obj/space-bigger-holes-AO.obj';
 import isometricRoomUrl from './public/models/obj/space-isometric.obj';
 import settings from './settings';
+import { recordCostumeColor } from './theme/colors';
 
 require('./lib/OBJLoader')(THREE);
 
@@ -44,7 +45,7 @@ const preloadTexture = (url) => new Promise(
 );
 
 const thumbpadMaterial = new MeshLambertMaterial({ color: settings.textColor });
-const controllerMaterial = new MeshLambertMaterial({ color: settings.controllerColor });
+const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor });
 
 const props = Object.assign(emitter(), {
   hand: (function createHand() {
@@ -53,7 +54,7 @@ const props = Object.assign(emitter(), {
     const segments = 32;
     const cylinder = new Mesh(
       new CylinderBufferGeometry(radius, radius, height, segments),
-      new MeshLambertMaterial({ color: settings.controllerColor }),
+      new MeshLambertMaterial({ color: recordCostumeColor }),
     );
 
     cylinder.rotation.x = Math.PI * 0.5 * 7;
@@ -96,7 +97,7 @@ const props = Object.assign(emitter(), {
     const segments = 32;
     const cone = new Mesh(
       new ConeBufferGeometry(radius, height, segments),
-      new MeshLambertMaterial({ color: settings.controllerColor }),
+      new MeshLambertMaterial({ color: recordCostumeColor }),
     );
 
     cone.rotation.x = Math.PI * 0.5 * 7;

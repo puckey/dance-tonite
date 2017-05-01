@@ -65,6 +65,8 @@ export default {
     if (!progressBar) {
       progressBar = document.querySelector('.audio-progress-bar');
     }
+    progressBar.style.width = '100vw';
+
     if (feature.isMobile) {
       await playClicked;
     }

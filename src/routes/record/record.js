@@ -4,14 +4,11 @@ import audio from '../../audio';
 import viewer from '../../viewer';
 import settings from '../../settings';
 import recording from '../../recording';
-import { Color } from '../../lib/three';
 import createTimeline from '../../lib/timeline';
 import controllers from '../../controllers';
 import transition from '../../transition';
 import instructions from '../../instructions';
-
-const RECORD_COLOR = new Color(0x55b848);
-const WAIT_COLOR = new Color(0xcccccc);
+import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 
 const { roomDepth, roomOffset } = settings;
 
@@ -51,7 +48,7 @@ export default async (goto) => {
     {
       time: 0,
       callback: () => {
-        room.changeColor(WAIT_COLOR);
+        room.changeColor(waitRoomColor);
         orb2.fadeOut();
         orb.fadeIn();
         if (audio.totalProgress > 1) {
@@ -63,7 +60,7 @@ export default async (goto) => {
     {
       time: 1,
       callback: () => {
-        room.changeColor(RECORD_COLOR);
+        room.changeColor(recordRoomColor);
         controllers.update();
       },
     },
@@ -97,7 +94,7 @@ export default async (goto) => {
   viewer.switchCamera('default');
 
   const room = new Room({ recording });
-  room.changeColor(WAIT_COLOR);
+  room.changeColor(waitRoomColor);
 
   const orb = new Orb();
   const orb2 = new Orb();
