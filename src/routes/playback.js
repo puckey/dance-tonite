@@ -1,5 +1,6 @@
 import Orb from '../orb';
 import audio from '../audio';
+import audioPool from '../utils/audio-pool';
 import audioSrc from '../public/sound/lcd-14loops.ogg';
 import Playlist from '../playlist';
 import viewer from '../viewer';
@@ -43,16 +44,16 @@ const hudSettings = {
 };
 
 let playClicked;
+let audioElement;
 if (feature.isMobile) {
   playClicked = new Promise((resolve) => {
     hudSettings.playButton = function () {
       this.classList.add('mod-hidden');
-      audio.fill();
+      audioPool.fill();
+      audioElement = audioPool.get();
       resolve();
     };
   });
-} else {
-  audio.fill();
 }
 
 export default {
@@ -91,6 +92,7 @@ export default {
     };
 
     await audio.load({
+      audioElement,
       src: audioSrc,
       loops: loopCount,
       progressive: true,

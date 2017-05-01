@@ -20,10 +20,6 @@ const ALMOST_ZERO = 1e-4;
 let scheduledTime;
 
 const audio = Object.assign(emitter(), {
-  fill() {
-    audioPool.fill();
-  },
-
   tick() {
     const currentTime = audioElement
       ? audioElement.currentTime
@@ -52,7 +48,7 @@ const audio = Object.assign(emitter(), {
 
   load(param) {
     return new Promise((resolve, reject) => {
-      context = new AudioContext();
+      context = new (window.AudioContext || window.webkitAudioContext)();
       gainNode = context.createGain();
       // Reset time, set loop count
       lastTime = 0;
@@ -68,7 +64,7 @@ const audio = Object.assign(emitter(), {
       };
 
       if (param.progressive) {
-        audioElement = audioPool.get();
+        audioElement = param.audioElement || new Audio();
         source = context.createMediaElementSource(audioElement);
         audioElement.src = param.src;
         audioElement.loop = true;

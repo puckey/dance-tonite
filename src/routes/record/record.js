@@ -103,6 +103,7 @@ export default async (goto) => {
   const orb2 = new Orb();
 
   return () => {
+    controllers.remove();
     viewer.events.off('tick', tick);
     audio.reset();
     Room.reset();
