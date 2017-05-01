@@ -1,7 +1,8 @@
 import Orb from '../orb';
 import audio from '../audio';
 import audioPool from '../utils/audio-pool';
-import audioSrc from '../public/sound/lcd-14loops.ogg';
+import audioSrcOgg from '../public/sound/lcd-14loops.ogg';
+import audioSrcMp3 from '../public/sound/lcd-14loops.mp3';
 import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
@@ -11,6 +12,7 @@ import hud from '../hud';
 import feature from '../utils/feature';
 import { sleep } from '../utils/async';
 
+const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { roomDepth, roomOffset, holeHeight } = settings;
 let progressBar;
 const loopCount = 16;
