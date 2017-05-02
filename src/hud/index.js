@@ -4,6 +4,7 @@ import addIconSvg from './icons/addvr.svg';
 import enterIconSvg from './icons/entervr.svg';
 import enterIconDisabledSvg from './icons/x_entervr.svg';
 import aboutIconSvg from './icons/about.svg';
+import { sleep } from '../utils/async';
 
 const elements = {
   menuAdd: '.menu-item-add',
@@ -105,10 +106,11 @@ const hud = {
   hideLoader: () => {
     elements.loaderOverlay.classList.add('mod-hidden');
   },
-  enterVR: () => {
+  enterVR: async () => {
     elements.vrInfoOverlay.classList.add('mod-entering-vr');
     document.body.classList.add('mod-in-vr');
     toggleVRLabel();
+    await sleep(2);
   },
   exitVR: () => {
     elements.vrInfoOverlay.classList.remove('mod-entering-vr');

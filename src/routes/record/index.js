@@ -4,7 +4,7 @@ import controllers from '../../controllers';
 import instructions from '../../instructions';
 import viewer from '../../viewer';
 import router from '../../router';
-import transition from '../../transition';
+import hud from '../../hud';
 
 let unmountStep;
 
@@ -26,25 +26,28 @@ const goto = async (step) => {
   }
 };
 
-const toggleVR = () => {
-  if (viewer.vrEffect.isPresenting) {
-    viewer.vrEffect.exitPresent();
-    viewer.switchCamera('orthographic');
-  } else {
-    viewer.vrEffect.requestPresent().then(() => {
-      viewer.switchCamera('default');
-    });
-  }
-};
-
 export default {
   hud: {
-    menuEnter: toggleVR,
+    menuEnter: viewer.vrEffect.isPresenting
+      ? false
+      : function () {
+        this.classList.toggle('mod-hidden');
+        viewer.vrEffect.requestPresent().then(() => {
+          viewer.switchCamera('default');
+        });
+      },
   },
 
   mount: () => {
     controllers.add();
-    goto('record');
+    const tick = async () => {
+      if (viewer.vrEffect.isPresenting) {
+        viewer.events.off('tick', tick);
+        await hud.enterVR();
+        goto('record');
+      }
+    };
+    viewer.events.on('tick', tick);
   },
 
   unmount: () => {
