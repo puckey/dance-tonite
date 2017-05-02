@@ -94,6 +94,7 @@ export default async (goto) => {
       removeOnPress: true,
     },
   });
+  controllers.add();
   transition.exit();
 
   return () => {
