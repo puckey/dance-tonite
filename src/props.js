@@ -44,7 +44,6 @@ const preloadTexture = (url) => new Promise(
   }
 );
 
-const thumbpadMaterial = new MeshLambertMaterial({ color: settings.textColor });
 const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor });
 
 const props = Object.assign(emitter(), {
@@ -78,8 +77,9 @@ const props = Object.assign(emitter(), {
     const thumbpadHeight = 0.02;
     const thumbpad = new THREE.Mesh(
       new CylinderBufferGeometry(thumbpadRadius, thumbpadRadius, thumbpadHeight, segments),
-      thumbpadMaterial
+      new MeshLambertMaterial({ color: settings.textColor })
     );
+    thumbpad.name = 'button';
     thumbpad.position.z = -0.05;
     thumbpad.position.y = 0.01;
     thumbpad.updateMatrix();
@@ -121,9 +121,7 @@ const props = Object.assign(emitter(), {
 
   grid: (function createGrid() {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
-  }()),
-
-  thumbpadMaterial,
+  }())
 });
 
 Promise.all([

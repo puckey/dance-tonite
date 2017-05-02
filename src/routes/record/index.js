@@ -40,6 +40,7 @@ export default {
 
   mount: () => {
     controllers.add();
+    controllers.update();
     const tick = async () => {
       if (viewer.vrEffect.isPresenting) {
         viewer.events.off('tick', tick);
