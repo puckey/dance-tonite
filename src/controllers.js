@@ -39,30 +39,27 @@ rightController.addEventListener('thumbpaddown', () => {
   if (rightPress) rightPress();
 });
 
-const showButton = () => {
-  Props.thumbpadMaterial.visible = true;
-};
+const rButton = rhand.getObjectByName( 'button' );
+const lButton = lhand.getObjectByName( 'button' );
 
-const hideButton = () => {
-  Props.thumbpadMaterial.visible = false;
-};
+function setButtonVisibility( hand, flag ){
+  const button = (hand === 'left') ? lButton : rButton;
+  button.visible = flag;
+}
 
 export default {
   update({ left, right } = {}) {
-    if (!left && !right) {
-      hideButton();
-    }
 
     if (left) {
       lText.updateLabel(left.text);
       if (left.onPress) {
-        showButton();
+        setButtonVisibility('left', true);
       }
       leftPress = () => {
         if (left.removeOnPress) {
           lText.updateLabel('');
           leftPress = null;
-          hideButton();
+          setButtonVisibility('left', false);
         }
         if (left.onPress) {
           left.onPress();
@@ -71,18 +68,19 @@ export default {
     } else {
       lText.updateLabel('');
       leftPress = null;
+      setButtonVisibility('left', false);
     }
 
     if (right) {
       rText.updateLabel(right.text);
       if (right.onPress) {
-        showButton();
+        setButtonVisibility('right', true);
       }
       rightPress = () => {
         if (right.removeOnPress) {
           rText.updateLabel('');
           rightPress = null;
-          hideButton();
+          setButtonVisibility('right', false);
         }
         if (right.onPress) {
           right.onPress();
@@ -91,6 +89,7 @@ export default {
     } else {
       rText.updateLabel('');
       rightPress = null;
+      setButtonVisibility('right', false);
     }
   },
 
@@ -105,6 +104,5 @@ export default {
     rightController.remove(rhand);
   },
 
-  showButton,
-  hideButton,
+  setButtonVisibility,
 };
