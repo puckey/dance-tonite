@@ -1,16 +1,17 @@
 import record from './record';
 import review from './review';
+import tutorial from './tutorial';
 import controllers from '../../controllers';
 import instructions from '../../instructions';
 import viewer from '../../viewer';
 import router from '../../router';
-import transition from '../../transition';
 
 let unmountStep;
 
 const components = {
   record,
   review,
+  tutorial,
 };
 
 const goto = async (step) => {
@@ -44,7 +45,7 @@ export default {
 
   mount: () => {
     controllers.add();
-    goto('record');
+    goto('tutorial');
   },
 
   unmount: () => {

@@ -23,10 +23,10 @@ let scheduledTime;
 
 const audio = Object.assign(emitter(), {
   tick() {
-    const currentTime = audioElement
+    this.currentTime = audioElement
       ? audioElement.currentTime
       : (context.currentTime - startTime);
-    const time = this.time = (currentTime) % duration;
+    const time = this.time = (this.currentTime) % duration;
     const { loopDuration } = this;
 
     // The position within the track as a multiple of loopDuration:
