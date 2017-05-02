@@ -79,39 +79,50 @@ const tweenFog = (from, to, duration = 2) => {
 
 const fadeOut = async (duration) => {
   fadedOut = true;
-  await tweenFog(25, 0, duration);
+  fading = tweenFog(25, 0, duration);
+  await fading;
 };
 
 const fadeIn = async (maxFogDistance, duration) => {
   fadedOut = false;
-  await tweenFog(0, maxFogDistance, duration);
+  fading = tweenFog(0, maxFogDistance, duration);
+  await fading;
+};
+
+let entering;
+let fading;
+
+const enter = async (param) => {
+  // If fadeOut wasn't called before enter:
+  if (!fadedOut) {
+    await fadeOut();
+  }
+  insideTransition = true;
+  mainScene = viewer.scene;
+  viewer.renderScene = transitionScene;
+  transitionScene.fog = new THREE.Fog(0x000000, 0, 0);
+
+  floatingOrb.fadeIn();
+  viewer.events.on('tick', tick);
+  textItem.updateLabel(param.text);
+  floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
+  floatingOrb.mesh.scale.set(4, 4, 4);
+  // Fade in the transition space:
+  await fadeIn(25);
 };
 
 export default {
   fadeOut,
 
   async enter(param) {
-    // If fadeOut wasn't called before enter:
-    if (!fadedOut) {
-      await fadeOut();
-    }
-    insideTransition = true;
-    mainScene = viewer.scene;
-    viewer.renderScene = transitionScene;
-    transitionScene.fog = new THREE.Fog(0x000000, 0, 0);
-
-    floatingOrb.fadeIn();
-    viewer.events.on('tick', tick);
-    textItem.updateLabel(param.text);
-    floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
-    floatingOrb.mesh.scale.set(4, 4, 4);
-    // Fade in the transition space:
-    await fadeIn(25);
+    entering = enter(param);
+    await Promise.all([entering, fading]);
   },
 
   async exit({ immediate } = {}) {
+    await Promise.all([entering, fading]);
     if (!insideTransition) return;
-    if (!fadedOut) {
+    if (!fadedOut && !immediate) {
       await fadeOut();
     }
     viewer.events.off('tick', tick);
