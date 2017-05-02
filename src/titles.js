@@ -19,38 +19,40 @@ const chromeExperiment = document.querySelector('.chrome-experiment');
 const timeline = createTimeline([
   {
     time: 0,
-    callback: () => {
-      chromeExperiment.classList.remove('mod-hidden');
-      elements.splashTitleLCD.classList.add('mod-hidden');
-      elements.splashTitleDance.classList.add('mod-hidden');
-    },
+    show: [chromeExperiment],
+    hide: [elements.splashTitleLCD, elements.splashTitleDance],
   },
   {
     time: 0.3,
-    callback: () => {
-      elements.splashTitleLCD.classList.remove('mod-hidden');
-    },
+    hide: [elements.splashTitleLCD],
   },
   {
     time: 0.6,
-    callback: () => {
-      elements.splashTitleLCD.classList.add('mod-hidden');
-      elements.splashTitleDance.classList.remove('mod-hidden');
-    },
+    show: [elements.splashTitleDance],
+    hide: [elements.splashTitleLCD],
   },
   {
     time: 1,
-    callback: () => {
-      elements.splashTitleDance.classList.add('mod-hidden');
-    },
+    hide: [elements.splashTitleDance],
   },
   {
     time: 1.2,
-    callback: () => {
-      chromeExperiment.classList.add('mod-hidden');
-    },
+    hide: [chromeExperiment],
   },
 ]);
+
+timeline.on('keyframe', ({ show, hide }) => {
+  if (show) {
+    for (let i = 0; i < show.length; i++) {
+      show[i].classList.remove('mod-hidden');
+    }
+  }
+  if (hide) {
+    for (let i = 0; i < hide.length; i++) {
+      hide[i].classList.add('mod-hidden');
+    }
+  }
+});
 
 export default {
   mount: () => {

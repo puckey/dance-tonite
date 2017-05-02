@@ -33,7 +33,7 @@ export default (initialEvents = []) => {
       for (let i = lastIndex; i < events.length; i++) {
         const event = events[i];
         if (time < event.time) break;
-        timeline.emit(event.name, event);
+        timeline.emit(event.name || 'keyframe', event);
 
         // call optional callback
         if (event.callback) {
