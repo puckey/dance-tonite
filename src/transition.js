@@ -13,14 +13,19 @@ let mainScene;
 
 // Set up stage
 const textCreator = SDFText.creator();
-const text = textCreator.create('', {
+const textItem = textCreator.create('', {
   wrapWidth: 4000,
   scale: 15,
   align: 'center',
   color: settings.textColor,
 });
 
-transitionScene.add(text);
+const pivot = new THREE.Object3D();
+pivot.add(textItem);
+textItem.position.z = -12;
+textItem.position.y = 2;
+
+transitionScene.add(pivot);
 transitionScene.add(props.grid);
 
 const floatingOrb = new Orb(transitionScene);
@@ -29,9 +34,33 @@ let time = 0;
 let fadedOut = false;
 let insideTransition = false;
 
+const Y_AXIS = new THREE.Vector3(0, 1, 0);
+const Z_AXIS = new THREE.Vector3(0, 0, 1);
+const TEMP_VECTOR = new THREE.Vector3();
+const TEMP_VECTOR_2 = new THREE.Vector3();
+const SLERP_QUATERNION = new THREE.Quaternion();
+
 const tick = (dt) => {
   time += dt;
   floatingOrb.mesh.position.y = Math.sin(time * 2) / 4 + 2;
+  // From: http://stackoverflow.com/questions/34447119/positioning-a-three-js-object-in-front-of-the-camera-but-not-tied-to-the-camera
+  const direction = TEMP_VECTOR.copy(Z_AXIS);
+  // Apply the camera's quaternion onto the unit vector of one of the axes
+  // of our desired rotation plane (the z axis of the xz plane, in this case).
+  direction.applyQuaternion(SLERP_QUATERNION.slerp(viewer.camera.quaternion, 0.05));
+  // Project the direction vector onto the y axis to get the y component
+  // of the direction.
+  const yComponent = TEMP_VECTOR_2.copy(Y_AXIS).multiplyScalar(direction.dot(Y_AXIS));
+  // Subtract the y component from the direction vector so that we are
+  // left with the x and z components.
+  direction.sub(yComponent);
+  // Normalize the direction into a unit vector again.
+  direction.normalize();
+  // Set the pivot's quaternion to the rotation required to get from the z axis
+  // to the xz component of the camera's direction.
+  pivot.quaternion.setFromUnitVectors(Z_AXIS, direction);
+  // Finally, set the pivot's position as well, so that it follows the camera.
+  pivot.position.copy(viewer.camera.position);
 };
 
 const tweenFog = (from, to, duration = 2) => {
@@ -73,9 +102,7 @@ export default {
 
     floatingOrb.fadeIn();
     viewer.events.on('tick', tick);
-    text.updateLabel(param.text);
-    text.position.copy(offsetFrom(viewer.camera, -5, 2, -10));
-    text.lookAt(viewer.camera.position);
+    textItem.updateLabel(param.text);
     floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
     floatingOrb.mesh.scale.set(4, 4, 4);
     // Fade in the transition space:
