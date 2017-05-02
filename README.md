@@ -19,6 +19,6 @@ Where `color` is one of the following:
 - `blue`
 - `pink`
 
-# Known caveats
+## Known caveats
 
 Pressing the back button in your browser while mid-transition (when the scene fades to black in recording mode) messes up the routing system. Refresh to fix.
