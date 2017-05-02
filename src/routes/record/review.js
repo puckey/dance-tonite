@@ -37,7 +37,7 @@ export default async (goto) => {
   const tick = () => {
     audio.tick();
     playlist.tick();
-    moveCamera(audio.totalProgress);
+    moveCamera(audio.totalProgress + 0.5);
   };
 
   const performSubmit = async () => {

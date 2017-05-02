@@ -76,7 +76,7 @@ export default {
     orb = new Orb();
 
     const moveCamera = (progress) => {
-      const z = ((progress - 1.5) * roomDepth) + roomOffset;
+      const z = ((progress - 1) * roomDepth) + roomOffset;
       viewer.camera.position.set(0, holeHeight, -z);
       orb.move(-z);
     };

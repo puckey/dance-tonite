@@ -43,7 +43,6 @@ export default async (goto) => {
       onPress: performStart,
     },
   };
-
   const timeline = createTimeline([
     {
       time: 0,
@@ -55,7 +54,7 @@ export default async (goto) => {
           controllers.update(pressToFinish);
         }
         instructions.setSubText('start in');
-        instructions.beginCountdown(audio.loopDuration);
+        instructions.beginCountdown(audio.loopDuration - audio.loopOffsetTime);
       },
     },
     {
@@ -70,8 +69,8 @@ export default async (goto) => {
   const tick = () => {
     audio.tick();
     room.gotoTime(audio.time);
-    const progress = audio.progress - 1; // value between -1 and 1
-    timeline.tick(audio.progress);
+    const progress = audio.loopOffsetProgress - 1; // value between -1 and 1
+    timeline.tick(audio.loopOffsetProgress);
 
     const z = (progress - 0.5) * roomDepth + roomOffset;
     orb.move(z);
@@ -81,11 +80,12 @@ export default async (goto) => {
   };
 
   recording.reset();
-  recording.room = Math.floor(Math.random() * settings.loopCount) + 1;
+  recording.room = 1; // Math.floor(Math.random() * settings.loopCount) + 1;
 
   await audio.load({
-    src: `/public/sound/room-${recording.room}.ogg`,
+    src: `/public/sound/loop-${recording.room}.ogg`,
     loops: 2,
+    loopOffset: 0.5,
   });
   await transition.exit();
 

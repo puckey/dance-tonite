@@ -27,8 +27,19 @@ const audio = Object.assign(emitter(), {
       ? audioElement.currentTime
       : (context.currentTime - startTime);
     const time = this.time = (currentTime) % duration;
-    const { loopDuration } = this;
 
+    const { loopDuration, loopOffset } = this;
+    this.loopOffsetTime = time;
+    if (loopOffset) {
+      this.loopOffsetTime = time + loopOffset * loopDuration;
+      if (this.loopOffsetTime < 0) {
+        this.loopOffsetTime = duration - this.loopOffsetTime;
+      } else if (this.loopOffsetTime > duration) {
+        this.loopOffsetTime = this.loopOffsetTime - duration;
+      }
+      // The position within the track as a multiple of loopDuration:
+      this.loopOffsetProgress = this.loopOffsetTime / loopDuration;
+    }
     // The position within the track as a multiple of loopDuration:
     this.progress = time / loopDuration;
 
@@ -64,6 +75,10 @@ const audio = Object.assign(emitter(), {
         context.suspend();
         resolve(param.src);
       };
+
+      if (param.loopOffset) {
+        this.loopOffset = param.loopOffset;
+      }
 
       if (param.progressive) {
         audioElement = param.audioElement || new Audio();
