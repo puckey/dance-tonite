@@ -84,13 +84,13 @@ const hud = {
     Object
       .keys(newState)
       .forEach((key) => {
-        if (key === 'menuEnter' && !hasVR) return;
         const handler = newState[key];
         const visible = !!handler;
         const el = elements[key];
         if (el && visible !== state[key]) {
           el.classList[visible ? 'remove' : 'add']('mod-hidden');
         }
+        if (key === 'menuEnter' && !hasVR) return;
         if (typeof handler === 'function') {
           el.addEventListener('click', handler);
         }
