@@ -57,14 +57,14 @@ const vrEffect = new THREE.VREffect(renderer);
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
 
-let controller1 = new THREE.Object3D();
-let controller2 = new THREE.Object3D();
+const controller1 = new THREE.Object3D();
+const controller2 = new THREE.Object3D();
 window.addEventListener('vr controller connected', (event) => {
   const controller = event.detail;
   //  For 6DOF VR rigs:
   controller.standingMatrix = controls.getStandingMatrix();
   //  For 3DOF VR rigs: 
-  controller.head = camera.default;
+  controller.head = cameras.default;
   if (controller.style==='rift') {
     controller.addEventListener('primary press began', (event) => {
       console.log('primary press began')//TODO: hook this up
@@ -81,8 +81,8 @@ window.addEventListener('vr controller connected', (event) => {
       console.log('thumbpad press ended')//TODO: hook this up
     });
   }
-  if (controller1 instanceof THREE.VRController) controller2 = controller
-  else controller1 = controller;
+  if (controller1.children.length===0) controller1.add( controller )
+  else if (controller2.children.length===0) controller2.add( controller )
 }, false);
 
 const createScene = () => {
