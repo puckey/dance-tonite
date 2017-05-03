@@ -5,6 +5,7 @@ import * as THREE from './lib/three';
 // import roomUrl from './public/models/obj/space-bigger-holes.obj';
 import roomUrl from './public/models/obj/space-bigger-holes-AO.obj';
 import isometricRoomUrl from './public/models/obj/space-isometric.obj';
+import roomTextureUrl from './public/models/obj/bake/baked_tpAmbient_cubeMesh.png';
 import settings from './settings';
 import { recordCostumeColor } from './theme/colors';
 
@@ -121,13 +122,17 @@ const props = Object.assign(emitter(), {
 
   grid: (function createGrid() {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
-  }())
+  }()),
+
+  longGrid: (function createGrid() {
+    return new GridHelper(500, 500, 0xaaaa00, 0xaaaa00);
+  }()),
 });
 
 Promise.all([
   loadObject(roomUrl),
   loadObject(isometricRoomUrl),
-  preloadTexture('public/models/obj/bake/baked_tpAmbient_cubeMesh.png'),
+  preloadTexture(roomTextureUrl),
 ])
   .then(([room, isometricRoom, texture]) => {
     room.material = new THREE.MeshLambertMaterial();

@@ -13,7 +13,7 @@ import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 
 const { roomDepth, roomOffset } = settings;
 
-export default async (goto) => {
+export default async (goto, req) => {
   const performFinish = async () => {
     await transition.fadeOut();
     goto('review');
@@ -82,7 +82,7 @@ export default async (goto) => {
   };
 
   recording.reset();
-  recording.room = Math.floor(Math.random() * settings.loopCount) + 1;
+  recording.room = req.params.roomIndex || Math.floor(Math.random() * settings.loopCount) + 1;
 
   await audio.load({
     src: `/public/sound/room-${recording.room}.ogg`,
