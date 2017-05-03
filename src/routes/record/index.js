@@ -11,19 +11,18 @@ let unmountStep;
 const components = {
   record,
   review,
-};
-
-const goto = async (step) => {
-  if (unmountStep) {
-    unmountStep();
-    unmountStep = null;
-  }
-  const component = components[step];
-  if (component) {
-    unmountStep = await components[step](goto);
-  } else {
-    router.navigate(step);
-  }
+  start: (goto) => {
+    controllers.add();
+    const tick = async () => {
+      if (viewer.vrEffect.isPresenting) {
+        await hud.enterVR();
+        goto('record');
+        viewer.events.off('tick', tick);
+      }
+    };
+    viewer.events.on('tick', tick);
+    return () => { };
+  },
 };
 
 export default {
@@ -38,17 +37,20 @@ export default {
       },
   },
 
-  mount: () => {
-    controllers.add();
-    controllers.update();
-    const tick = async () => {
-      if (viewer.vrEffect.isPresenting) {
-        viewer.events.off('tick', tick);
-        await hud.enterVR();
-        goto('record');
+  mount: (req) => {
+    const goto = async (step) => {
+      if (unmountStep) {
+        unmountStep();
+        unmountStep = null;
+      }
+      const component = components[step];
+      if (component) {
+        unmountStep = await components[step](goto, req);
+      } else {
+        router.navigate(step);
       }
     };
-    viewer.events.on('tick', tick);
+    goto('start');
   },
 
   unmount: () => {
