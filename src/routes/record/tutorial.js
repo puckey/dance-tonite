@@ -6,7 +6,7 @@ import viewer from '../../viewer';
 import settings from '../../settings';
 import createTimeline from '../../lib/timeline';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
-import { Vector3 as Vector, Projector } from '../../lib/three';
+import { Vector3 as Vector } from '../../lib/three';
 
 const TUTORIAL_RECORDING_URL = '1033470119233-6feddefd.json';
 
@@ -20,6 +20,7 @@ let windowWidth;
 let windowHeight;
 let lineOriginX;
 let lineOriginY;
+let lineTarget;
 
 const getLineTransformString = (x1, y1, x2, y2) => {
   const length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
@@ -34,19 +35,54 @@ const updateWindowDimensions = () => {
   lineOriginY = tutorialText.offsetHeight;
 };
 
-const get2DCoordinates = object => {
+const get2DCoordinates = position => {
   const vector = new Vector();
-  const projector = new Projector();
+  vector.copy(position);
 
-  projector.projectVector(vector.setFromMatrixPosition(object.matrixWorld), viewer.camera);
+  // map to normalized device coordinate (NDC) space
+  vector.project(viewer.camera);
 
-  const x = (vector.x * windowWidth / 2) + windowWidth / 2;
-  const y = -(vector.y * windowHeight / 2) + windowHeight / 2;
+  // map to 2D screen space
+  const x = Math.round((vector.x + 1) * windowWidth / 2);
+  const y = Math.round((-vector.y + 1) * windowHeight / 2);
 
   return { x, y };
 };
 
 export default async (goto) => {
+  const orb = new Orb();
+  const orb2 = new Orb();
+
+  document.querySelector('.hud').appendChild(tutorialText);
+  document.querySelector('.hud').appendChild(skipTutorialButton);
+  document.querySelector('.hud').appendChild(line);
+
+  skipTutorialButton.classList.remove('mod-hidden');
+
+  await audio.load({
+    src: '/public/sound/room-7.ogg',
+    loops: 2,
+  });
+
+  viewer.switchCamera('orthographic');
+  viewer.camera.position.z = 1.3;
+  viewer.camera.position.y = 2;
+  viewer.camera.zoom = 0.7;
+  viewer.camera.updateProjectionMatrix();
+
+  const room = new Room({
+    url: TUTORIAL_RECORDING_URL,
+    showHead: true,
+    index: 1,
+  });
+  room.changeColor(waitRoomColor);
+  room.load();
+  Room.rotate180();
+
+  audio.play();
+  audio.mute();
+  audio.fadeIn();
+
   const performSkip = () => {
     skipTutorialButton.classList.add('mod-hidden');
     goto('record');
@@ -77,14 +113,11 @@ export default async (goto) => {
     {
       time: 4,
       text: 'This is the camera',
+      position: orb.mesh.position,
     },
     {
       time: 7,
       text: 'Dance!',
-    },
-    {
-      time: 9,
-      text: ' ',
     },
     {
       time: 15,
@@ -92,7 +125,7 @@ export default async (goto) => {
     },
     {
       time: 17,
-      text: 'Relax',
+      text: 'Prepare for the next recording',
     },
     {
       time: 18,
@@ -100,15 +133,21 @@ export default async (goto) => {
     },
     {
       time: 19,
-      text: 'Hello',
+      text: 'This is you',
+    },
+    {
+      time: 23,
+      text: 'This is your previous recording',
+    },
+    {
+      time: 26,
+      text: 'Add up to 10 versions of yourself',
+    },
+    {
+      time: 27,
+      text: ' ',
     },
   ]);
-
-  textTimeline.on('keyframe', ({ text }) => {
-    if (text) {
-      tutorialText.innerHTML = text;
-    }
-  });
 
   const tick = () => {
     audio.tick();
@@ -121,47 +160,27 @@ export default async (goto) => {
     orb.move(z);
     orb2.move(z - roomDepth * 2);
 
-    const { x, y } = get2DCoordinates(orb.mesh);
-    line.style.transform = getLineTransformString(
-      x,
-      y,
-      lineOriginX,
-      lineOriginY
-    );
+    if (lineTarget) {
+      const { x, y } = get2DCoordinates(lineTarget);
+      line.style.opacity = 1;
+      line.style.transform = getLineTransformString(
+        x,
+        y,
+        lineOriginX,
+        lineOriginY
+      );
+    } else {
+      line.style.opacity = 0;
+    }
   };
 
-  document.querySelector('.hud').appendChild(tutorialText);
-  document.querySelector('.hud').appendChild(skipTutorialButton);
-  document.querySelector('.hud').appendChild(line);
-
-  skipTutorialButton.classList.remove('mod-hidden');
-
-  await audio.load({
-    src: '/public/sound/room-7.ogg',
-    loops: 2,
+  textTimeline.on('keyframe', ({ text, position }) => {
+    if (text) {
+      tutorialText.innerHTML = text;
+    }
+    lineTarget = position;
   });
 
-  viewer.switchCamera('orthographic');
-  viewer.camera.position.z = 1.3;
-  viewer.camera.position.y = 2;
-  viewer.camera.zoom = 0.7;
-  viewer.camera.updateProjectionMatrix();
-
-  const room = new Room({
-    url: TUTORIAL_RECORDING_URL,
-    showHead: true,
-    index: 1,
-  });
-  room.changeColor(waitRoomColor);
-  room.load();
-  Room.rotate180();
-
-  const orb = new Orb();
-  const orb2 = new Orb();
-
-  audio.play();
-  audio.mute();
-  audio.fadeIn();
   viewer.events.on('tick', tick);
   skipTutorialButton.addEventListener('click', performSkip);
   window.addEventListener('resize', updateWindowDimensions);
