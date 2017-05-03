@@ -30,7 +30,7 @@ const toggle = async () => {
 };
 
 const about = h('div.about.mod-hidden');
-const closeButton = h('div.about-close-button', { onclick: toggle }, '×');
+const closeButton = h('div.close-button', { onclick: toggle }, '×');
 document.body.appendChild(about);
 
 export default { toggle };

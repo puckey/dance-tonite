@@ -1,9 +1,11 @@
 import h from 'hyperscript';
+import router from '../../router';
 import Room from '../../room';
 import Orb from '../../orb';
 import audio from '../../audio';
 import viewer from '../../viewer';
 import settings from '../../settings';
+import hud from '../../hud';
 import createTimeline from '../../lib/timeline';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { Vector3 as Vector } from '../../lib/three';
@@ -13,8 +15,6 @@ const TUTORIAL_RECORDING_URL = '1033470119233-6feddefd.json';
 const { roomDepth, roomOffset } = settings;
 
 const tutorialText = h('div.tutorial-text', '');
-const skipTutorialButton = h('div.skip-tutorial-button', 'Skip Tutorial');
-const line = h('div.line');
 
 let windowWidth;
 let windowHeight;
@@ -54,9 +54,22 @@ export default async (goto) => {
   const orb = new Orb();
   const orb2 = new Orb();
 
+  const skipTutorialButton = h('div.skip-tutorial-button', 'Skip Tutorial');
+  const noVRFoundOverlay = h(
+    'div.no-vr-found-overlay.mod-hidden',
+    h(
+      'div.no-vr-found-overlay-text',
+      'Connect a VR headset to continue'
+    )
+  );
+  const closeButton = h('div.close-button', { onclick: () => { router.navigate('/'); } }, '×');
+  const line = h('div.line');
+
+  document.querySelector('.hud').appendChild(line);
   document.querySelector('.hud').appendChild(tutorialText);
   document.querySelector('.hud').appendChild(skipTutorialButton);
-  document.querySelector('.hud').appendChild(line);
+  document.querySelector('.hud').appendChild(noVRFoundOverlay);
+  document.querySelector('.hud').appendChild(closeButton);
 
   skipTutorialButton.classList.remove('mod-hidden');
 
@@ -84,9 +97,18 @@ export default async (goto) => {
   audio.mute();
   audio.fadeIn();
 
-  const performSkip = () => {
-    skipTutorialButton.classList.add('mod-hidden');
-    goto('record');
+  const performSkip = async () => {
+    if (typeof navigator.getVRDisplays === 'function') {
+      const devices = await navigator.getVRDisplays();
+      if (devices.length > 0) {
+        skipTutorialButton.classList.add('mod-hidden');
+        await hud.enterVR();
+        viewer.vrEffect.requestPresent();
+        goto('record');
+        return;
+      }
+    }
+    noVRFoundOverlay.classList.remove('mod-hidden');
   };
 
   const colorTimeline = createTimeline([
@@ -114,6 +136,7 @@ export default async (goto) => {
     {
       time: 1,
       text: 'This is you',
+      position: orb.mesh.position,
     },
     {
       time: 4,
@@ -136,15 +159,21 @@ export default async (goto) => {
     {
       time: 20,
       text: 'This is you',
+      position: orb.mesh.position,
     },
     {
       time: 23,
       text: 'This is your previous recording',
+      position: orb.mesh.position,
     },
     {
       time: 28,
       text: 'Add up to 10 copies of yourself',
       layers: 4,
+    },
+    {
+      time: 37.5,
+      callback: performSkip,
     },
   ]);
 
@@ -192,7 +221,9 @@ export default async (goto) => {
     window.removeEventListener('resize', updateWindowDimensions);
     skipTutorialButton.removeEventListener('click', performSkip);
     document.querySelector('.hud').removeChild(tutorialText);
+    document.querySelector('.hud').removeChild(noVRFoundOverlay);
     document.querySelector('.hud').removeChild(skipTutorialButton);
+    document.querySelector('.hud').removeChild(closeButton);
     document.querySelector('.hud').removeChild(line);
     audio.reset();
     Room.reset();
