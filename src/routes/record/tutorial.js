@@ -21,6 +21,8 @@ let lineOriginY;
 let lineTarget;
 let renderLayerCount;
 
+const querySelector = document.querySelector;
+
 const getLineTransformString = (x1, y1, x2, y2) => {
   const length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
   const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
@@ -57,11 +59,11 @@ export default async (goto) => {
   const closeButton = h('div.close-button', { onclick: () => { router.navigate('/'); } }, '×');
   const line = h('div.line');
 
-  document.querySelector('.hud').appendChild(line);
-  document.querySelector('.hud').appendChild(tutorialText);
-  document.querySelector('.hud').appendChild(skipTutorialButton);
-  document.querySelector('.hud').appendChild(noVRFoundOverlay);
-  document.querySelector('.hud').appendChild(closeButton);
+  querySelector('.hud').appendChild(line);
+  querySelector('.hud').appendChild(tutorialText);
+  querySelector('.hud').appendChild(skipTutorialButton);
+  querySelector('.hud').appendChild(noVRFoundOverlay);
+  querySelector('.hud').appendChild(closeButton);
 
   skipTutorialButton.classList.remove('mod-hidden');
 
@@ -219,11 +221,11 @@ export default async (goto) => {
   return () => {
     window.removeEventListener('resize', updateWindowDimensions);
     skipTutorialButton.removeEventListener('click', performSkip);
-    document.querySelector('.hud').removeChild(tutorialText);
-    document.querySelector('.hud').removeChild(noVRFoundOverlay);
-    document.querySelector('.hud').removeChild(skipTutorialButton);
-    document.querySelector('.hud').removeChild(closeButton);
-    document.querySelector('.hud').removeChild(line);
+    querySelector('.hud').removeChild(tutorialText);
+    querySelector('.hud').removeChild(noVRFoundOverlay);
+    querySelector('.hud').removeChild(skipTutorialButton);
+    querySelector('.hud').removeChild(closeButton);
+    querySelector('.hud').removeChild(line);
     audio.reset();
     Room.reset();
     audio.fadeOut();
