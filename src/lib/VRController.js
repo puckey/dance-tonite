@@ -44,6 +44,11 @@
 ///////////////////////
 
 
+module.exports = function( THREE ){
+
+
+
+
 THREE.VRController = function( gamepad ){
 
 	var 
@@ -778,3 +783,5 @@ OrientationArmModel.prototype.quatAngle_ = function( q1, q2 ){
 
 
 
+
+}
