@@ -11,9 +11,9 @@ import Room from '../room';
 let current;
 
 const routes = {
+  '/plane': plane,
   '/record/:roomIndex?': record,
   '/:id?': playback,
-  '/plane': plane,
   '/*': notFound,
 };
 
