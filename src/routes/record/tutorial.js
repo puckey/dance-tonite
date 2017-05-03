@@ -14,8 +14,6 @@ const TUTORIAL_RECORDING_URL = '1033470119233-6feddefd.json';
 
 const { roomDepth, roomOffset } = settings;
 
-const tutorialText = h('div.tutorial-text', '');
-
 let windowWidth;
 let windowHeight;
 let lineOriginX;
@@ -27,13 +25,6 @@ const getLineTransformString = (x1, y1, x2, y2) => {
   const length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
   const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
   return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
-};
-
-const updateWindowDimensions = () => {
-  windowWidth = window.innerWidth;
-  windowHeight = window.innerHeight;
-  lineOriginX = windowWidth / 2;
-  lineOriginY = tutorialText.offsetHeight;
 };
 
 const get2DCoordinates = position => {
@@ -54,6 +45,7 @@ export default async (goto) => {
   const orb = new Orb();
   const orb2 = new Orb();
 
+  const tutorialText = h('div.tutorial-text', '');
   const skipTutorialButton = h('div.skip-tutorial-button', 'Skip Tutorial');
   const noVRFoundOverlay = h(
     'div.no-vr-found-overlay.mod-hidden',
@@ -200,6 +192,13 @@ export default async (goto) => {
     } else {
       line.style.opacity = 0;
     }
+  };
+
+  const updateWindowDimensions = () => {
+    windowWidth = window.innerWidth;
+    windowHeight = window.innerHeight;
+    lineOriginX = windowWidth / 2;
+    lineOriginY = tutorialText.offsetHeight;
   };
 
   textTimeline.on('keyframe', ({ text, position, layers }) => {

@@ -125,6 +125,7 @@ svg * {
   font-size: 1.5rem;
   text-align: center;
   z-index: $interface-layer;
+  user-select: none;
 }
 
 .line {
@@ -231,6 +232,7 @@ svg * {
   margin: 50vh auto 0;
   padding: 0 1rem;
   font-size: 2rem;
+  user-select: none;
 }
 
 .vr-info-overlay {
@@ -258,6 +260,7 @@ svg * {
   font-feature-settings: 'ss01';
   color: $background-color;
   opacity: 0;
+  user-select: none;
 }
 
 .vr-info-overlay.mod-entering-vr {
@@ -279,6 +282,7 @@ svg * {
   background: none;
   cursor: pointer;
   z-index: $interface-layer;
+  user-select: none;
 
   @media screen and (max-width: $min-width) {
     position: absolute;
