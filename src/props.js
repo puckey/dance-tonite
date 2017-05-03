@@ -130,6 +130,7 @@ Promise.all([
   loadObject(roomUrl),
   loadObject(isometricRoomUrl),
   preloadTexture('public/models/obj/bake/VR_AOMap.png'),
+  preloadTexture('public/models/obj/bake/ISO_AOMap.png'),
 ])
   .then(([room, isometricRoom, texture, isometricTexture]) => {
     room.material = new THREE.MeshLambertMaterial();
