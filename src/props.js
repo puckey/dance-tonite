@@ -122,7 +122,11 @@ const props = Object.assign(emitter(), {
 
   grid: (function createGrid() {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
-  }())
+  }()),
+
+  longGrid: (function createGrid() {
+    return new GridHelper(500, 500, 0xaaaa00, 0xaaaa00);
+  }()),
 });
 
 Promise.all([
