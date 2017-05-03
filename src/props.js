@@ -3,7 +3,7 @@ import emitter from 'mitt';
 import * as THREE from './lib/three';
 
 // import roomUrl from './public/models/obj/space-bigger-holes.obj';
-import roomUrl from './public/models/obj/space-bigger-holes-AO.obj';
+import roomUrl from './public/models/obj/space-bigger-holes.obj';
 import isometricRoomUrl from './public/models/obj/space-isometric.obj';
 import settings from './settings';
 import { recordCostumeColor } from './theme/colors';
@@ -129,11 +129,15 @@ const props = Object.assign(emitter(), {
 Promise.all([
   loadObject(roomUrl),
   loadObject(isometricRoomUrl),
-  preloadTexture('public/models/obj/bake/baked_tpAmbient_cubeMesh.png'),
+  preloadTexture('public/models/obj/bake/VR_AOMap.png'),
+  preloadTexture('public/models/obj/bake/ISO_AOMap4.png'),
 ])
-  .then(([room, isometricRoom, texture]) => {
+  .then(([room, isometricRoom, texture, isometricTexture]) => {
     room.material = new THREE.MeshLambertMaterial();
     room.material.map = texture;
+
+    isometricRoom.material = new THREE.MeshLambertMaterial();
+    isometricRoom.material.map = isometricTexture;
 
     props.room = room;
     props.orthographicRoom = isometricRoom;
