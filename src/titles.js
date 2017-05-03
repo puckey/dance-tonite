@@ -24,7 +24,7 @@ const timeline = createTimeline([
   },
   {
     time: 0.3,
-    hide: [elements.splashTitleLCD],
+    show: [elements.splashTitleLCD],
   },
   {
     time: 0.6,

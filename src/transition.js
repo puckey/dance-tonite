@@ -22,8 +22,8 @@ const textItem = textCreator.create('', {
 
 const pivot = new THREE.Object3D();
 pivot.add(textItem);
-textItem.position.z = -12;
-textItem.position.y = 2;
+textItem.position.z = -20;
+textItem.position.y = 3;
 
 transitionScene.add(pivot);
 transitionScene.add(props.grid);
@@ -38,7 +38,6 @@ const Y_AXIS = new THREE.Vector3(0, 1, 0);
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 const TEMP_VECTOR = new THREE.Vector3();
 const TEMP_VECTOR_2 = new THREE.Vector3();
-const SLERP_QUATERNION = new THREE.Quaternion();
 
 const tick = (dt) => {
   time += dt;
@@ -47,7 +46,7 @@ const tick = (dt) => {
   const direction = TEMP_VECTOR.copy(Z_AXIS);
   // Apply the camera's quaternion onto the unit vector of one of the axes
   // of our desired rotation plane (the z axis of the xz plane, in this case).
-  direction.applyQuaternion(SLERP_QUATERNION.slerp(viewer.camera.quaternion, 0.05));
+  direction.applyQuaternion(viewer.camera.quaternion);
   // Project the direction vector onto the y axis to get the y component
   // of the direction.
   const yComponent = TEMP_VECTOR_2.copy(Y_AXIS).multiplyScalar(direction.dot(Y_AXIS));
