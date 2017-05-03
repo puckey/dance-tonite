@@ -1,6 +1,7 @@
 import router from '../router';
 import playback from './playback';
 import record from './record';
+import plane from './plane';
 import notFound from './not-found';
 import transition from '../transition';
 import hud from '../hud';
@@ -11,6 +12,7 @@ let current;
 
 const routes = {
   '/record': record,
+  '/plane': plane,
   '/:id?': playback,
   '/*': notFound,
 };
