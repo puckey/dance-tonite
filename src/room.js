@@ -134,7 +134,7 @@ export default class Room {
     }
   }
 
-  gotoTime(seconds) {
+  gotoTime(seconds, layers = false) {
     const { frames } = this;
     if (!frames) return;
 
@@ -142,6 +142,7 @@ export default class Room {
 
     if (frames.length <= frameNumber) return;
     let positions = frames[frameNumber];
+
     // TODO: figure out why we can't use just 'positions.length / PERFORMANCE_ELEMENT_COUNT' here:
     const count = this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
 
@@ -155,7 +156,9 @@ export default class Room {
     if (positions[0] === '[') {
       positions = frames[frameNumber] = JSON.parse(positions);
     }
-    for (let i = 0; i < count; i++) {
+
+    const maxLayers = layers || count;
+    for (let i = 0; i < maxLayers; i++) {
       if (this.showHead) {
         transformMesh(
           this.headMesh,

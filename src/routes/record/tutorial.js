@@ -21,6 +21,7 @@ let windowHeight;
 let lineOriginX;
 let lineOriginY;
 let lineTarget;
+let renderLayerCount;
 
 const getLineTransformString = (x1, y1, x2, y2) => {
   const length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
@@ -107,7 +108,11 @@ export default async (goto) => {
 
   const textTimeline = createTimeline([
     {
-      time: 2,
+      time: 0,
+      layers: 1,
+    },
+    {
+      time: 1,
       text: 'This is you',
     },
     {
@@ -122,17 +127,14 @@ export default async (goto) => {
     {
       time: 15,
       text: 'Cut!',
+      layers: 2,
     },
     {
       time: 17,
       text: 'Prepare for the next recording',
     },
     {
-      time: 18,
-      text: ' ',
-    },
-    {
-      time: 19,
+      time: 20,
       text: 'This is you',
     },
     {
@@ -140,18 +142,15 @@ export default async (goto) => {
       text: 'This is your previous recording',
     },
     {
-      time: 26,
-      text: 'Add up to 10 versions of yourself',
-    },
-    {
-      time: 27,
-      text: ' ',
+      time: 28,
+      text: 'Add up to 10 copies of yourself',
+      layers: 4,
     },
   ]);
 
   const tick = () => {
     audio.tick();
-    room.gotoTime(audio.time);
+    room.gotoTime(audio.time, renderLayerCount);
     const progress = audio.progress - 1; // value between -1 and 1
     colorTimeline.tick(audio.progress);
     textTimeline.tick(audio.currentTime);
@@ -174,9 +173,12 @@ export default async (goto) => {
     }
   };
 
-  textTimeline.on('keyframe', ({ text, position }) => {
+  textTimeline.on('keyframe', ({ text, position, layers }) => {
     if (text) {
       tutorialText.innerHTML = text;
+    }
+    if (layers) {
+      renderLayerCount = layers;
     }
     lineTarget = position;
   });
