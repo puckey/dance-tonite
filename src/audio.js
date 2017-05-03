@@ -70,6 +70,7 @@ const audio = Object.assign(emitter(), {
         : param.loops;
       this.loopCount = 0;
       const canPlay = () => {
+        this.duration = duration;
         this.loopDuration = duration / loopCount;
         startTime = context.currentTime;
         context.suspend();

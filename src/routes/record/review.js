@@ -54,7 +54,7 @@ export default async (goto) => {
       sleep(5000),
     ]);
     await transition.fadeOut();
-    goto(`/${uri.replace('.json', '')}`);
+    goto(`/${recording.loopIndex}/${uri.replace('.json', '')}`);
     transition.exit({ immediate: true });
   };
 
@@ -72,7 +72,7 @@ export default async (goto) => {
   await Promise.all(
     [
       audio.load({
-        src: `/public/sound/room-${recording.room || 1}.ogg`,
+        src: `/public/sound/room-${recording.loopIndex || 1}.ogg`,
         loops: 2,
       }),
       sleep(5000),
@@ -81,8 +81,8 @@ export default async (goto) => {
   await transition.fadeOut();
   audio.play();
   viewer.events.on('tick', tick);
-  controllers.setButtonVisibility('right',true);
-  controllers.setButtonVisibility('left',true);
+  controllers.setButtonVisibility('right', true);
+  controllers.setButtonVisibility('left', true);
   controllers.update({
     left: {
       text: 'press to redo',

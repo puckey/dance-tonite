@@ -9,16 +9,28 @@ import controllers from '../../controllers';
 import transition from '../../transition';
 import instructions from '../../instructions';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
+import { sleep } from '../../utils/async';
 
 const { roomDepth, roomOffset } = settings;
 
 export default async (goto, req) => {
   const performFinish = async () => {
-    await transition.fadeOut();
+    instructions.remove();
+    await Promise.all([
+      // Wait for loop to finish:
+      sleep(
+        (audio.duration - audio.time) < (audio.loopDuration / 2)
+        ? (audio.duration - audio.time + 0.1) * 1000
+        : 0
+      ).then(() => {
+        recording.stop();
+      }),
+      audio.fadeOut(),
+      transition.enter({
+        text: 'Let’s review your performance',
+      }),
+    ]);
     goto('review');
-    transition.enter({
-      text: 'Let’s review your performance',
-    });
   };
 
   const performStart = async () => {
@@ -78,12 +90,14 @@ export default async (goto, req) => {
 
     recording.tick();
   };
-
-  recording.reset();
-  recording.room = req.params.roomIndex || Math.floor(Math.random() * settings.loopCount) + 1;
+  recording.setup({
+    loopIndex: req.params.loopIndex
+      || (Math.floor(Math.random() * settings.loopCount) + 1),
+    hideHead: req.params.hideHead === '1',
+  });
 
   await audio.load({
-    src: `/public/sound/loop-${recording.room}.ogg`,
+    src: `/public/sound/room-${recording.loopIndex}.ogg`,
     loops: 2,
     loopOffset: 0.5,
   });

@@ -10,8 +10,8 @@ import Room from '../room';
 let current;
 
 const routes = {
-  '/record/:roomIndex?': record,
-  '/:id?': playback,
+  '/record/:loopIndex?/:hideHead?': record,
+  '/:loopIndex?/:id?': playback,
   '/*': notFound,
 };
 

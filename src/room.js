@@ -13,7 +13,6 @@ const PROTOCOL = location.protocol;
 const PERFORMANCE_ELEMENT_COUNT = 21;
 const LIMB_ELEMENT_COUNT = 7;
 
-const num = 20;
 let roomIndex = 0;
 let roomMesh;
 let roomMeshes;
@@ -36,6 +35,7 @@ const transformMesh = (
   scale,
   offset,
 ) => {
+  // if (positions.length < arrayOffset) return;
   const x = positions[arrayOffset] * 0.0001;
   const y = positions[arrayOffset + 1] * 0.0001;
   const z = positions[arrayOffset + 2] * 0.0001;
@@ -43,6 +43,7 @@ const transformMesh = (
   const qy = positions[arrayOffset + 4] * 0.0001;
   const qz = positions[arrayOffset + 5] * 0.0001;
   const qw = positions[arrayOffset + 6] * 0.0001;
+  
   instancedMesh.setPositionAt(
     index,
     tempVector(x, y, z - settings.roomOffset).add(offset),
@@ -53,10 +54,12 @@ const transformMesh = (
 };
 
 export default class Room {
-  constructor({ showHead = true, url, recording }) {
+  constructor({ url, recording }) {
     this.index = roomIndex;
-    this.showHead = showHead;
     this.isRecording = !!recording;
+    if (recording) {
+      this.hideHead = recording.hideHead;
+    }
     this.url = url;
     roomIndex += 1;
     if (recording) {
@@ -87,7 +90,7 @@ export default class Room {
     });
     roomsGroup.add(this.handMesh);
 
-    if (this.showHead) {
+    if (!this.hideHead) {
       this.headMesh = createInstancedMesh({
         count,
         geometry: props.head.geometry,
@@ -108,7 +111,7 @@ export default class Room {
           // First JSON is meta object:
           const meta = JSON.parse(json);
           this.frames = frames;
-          this.showHead = !meta.hideHead;
+          this.hideHead = meta.hideHead;
           this.layerCount = meta.count;
           this.createMeshes();
         } else {
@@ -138,7 +141,7 @@ export default class Room {
     const { frames } = this;
     if (!frames) return;
 
-    const frameNumber = Math.floor((seconds % (audio.loopDuration * 2)) * 90);
+    let frameNumber = Math.floor((seconds % (audio.loopDuration * 2)) * 90);
 
     if (frames.length <= frameNumber) return;
     let positions = frames[frameNumber];
@@ -151,12 +154,15 @@ export default class Room {
       this.headMesh.geometry.maxInstancedCount = count;
     }
     this.handMesh.geometry.maxInstancedCount = count * 2;
+    if (frameNumber > frames.length - 3) {
+      frameNumber = frames.length - 4;
+    }
     // Check if data is still a string:
     if (positions[0] === '[') {
       positions = frames[frameNumber] = JSON.parse(positions);
     }
     for (let i = 0; i < count; i++) {
-      if (this.showHead) {
+      if (!this.hideHead) {
         transformMesh(
           this.headMesh,
           positions,
@@ -203,13 +209,13 @@ Room.reset = () => {
   roomIndex = 0;
   roomMeshes = {
     default: createInstancedMesh({
-      count: num,
+      count: settings.loopCount,
       geometry: props.room.geometry,
       color: getRoomColor,
       material: props.room.material,
     }),
     orthographic: createInstancedMesh({
-      count: num,
+      count: settings.loopCount,
       geometry: props.orthographicRoom.geometry,
       color: getRoomColor,
     }),
