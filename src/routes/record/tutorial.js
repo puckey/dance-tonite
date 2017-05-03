@@ -6,7 +6,7 @@ import viewer from '../../viewer';
 import settings from '../../settings';
 import createTimeline from '../../lib/timeline';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
-import { Vector3 as Vector } from '../../lib/three';
+import { Vector3 as Vector, Projector } from '../../lib/three';
 
 const TUTORIAL_RECORDING_URL = '1033470119233-6feddefd.json';
 
@@ -34,16 +34,14 @@ const updateWindowDimensions = () => {
   lineOriginY = tutorialText.offsetHeight;
 };
 
-const get2DCoordinates = position => {
+const get2DCoordinates = object => {
   const vector = new Vector();
-  vector.copy(position);
+  const projector = new Projector();
 
-  // map to normalized device coordinate (NDC) space
-  vector.project(viewer.camera);
+  projector.projectVector(vector.setFromMatrixPosition(object.matrixWorld), viewer.camera);
 
-  // map to 2D screen space
-  const x = Math.round((vector.x + 1) * windowWidth / 2);
-  const y = Math.round((-vector.y + 1) * windowHeight / 2);
+  const x = (vector.x * windowWidth / 2) + windowWidth / 2;
+  const y = -(vector.y * windowHeight / 2) + windowHeight / 2;
 
   return { x, y };
 };
@@ -86,7 +84,7 @@ export default async (goto) => {
     },
     {
       time: 9,
-      text: '',
+      text: ' ',
     },
     {
       time: 15,
@@ -98,7 +96,11 @@ export default async (goto) => {
     },
     {
       time: 18,
-      text: '',
+      text: ' ',
+    },
+    {
+      time: 19,
+      text: 'Hello',
     },
   ]);
 
@@ -119,7 +121,7 @@ export default async (goto) => {
     orb.move(z);
     orb2.move(z - roomDepth * 2);
 
-    const { x, y } = get2DCoordinates(orb.mesh.position);
+    const { x, y } = get2DCoordinates(orb.mesh);
     line.style.transform = getLineTransformString(
       x,
       y,
