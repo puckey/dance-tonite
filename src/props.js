@@ -5,6 +5,8 @@ import * as THREE from './lib/three';
 // import roomUrl from './public/models/obj/space-bigger-holes.obj';
 import roomUrl from './public/models/obj/space-bigger-holes.obj';
 import isometricRoomUrl from './public/models/obj/space-isometric.obj';
+import roomTextureUrl from './public/models/obj/bake/VR_AOMap.png';
+import isometricRoomTextureUrl from 'public/models/obj/bake/ISO_AOMap.png';
 import settings from './settings';
 import { recordCostumeColor } from './theme/colors';
 
@@ -44,7 +46,6 @@ const preloadTexture = (url) => new Promise(
   }
 );
 
-const thumbpadMaterial = new MeshLambertMaterial({ color: settings.textColor });
 const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor });
 
 const props = Object.assign(emitter(), {
@@ -78,8 +79,9 @@ const props = Object.assign(emitter(), {
     const thumbpadHeight = 0.02;
     const thumbpad = new THREE.Mesh(
       new CylinderBufferGeometry(thumbpadRadius, thumbpadRadius, thumbpadHeight, segments),
-      thumbpadMaterial
+      new MeshLambertMaterial({ color: settings.textColor })
     );
+    thumbpad.name = 'button';
     thumbpad.position.z = -0.05;
     thumbpad.position.y = 0.01;
     thumbpad.updateMatrix();
@@ -123,14 +125,16 @@ const props = Object.assign(emitter(), {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
   }()),
 
-  thumbpadMaterial,
+  longGrid: (function createGrid() {
+    return new GridHelper(500, 500, 0xaaaa00, 0xaaaa00);
+  }()),
 });
 
 Promise.all([
   loadObject(roomUrl),
-  loadObject(isometricRoomUrl),
-  preloadTexture('public/models/obj/bake/VR_AOMap.png'),
-  preloadTexture('public/models/obj/bake/ISO_AOMap.png'),
+  loadObject(isometricRoomUrl), 
+  preloadTexture(roomTextureUrl),
+  preloadTexture(isometricRoomTextureUrl),
 ])
   .then(([room, isometricRoom, texture, isometricTexture]) => {
     room.material = new THREE.MeshLambertMaterial();

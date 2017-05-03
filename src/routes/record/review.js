@@ -66,7 +66,7 @@ export default async (goto) => {
       text: 'Okay, here we go again',
       duration: 5000,
     });
-    goto('record');
+    goto('start');
   };
 
   await Promise.all(
@@ -81,7 +81,8 @@ export default async (goto) => {
   await transition.fadeOut();
   audio.play();
   viewer.events.on('tick', tick);
-  controllers.showButton();
+  controllers.setButtonVisibility('right',true);
+  controllers.setButtonVisibility('left',true);
   controllers.update({
     left: {
       text: 'press to redo',

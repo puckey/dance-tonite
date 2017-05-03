@@ -10,7 +10,7 @@ import Room from '../room';
 let current;
 
 const routes = {
-  '/record': record,
+  '/record/:roomIndex?': record,
   '/:id?': playback,
   '/*': notFound,
 };
