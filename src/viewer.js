@@ -13,7 +13,7 @@ import Room from './room';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
-require('./lib/ViveController')(THREE);
+require('./lib/VRController')(THREE);
 
 const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
@@ -57,12 +57,33 @@ const vrEffect = new THREE.VREffect(renderer);
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
 
-const controller1 = new THREE.ViveController(0);
-const controller2 = new THREE.ViveController(1);
-
-// Use controllers:
-controller1.standingMatrix = controls.getStandingMatrix();
-controller2.standingMatrix = controls.getStandingMatrix();
+let controller1 = new THREE.Object3D();
+let controller2 = new THREE.Object3D();
+window.addEventListener('vr controller connected', (event) => {
+  const controller = event.detail;
+  //  For 6DOF VR rigs:
+  controller.standingMatrix = controls.getStandingMatrix();
+  //  For 3DOF VR rigs: 
+  controller.head = camera.default;
+  if (controller.style==='rift') {
+    controller.addEventListener('primary press began', (event) => {
+      console.log('primary press began')//TODO: hook this up
+    });
+    controller.addEventListener('primary press ended', (event) => {
+      console.log('primary press ended')//TODO: hook this up
+    });
+  }
+  else {
+    controller.addEventListener('thumbpad press began', (event) => {
+      console.log('thumbpad press began')//TODO: hook this up
+    });
+    controller.addEventListener('thumbpad press ended', (event) => {
+      console.log('thumbpad press ended')//TODO: hook this up
+    });
+  }
+  if (controller1 instanceof THREE.VRController) controller2 = controller
+  else controller1 = controller;
+}, false);
 
 const createScene = () => {
   const scene = new THREE.Scene();
@@ -140,8 +161,7 @@ const animate = () => {
   if (showStats) stats.begin();
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
-  controller1.update();
-  controller2.update();
+  THREE.VRController.update();
   controls.update();
   events.emit('tick', dt);
   if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
