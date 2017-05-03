@@ -8,10 +8,12 @@ import viewer from '../viewer';
 import settings from '../settings';
 import about from '../about';
 import titles from '../titles';
+import transition from '../transition';
 import hud from '../hud';
 import feature from '../utils/feature';
 import { sleep } from '../utils/async';
 import Room from '../room';
+import { queryData } from '../utils/url';
 
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { roomDepth, roomOffset, holeHeight } = settings;
@@ -29,7 +31,17 @@ const toggleVR = async () => {
     viewer.vrEffect.requestPresent();
     await audio.fadeOut();
     viewer.switchCamera('default');
-    await sleep(5000);
+
+    if (queryData.demo) {
+      transition.enter({
+        text: 'Let us know when you\'re ready',
+      });
+      // TODO listen for daydream button press
+      // await daydreamButtonPressed;
+    } else {
+      await sleep(5000);
+    }
+
     audio.rewind();
     audio.play();
   }
@@ -103,6 +115,7 @@ export default {
       loops: loopCount,
       progressive: true,
     });
+
     audio.play();
     hud.hideLoader();
     viewer.events.on('tick', tick);
