@@ -336,6 +336,9 @@ THREE.VRController.onGamepadConnect = function( gamepad ){
 
 	if( scope.verbosity >= 0.5 ) console.log( 'vr controller connected', controller );
 	controller.visible = true;
+
+console.log('~~!!!!!!!!! vr controller connected')
+
 	window.dispatchEvent( new CustomEvent( 'vr controller connected', { detail: controller }));
 }
 THREE.VRController.onGamepadDisconnect = function( gamepad ){

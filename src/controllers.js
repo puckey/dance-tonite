@@ -3,34 +3,106 @@ import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
 
-const [leftController, rightController] = viewer.controllers;
-
 const textCreator = SDFText.creator();
-
-const rhand = Props.controller.clone();
-const lhand = Props.controller.clone();
-const rText = textCreator.create('', {
-  wrapWidth: 1600,
-  scale: 0.25,
-  align: 'left',
-  color: settings.textColor,
-});
-const lText = textCreator.create('', {
-  wrapWidth: 1600,
-  scale: 0.25,
-  align: 'right',
-  color: settings.textColor,
-});
-rhand.add(rText);
-lhand.add(lText);
-
-rText.rotation.x = lText.rotation.x = -Math.PI * 0.5;
-rText.position.set(0.03, 0, -0.022);
-lText.position.set(-0.12, 0, -0.022);
-
+let [leftController, rightController] = viewer.controllers;
 let leftPress;
 let rightPress;
 
+
+
+
+THREE.VRController.verbosity=1;
+
+
+window.addEventListener('vr controller connected', (event) => {
+  const controller = event.detail;
+  const handedness = leftController.style===undefined ? 'left' : 'right'
+  controller.standingMatrix = controls.getStandingMatrix();//  For 6DOF VR rigs.
+  controller.head = viewer.cameras.default;//  For 3DOF VR rigs.
+  viewer.scene.add(controller);
+
+  const hand = Props.controller.clone();
+  controller.add(hand);
+  const text = textCreator.create('', {
+    wrapWidth: 1600,
+    scale: 0.25,
+    align: handedness,
+    color: settings.textColor,
+  });
+  hand.add(text);
+  text.rotation.x = -Math.PI * 0.5;
+  if (handedness==='left') text.position.set(-0.12, 0, -0.022);
+  else text.position.set(0.03, 0, -0.022);
+
+  controller.setButtonVisibility = ( flag ) => {
+    hand.getObjectByName( 'button' ).visible = flag;
+  }
+
+
+
+
+  console.log('controller connected!',handedness);
+
+
+  //  I don't know where rightPress() and leftPress() are coming from
+  //  so it's hard to make this more efficient by abtracting that to
+  //  just press().
+
+  controller.addEventListener('thumbpad press began', () => {
+    if (handedness==='left' && leftPress) leftPress();
+    if (handedness==='right' && rightPress) rightPress();
+    console.log('thumbpad press began',handedness)
+  })
+
+
+
+/*
+  if (controller.style==='rift') {
+    controller.addEventListener('primary press began', (event) => {
+      console.log('primary press began')//TODO: hook this up
+    });
+    controller.addEventListener('primary press ended', (event) => {
+      console.log('primary press ended')//TODO: hook this up
+    });
+  }
+  else {
+    controller.addEventListener('thumbpad press began', (event) => {
+      console.log('thumbpad press began')//TODO: hook this up
+    });
+    controller.addEventListener('thumbpad press ended', (event) => {
+      console.log('thumbpad press ended')//TODO: hook this up
+    });
+  }*/
+
+
+
+
+  if (handedness==='left') {
+
+    leftController = controller
+  }
+  else if (handedness==='right') {
+
+    rightController = controller
+  }
+
+
+
+
+
+}, false);
+
+
+
+
+
+
+
+
+
+
+
+/*
 leftController.addEventListener('thumbpaddown', () => {
   if (leftPress) leftPress();
 });
@@ -39,17 +111,21 @@ rightController.addEventListener('thumbpaddown', () => {
   if (rightPress) rightPress();
 });
 
+
 const rButton = rhand.getObjectByName( 'button' );
 const lButton = lhand.getObjectByName( 'button' );
+
 
 function setButtonVisibility( hand, flag ){
   const button = (hand === 'left') ? lButton : rButton;
   button.visible = flag;
 }
+*/
 
 export default {
   update({ left, right } = {}) {
 
+    /*
     if (left) {
       lText.updateLabel(left.text);
       if (left.onPress) {
@@ -91,18 +167,21 @@ export default {
       rightPress = null;
       setButtonVisibility('right', false);
     }
+    */
   },
 
   add() {
-    leftController.add(lhand);
-    rightController.add(rhand);
+    leftController.visible=true;
+    rightController.visible=true;
   },
 
   remove() {
     rightPress = leftPress = null;
-    leftController.remove(lhand);
-    rightController.remove(rhand);
+    leftController.visible=false;
+    rightController.visible=false;
   },
 
-  setButtonVisibility,
+  setButtonVisibility( hand, flag ){//  Quick hack...
+    this[hand+'Controller'].setButtonVisibility(flag)
+  },
 };
