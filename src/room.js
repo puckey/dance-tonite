@@ -212,6 +212,7 @@ Room.reset = () => {
       count: num,
       geometry: props.orthographicRoom.geometry,
       color: getRoomColor,
+      material: props.orthographicRoom.material
     }),
   };
   roomMesh = roomMeshes.default;
