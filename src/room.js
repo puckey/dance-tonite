@@ -116,7 +116,9 @@ export default class Room {
     streamJSON(`${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.url}`,
       (error, json) => {
         if (error || !json) {
-          return callback(error);
+          if (callback) {
+            return callback(error);
+          }
         }
         if (!this.frames) {
           // First JSON is meta object:
@@ -156,7 +158,7 @@ export default class Room {
     ).applyMatrix4(roomsGroup.matrix);
   }
 
-  gotoTime(seconds, layers) {
+  gotoTime(seconds, maxLayers) {
     const { frames } = this;
     if (!frames) return;
 
@@ -166,7 +168,10 @@ export default class Room {
     let positions = frames[frameNumber];
 
     // TODO: figure out why we can't use just 'positions.length / PERFORMANCE_ELEMENT_COUNT' here:
-    const count = layers || this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
+    let count = this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
+    if (maxLayers !== undefined) {
+      count = Math.min(maxLayers, count);
+    }
 
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;

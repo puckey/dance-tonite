@@ -213,7 +213,7 @@ svg * {
   animation: grow2 2s infinite;
 }
 
-.no-vr-found-overlay {
+.tutorial-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -226,13 +226,14 @@ svg * {
   z-index: $interface-layer;
 }
 
-.no-vr-found-overlay-text {
+.tutorial-overlay-text {
   position: relative;
   top: -1rem;
   margin: 50vh auto 0;
   padding: 0 1rem;
   font-size: 2rem;
   user-select: none;
+  max-width: 75vw;
 }
 
 .vr-info-overlay {

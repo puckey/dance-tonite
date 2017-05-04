@@ -14,22 +14,29 @@ const TUTORIAL_RECORDING_URL = '1033470119233-6feddefd.json';
 
 const { roomDepth, roomOffset } = settings;
 
-let windowWidth;
-let windowHeight;
-let lineOriginX;
-let lineOriginY;
-let getLineTarget;
-let renderLayerCount;
-
-const getLineTransformString = (x1, y1, x2, y2, margin) => {
+const getLineTransform = (x1, y1, x2, y2, margin) => {
   const length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) - margin;
   const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
   return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
 };
 
 export default async (goto) => {
-  const hudEl = document.querySelector('.hud');
+  let windowWidth;
+  let windowHeight;
+  let lineOriginX;
+  let lineOriginY;
+  let getLineTarget;
+  let minLayers = 0;
+  let overlayAdded = false;
+  const hudElements = [];
+  const addToHud = (...elements) => {
+    elements.forEach((el) => {
+      hudElements.push(el);
+      hudEl.appendChild(el);
+    });
+  };
 
+  const hudEl = document.querySelector('.hud');
   const TEMP_VECTOR = new Vector3();
   const worldToScreen = (position) => {
     // map to normalized device coordinate (NDC) space
@@ -46,22 +53,31 @@ export default async (goto) => {
   const orb2 = new Orb();
 
   const tutorialText = h('div.tutorial-text', '');
-  const skipTutorialButton = h('div.skip-tutorial-button', 'Skip Tutorial');
-  const noVRFoundOverlay = h(
-    'div.no-vr-found-overlay.mod-hidden',
-    h(
-      'div.no-vr-found-overlay-text',
-      'Connect a VR headset to continue'
-    )
+  const skipTutorialButton = h(
+    'div.skip-tutorial-button',
+    {
+      onclick: () => {
+        const overlay = h(
+          'div.tutorial-overlay.mod-link',
+          {
+            href: '#',
+            onclick: performSkip,
+          },
+          h(
+            'div.tutorial-overlay-text',
+            'Click here to add your performance!'
+          )
+        );
+        addToHud(overlay);
+        overlayAdded = true;
+      }
+    },
+    'Skip Tutorial'
   );
   const closeButton = h('div.close-button', { onclick: () => { router.navigate('/'); } }, '×');
   const line = h('div.line');
 
-  hudEl.appendChild(line);
-  hudEl.appendChild(tutorialText);
-  hudEl.appendChild(skipTutorialButton);
-  hudEl.appendChild(noVRFoundOverlay);
-  hudEl.appendChild(closeButton);
+  addToHud(line, tutorialText, skipTutorialButton, closeButton);
 
   skipTutorialButton.classList.remove('mod-hidden');
 
@@ -90,18 +106,26 @@ export default async (goto) => {
   audio.mute();
   audio.fadeIn();
 
-  const performSkip = async () => {
+  const performSkip = () => {
     if (typeof navigator.getVRDisplays === 'function') {
-      const devices = await navigator.getVRDisplays();
-      if (devices.length > 0) {
-        skipTutorialButton.classList.add('mod-hidden');
-        await hud.enterVR();
-        viewer.vrEffect.requestPresent();
-        goto('record');
-        return;
-      }
+      viewer.vrEffect.requestPresent();
+      skipTutorialButton.classList.add('mod-hidden');
+      hud.enterVR();
+      goto('record');
+    } else {
+      const noVRFoundOverlay = h(
+        'div.tutorial-overlay.mod-hidden',
+        {
+          onclick: () => goto('/'),
+        },
+        h(
+          'div.tutorial-overlay-text.mod-link',
+          'A message about Vive not being found. Click here to go back.'
+        )
+      );
+      addToHud(noVRFoundOverlay);
+      noVRFoundOverlay.classList.remove('mod-hidden');
     }
-    noVRFoundOverlay.classList.remove('mod-hidden');
   };
 
   const colorTimeline = createTimeline([
@@ -124,16 +148,16 @@ export default async (goto) => {
   const textTimeline = createTimeline([
     {
       time: 0,
-      layers: 1,
+      text: 'So here is how it works.',
     },
     {
-      time: 1,
-      text: 'This is you',
+      time: 2,
+      text: 'This is you.',
       getPosition: () => room.getHeadPosition(0, audio.time),
     },
     {
       time: 4,
-      text: 'This is the camera',
+      text: 'This is the camera.',
       getPosition: () => orb.mesh.position,
     },
     {
@@ -142,12 +166,11 @@ export default async (goto) => {
     },
     {
       time: 15,
-      text: 'Cut!',
-      layers: 2,
+      text: 'Nice moves!',
     },
     {
       time: 17,
-      text: 'Prepare for the next recording',
+      text: 'Get ready to add another layer…',
     },
     {
       time: 20,
@@ -156,23 +179,44 @@ export default async (goto) => {
     },
     {
       time: 23,
-      text: 'This is your previous recording',
+      text: 'This was your previous recording',
       getPosition: () => room.getHeadPosition(0, audio.time),
     },
     {
       time: 28,
       text: 'Add up to 10 copies of yourself',
-      layers: 4,
+      layers: 5,
     },
     {
       time: 37.5,
-      callback: performSkip,
+      callback: () => {
+        if (overlayAdded) return;
+        const overlay = h(
+          'div.tutorial-overlay.mod-hidden.mod-link',
+          {
+            href: '#',
+            onclick: performSkip,
+          },
+          h(
+            'div.tutorial-overlay-text',
+            'Click here to add your performance!'
+          )
+        );
+        addToHud(overlay);
+        overlay.classList.remove('mod-hidden');
+      },
     },
   ]);
 
   const tick = () => {
     audio.tick();
-    room.gotoTime(audio.time, renderLayerCount);
+    room.gotoTime(
+      audio.time,
+      Math.max(
+        minLayers,
+        Math.ceil(audio.totalProgress / 2)
+      )
+    );
     const progress = audio.progress - 1; // value between -1 and 1
     colorTimeline.tick(audio.progress);
     textTimeline.tick(audio.currentTime);
@@ -183,7 +227,7 @@ export default async (goto) => {
 
     if (getLineTarget) {
       const { x, y } = worldToScreen(getLineTarget());
-      line.style.transform = getLineTransformString(
+      line.style.transform = getLineTransform(
         lineOriginX,
         lineOriginY,
         x,
@@ -204,26 +248,22 @@ export default async (goto) => {
     if (text) {
       tutorialText.innerHTML = text;
     }
-    if (layers) {
-      renderLayerCount = layers;
-    }
     getLineTarget = getPosition;
     line.style.opacity = getPosition ? 1 : 0;
+    if (layers) {
+      minLayers = layers;
+    }
   });
 
   viewer.events.on('tick', tick);
-  skipTutorialButton.addEventListener('click', performSkip);
   window.addEventListener('resize', updateWindowDimensions);
   updateWindowDimensions();
 
   return () => {
     window.removeEventListener('resize', updateWindowDimensions);
-    skipTutorialButton.removeEventListener('click', performSkip);
-    hudEl.removeChild(tutorialText);
-    hudEl.removeChild(noVRFoundOverlay);
-    hudEl.removeChild(skipTutorialButton);
-    hudEl.removeChild(closeButton);
-    hudEl.removeChild(line);
+    hudElements.forEach((el) => {
+      hudEl.removeChild(el);
+    });
     audio.reset();
     Room.reset();
     audio.fadeOut();
