@@ -12,10 +12,10 @@ let rightPress;
 
 
 //THREE.VRController.verbosity=1;
-console.log( THREE.VRController.controllers )
+//console.log( THREE.VRController.controllers )
 
 
-console.log('can has window events?', window.addEventListener)
+//console.log('can has window events?', window.addEventListener)
 
 window.addEventListener('vr controller connected', (event) => {
   const controller = event.detail;
@@ -28,7 +28,7 @@ window.addEventListener('vr controller connected', (event) => {
 
 
 
-  console.log('@#$%@#$%@#$%@#$%@#$%@#$%@#$%@#$%   controller connected!',handedness);
+  //console.log('@#$%@#$%@#$%@#$%@#$%@#$%@#$%@#$%   controller connected!',handedness);
 
 
 
@@ -52,7 +52,7 @@ window.addEventListener('vr controller connected', (event) => {
   function handlePress(){
     if (handedness==='left' && leftPress) leftPress();
     if (handedness==='right' && rightPress) rightPress();
-    console.log('press event began',handedness)
+    //console.log('press event began',handedness)
   }
   if (controller.style==='rift') {
     controller.addEventListener('primary press began', handlePress);
@@ -100,7 +100,14 @@ window.addEventListener('vr controller connected', (event) => {
   if (handedness==='left') leftController = controller
   else if (handedness==='right') rightController = controller
 
-}, true);
+
+  //  Oh, and we ought to patch viewer{} as well.
+  //  Not so elegant, but necessary for a quick fix.
+
+  viewer.controllers[0] = leftController
+  viewer.controllers[1] = rightController
+
+}, false);
 
 
 
