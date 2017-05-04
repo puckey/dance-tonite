@@ -1,4 +1,5 @@
 import * as THREE from './lib/three';
+import Settings from './settings';
 
 const group = new THREE.Group();
 
@@ -21,7 +22,7 @@ function reset( event ){
   clear();
 }
 
-const lineMaterial = new THREE.LineBasicMaterial();
+const lineMaterial = new THREE.LineBasicMaterial({color:Settings.textColor});
 const groundLineMaterial = new THREE.LineBasicMaterial();
 const extrudeMaterial = new THREE.MeshBasicMaterial({
   transparent: true,
