@@ -95,6 +95,11 @@ window.addEventListener('vr controller connected', (event) => {
   };
 
 
+  controller.addEventListener('disconnected', ( event )=>{
+    controller.visible=false;
+  });
+
+
   //  Export as either left or right.
 
   if (handedness==='left') leftController = controller
