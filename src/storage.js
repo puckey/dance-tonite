@@ -11,7 +11,9 @@ const persist = (json) => new Promise((resolve, reject) => {
 });
 
 const loadPlaylist = async (filename) => {
-  const response = await fetch(`/public/playlists/${filename}`);
+  const response = await fetch(`/public/playlists/${filename}`, {
+    credentials: 'include',
+  });
   const data = await response.json();
   return data;
 };

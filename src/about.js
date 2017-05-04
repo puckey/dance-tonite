@@ -22,7 +22,9 @@ const toggle = async () => {
   }
   if (!fetched) {
     fetched = true;
-    const response = await fetch(aboutSrc);
+    const response = await fetch(aboutSrc, {
+      credentials: 'include',
+    });
     const data = await response.text();
     about.innerHTML = data;
     about.appendChild(closeButton);
