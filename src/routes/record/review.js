@@ -66,7 +66,7 @@ export default async (goto) => {
       text: 'Okay, here we go again',
       duration: 5000,
     });
-    goto('start');
+    goto('record');
   };
 
   await Promise.all(

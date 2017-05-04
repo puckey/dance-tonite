@@ -119,7 +119,8 @@ export default async (goto, req) => {
   const orb = new Orb();
   const orb2 = new Orb();
 
-  viewer.scene.add( dp.outline );
+  viewer.scene.add(dp.outline);
+  controllers.add();
   return () => {
     instructions.remove();
     controllers.remove();
@@ -130,6 +131,6 @@ export default async (goto, req) => {
     room.destroy();
     orb.destroy();
     orb2.destroy();
-    viewer.scene.remove( dp.outline );
+    viewer.scene.remove(dp.outline);
   };
 };

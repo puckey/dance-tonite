@@ -26,7 +26,7 @@ const audio = Object.assign(emitter(), {
     this.currentTime = audioElement
       ? audioElement.currentTime
       : (context.currentTime - startTime);
-    const time = this.time = (this.currentTime) % duration;
+    const time = this.time = this.currentTime % duration;
 
     const { loopDuration, loopOffset } = this;
     this.loopOffsetTime = time;

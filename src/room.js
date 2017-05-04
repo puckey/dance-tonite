@@ -180,9 +180,7 @@ export default class Room {
       this.headMesh.geometry.maxInstancedCount = count;
     }
     this.handMesh.geometry.maxInstancedCount = count * 2;
-    if (frameNumber > frames.length - 3) {
-      frameNumber = frames.length - 4;
-    }
+
     // Check if data is still a string:
     if (positions[0] === '[') {
       positions = frames[frameNumber] = JSON.parse(positions);
@@ -245,7 +243,7 @@ Room.reset = () => {
       count: settings.loopCount,
       geometry: props.orthographicRoom.geometry,
       color: getRoomColor,
-      material: props.orthographicRoom.material
+      material: props.orthographicRoom.material,
     }),
   };
   roomMesh = roomMeshes.default;
