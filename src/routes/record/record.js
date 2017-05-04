@@ -10,16 +10,28 @@ import transition from '../../transition';
 import instructions from '../../instructions';
 import dp from '../../debugplane';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
+import { sleep } from '../../utils/async';
 
 const { roomDepth, roomOffset } = settings;
 
 export default async (goto, req) => {
   const performFinish = async () => {
-    await transition.fadeOut();
+    instructions.remove();
+    await Promise.all([
+      // Wait for loop to finish:
+      sleep(
+        (audio.duration - audio.time) < (audio.loopDuration / 2)
+        ? (audio.duration - audio.time + 0.1) * 1000
+        : 0
+      ).then(() => {
+        recording.stop();
+      }),
+      audio.fadeOut(),
+      transition.enter({
+        text: 'Let’s review your performance',
+      }),
+    ]);
     goto('review');
-    transition.enter({
-      text: 'Let’s review your performance',
-    });
   };
 
   const performStart = async () => {
@@ -44,7 +56,6 @@ export default async (goto, req) => {
       onPress: performStart,
     },
   };
-
   const timeline = createTimeline([
     {
       time: 0,
@@ -56,7 +67,7 @@ export default async (goto, req) => {
           controllers.update(pressToFinish);
         }
         instructions.setSubText('start in');
-        instructions.beginCountdown(audio.loopDuration);
+        instructions.beginCountdown(audio.loopDuration - audio.loopOffsetTime);
       },
     },
     {
@@ -71,8 +82,8 @@ export default async (goto, req) => {
   const tick = () => {
     audio.tick();
     room.gotoTime(audio.time);
-    const progress = audio.progress - 1; // value between -1 and 1
-    timeline.tick(audio.progress);
+    const progress = audio.loopOffsetProgress - 1; // value between -1 and 1
+    timeline.tick(audio.loopOffsetProgress);
 
     const z = (progress - 0.5) * roomDepth + roomOffset;
     orb.move(z);
@@ -80,13 +91,16 @@ export default async (goto, req) => {
 
     recording.tick();
   };
-
-  recording.reset();
-  recording.room = req.params.roomIndex || Math.floor(Math.random() * settings.loopCount) + 1;
+  recording.setup({
+    loopIndex: req.params.loopIndex
+      || (Math.floor(Math.random() * settings.loopCount) + 1),
+    hideHead: req.params.hideHead === '1',
+  });
 
   await audio.load({
-    src: `/public/sound/room-${recording.room}.ogg`,
+    src: `/public/sound/room-${recording.loopIndex}.ogg`,
     loops: 2,
+    loopOffset: 0.5,
   });
   await transition.exit();
 
@@ -105,7 +119,8 @@ export default async (goto, req) => {
   const orb = new Orb();
   const orb2 = new Orb();
 
-  viewer.scene.add( dp.outline );
+  viewer.scene.add(dp.outline);
+  controllers.add();
   return () => {
     instructions.remove();
     controllers.remove();
@@ -116,6 +131,6 @@ export default async (goto, req) => {
     room.destroy();
     orb.destroy();
     orb2.destroy();
-    viewer.scene.remove( dp.outline );
+    viewer.scene.remove(dp.outline);
   };
 };

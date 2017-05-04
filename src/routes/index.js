@@ -12,8 +12,8 @@ let current;
 
 const routes = {
   '/plane': plane,
-  '/record/:roomIndex?': record,
-  '/:id?': playback,
+  '/record/:loopIndex?/:hideHead?': record,
+  '/:loopIndex?/:id?': playback,
   '/*': notFound,
 };
 

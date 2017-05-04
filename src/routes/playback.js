@@ -1,8 +1,8 @@
 import Orb from '../orb';
 import audio from '../audio';
 import audioPool from '../utils/audio-pool';
-import audioSrcOgg from '../public/sound/lcd-14loops.ogg';
-import audioSrcMp3 from '../public/sound/lcd-14loops.mp3';
+import audioSrcOgg from '../public/sound/tonite-24-loops.ogg';
+import audioSrcMp3 from '../public/sound/tonite-24-loops.mp3';
 import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
@@ -19,7 +19,6 @@ import props from '../props';
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { roomDepth, roomOffset, holeHeight } = settings;
 let progressBar;
-const loopCount = 16;
 
 const toggleVR = async () => {
   if (viewer.vrEffect.isPresenting) {
@@ -89,31 +88,32 @@ export default {
     orb = new Orb();
 
     const moveCamera = (progress) => {
-      const z = ((progress - 1.5) * roomDepth) + roomOffset;
+      const emptySpace = 2.5;
+      const z = ((progress - emptySpace) * roomDepth) + roomOffset;
       viewer.camera.position.set(0, holeHeight, -z);
       orb.move(-z);
     };
 
     moveCamera(0);
-
     Room.rotate180();
     playlist = new Playlist();
     playlist.load({
       url: 'curated.json',
       pathRecording: req.params.id,
+      loopIndex: parseInt(req.params.loopIndex, 10),
     });
     tick = () => {
       audio.tick();
       playlist.tick();
       titles.tick();
-      progressBar.style.transform = `scaleX(${audio.progress / loopCount})`;
+      progressBar.style.transform = `scaleX(${audio.progress / settings.totalLoopCount})`;
       moveCamera(audio.progress);
     };
 
     await audio.load({
       audioElement,
       src: audioSrc,
-      loops: loopCount,
+      loops: settings.totalLoopCount,
       progressive: true,
     });
 

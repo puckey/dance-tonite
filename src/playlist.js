@@ -6,6 +6,7 @@ import audio from './audio';
 
 export default class Playlist {
   constructor({ recording } = {}) {
+    this.isRecording = !!recording;
     if (recording) {
       const rooms = this.rooms = [];
       for (let i = 0; i < 10; i++) {
@@ -14,13 +15,12 @@ export default class Playlist {
     }
   }
 
-  async load({ url, pathRecording }) {
+  async load({ url, pathRecording, loopIndex }) {
     const urls = await storage.loadPlaylist(url);
-    if (pathRecording) urls[1] = `${pathRecording}.json`;
+    if (pathRecording) urls[loopIndex - 1] = `${pathRecording}.json`;
     this.rooms = urls.map(
       (recordingUrl, index) => new Room({
         url: recordingUrl,
-        showHead: !/head=false/.test(recordingUrl),
         index,
       }),
     );
@@ -45,6 +45,10 @@ export default class Playlist {
       const oddRoom = i % 2 === 1;
       if (oddRoom) {
         time += audio.loopDuration;
+      }
+      // Playback mode is offset by half a loop:
+      if (!this.isRecording) {
+        time += audio.loopDuration / 2;
       }
       room.gotoTime(time % (audio.loopDuration * 2));
     }
