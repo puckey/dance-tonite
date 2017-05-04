@@ -18,7 +18,7 @@ let windowWidth;
 let windowHeight;
 let lineOriginX;
 let lineOriginY;
-let lineTarget;
+let getLineTarget;
 let renderLayerCount;
 
 const getLineTransformString = (x1, y1, x2, y2, margin) => {
@@ -129,12 +129,12 @@ export default async (goto) => {
     {
       time: 1,
       text: 'This is you',
-      position: orb.mesh.position,
+      getPosition: () => room.getHeadPosition(0, audio.time),
     },
     {
       time: 4,
       text: 'This is the camera',
-      position: orb.mesh.position,
+      getPosition: () => orb.mesh.position,
     },
     {
       time: 7,
@@ -152,12 +152,12 @@ export default async (goto) => {
     {
       time: 20,
       text: 'This is you',
-      position: orb.mesh.position,
+      getPosition: () => room.getHeadPosition(1, audio.time),
     },
     {
       time: 23,
       text: 'This is your previous recording',
-      position: orb.mesh.position,
+      getPosition: () => room.getHeadPosition(0, audio.time),
     },
     {
       time: 28,
@@ -181,9 +181,8 @@ export default async (goto) => {
     orb.move(z);
     orb2.move(z - roomDepth * 2);
 
-    if (lineTarget) {
-      const { x, y } = worldToScreen(lineTarget);
-      line.style.opacity = 1;
+    if (getLineTarget) {
+      const { x, y } = worldToScreen(getLineTarget());
       line.style.transform = getLineTransformString(
         lineOriginX,
         lineOriginY,
@@ -191,8 +190,6 @@ export default async (goto) => {
         y,
         windowHeight * 0.03
       );
-    } else {
-      line.style.opacity = 0;
     }
   };
 
@@ -203,14 +200,15 @@ export default async (goto) => {
     lineOriginY = tutorialText.offsetHeight * 1.2;
   };
 
-  textTimeline.on('keyframe', ({ text, position, layers }) => {
+  textTimeline.on('keyframe', ({ text, getPosition, layers }) => {
     if (text) {
       tutorialText.innerHTML = text;
     }
     if (layers) {
       renderLayerCount = layers;
     }
-    lineTarget = position;
+    getLineTarget = getPosition;
+    line.style.opacity = getPosition ? 1 : 0;
   });
 
   viewer.events.on('tick', tick);
