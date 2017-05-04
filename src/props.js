@@ -126,7 +126,9 @@ const props = Object.assign(emitter(), {
   }()),
 
   longGrid: (function createGrid() {
-    return new GridHelper(500, 500, 0xaaaa00, 0xaaaa00);
+    const longGrid = new GridHelper(400, 400, 0xaaaa00, 0xaaaa00);
+    longGrid.position.y = -0.1;
+    return longGrid;
   }()),
 });
 
