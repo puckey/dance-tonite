@@ -167,6 +167,7 @@ export default class Room {
 
     if (frames.length <= frameNumber) return;
     let positions = frames[frameNumber];
+    if (!positions) return;
 
     // TODO: figure out why we can't use just 'positions.length / PERFORMANCE_ELEMENT_COUNT' here:
     let count = this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
