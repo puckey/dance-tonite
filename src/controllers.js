@@ -12,25 +12,25 @@ let rightPress;
 
 
 //THREE.VRController.verbosity=1;
-//THREE.VRController.controllers
+console.log( THREE.VRController.controllers )
 
 
 console.log('can has window events?', window.addEventListener)
 
 window.addEventListener('vr controller connected', (event) => {
-
-
-  console.log('controller connected!',handedness);
-
-
-
   const controller = event.detail;
   //  Can take this further and see if controller.gamepad.hand contains a "left" or "right" string.
   //  (It's blank half the time... very unreliable!)
-  const handedness = leftController.style===undefined ? 'left' : 'right'
+  const handedness = leftController.gamepad===undefined ? 'left' : 'right'
   controller.standingMatrix = viewer.controls.getStandingMatrix();//  For 6DOF VR rigs.
   controller.head = viewer.cameras.default;//  For 3DOF VR rigs.
   viewer.scene.add(controller);
+
+
+
+  console.log('@#$%@#$%@#$%@#$%@#$%@#$%@#$%@#$%   controller connected!',handedness);
+
+
 
   const hand = Props.controller.clone();
   controller.add(hand);
@@ -100,7 +100,7 @@ window.addEventListener('vr controller connected', (event) => {
   if (handedness==='left') leftController = controller
   else if (handedness==='right') rightController = controller
 
-}, false);
+}, true);
 
 
 
