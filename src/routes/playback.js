@@ -1,24 +1,22 @@
 import Orb from '../orb';
 import audio from '../audio';
 import audioPool from '../utils/audio-pool';
-import audioSrcOgg from '../public/sound/tonite-24-loops.ogg';
-import audioSrcMp3 from '../public/sound/tonite-24-loops.mp3';
+import audioSrcOgg from '../public/sound/lcd-14loops.ogg';
+import audioSrcMp3 from '../public/sound/lcd-14loops.mp3';
 import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
 import about from '../about';
 import titles from '../titles';
-import transition from '../transition';
 import hud from '../hud';
 import feature from '../utils/feature';
 import { sleep } from '../utils/async';
 import Room from '../room';
-import { queryData } from '../utils/url';
-import props from '../props';
 
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { roomDepth, roomOffset, holeHeight } = settings;
 let progressBar;
+const loopCount = 16;
 
 const toggleVR = async () => {
   if (viewer.vrEffect.isPresenting) {
@@ -31,17 +29,7 @@ const toggleVR = async () => {
     viewer.vrEffect.requestPresent();
     await audio.fadeOut();
     viewer.switchCamera('default');
-
-    if (queryData.demo) {
-      transition.enter({
-        text: 'Let us know when you\'re ready',
-      });
-      // TODO listen for daydream button press
-      // await daydreamButtonPressed;
-    } else {
-      await sleep(5000);
-    }
-
+    await sleep(5000);
     audio.rewind();
     audio.play();
   }
@@ -88,38 +76,35 @@ export default {
     orb = new Orb();
 
     const moveCamera = (progress) => {
-      const emptySpace = 2.5;
-      const z = ((progress - emptySpace) * roomDepth) + roomOffset;
+      const z = ((progress - 1.5) * roomDepth) + roomOffset;
       viewer.camera.position.set(0, holeHeight, -z);
       orb.move(-z);
     };
 
     moveCamera(0);
+
     Room.rotate180();
     playlist = new Playlist();
     playlist.load({
       url: 'curated.json',
       pathRecording: req.params.id,
-      loopIndex: parseInt(req.params.loopIndex, 10),
     });
     tick = () => {
       audio.tick();
       playlist.tick();
       titles.tick();
-      progressBar.style.transform = `scaleX(${audio.progress / settings.totalLoopCount})`;
+      progressBar.style.transform = `scaleX(${audio.progress / loopCount})`;
       moveCamera(audio.progress);
     };
 
     await audio.load({
       audioElement,
       src: audioSrc,
-      loops: settings.totalLoopCount,
+      loops: loopCount,
       progressive: true,
     });
-
     audio.play();
     hud.hideLoader();
-    viewer.scene.add(props.longGrid);
     viewer.events.on('tick', tick);
   },
 
