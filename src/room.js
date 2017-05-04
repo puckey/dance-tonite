@@ -27,6 +27,21 @@ const ROTATION_MATRIX = new THREE.Matrix4().makeRotationAxis(
 );
 const IDENTITY_MATRIX = new THREE.Matrix4();
 
+const secondsToFrames = (seconds) => Math.floor((seconds % (audio.loopDuration * 2)) * 90);
+
+const getPosition = (positions, arrayOffset, offset) => tempVector(
+  positions[arrayOffset] * 0.0001,
+  positions[arrayOffset + 1] * 0.0001,
+  positions[arrayOffset + 2] * 0.0001 - settings.roomOffset
+).add(offset);
+
+const getQuaternion = (positions, arrayOffset) => tempQuaternion(
+  positions[arrayOffset + 3] * 0.0001,
+  positions[arrayOffset + 4] * 0.0001,
+  positions[arrayOffset + 5] * 0.0001,
+  positions[arrayOffset + 6] * 0.0001
+);
+
 const transformMesh = (
   instancedMesh,
   positions,
@@ -35,21 +50,18 @@ const transformMesh = (
   scale,
   offset,
 ) => {
-  // if (positions.length < arrayOffset) return;
-  const x = positions[arrayOffset] * 0.0001;
-  const y = positions[arrayOffset + 1] * 0.0001;
-  const z = positions[arrayOffset + 2] * 0.0001;
-  const qx = positions[arrayOffset + 3] * 0.0001;
-  const qy = positions[arrayOffset + 4] * 0.0001;
-  const qz = positions[arrayOffset + 5] * 0.0001;
-  const qw = positions[arrayOffset + 6] * 0.0001;
-  
   instancedMesh.setPositionAt(
     index,
-    tempVector(x, y, z - settings.roomOffset).add(offset),
+    getPosition(positions, arrayOffset, offset)
   );
-  instancedMesh.setQuaternionAt(index, tempQuaternion(qx, qy, qz, qw));
-  instancedMesh.setScaleAt(index, tempVector(scale, scale, scale));
+  instancedMesh.setQuaternionAt(
+    index,
+    getQuaternion(positions, arrayOffset, offset)
+  );
+  instancedMesh.setScaleAt(
+    index,
+    tempVector(scale, scale, scale)
+  );
   instancedMesh.needsUpdate();
 };
 
@@ -105,7 +117,9 @@ export default class Room {
     streamJSON(`${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.url}`,
       (error, json) => {
         if (error || !json) {
-          return callback(error);
+          if (callback) {
+            return callback(error);
+          }
         }
         if (!this.frames) {
           // First JSON is meta object:
@@ -137,16 +151,28 @@ export default class Room {
     }
   }
 
-  gotoTime(seconds) {
+  getHeadPosition(index, seconds) {
+    return getPosition(
+      this.frames[secondsToFrames(seconds)],
+      index * PERFORMANCE_ELEMENT_COUNT,
+      this.position
+    ).applyMatrix4(roomsGroup.matrix);
+  }
+
+  gotoTime(seconds, maxLayers) {
     const { frames } = this;
     if (!frames) return;
 
-    let frameNumber = Math.floor((seconds % (audio.loopDuration * 2)) * 90);
+    const frameNumber = secondsToFrames(seconds);
 
     if (frames.length <= frameNumber) return;
     let positions = frames[frameNumber];
+
     // TODO: figure out why we can't use just 'positions.length / PERFORMANCE_ELEMENT_COUNT' here:
-    const count = this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
+    let count = this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
+    if (maxLayers !== undefined) {
+      count = Math.min(maxLayers, count);
+    }
 
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
@@ -161,6 +187,7 @@ export default class Room {
     if (positions[0] === '[') {
       positions = frames[frameNumber] = JSON.parse(positions);
     }
+
     for (let i = 0; i < count; i++) {
       if (!this.hideHead) {
         transformMesh(
@@ -218,6 +245,7 @@ Room.reset = () => {
       count: settings.loopCount,
       geometry: props.orthographicRoom.geometry,
       color: getRoomColor,
+      material: props.orthographicRoom.material
     }),
   };
   roomMesh = roomMeshes.default;
