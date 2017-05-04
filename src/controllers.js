@@ -11,13 +11,24 @@ let rightPress;
 
 
 
-THREE.VRController.verbosity=1;
+//THREE.VRController.verbosity=1;
+//THREE.VRController.controllers
 
+
+console.log('can has window events?', window.addEventListener)
 
 window.addEventListener('vr controller connected', (event) => {
+
+
+  console.log('controller connected!',handedness);
+
+
+
   const controller = event.detail;
+  //  Can take this further and see if controller.gamepad.hand contains a "left" or "right" string.
+  //  (It's blank half the time... very unreliable!)
   const handedness = leftController.style===undefined ? 'left' : 'right'
-  controller.standingMatrix = controls.getStandingMatrix();//  For 6DOF VR rigs.
+  controller.standingMatrix = viewer.controls.getStandingMatrix();//  For 6DOF VR rigs.
   controller.head = viewer.cameras.default;//  For 3DOF VR rigs.
   viewer.scene.add(controller);
 
@@ -35,150 +46,86 @@ window.addEventListener('vr controller connected', (event) => {
   else text.position.set(0.03, 0, -0.022);
 
   controller.setButtonVisibility = ( flag ) => {
-    hand.getObjectByName( 'button' ).visible = flag;
+    hand.getObjectByName('button').visible = flag;
   }
 
-
-
-
-  console.log('controller connected!',handedness);
-
-
-  //  I don't know where rightPress() and leftPress() are coming from
-  //  so it's hard to make this more efficient by abtracting that to
-  //  just press().
-
-  controller.addEventListener('thumbpad press began', () => {
+  function handlePress(){
     if (handedness==='left' && leftPress) leftPress();
     if (handedness==='right' && rightPress) rightPress();
-    console.log('thumbpad press began',handedness)
-  })
-
-
-
-/*
+    console.log('press event began',handedness)
+  }
   if (controller.style==='rift') {
-    controller.addEventListener('primary press began', (event) => {
-      console.log('primary press began')//TODO: hook this up
-    });
-    controller.addEventListener('primary press ended', (event) => {
-      console.log('primary press ended')//TODO: hook this up
-    });
+    controller.addEventListener('primary press began', handlePress);
+    controller.addEventListener('primary press ended', handlePress);
   }
   else {
-    controller.addEventListener('thumbpad press began', (event) => {
-      console.log('thumbpad press began')//TODO: hook this up
-    });
-    controller.addEventListener('thumbpad press ended', (event) => {
-      console.log('thumbpad press ended')//TODO: hook this up
-    });
-  }*/
-
-
-
-
-  if (handedness==='left') {
-
-    leftController = controller
-  }
-  else if (handedness==='right') {
-
-    rightController = controller
+    controller.addEventListener('thumbpad press began', handlePress);
+    controller.addEventListener('thumbpad press ended', handlePress);
   }
 
+  controller.updateOn = ( options ) => {
+    text.updateLabel(options.text);
+    if (options.onPress) controller.setButtonVisibility(true);
+    if (handedness==='left'){
+      leftPress = () => {
+        if (options.removeOnPress) {
+          text.updateLabel('');
+          leftPress = null;
+          controller.setButtonVisibility(false);
+        }
+        if (options.onPress) options.onPress();
+      };
+    }
+    else if(handedness==='right'){
+      rightPress = () => {
+        if (options.removeOnPress) {
+          text.updateLabel('');
+          rightPress = null;
+          controller.setButtonVisibility(false);
+        }
+        if (options.onPress) options.onPress();
+      };
+    }
+  };
+  controller.updateOff = ( options ) => {
+    text.updateLabel('');
+    if (handedness==='left') leftPress = null;
+    else if(handedness==='right') rightPress = null;
+    controller.setButtonVisibility(false);
+  };
 
 
+  //  Export as either left or right.
 
+  if (handedness==='left') leftController = controller
+  else if (handedness==='right') rightController = controller
 
 }, false);
 
 
 
 
-
-
-
-
-
-
-
-/*
-leftController.addEventListener('thumbpaddown', () => {
-  if (leftPress) leftPress();
-});
-
-rightController.addEventListener('thumbpaddown', () => {
-  if (rightPress) rightPress();
-});
-
-
-const rButton = rhand.getObjectByName( 'button' );
-const lButton = lhand.getObjectByName( 'button' );
-
-
-function setButtonVisibility( hand, flag ){
-  const button = (hand === 'left') ? lButton : rButton;
-  button.visible = flag;
-}
-*/
-
 export default {
   update({ left, right } = {}) {
-
-    /*
-    if (left) {
-      lText.updateLabel(left.text);
-      if (left.onPress) {
-        setButtonVisibility('left', true);
-      }
-      leftPress = () => {
-        if (left.removeOnPress) {
-          lText.updateLabel('');
-          leftPress = null;
-          setButtonVisibility('left', false);
-        }
-        if (left.onPress) {
-          left.onPress();
-        }
-      };
-    } else {
-      lText.updateLabel('');
-      leftPress = null;
-      setButtonVisibility('left', false);
+    if(leftController.gamepad){//  Did we find this controller?
+      if (left) leftController.updateOn(left);
+      else leftController.updateOff(left);
     }
-
-    if (right) {
-      rText.updateLabel(right.text);
-      if (right.onPress) {
-        setButtonVisibility('right', true);
-      }
-      rightPress = () => {
-        if (right.removeOnPress) {
-          rText.updateLabel('');
-          rightPress = null;
-          setButtonVisibility('right', false);
-        }
-        if (right.onPress) {
-          right.onPress();
-        }
-      };
-    } else {
-      rText.updateLabel('');
-      rightPress = null;
-      setButtonVisibility('right', false);
+    if(rightController.gamepad){//  Did we find this controller?
+      if (right) rightController.updateOn(right);
+      else rightController.updateOff(right);
     }
-    */
   },
 
   add() {
-    leftController.visible=true;
-    rightController.visible=true;
+    leftController.visible  = true;
+    rightController.visible = true;
   },
 
   remove() {
-    rightPress = leftPress = null;
-    leftController.visible=false;
-    rightController.visible=false;
+    rightPress = leftPress  = null;
+    leftController.visible  = false;
+    rightController.visible = false;
   },
 
   setButtonVisibility( hand, flag ){//  Quick hack...
