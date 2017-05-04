@@ -1,4 +1,4 @@
-# Dance Tonight is a music video concept featuring a collaborative VR experience
+# Dance Tonite is a music video concept featuring a collaborative VR experience
 
 <div class="video-container">
 <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
