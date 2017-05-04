@@ -134,7 +134,7 @@ export default class Room {
     }
   }
 
-  gotoTime(seconds, layers = false) {
+  gotoTime(seconds, layers) {
     const { frames } = this;
     if (!frames) return;
 
@@ -144,7 +144,7 @@ export default class Room {
     let positions = frames[frameNumber];
 
     // TODO: figure out why we can't use just 'positions.length / PERFORMANCE_ELEMENT_COUNT' here:
-    const count = this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
+    const count = layers || this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
 
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
@@ -157,8 +157,7 @@ export default class Room {
       positions = frames[frameNumber] = JSON.parse(positions);
     }
 
-    const maxLayers = layers || count;
-    for (let i = 0; i < maxLayers; i++) {
+    for (let i = 0; i < count; i++) {
       if (this.showHead) {
         transformMesh(
           this.headMesh,

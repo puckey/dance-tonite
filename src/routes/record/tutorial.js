@@ -8,7 +8,7 @@ import settings from '../../settings';
 import hud from '../../hud';
 import createTimeline from '../../lib/timeline';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
-import { Vector3 as Vector } from '../../lib/three';
+import { Vector3 } from '../../lib/three';
 
 const TUTORIAL_RECORDING_URL = '1033470119233-6feddefd.json';
 
@@ -21,29 +21,27 @@ let lineOriginY;
 let lineTarget;
 let renderLayerCount;
 
-const querySelector = document.querySelector;
-
-const getLineTransformString = (x1, y1, x2, y2) => {
-  const length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+const getLineTransformString = (x1, y1, x2, y2, margin) => {
+  const length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) - margin;
   const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
   return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
 };
 
-const get2DCoordinates = position => {
-  const vector = new Vector();
-  vector.copy(position);
-
-  // map to normalized device coordinate (NDC) space
-  vector.project(viewer.camera);
-
-  // map to 2D screen space
-  const x = Math.round((vector.x + 1) * windowWidth / 2);
-  const y = Math.round((-vector.y + 1) * windowHeight / 2);
-
-  return { x, y };
-};
-
 export default async (goto) => {
+  const hudEl = document.querySelector('.hud');
+
+  const TEMP_VECTOR = new Vector3();
+  const worldToScreen = (position) => {
+    // map to normalized device coordinate (NDC) space
+    TEMP_VECTOR
+      .copy(position)
+      .project(viewer.camera);
+    TEMP_VECTOR.x = (TEMP_VECTOR.x + 1) * (windowWidth * 0.5);
+    TEMP_VECTOR.y = (-TEMP_VECTOR.y + 1) * (windowHeight * 0.5);
+
+    return TEMP_VECTOR;
+  };
+
   const orb = new Orb();
   const orb2 = new Orb();
 
@@ -59,11 +57,11 @@ export default async (goto) => {
   const closeButton = h('div.close-button', { onclick: () => { router.navigate('/'); } }, '×');
   const line = h('div.line');
 
-  querySelector('.hud').appendChild(line);
-  querySelector('.hud').appendChild(tutorialText);
-  querySelector('.hud').appendChild(skipTutorialButton);
-  querySelector('.hud').appendChild(noVRFoundOverlay);
-  querySelector('.hud').appendChild(closeButton);
+  hudEl.appendChild(line);
+  hudEl.appendChild(tutorialText);
+  hudEl.appendChild(skipTutorialButton);
+  hudEl.appendChild(noVRFoundOverlay);
+  hudEl.appendChild(closeButton);
 
   skipTutorialButton.classList.remove('mod-hidden');
 
@@ -83,6 +81,7 @@ export default async (goto) => {
     showHead: true,
     index: 1,
   });
+
   room.changeColor(waitRoomColor);
   room.load();
   Room.rotate180();
@@ -183,13 +182,14 @@ export default async (goto) => {
     orb2.move(z - roomDepth * 2);
 
     if (lineTarget) {
-      const { x, y } = get2DCoordinates(lineTarget);
+      const { x, y } = worldToScreen(lineTarget);
       line.style.opacity = 1;
       line.style.transform = getLineTransformString(
+        lineOriginX,
+        lineOriginY,
         x,
         y,
-        lineOriginX,
-        lineOriginY
+        windowHeight * 0.03
       );
     } else {
       line.style.opacity = 0;
@@ -200,7 +200,7 @@ export default async (goto) => {
     windowWidth = window.innerWidth;
     windowHeight = window.innerHeight;
     lineOriginX = windowWidth / 2;
-    lineOriginY = tutorialText.offsetHeight;
+    lineOriginY = tutorialText.offsetHeight * 1.2;
   };
 
   textTimeline.on('keyframe', ({ text, position, layers }) => {
@@ -221,11 +221,11 @@ export default async (goto) => {
   return () => {
     window.removeEventListener('resize', updateWindowDimensions);
     skipTutorialButton.removeEventListener('click', performSkip);
-    querySelector('.hud').removeChild(tutorialText);
-    querySelector('.hud').removeChild(noVRFoundOverlay);
-    querySelector('.hud').removeChild(skipTutorialButton);
-    querySelector('.hud').removeChild(closeButton);
-    querySelector('.hud').removeChild(line);
+    hudEl.removeChild(tutorialText);
+    hudEl.removeChild(noVRFoundOverlay);
+    hudEl.removeChild(skipTutorialButton);
+    hudEl.removeChild(closeButton);
+    hudEl.removeChild(line);
     audio.reset();
     Room.reset();
     audio.fadeOut();
