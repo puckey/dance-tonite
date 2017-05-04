@@ -136,6 +136,7 @@ export default {
   },
 
   setButtonVisibility( hand, flag ){//  Quick hack...
-    this[hand+'Controller'].setButtonVisibility(flag)
+    if(hand==='left') leftController.setButtonVisibility(flag)
+    else if(hand==='right') rightController.setButtonVisibility(flag)
   },
 };
