@@ -10,7 +10,8 @@ import createTimeline from '../../lib/timeline';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { Vector3 } from '../../lib/three';
 
-const TUTORIAL_RECORDING_URL = '1033470119233-6feddefd.json';
+// TODO: replace with better recording:
+const TUTORIAL_RECORDING_URL = '1030619465488-e65b1335.json?dance';
 
 const { roomDepth, roomOffset } = settings;
 
@@ -70,7 +71,7 @@ export default async (goto) => {
         );
         addToHud(overlay);
         overlayAdded = true;
-      }
+      },
     },
     'Skip Tutorial'
   );
@@ -84,6 +85,7 @@ export default async (goto) => {
   await audio.load({
     src: '/public/sound/room-7.ogg',
     loops: 2,
+    loopOffset: 0.5,
   });
 
   viewer.switchCamera('orthographic');
@@ -147,44 +149,45 @@ export default async (goto) => {
 
   const textTimeline = createTimeline([
     {
-      time: 0,
-      text: 'So here is how it works.',
-    },
-    {
-      time: 2,
+      time: 0.5,
       text: 'This is you.',
       getPosition: () => room.getHeadPosition(0, audio.time),
     },
     {
-      time: 4,
+      time: 3,
       text: 'This is the camera.',
       getPosition: () => orb.mesh.position,
     },
     {
-      time: 7,
-      text: 'Dance!',
+      time: 8,
+      text: 'Dance for the camera!',
+    },
+    // {
+    //   time: 14,
+    //   text: 'Nice moves!',
+    // },
+    {
+      time: 14,
+      getPosition: () => room.getHeadPosition(0, audio.time),
+      text: 'This is you...',
     },
     {
-      time: 15,
-      text: 'Nice moves!',
-    },
-    {
-      time: 17,
-      text: 'Get ready to add another layer…',
-    },
-    {
-      time: 20,
-      text: 'This is you',
+      time: 16,
       getPosition: () => room.getHeadPosition(1, audio.time),
+      text: 'This is you...',
     },
     {
-      time: 23,
-      text: 'This was your previous recording',
+      time: 19,
+      text: 'This is your previous recording.',
       getPosition: () => room.getHeadPosition(0, audio.time),
     },
     {
+      time: 24,
+      text: 'Dance together!',
+    },
+    {
       time: 28,
-      text: 'Add up to 10 copies of yourself',
+      text: 'Add up to 10 copies of yourself.',
       layers: 5,
     },
     {
