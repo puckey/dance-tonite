@@ -100,6 +100,7 @@ export default class Room {
       geometry: props.hand.geometry,
       color,
     });
+    this.handMesh.castShadow = true;
     roomsGroup.add(this.handMesh);
 
     if (!this.hideHead) {
@@ -108,6 +109,7 @@ export default class Room {
         geometry: props.head.geometry,
         color,
       });
+      this.headMesh.castShadow = true;
       roomsGroup.add(this.headMesh);
     }
   }
@@ -247,6 +249,8 @@ Room.reset = () => {
       material: props.orthographicRoom.material,
     }),
   };
+  roomMeshes.default.receiveShadow = true;
+  roomMeshes.orthographic.receiveShadow = true;
   roomMesh = roomMeshes.default;
   roomsGroup.add(roomMesh);
   viewer.scene.add(roomsGroup);
