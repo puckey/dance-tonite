@@ -42,6 +42,13 @@ export default async (goto, req) => {
   };
 
   const pressToFinish = {
+    left: {
+      text: 'press to restart',
+      removeOnPress: true,
+      onPress: () => {
+        goto('record');
+      },
+    },
     right: {
       text: 'press to finish',
       removeOnPress: true,
@@ -67,7 +74,7 @@ export default async (goto, req) => {
           controllers.update(pressToFinish);
         }
         instructions.setSubText('start in');
-        instructions.beginCountdown(audio.loopDuration - audio.loopOffsetTime);
+        instructions.beginCountdown(audio.loopDuration - audio.time);
       },
     },
     {
@@ -82,8 +89,8 @@ export default async (goto, req) => {
   const tick = () => {
     audio.tick();
     room.gotoTime(audio.time);
-    const progress = audio.loopOffsetProgress - 1; // value between -1 and 1
-    timeline.tick(audio.loopOffsetProgress);
+    const progress = audio.progress - 1; // value between -1 and 1
+    timeline.tick(audio.progress);
 
     const z = (progress - 0.5) * roomDepth + roomOffset;
     orb.move(z);

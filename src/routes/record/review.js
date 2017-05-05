@@ -18,7 +18,7 @@ const ROTATION = new THREE.Quaternion();
 const SCALE = new THREE.Vector3();
 
 const moveCamera = (progress) => {
-  const zPos = roomOffset + ((progress - 1.5) * roomDepth);
+  const zPos = roomOffset + ((progress - 1) * roomDepth);
   const fixedPosition = tempVector(0, settings.holeHeight, -zPos);
 
   // Move controllers relative to fixed camera:

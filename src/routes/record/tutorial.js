@@ -70,7 +70,7 @@ export default async (goto) => {
         );
         addToHud(overlay);
         overlayAdded = true;
-      },
+      }
     },
     'Skip Tutorial'
   );
@@ -84,7 +84,6 @@ export default async (goto) => {
   await audio.load({
     src: '/public/sound/room-7.ogg',
     loops: 2,
-    loopOffset: 0.5,
   });
 
   viewer.switchCamera('orthographic');
@@ -148,25 +147,29 @@ export default async (goto) => {
 
   const textTimeline = createTimeline([
     {
-      time: 0.5,
+      time: 0,
+      text: 'So here is how it works.',
+    },
+    {
+      time: 2,
       text: 'This is you.',
       getPosition: () => room.getHeadPosition(0, audio.time),
     },
     {
-      time: 2,
+      time: 4,
       text: 'This is the camera.',
       getPosition: () => orb.mesh.position,
     },
     {
-      time: 4,
+      time: 7,
       text: 'Dance!',
     },
     {
-      time: 12,
+      time: 15,
       text: 'Nice moves!',
     },
     {
-      time: 18,
+      time: 17,
       text: 'Get ready to add another layer…',
     },
     {
@@ -214,8 +217,8 @@ export default async (goto) => {
         Math.ceil(audio.totalProgress / 2)
       )
     );
-    const progress = audio.loopOffsetProgress - 1; // value between -1 and 1
-    colorTimeline.tick(audio.loopOffsetProgress);
+    const progress = audio.progress - 1; // value between -1 and 1
+    colorTimeline.tick(audio.progress);
     textTimeline.tick(audio.currentTime);
 
     const z = (progress - 0.5) * -roomDepth - roomOffset;

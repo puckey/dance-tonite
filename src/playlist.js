@@ -42,13 +42,9 @@ export default class Playlist {
     for (let i = 0; i < this.rooms.length; i++) {
       const room = this.rooms[i];
       let time = audio.time;
-      const oddRoom = i % 2 === 1;
+      const oddRoom = i % 2 === 0;
       if (oddRoom) {
         time += audio.loopDuration;
-      }
-      // Playback mode is offset by half a loop:
-      if (!this.isRecording) {
-        time += audio.loopDuration / 2;
       }
       room.gotoTime(time % (audio.loopDuration * 2));
     }
