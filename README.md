@@ -10,7 +10,7 @@
     npm run build
 
 ## Recording
-- To record a specific room, add the number behind the record url: `/record/1`, `/record/2` etc.
+- To record a specific room, add the number behind the record url: `/record/1` up to `/record/21`.
 - To record a room without heads, add the number 1 behind the room number. So, room 3, no heads: `/record/3/1`.
 
 ## Debug plane
