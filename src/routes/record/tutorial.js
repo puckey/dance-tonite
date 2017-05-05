@@ -162,10 +162,6 @@ export default async (goto) => {
       time: 8,
       text: 'Dance for the camera!',
     },
-    // {
-    //   time: 14,
-    //   text: 'Nice moves!',
-    // },
     {
       time: 14,
       getPosition: () => room.getHeadPosition(0, audio.time),
@@ -189,6 +185,10 @@ export default async (goto) => {
       time: 28,
       text: 'Add up to 10 copies of yourself.',
       layers: 5,
+    },
+    {
+      time: 32,
+      text: '',
     },
     {
       time: 37.5,
@@ -248,7 +248,8 @@ export default async (goto) => {
   };
 
   textTimeline.on('keyframe', ({ text, getPosition, layers }) => {
-    if (text) {
+    // just !text would return true on empty string, so:
+    if (text !== undefined) {
       tutorialText.innerHTML = text;
     }
     getLineTarget = getPosition;
