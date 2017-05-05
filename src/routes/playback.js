@@ -56,6 +56,7 @@ const hudSettings = {
   menuEnter: toggleVR,
   aboutButton: about.toggle,
   colophon: true,
+  chromeExperiment: true,
 };
 
 let playClicked;
