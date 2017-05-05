@@ -61,7 +61,7 @@ controls.standing = true;
 const createScene = () => {
   const scene = new THREE.Scene();
   const light = new THREE.DirectionalLight(0xffffff);
-  light.position.set(-1, 0.75, 1).normalize();
+  light.position.set(-1, 0.75, -0.75).normalize();
 
   const ambientLight = new THREE.AmbientLight( 0x444444, 0.7 );
   const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
