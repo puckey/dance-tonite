@@ -17,24 +17,34 @@ export default class Playlist {
 
   async load({ url, pathRecording, loopIndex }) {
     const urls = await storage.loadPlaylist(url);
-    if (pathRecording) urls[loopIndex - 1] = `${pathRecording}.json`;
-    this.rooms = urls.map(
-      (recordingUrl, index) => new Room({
-        url: recordingUrl,
-        index,
-      }),
-    );
-    asyncEach(
-      this.rooms,
-      3,
-      (room, callback) => {
-        // If destroyed, callback with error to stop loading further files:
-        if (this.destroyed) {
-          return callback(Error('playlist was destroyed'));
-        }
-        room.load(callback);
-      },
-    );
+    await new Promise((resolve, reject) => {
+      if (pathRecording) urls[loopIndex - 1] = `${pathRecording}.json`;
+      this.rooms = urls.map(
+        (recordingUrl, index) => new Room({
+          url: recordingUrl,
+          index,
+        }),
+      );
+      asyncEach(
+        this.rooms,
+        4,
+        (room, callback) => {
+          // If destroyed, callback with error to stop loading further files:
+          if (this.destroyed) {
+            return callback(Error('playlist was destroyed'));
+          }
+          room.load(callback);
+        },
+        (error) => {
+          console.log('done');
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        },
+      );
+    });
   }
 
   tick() {
