@@ -83,7 +83,7 @@ export default async (goto) => {
   skipTutorialButton.classList.remove('mod-hidden');
 
   await audio.load({
-    src: '/public/sound/room-7.ogg',
+    src: '/public/sound/room-1.ogg',
     loops: 2,
     loopOffset: 0.5,
   });
@@ -173,7 +173,7 @@ export default async (goto) => {
       text: 'This is you...',
     },
     {
-      time: 19,
+      time: 17,
       text: 'This is your previous recording.',
       getPosition: () => room.getHeadPosition(0, audio.time),
     },
