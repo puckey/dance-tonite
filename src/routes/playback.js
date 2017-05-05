@@ -56,6 +56,7 @@ const hudSettings = {
   menuEnter: toggleVR,
   aboutButton: about.toggle,
   colophon: true,
+  chromeExperiment: true,
 };
 
 let playClicked;
@@ -97,11 +98,7 @@ export default {
     moveCamera(0);
     Room.rotate180();
     playlist = new Playlist();
-    playlist.load({
-      url: 'curated.json',
-      pathRecording: req.params.id,
-      loopIndex: parseInt(req.params.loopIndex, 10),
-    });
+
     tick = () => {
       audio.tick();
       playlist.tick();
@@ -110,16 +107,24 @@ export default {
       moveCamera(audio.progress);
     };
 
-    await audio.load({
-      audioElement,
-      src: audioSrc,
-      loops: settings.totalLoopCount,
-      progressive: true,
-    });
-
-    audio.play();
-    hud.hideLoader();
+    hud.showLoader('');
     viewer.scene.add(props.longGrid);
+
+    await Promise.all([
+      playlist.load({
+        url: 'curated.json',
+        pathRecording: req.params.id,
+        loopIndex: parseInt(req.params.loopIndex, 10),
+      }),
+      audio.load({
+        audioElement,
+        src: audioSrc,
+        loops: settings.totalLoopCount,
+        progressive: true,
+      }),
+    ]);
+    hud.hideLoader();
+    audio.play();
     viewer.events.on('tick', tick);
   },
 
