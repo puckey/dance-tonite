@@ -6,6 +6,7 @@ import audio from './audio';
 
 export default class Playlist {
   constructor({ recording } = {}) {
+    this.isRecording = !!recording;
     if (recording) {
       const rooms = this.rooms = [];
       for (let i = 0; i < 10; i++) {
@@ -14,27 +15,36 @@ export default class Playlist {
     }
   }
 
-  async load({ url, pathRecording }) {
+  async load({ url, pathRecording, loopIndex }) {
     const urls = await storage.loadPlaylist(url);
-    if (pathRecording) urls[1] = `${pathRecording}.json`;
-    this.rooms = urls.map(
-      (recordingUrl, index) => new Room({
-        url: recordingUrl,
-        showHead: !/head=false/.test(recordingUrl),
-        index,
-      }),
-    );
-    asyncEach(
-      this.rooms,
-      3,
-      (room, callback) => {
-        // If destroyed, callback with error to stop loading further files:
-        if (this.destroyed) {
-          return callback(Error('playlist was destroyed'));
-        }
-        room.load(callback);
-      },
-    );
+    await new Promise((resolve, reject) => {
+      if (pathRecording) urls[loopIndex - 1] = `${pathRecording}.json`;
+      this.rooms = urls.map(
+        (recordingUrl, index) => new Room({
+          url: recordingUrl,
+          index,
+        }),
+      );
+      asyncEach(
+        this.rooms,
+        4,
+        (room, callback) => {
+          // If destroyed, callback with error to stop loading further files:
+          if (this.destroyed) {
+            return callback(Error('playlist was destroyed'));
+          }
+          room.load(callback);
+        },
+        (error) => {
+          console.log('done');
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        },
+      );
+    });
   }
 
   tick() {
@@ -42,7 +52,7 @@ export default class Playlist {
     for (let i = 0; i < this.rooms.length; i++) {
       const room = this.rooms[i];
       let time = audio.time;
-      const oddRoom = i % 2 === 1;
+      const oddRoom = i % 2 === 0;
       if (oddRoom) {
         time += audio.loopDuration;
       }

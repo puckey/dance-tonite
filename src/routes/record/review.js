@@ -18,7 +18,7 @@ const ROTATION = new THREE.Quaternion();
 const SCALE = new THREE.Vector3();
 
 const moveCamera = (progress) => {
-  const zPos = roomOffset + ((progress - 1.5) * roomDepth);
+  const zPos = roomOffset + ((progress - 1) * roomDepth);
   const fixedPosition = tempVector(0, settings.holeHeight, -zPos);
 
   // Move controllers relative to fixed camera:
@@ -37,7 +37,7 @@ export default async (goto) => {
   const tick = () => {
     audio.tick();
     playlist.tick();
-    moveCamera(audio.totalProgress);
+    moveCamera(audio.totalProgress + 0.5);
   };
 
   const performSubmit = async () => {
@@ -54,7 +54,7 @@ export default async (goto) => {
       sleep(5000),
     ]);
     await transition.fadeOut();
-    goto(`/${uri.replace('.json', '')}`);
+    goto(`/${recording.loopIndex}/${uri.replace('.json', '')}`);
     transition.exit({ immediate: true });
   };
 
@@ -66,13 +66,13 @@ export default async (goto) => {
       text: 'Okay, here we go again',
       duration: 5000,
     });
-    goto('start');
+    goto('record');
   };
 
   await Promise.all(
     [
       audio.load({
-        src: `/public/sound/room-${recording.room || 1}.ogg`,
+        src: `/public/sound/room-${recording.loopIndex || 1}.ogg`,
         loops: 2,
       }),
       sleep(5000),
@@ -81,8 +81,8 @@ export default async (goto) => {
   await transition.fadeOut();
   audio.play();
   viewer.events.on('tick', tick);
-  controllers.setButtonVisibility('right',true);
-  controllers.setButtonVisibility('left',true);
+  controllers.setButtonVisibility('right', true);
+  controllers.setButtonVisibility('left', true);
   controllers.update({
     left: {
       text: 'press to redo',

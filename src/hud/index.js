@@ -15,6 +15,7 @@ const elements = {
   loaderOverlayText: '.loader-overlay-text',
   vrInfoOverlay: '.vr-info-overlay',
   playButton: '.play-button',
+  chromeExperiment: '.chrome-experiment',
 };
 
 for (const i in elements) {
@@ -26,6 +27,7 @@ const defaultState = {
   menuEnter: false,
   aboutButton: false,
   colophon: false,
+  chromeExperiment: false,
 };
 
 let state = { };
@@ -97,7 +99,6 @@ const hud = {
         }
       });
     state = newState;
-    document.querySelector('.chrome-experiment').classList.add('mod-hidden');
   },
   showLoader: (label = 'Just a sec...') => {
     elements.loaderOverlayText.innerHTML = label;
