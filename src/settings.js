@@ -21,6 +21,6 @@ export default {
   loopCount: 21,
 
   // The total amount of loops contained in the playback file:
-  totalLoopCount: 25,
+  totalLoopCount: 26,
   textColor: '#ffff07',
 };
