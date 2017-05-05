@@ -22,9 +22,7 @@ const toggle = async () => {
   }
   if (!fetched) {
     fetched = true;
-    const response = await fetch(aboutSrc, {
-      credentials: 'include',
-    });
+    const response = await fetch(aboutSrc);
     const data = await response.text();
     about.innerHTML = data;
     about.appendChild(closeButton);
@@ -32,7 +30,7 @@ const toggle = async () => {
 };
 
 const about = h('div.about.mod-hidden');
-const closeButton = h('div.close-button', { onclick: toggle }, '×');
+const closeButton = h('div.about-close-button', { onclick: toggle }, '×');
 document.body.appendChild(about);
 
 export default { toggle };

@@ -90,7 +90,6 @@ const config = {
     }),
     new CopyWebpackPlugin([
       { from: 'public', to: '../dist/public' },
-      { from: 'templates/_redirects', to: '../dist/' },
     ]),
     new webpack.DefinePlugin({
       'process.env': {

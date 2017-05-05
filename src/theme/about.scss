@@ -59,7 +59,26 @@ h2 {
 }
 
 h3 {
+  // display: inline-block;
   font-size: 1rem;
+  // border-bottom: 1px solid $background-color;
   padding-bottom: 0!important;
+  // margin-bottom: 1rem!important;
   text-decoration: underline;
+}
+
+.about-close-button {
+  position: fixed;
+  top: 0;
+  right: 0;
+  font-size: 1.5rem;
+  padding: 1rem;
+  width: 1rem;
+  height: 1rem;
+  background: none;
+  cursor: pointer;
+
+  @media screen and (max-width: $min-width) {
+    position: absolute;
+  }
 }
