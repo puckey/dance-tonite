@@ -3,10 +3,9 @@ import emitter from 'mitt';
 import * as THREE from './lib/three';
 
 // import roomUrl from './public/models/obj/space-bigger-holes.obj';
-import roomUrl from './public/models/obj/space-bigger-holes.obj';
+import roomUrl from './public/models/obj/space-bigger-holes-AO.obj';
 import isometricRoomUrl from './public/models/obj/space-isometric.obj';
-import roomTextureUrl from './public/models/obj/bake/VR_AOMap.png';
-import isometricRoomTextureUrl from './public/models/obj/bake/ISO_AOMap.png';
+import roomTextureUrl from './public/models/obj/bake/baked_tpAmbient_cubeMesh.png';
 import settings from './settings';
 import { recordCostumeColor } from './theme/colors';
 
@@ -61,6 +60,7 @@ const props = Object.assign(emitter(), {
     cylinder.rotation.x = Math.PI * 0.5 * 7;
     cylinder.updateMatrix();
     cylinder.geometry.applyMatrix(cylinder.matrix);
+    cylinder.castShadow = true;
     return cylinder;
   }()),
 
@@ -105,6 +105,7 @@ const props = Object.assign(emitter(), {
     cone.rotation.x = Math.PI * 0.5 * 7;
     cone.updateMatrix();
     cone.geometry.applyMatrix(cone.matrix);
+    cone.castShadow = true;
     return cone;
   }()),
 
@@ -118,30 +119,24 @@ const props = Object.assign(emitter(), {
     const material = new MeshBasicMaterial({
       color: settings.sphereColor.clone(),
     });
-    return new Mesh(geometry, material);
+    const mesh = new Mesh(geometry, material);
+    mesh.castShadow = true;
+    return mesh;
   }()),
 
   grid: (function createGrid() {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
-  }()),
-
-  longGrid: (function createGrid() {
-    return new GridHelper(500, 500, 0xaaaa00, 0xaaaa00);
-  }()),
+  }())
 });
 
 Promise.all([
   loadObject(roomUrl),
   loadObject(isometricRoomUrl),
   preloadTexture(roomTextureUrl),
-  preloadTexture(isometricRoomTextureUrl),
 ])
-  .then(([room, isometricRoom, texture, isometricTexture]) => {
+  .then(([room, isometricRoom, texture]) => {
     room.material = new THREE.MeshLambertMaterial();
     room.material.map = texture;
-
-    isometricRoom.material = new THREE.MeshLambertMaterial();
-    isometricRoom.material.map = isometricTexture;
 
     props.room = room;
     props.orthographicRoom = isometricRoom;

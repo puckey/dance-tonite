@@ -10,10 +10,11 @@ import Stats from './lib/stats';
 import { tempVector } from './utils/three';
 import settings from './settings';
 import Room from './room';
+import * as Shadow from './shadow';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
-require('./lib/ViveController')(THREE);
+require('./lib/VRController')(THREE);
 
 const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
@@ -47,7 +48,7 @@ renderer.setClearColor(0x000000);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.sortObjects = false;
-renderer.shadowMap.enabled = false;
+Shadow.configureRenderer( renderer );
 
 const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);
@@ -57,20 +58,19 @@ const vrEffect = new THREE.VREffect(renderer);
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
 
-const controller1 = new THREE.ViveController(0);
-const controller2 = new THREE.ViveController(1);
-
-// Use controllers:
-controller1.standingMatrix = controls.getStandingMatrix();
-controller2.standingMatrix = controls.getStandingMatrix();
-
 const createScene = () => {
   const scene = new THREE.Scene();
   const light = new THREE.DirectionalLight(0xffffff);
   light.position.set(-1, 0.75, 1).normalize();
-  scene.add(new THREE.HemisphereLight(0x606060, 0x404040));
-  scene.add(light);
-  scene.add(controller1, controller2);
+
+  const ambientLight = new THREE.AmbientLight( 0x444444, 0.7 );
+  const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
+
+  scene.add( hemisphereLight );
+  scene.add( light, ambientLight );
+  scene.add( Shadow.shadowLight, Shadow.shadowTarget );
+  //  Uncomment to see shadow volume
+  // scene.add( Shadow.helper );
   scene.fog = new THREE.Fog(0x000000, 0, 75);
   return scene;
 };
@@ -117,7 +117,7 @@ const viewer = {
   cameras,
   scene,
   renderScene: scene,
-  controllers: [controller1, controller2],
+  controllers: [{}, {}],
   controls,
   createScene,
   events,
@@ -129,8 +129,9 @@ const viewer = {
         : 'default',
     );
     viewer.camera = cameras[name];
+    Shadow.setShadowProfile( name );
   },
-  vrEffect,
+  vrEffect
 };
 
 const clock = new THREE.Clock();
@@ -140,10 +141,10 @@ const animate = () => {
   if (showStats) stats.begin();
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
-  controller1.update();
-  controller2.update();
+  THREE.VRController.update();
   controls.update();
   events.emit('tick', dt);
+  Shadow.updateFollow( viewer.camera );
   if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
   vrEffect.render(viewer.renderScene, viewer.camera);
   events.emit('render', dt);
