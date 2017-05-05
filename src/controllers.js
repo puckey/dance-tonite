@@ -9,8 +9,6 @@ const textCreator = SDFText.creator();
 
 const rhand = Props.controller.clone();
 const lhand = Props.controller.clone();
-rhand.children[0].castShadow = lhand.children[0].castShadow = true;
-
 const rText = textCreator.create('', {
   wrapWidth: 1600,
   scale: 0.25,

@@ -61,7 +61,6 @@ const props = Object.assign(emitter(), {
     cylinder.rotation.x = Math.PI * 0.5 * 7;
     cylinder.updateMatrix();
     cylinder.geometry.applyMatrix(cylinder.matrix);
-    cylinder.castShadow = true;
     return cylinder;
   }()),
 
@@ -106,7 +105,6 @@ const props = Object.assign(emitter(), {
     cone.rotation.x = Math.PI * 0.5 * 7;
     cone.updateMatrix();
     cone.geometry.applyMatrix(cone.matrix);
-    cone.castShadow = true;
     return cone;
   }()),
 
@@ -120,9 +118,7 @@ const props = Object.assign(emitter(), {
     const material = new MeshBasicMaterial({
       color: settings.sphereColor.clone(),
     });
-    const mesh = new Mesh(geometry, material);
-    mesh.castShadow = true;
-    return mesh;
+    return new Mesh(geometry, material);
   }()),
 
   grid: (function createGrid() {
