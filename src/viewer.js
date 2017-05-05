@@ -20,7 +20,7 @@ const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
 const orthographicDistance = 4;
 
-const showStats = (window.location.hash.indexOf('fps') == -1) ? false : true;
+const showStats = !(window.location.hash.indexOf('fps') === -1);
 
 const cameras = (function () {
   const aspect = getWindowAspect();
@@ -48,7 +48,7 @@ renderer.setClearColor(0x000000);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.sortObjects = false;
-Shadow.configureRenderer( renderer );
+Shadow.configureRenderer(renderer);
 
 const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);
@@ -63,12 +63,12 @@ const createScene = () => {
   const light = new THREE.DirectionalLight(0xffffff);
   light.position.set(-1, 0.75, 1).normalize();
 
-  const ambientLight = new THREE.AmbientLight( 0x444444, 0.7 );
+  const ambientLight = new THREE.AmbientLight(0x444444, 0.7);
   const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
 
-  scene.add( hemisphereLight );
-  scene.add( light, ambientLight );
-  scene.add( Shadow.shadowLight, Shadow.shadowTarget );
+  scene.add(hemisphereLight);
+  scene.add(light, ambientLight);
+  scene.add(Shadow.shadowLight, Shadow.shadowTarget);
   //  Uncomment to see shadow volume
   // scene.add( Shadow.helper );
   scene.fog = new THREE.Fog(0x000000, 0, 75);
@@ -99,17 +99,16 @@ window.addEventListener('resize', () => {
 const scene = createScene();
 
 let stats;
-const statsMeshOffsetPosition = new THREE.Vector3(0.3,0.15,1);
+const statsMeshOffsetPosition = new THREE.Vector3(0.3, 0.15, 1);
 
 if (showStats) {
   stats = new Stats();
-  document.body.appendChild( stats.dom );
+  document.body.appendChild(stats.dom);
 
-  scene.add( stats.mesh );
-  stats.mesh.scale.set( 2.5, 2.5, 2.5 );
-  stats.mesh.rotation.set( 0.0, -Math.PI, 0 );
+  scene.add(stats.mesh);
+  stats.mesh.scale.set(2.5, 2.5, 2.5);
+  stats.mesh.rotation.set(0.0, -Math.PI, 0);
 }
-
 
 
 const viewer = {
@@ -129,18 +128,22 @@ const viewer = {
         : 'default',
     );
     viewer.camera = cameras[name];
-    Shadow.setShadowProfile( name );
+    Shadow.setShadowProfile(name);
   },
-  vrEffect
+  vrEffect,
 };
 
 const clock = new THREE.Clock();
 clock.start();
 
 let hasExternalDisplay = false;
-navigator.getVRDisplays().then(function(displays) {
-  if(displays[0] && displays[0].capabilities) hasExternalDisplay = displays[0].capabilities.hasExternalDisplay;
-});
+if (navigator.getVRDisplays !== undefined) {
+  navigator.getVRDisplays().then((displays) => {
+    if (displays[0] && displays[0].capabilities) {
+      hasExternalDisplay = displays[0].capabilities.hasExternalDisplay;
+    }
+  });
+}
 
 const animate = () => {
   if (showStats) stats.begin();
@@ -149,12 +152,12 @@ const animate = () => {
   THREE.VRController.update();
   controls.update();
   events.emit('tick', dt);
-  Shadow.updateFollow( viewer.camera );
+  Shadow.updateFollow(viewer.camera);
   if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
   vrEffect.render(viewer.renderScene, viewer.camera);
   if (vrEffect.isPresenting && hasExternalDisplay) {
-    renderer.render(viewer.scene,viewer.camera);
-  };
+    renderer.render(viewer.scene, viewer.camera);
+  }
   events.emit('render', dt);
   if (showStats) stats.end();
 };
