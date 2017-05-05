@@ -27,12 +27,8 @@ window.addEventListener('vr controller connected', (event) => {
   viewer.scene.add(controller);
 
 
-
-  //console.log('@#$%@#$%@#$%@#$%@#$%@#$%@#$%@#$%   controller connected!',handedness);
-
-
-
   const hand = Props.controller.clone();
+  hand.children[0].castShadow = true;
   controller.add(hand);
   const text = textCreator.create('', {
     wrapWidth: 1600,
@@ -102,15 +98,15 @@ window.addEventListener('vr controller connected', (event) => {
 
   //  Export as either left or right.
 
-  if (handedness==='left') leftController = controller
-  else if (handedness==='right') rightController = controller
+  if (handedness==='left') leftController = controller;
+  else if (handedness==='right') rightController = controller;
 
 
   //  Oh, and we ought to patch viewer{} as well.
   //  Not so elegant, but necessary for a quick fix.
 
-  viewer.controllers[0] = leftController
-  viewer.controllers[1] = rightController
+  viewer.controllers[0] = leftController;
+  viewer.controllers[1] = rightController;
 
 }, false);
 
