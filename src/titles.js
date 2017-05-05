@@ -10,7 +10,7 @@ const elements = {
   ),
   splashTitleDance: h(
     'div.splash-title.splash-title-dance.mod-hidden',
-    'Dance Tonight'
+    'Dance Tonite'
   ),
 };
 

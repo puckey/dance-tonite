@@ -1,6 +1,7 @@
 import router from '../router';
 import playback from './playback';
 import record from './record';
+import plane from './plane';
 import notFound from './not-found';
 import transition from '../transition';
 import hud from '../hud';
@@ -10,8 +11,9 @@ import Room from '../room';
 let current;
 
 const routes = {
-  '/record/:roomIndex?': record,
-  '/:id?': playback,
+  '/plane': plane,
+  '/record/:loopIndex?/:hideHead?': record,
+  '/:loopIndex?/:id?': playback,
   '/*': notFound,
 };
 
