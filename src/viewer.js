@@ -137,6 +137,11 @@ const viewer = {
 const clock = new THREE.Clock();
 clock.start();
 
+let hasExternalDisplay = false;
+navigator.getVRDisplays().then(function(displays) {
+  if(displays[0] && displays[0].capabilities) hasExternalDisplay = displays[0].capabilities.hasExternalDisplay;
+});
+
 const animate = () => {
   if (showStats) stats.begin();
   const dt = clock.getDelta();
@@ -147,6 +152,9 @@ const animate = () => {
   Shadow.updateFollow( viewer.camera );
   if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
   vrEffect.render(viewer.renderScene, viewer.camera);
+  if (vrEffect.isPresenting && hasExternalDisplay) {
+    renderer.render(viewer.scene,viewer.camera);
+  };
   events.emit('render', dt);
   if (showStats) stats.end();
 };
