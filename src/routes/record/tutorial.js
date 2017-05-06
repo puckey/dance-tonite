@@ -61,7 +61,6 @@ export default async (goto) => {
         const overlay = h(
           'div.tutorial-overlay.mod-link',
           {
-            href: '#',
             onclick: performSkip,
           },
           h(
@@ -197,7 +196,6 @@ export default async (goto) => {
         const overlay = h(
           'div.tutorial-overlay.mod-hidden.mod-link',
           {
-            href: '#',
             onclick: performSkip,
           },
           h(
