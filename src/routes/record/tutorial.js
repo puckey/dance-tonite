@@ -21,6 +21,9 @@ const getLineTransform = (x1, y1, x2, y2, margin) => {
   return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
 };
 
+let originalCameraPosition;
+let originalZoom;
+
 export default async (goto) => {
   let windowWidth;
   let windowHeight;
@@ -88,8 +91,10 @@ export default async (goto) => {
   });
 
   viewer.switchCamera('orthographic');
-  viewer.camera.position.z = 1.3;
+  originalCameraPosition = viewer.camera.position.clone();
+  originalZoom = viewer.camera.zoom;
   viewer.camera.position.y = 2;
+  viewer.camera.position.z = 1.3;
   viewer.camera.zoom = 0.7;
   viewer.camera.updateProjectionMatrix();
 
@@ -263,6 +268,10 @@ export default async (goto) => {
   updateWindowDimensions();
 
   return () => {
+    viewer.camera.position.copy(originalCameraPosition);
+    viewer.camera.zoom = originalZoom;
+    viewer.camera.updateProjectionMatrix();
+
     window.removeEventListener('resize', updateWindowDimensions);
     hudElements.forEach((el) => {
       hudEl.removeChild(el);
