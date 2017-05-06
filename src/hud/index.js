@@ -1,3 +1,4 @@
+import hyperscript from 'hyperscript';
 import router from '../router';
 import feature from '../utils/feature';
 import addIconSvg from './icons/addvr.svg';
@@ -6,6 +7,8 @@ import enterIconDisabledSvg from './icons/x_entervr.svg';
 import aboutIconSvg from './icons/about.svg';
 import { sleep } from '../utils/async';
 import viewer from '../viewer';
+
+const h = hyperscript.context();
 
 const elements = {
   menuAdd: '.menu-item-add',
@@ -29,6 +32,10 @@ const defaultState = {
 
 let state = { };
 
+const hudEl = document.querySelector('.hud');
+
+const componentElements = [];
+
 // VR state
 const toggleVRLabel = () => {
   elements.menuEnter.onmouseleave = () => {
@@ -40,7 +47,7 @@ const toggleVRLabel = () => {
 const hud = {
   prepare() {
     for (const i in elements) {
-      elements[i] = document.querySelector(elements[i]);
+      elements[i] = hudEl.querySelector(elements[i]);
     }
 
     elements.menuAdd.addEventListener('click', () => {
@@ -119,6 +126,38 @@ const hud = {
     document.body.classList.remove('mod-in-vr');
     toggleVRLabel();
   },
+
+  create(/* tag, attrs, [text?, Elements?,...] */) {
+    const el = h.apply(h, arguments);
+    return hud.add(el);
+  },
+
+  add(el) {
+    componentElements.push(el);
+    hudEl.appendChild(el);
+    return el;
+  },
+
+  remove(el) {
+    const index = componentElements.indexOf(el);
+    if (index !== -1) {
+      componentElements.splice(index, 1);
+      hudEl.removeChild(el);
+    }
+  },
+
+  clear() {
+    componentElements.forEach((el) => {
+      hudEl.removeChild(el);
+    });
+
+    // Remove event listeners from hyperscript context:
+    h.cleanup();
+
+    componentElements.length = 0;
+  },
+
+  h,
 
   elements,
 };

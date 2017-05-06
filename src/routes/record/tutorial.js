@@ -30,15 +30,7 @@ export default async (goto) => {
   let getLineTarget;
   let minLayers = 0;
   let overlayAdded = false;
-  const hudElements = [];
-  const addToHud = (...elements) => {
-    elements.forEach((el) => {
-      hudElements.push(el);
-      hudEl.appendChild(el);
-    });
-  };
 
-  const hudEl = document.querySelector('.hud');
   const TEMP_VECTOR = new Vector3();
   const worldToScreen = (position) => {
     // map to normalized device coordinate (NDC) space
@@ -54,31 +46,37 @@ export default async (goto) => {
   const orb = new Orb();
   const orb2 = new Orb();
 
-  const tutorialText = h('div.tutorial-text', '');
-  const skipTutorialButton = h(
+  const tutorialText = hud.create('div.tutorial-text', '');
+  const skipTutorialButton = hud.create(
     'div.skip-tutorial-button',
     {
       onclick: () => {
-        const overlay = h(
+        hud.create(
           'div.tutorial-overlay.mod-link',
           {
             onclick: performSkip,
           },
-          h(
+          hud.h(
             'div.tutorial-overlay-text',
             'Click here to add your performance!'
           )
         );
-        addToHud(overlay);
         overlayAdded = true;
       },
     },
     'Skip Tutorial'
   );
-  const closeButton = h('div.close-button', { onclick: () => { router.navigate('/'); } }, '×');
-  const line = h('div.line');
-
-  addToHud(line, tutorialText, skipTutorialButton, closeButton);
+  hud.create('div.close-button',
+    {
+      onClick: () => router.navigate('/'),
+    },
+    '×'
+  );
+  const lineEl = hud.create('div.line', {
+    style: {
+      transform: 'scaleX(0)',
+    },
+  });
 
   skipTutorialButton.classList.remove('mod-hidden');
 
@@ -118,18 +116,16 @@ export default async (goto) => {
       hud.enterVR();
       goto('record');
     } else {
-      const noVRFoundOverlay = h(
+      hud.create(
         'div.tutorial-overlay.mod-hidden',
         {
           onclick: () => goto('/'),
         },
-        h(
+        hud.h(
           'div.tutorial-overlay-text.mod-link',
           'A message about Vive not being found. Click here to go back.'
         )
       );
-      addToHud(noVRFoundOverlay);
-      noVRFoundOverlay.classList.remove('mod-hidden');
     }
   };
 
@@ -197,7 +193,7 @@ export default async (goto) => {
       time: 37.5,
       callback: () => {
         if (overlayAdded) return;
-        const overlay = h(
+        hud.create(
           'div.tutorial-overlay.mod-hidden.mod-link',
           {
             onclick: performSkip,
@@ -207,8 +203,6 @@ export default async (goto) => {
             'Click here to add your performance!'
           )
         );
-        addToHud(overlay);
-        overlay.classList.remove('mod-hidden');
       },
     },
   ]);
@@ -232,7 +226,7 @@ export default async (goto) => {
 
     if (getLineTarget) {
       const { x, y } = worldToScreen(getLineTarget());
-      line.style.transform = getLineTransform(
+      lineEl.style.transform = getLineTransform(
         lineOriginX,
         lineOriginY,
         x,
@@ -255,7 +249,7 @@ export default async (goto) => {
       tutorialText.innerHTML = text;
     }
     getLineTarget = getPosition;
-    line.style.opacity = getPosition ? 1 : 0;
+    lineEl.style.opacity = getPosition ? 1 : 0;
     if (layers) {
       minLayers = layers;
     }
@@ -272,9 +266,6 @@ export default async (goto) => {
     viewer.camera.updateProjectionMatrix();
 
     window.removeEventListener('resize', updateWindowDimensions);
-    hudElements.forEach((el) => {
-      hudEl.removeChild(el);
-    });
     audio.reset();
     Room.reset();
     audio.fadeOut();

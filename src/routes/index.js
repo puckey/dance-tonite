@@ -21,6 +21,7 @@ router.on('navigate', () => {
   if (current) {
     audio.fadeOut();
     current.unmount();
+    hud.clear();
     Room.reset();
     current = null;
   }

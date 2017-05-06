@@ -3,6 +3,7 @@ import review from './review';
 import tutorial from './tutorial';
 import instructions from '../../instructions';
 import router from '../../router';
+import hud from '../../hud';
 
 let unmountStep;
 
@@ -18,6 +19,7 @@ export default {
     const goto = async (step) => {
       if (unmountStep) {
         unmountStep();
+        hud.clear();
       }
       const component = components[step];
       if (component) {
