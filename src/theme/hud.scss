@@ -137,6 +137,7 @@ svg * {
   background: $text-color;
   z-index: $interface-layer;
   transform-origin: 0 100%;
+  will-change: transform;
 }
 
 .chrome-experiment {
