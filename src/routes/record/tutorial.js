@@ -68,7 +68,7 @@ export default async (goto) => {
   );
   hud.create('div.close-button',
     {
-      onClick: () => router.navigate('/'),
+      onclick: () => router.navigate('/'),
     },
     '×'
   );
@@ -108,12 +108,12 @@ export default async (goto) => {
   audio.mute();
   audio.fadeIn();
 
-  const performSkip = () => {
+  const performSkip = async () => {
     // TODO: we need to make sure the user has a vr device capable of room vr:
     if (feature.hasVR) {
       viewer.vrEffect.requestPresent();
       skipTutorialButton.classList.add('mod-hidden');
-      hud.enterVR();
+      await hud.enterVR();
       goto('record');
     } else {
       hud.create(

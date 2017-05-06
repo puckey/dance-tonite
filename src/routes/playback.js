@@ -22,16 +22,15 @@ const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { roomDepth, roomOffset, holeHeight } = settings;
 
 const toggleVR = async () => {
+  if (!feature.hasVR) return;
   if (viewer.vrEffect.isPresenting) {
-    hud.exitVR();
     viewer.vrEffect.exitPresent();
     viewer.switchCamera('orthographic');
   } else {
-    hud.enterVR();
     viewer.vrEffect.requestPresent();
+    const removeMessage = hud.enterVR();
     await audio.fadeOut();
     viewer.switchCamera('default');
-
     if (queryData.demo) {
       transition.enter({
         text: 'Let us know when you\'re ready',
@@ -39,10 +38,13 @@ const toggleVR = async () => {
       // TODO listen for daydream button press
       // await daydreamButtonPressed;
     } else {
-      await sleep(5000);
+      await sleep(1000);
+      audio.pause();
+      audio.rewind();
+      await sleep(4000);
+      removeMessage();
     }
 
-    audio.rewind();
     audio.play();
   }
 };
@@ -65,7 +67,7 @@ let audioElement;
 if (feature.isMobile) {
   playClicked = new Promise((resolve) => {
     hud.create('div.play-button', {
-      onClick: () => {
+      onclick: () => {
         this.classList.add('mod-hidden');
         audioPool.fill();
         audioElement = audioPool.get();

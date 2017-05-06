@@ -13,11 +13,9 @@ const h = hyperscript.context();
 const elements = {
   menuAdd: '.menu-item-add',
   menuEnter: '.menu-item-enter',
-  menuEnterLabel: '.menu-item-enter .menu-item-label',
   aboutButton: '.about-button',
   loaderOverlay: '.loader-overlay',
   loaderOverlayText: '.loader-overlay-text',
-  vrInfoOverlay: '.vr-info-overlay',
   playButton: '.play-button',
   chromeExperiment: '.chrome-experiment',
 };
@@ -32,23 +30,25 @@ const defaultState = {
 
 let state = { };
 
-const hudEl = document.querySelector('.hud');
-
 const componentElements = [];
-
-// VR state
-const toggleVRLabel = () => {
-  elements.menuEnter.onmouseleave = () => {
-    elements.menuEnterLabel.innerHTML = viewer.vrEffect.isPresenting ? 'Exit VR' : 'Enter VR';
-  };
-};
 
 // Interface methods
 const hud = {
   prepare() {
+    const hudEl = document.querySelector('.hud');
     for (const i in elements) {
       elements[i] = hudEl.querySelector(elements[i]);
     }
+    elements.hud = hudEl;
+
+    elements.menuEnter.addEventListener('mouseenter', function () {
+      this.querySelector('.menu-item-label')
+        .innerHTML = viewer.vrEffect.isPresenting
+          ? 'Exit VR'
+          : feature.hasVR
+            ? 'Enter VR'
+            : 'VR not found';
+    });
 
     elements.menuAdd.addEventListener('click', () => {
       router.navigate('/record');
@@ -66,6 +66,7 @@ const hud = {
     elements.menuEnter.querySelector('.menu-item-label').innerHTML = feature.hasVR
       ? 'Enter VR'
       : 'VR not found';
+
     elements.menuEnter.querySelector('.menu-item-icon').innerHTML = feature.hasVR
       ? enterIconSvg
       : enterIconDisabledSvg;
@@ -97,7 +98,6 @@ const hud = {
         if (el && visible !== state[key]) {
           el.classList[visible ? 'remove' : 'add']('mod-hidden');
         }
-        if (key === 'menuEnter' && !feature.hasVR) return;
         if (typeof handler === 'function') {
           el.addEventListener('click', handler);
         }
@@ -114,27 +114,23 @@ const hud = {
     elements.loaderOverlay.classList.add('mod-hidden');
   },
 
-  enterVR: async () => {
-    elements.vrInfoOverlay.classList.add('mod-entering-vr');
-    document.body.classList.add('mod-in-vr');
-    toggleVRLabel();
-    await sleep(2);
-  },
-
-  exitVR() {
-    elements.vrInfoOverlay.classList.remove('mod-entering-vr');
-    document.body.classList.remove('mod-in-vr');
-    toggleVRLabel();
+  enterVR: () => {
+    const el = hud.create(
+      'div.vr-info-overlay.mod-entering-vr',
+      h('div.vr-info-overlay-text', 'Put on your VR headset')
+    );
+    return () => {
+      hud.remove(el);
+    };
   },
 
   create(/* tag, attrs, [text?, Elements?,...] */) {
-    const el = h.apply(h, arguments);
-    return hud.add(el);
+    return hud.add(h.apply(h, arguments));
   },
 
   add(el) {
     componentElements.push(el);
-    hudEl.appendChild(el);
+    elements.hud.appendChild(el);
     return el;
   },
 
@@ -142,13 +138,14 @@ const hud = {
     const index = componentElements.indexOf(el);
     if (index !== -1) {
       componentElements.splice(index, 1);
-      hudEl.removeChild(el);
+      elements.hud.removeChild(el);
     }
   },
 
   clear() {
+    elements.vrInfo = null;
     componentElements.forEach((el) => {
-      hudEl.removeChild(el);
+      elements.hud.removeChild(el);
     });
 
     // Remove event listeners from hyperscript context:
