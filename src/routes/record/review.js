@@ -81,8 +81,6 @@ export default async (goto) => {
   await transition.fadeOut();
   audio.play();
   viewer.events.on('tick', tick);
-  controllers.setButtonVisibility('right', true);
-  controllers.setButtonVisibility('left', true);
   controllers.update({
     left: {
       text: 'press to redo',
