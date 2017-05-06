@@ -260,4 +260,3 @@ Room.rotate180 = () => {
   roomsGroup.matrix.copy(ROTATION_MATRIX);
 };
 
-props.on('loaded', Room.reset);

@@ -2,7 +2,6 @@ import record from './record';
 import review from './review';
 import tutorial from './tutorial';
 import instructions from '../../instructions';
-import viewer from '../../viewer';
 import router from '../../router';
 
 let unmountStep;
@@ -19,12 +18,12 @@ export default {
     const goto = async (step) => {
       if (unmountStep) {
         unmountStep();
-        unmountStep = null;
       }
       const component = components[step];
       if (component) {
         unmountStep = await components[step](goto, req);
       } else {
+        unmountStep = null;
         router.navigate(step);
       }
     };

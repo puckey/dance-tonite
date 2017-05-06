@@ -11,6 +11,7 @@ import { tempVector } from './utils/three';
 import settings from './settings';
 import Room from './room';
 import * as Shadow from './shadow';
+import feature from './utils/feature';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
@@ -136,15 +137,6 @@ const viewer = {
 const clock = new THREE.Clock();
 clock.start();
 
-let hasExternalDisplay = false;
-if (navigator.getVRDisplays !== undefined) {
-  navigator.getVRDisplays().then((displays) => {
-    if (displays[0] && displays[0].capabilities) {
-      hasExternalDisplay = displays[0].capabilities.hasExternalDisplay;
-    }
-  });
-}
-
 const animate = () => {
   if (showStats) stats.begin();
   const dt = clock.getDelta();
@@ -155,7 +147,7 @@ const animate = () => {
   Shadow.updateFollow(viewer.camera);
   if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
   vrEffect.render(viewer.renderScene, viewer.camera);
-  if (vrEffect.isPresenting && hasExternalDisplay) {
+  if (vrEffect.isPresenting && feature.hasExternalDisplay) {
     renderer.render(viewer.renderScene, viewer.camera);
   }
   events.emit('render', dt);

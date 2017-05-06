@@ -1,5 +1,3 @@
-import emitter from 'mitt';
-
 import * as THREE from './lib/three';
 
 // import roomUrl from './public/models/obj/space-bigger-holes.obj';
@@ -48,7 +46,7 @@ const preloadTexture = (url) => new Promise(
 
 const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor });
 
-const props = Object.assign(emitter(), {
+const props = {
   hand: (function createHand() {
     const radius = 0.02;
     const height = 0.2;
@@ -130,32 +128,28 @@ const props = Object.assign(emitter(), {
   }()),
 
   longGrid: (function createGrid() {
-    const longGrid = new GridHelper(400, 400, 0xaaaa00, 0xaaaa00);
-    longGrid.position.y = -0.1;
+    const longGrid = new GridHelper(400, 800, 0xaaaa00, 0xaaaa00);
+    longGrid.position.y = -0.01;
     return longGrid;
   }()),
-});
 
-Promise.all([
-  loadObject(roomUrl),
-  loadObject(isometricRoomUrl),
-  preloadTexture(roomTextureUrl),
-  preloadTexture(isometricRoomTextureUrl),
-])
-  .then(([room, isometricRoom, texture, isometricTexture]) => {
-    room.material = new THREE.MeshLambertMaterial();
-    room.material.map = texture;
+  prepare: () => (
+    Promise.all([
+      loadObject(roomUrl),
+      loadObject(isometricRoomUrl),
+      preloadTexture(roomTextureUrl),
+      preloadTexture(isometricRoomTextureUrl),
+    ]).then(([room, isometricRoom, texture, isometricTexture]) => {
+      room.material = new THREE.MeshLambertMaterial();
+      room.material.map = texture;
 
-    isometricRoom.material = new THREE.MeshLambertMaterial();
-    isometricRoom.material.map = isometricTexture;
+      isometricRoom.material = new THREE.MeshLambertMaterial();
+      isometricRoom.material.map = isometricTexture;
 
-    props.room = room;
-    props.orthographicRoom = isometricRoom;
-    props.emit('loaded');
-  })
-  .catch((error) => {
-    // TODO: goto error screen
-    console.log(error);
-  });
+      props.room = room;
+      props.orthographicRoom = isometricRoom;
+    })
+  ),
+};
 
 export default props;

@@ -5,6 +5,7 @@ import enterIconSvg from './icons/entervr.svg';
 import enterIconDisabledSvg from './icons/x_entervr.svg';
 import aboutIconSvg from './icons/about.svg';
 import { sleep } from '../utils/async';
+import viewer from '../viewer';
 
 const elements = {
   menuAdd: '.menu-item-add',
@@ -18,10 +19,6 @@ const elements = {
   chromeExperiment: '.chrome-experiment',
 };
 
-for (const i in elements) {
-  elements[i] = document.querySelector(elements[i]);
-}
-
 const defaultState = {
   menuAdd: false,
   menuEnter: false,
@@ -32,46 +29,46 @@ const defaultState = {
 
 let state = { };
 
-let hasVR;
-
-elements.menuAdd.addEventListener('click', () => {
-  router.navigate('/record');
-});
-
-// Add .mod-mobile identifier to body on mobile to disable hover effects
-if (feature.isMobile) {
-  document.body.classList.add('mod-mobile');
-}
-
-// Check if VR device is connected
-if (typeof navigator.getVRDisplays === 'function') {
-  navigator.getVRDisplays().then(devices => {
-    hasVR = devices.length > 0;
-    if (hasVR) {
-      elements.menuEnter.classList.remove('mod-disabled');
-      elements.menuEnter.querySelector('.menu-item-label').innerHTML = 'Enter VR';
-      elements.menuEnter.querySelector('.menu-item-icon').innerHTML = enterIconSvg;
-    }
-  });
-}
-
-// Add icons
-elements.menuAdd.querySelector('.menu-item-icon').innerHTML = addIconSvg;
-elements.aboutButton.querySelector('.menu-item-icon').innerHTML = aboutIconSvg;
-elements.menuEnter.querySelector('.menu-item-icon').innerHTML = enterIconDisabledSvg;
-
 // VR state
-let vr = false;
 const toggleVRLabel = () => {
-  vr = !vr;
   elements.menuEnter.onmouseleave = () => {
-    elements.menuEnterLabel.innerHTML = vr ? 'Exit VR' : 'Enter VR';
+    elements.menuEnterLabel.innerHTML = viewer.vrEffect.isPresenting ? 'Exit VR' : 'Enter VR';
   };
 };
 
 // Interface methods
 const hud = {
-  update: (param = {}) => {
+  prepare() {
+    for (const i in elements) {
+      elements[i] = document.querySelector(elements[i]);
+    }
+
+    elements.menuAdd.addEventListener('click', () => {
+      router.navigate('/record');
+    });
+
+    // Add .mod-mobile identifier to body on mobile to disable hover effects
+    if (feature.isMobile) {
+      document.body.classList.add('mod-mobile');
+    }
+
+    if (feature.hasVR) {
+      elements.menuEnter.classList.remove('mod-disabled');
+    }
+
+    elements.menuEnter.querySelector('.menu-item-label').innerHTML = feature.hasVR
+      ? 'Enter VR'
+      : 'VR not found';
+    elements.menuEnter.querySelector('.menu-item-icon').innerHTML = feature.hasVR
+      ? enterIconSvg
+      : enterIconDisabledSvg;
+
+    // Add icons
+    elements.menuAdd.querySelector('.menu-item-icon').innerHTML = addIconSvg;
+    elements.aboutButton.querySelector('.menu-item-icon').innerHTML = aboutIconSvg;
+  },
+
+  update(param = {}) {
     const newState = Object.assign(
       {},
       defaultState,
@@ -93,31 +90,36 @@ const hud = {
         if (el && visible !== state[key]) {
           el.classList[visible ? 'remove' : 'add']('mod-hidden');
         }
-        if (key === 'menuEnter' && !hasVR) return;
+        if (key === 'menuEnter' && !feature.hasVR) return;
         if (typeof handler === 'function') {
           el.addEventListener('click', handler);
         }
       });
     state = newState;
   },
-  showLoader: (label = 'Just a sec...') => {
+
+  showLoader(label = 'Just a sec...') {
     elements.loaderOverlayText.innerHTML = label;
     elements.loaderOverlay.classList.remove('mod-hidden');
   },
-  hideLoader: () => {
+
+  hideLoader() {
     elements.loaderOverlay.classList.add('mod-hidden');
   },
+
   enterVR: async () => {
     elements.vrInfoOverlay.classList.add('mod-entering-vr');
     document.body.classList.add('mod-in-vr');
     toggleVRLabel();
     await sleep(2);
   },
-  exitVR: () => {
+
+  exitVR() {
     elements.vrInfoOverlay.classList.remove('mod-entering-vr');
     document.body.classList.remove('mod-in-vr');
     toggleVRLabel();
   },
+
   elements,
 };
 

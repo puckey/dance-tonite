@@ -9,6 +9,7 @@ import hud from '../../hud';
 import createTimeline from '../../lib/timeline';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { Vector3 } from '../../lib/three';
+import feature from '../../utils/feature';
 
 // TODO: replace with better recording:
 const TUTORIAL_RECORDING_URL = '1030619465488-e65b1335.json?dance';
@@ -113,7 +114,8 @@ export default async (goto) => {
   audio.fadeIn();
 
   const performSkip = () => {
-    if (typeof navigator.getVRDisplays === 'function') {
+    // TODO: we need to make sure the user has a vr device capable of room vr:
+    if (feature.hasVR) {
       viewer.vrEffect.requestPresent();
       skipTutorialButton.classList.add('mod-hidden');
       hud.enterVR();
