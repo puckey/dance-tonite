@@ -16,6 +16,8 @@ import Room from '../room';
 import { queryData } from '../utils/url';
 import props from '../props';
 
+// Chromium does not support mp3:
+// TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { roomDepth, roomOffset, holeHeight } = settings;
 let progressBar;

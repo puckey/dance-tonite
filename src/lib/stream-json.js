@@ -68,8 +68,8 @@ const streamJsonXHR = (url, callback) => {
   xhr.send();
 };
 
-export default (url, callback) => {
-  return fetchSupported
+export default (url, callback) => (
+  fetchSupported
     ? streamJsonFetch(url, callback)
-    : streamJsonXHR(url, callback);
-}
+    : streamJsonXHR(url, callback)
+);

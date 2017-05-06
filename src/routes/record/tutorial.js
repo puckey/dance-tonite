@@ -22,9 +22,6 @@ const getLineTransform = (x1, y1, x2, y2, margin) => {
   return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
 };
 
-let originalCameraPosition;
-let originalZoom;
-
 export default async (goto) => {
   let windowWidth;
   let windowHeight;
@@ -92,8 +89,8 @@ export default async (goto) => {
   });
 
   viewer.switchCamera('orthographic');
-  originalCameraPosition = viewer.camera.position.clone();
-  originalZoom = viewer.camera.zoom;
+  const originalCameraPosition = viewer.camera.position.clone();
+  const originalZoom = viewer.camera.zoom;
   viewer.camera.position.y = 2;
   viewer.camera.position.z = 1.3;
   viewer.camera.zoom = 0.7;
