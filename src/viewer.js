@@ -156,7 +156,7 @@ const animate = () => {
   if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
   vrEffect.render(viewer.renderScene, viewer.camera);
   if (vrEffect.isPresenting && hasExternalDisplay) {
-    renderer.render(viewer.scene, viewer.camera);
+    renderer.render(viewer.renderScene, viewer.camera);
   }
   events.emit('render', dt);
   if (showStats) stats.end();
