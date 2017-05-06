@@ -245,7 +245,7 @@ export default async (goto) => {
     lineOriginY = tutorialText.offsetHeight * 1.2;
   };
 
-  textTimeline.on('keyframe', ({ text, getPosition, layers }) => {
+  const handleKeyframe = ({ text, getPosition, layers }) => {
     // just !text would return true on empty string, so:
     if (text !== undefined) {
       tutorialText.innerHTML = text;
@@ -255,8 +255,9 @@ export default async (goto) => {
     if (layers) {
       minLayers = layers;
     }
-  });
+  };
 
+  textTimeline.on('keyframe', handleKeyframe);
   viewer.events.on('tick', tick);
   window.addEventListener('resize', updateWindowDimensions);
   updateWindowDimensions();
@@ -276,5 +277,6 @@ export default async (goto) => {
     viewer.camera.zoom = 1;
     viewer.camera.updateProjectionMatrix();
     viewer.events.off('tick', tick);
+    textTimeline.off('keyframe', handleKeyframe);
   };
 };
