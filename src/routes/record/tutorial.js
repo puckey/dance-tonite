@@ -222,7 +222,9 @@ export default async (goto) => {
 
     const z = (progress - 0.5) * -roomDepth - roomOffset;
     orb.move(z);
-    orb2.move(z - roomDepth * 2);
+    if (audio.totalProgress > 1) {
+      orb2.move(z - roomDepth * 2);
+    }
 
     if (getLineTarget) {
       const { x, y } = worldToScreen(getLineTarget());
