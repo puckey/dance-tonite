@@ -129,6 +129,7 @@ const props = {
   longGrid: (function createGrid() {
     const longGrid = new GridHelper(400, 800, 0xaaaa00, 0xaaaa00);
     longGrid.position.y = -0.01;
+    longGrid.position.z = 0.25;
     return longGrid;
   }()),
 
