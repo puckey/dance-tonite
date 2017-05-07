@@ -23,6 +23,7 @@ const getLineTransform = (x1, y1, x2, y2, margin) => {
 };
 
 export default async (goto) => {
+  hud.showLoader();
   let windowWidth;
   let windowHeight;
   let lineOriginX;

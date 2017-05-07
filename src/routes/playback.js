@@ -109,6 +109,7 @@ export default {
       moveCamera(audio.progress);
     };
 
+    hud.showLoader();
 
     await Promise.all([
       playlist.load({
