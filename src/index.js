@@ -7,6 +7,7 @@ import props from './props';
 import feature from './utils/feature';
 import Room from './room';
 import hud from './hud';
+import viewer from './viewer';
 
 window.THREE = THREE;
 
