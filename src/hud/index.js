@@ -5,9 +5,9 @@ import addIconSvg from './icons/addvr.svg';
 import enterIconSvg from './icons/entervr.svg';
 import enterIconDisabledSvg from './icons/x_entervr.svg';
 import aboutIconSvg from './icons/about.svg';
-import { sleep } from '../utils/async';
 import viewer from '../viewer';
 
+const componentContext = hyperscript.context();
 const h = hyperscript.context();
 
 const elements = {
@@ -115,21 +115,25 @@ const hud = {
   },
 
   enterVR: () => {
-    const el = hud.create(
+    const el = hud.add(
+      h(
       'div.vr-info-overlay.mod-entering-vr',
       h('div.vr-info-overlay-text', 'Put on your VR headset')
-    );
+    ), false);
+    
     return () => {
       hud.remove(el);
     };
   },
 
   create(/* tag, attrs, [text?, Elements?,...] */) {
-    return hud.add(h.apply(h, arguments));
+    return hud.add(componentContext.apply(componentContext, arguments));
   },
 
-  add(el) {
-    componentElements.push(el);
+  add(el, componentElement = true) {
+    if (componentElement) {
+      componentElements.push(el);
+    }
     elements.hud.appendChild(el);
     return el;
   },
@@ -138,8 +142,8 @@ const hud = {
     const index = componentElements.indexOf(el);
     if (index !== -1) {
       componentElements.splice(index, 1);
-      elements.hud.removeChild(el);
     }
+    elements.hud.removeChild(el);
   },
 
   clear() {
@@ -149,12 +153,12 @@ const hud = {
     });
 
     // Remove event listeners from hyperscript context:
-    h.cleanup();
+    componentContext.cleanup();
 
     componentElements.length = 0;
   },
 
-  h,
+  h: componentContext,
 
   elements,
 };

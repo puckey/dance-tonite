@@ -10,6 +10,8 @@ import createTimeline from '../../lib/timeline';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { Vector3 } from '../../lib/three';
 import feature from '../../utils/feature';
+import { sleep } from '../../utils/async';
+import transition from '../../transition';
 
 // TODO: replace with better recording:
 const TUTORIAL_RECORDING_URL = '1030619465488-e65b1335.json?dance';
@@ -30,7 +32,7 @@ export default async (goto) => {
   let lineOriginY;
   let getLineTarget;
   let minLayers = 0;
-  let overlayAdded = false;
+  let overlayEl;
 
   const TEMP_VECTOR = new Vector3();
   const worldToScreen = (position) => {
@@ -44,89 +46,19 @@ export default async (goto) => {
     return TEMP_VECTOR;
   };
 
-  const orb = new Orb();
-  const orb2 = new Orb();
-
-  const tutorialText = hud.create('div.tutorial-text', '');
-  const skipTutorialButton = hud.create(
-    'div.skip-tutorial-button',
-    {
-      onclick: () => {
-        hud.create(
-          'div.tutorial-overlay.mod-link',
-          {
-            onclick: performSkip,
-          },
-          hud.h(
-            'div.tutorial-overlay-text',
-            'Click here to add your performance!'
-          )
-        );
-        overlayAdded = true;
-      },
-    },
-    'Skip Tutorial'
-  );
-  hud.create('div.close-button',
-    {
-      onclick: () => router.navigate('/'),
-    },
-    '×'
-  );
-  const lineEl = hud.create('div.line', {
-    style: {
-      transform: 'scaleX(0)',
-    },
-  });
-
-  skipTutorialButton.classList.remove('mod-hidden');
-
-  await audio.load({
-    src: '/public/sound/room-1.ogg',
-    loops: 2,
-    loopOffset: 0.5,
-  });
-
-  viewer.switchCamera('orthographic');
-  const originalCameraPosition = viewer.camera.position.clone();
-  const originalZoom = viewer.camera.zoom;
-  viewer.camera.position.y = 2;
-  viewer.camera.position.z = 1.3;
-  viewer.camera.zoom = 0.7;
-  viewer.camera.updateProjectionMatrix();
-
-  const room = new Room({
-    url: TUTORIAL_RECORDING_URL,
-    showHead: true,
-    index: 1,
-  });
-
-  room.changeColor(waitRoomColor);
-  room.load();
-  Room.rotate180();
-
-  audio.play();
-  audio.mute();
-  audio.fadeIn();
-
   const performSkip = async () => {
     // TODO: we need to make sure the user has a vr device capable of room vr:
     if (feature.hasVR) {
-      viewer.vrEffect.requestPresent();
       skipTutorialButton.classList.add('mod-hidden');
-      await hud.enterVR();
+      const removeOverlay = hud.enterVR();
+      await viewer.vrEffect.requestPresent();
+      // Wait for the VR overlay to cover the screen:
+      await sleep(500);
       goto('record');
+      await sleep(4500);
+      removeOverlay();
     } else {
-      hud.create(
-        'div.tutorial-overlay.mod-hidden',
-        {
-          onclick: () => goto('/'),
-        },
-        hud.h(
-          'div.tutorial-overlay-text.mod-link',
-          'A message about Vive not being found. Click here to go back.'
-        )
-      );
+      goto('/');
     }
   };
 
@@ -146,6 +78,22 @@ export default async (goto) => {
       },
     },
   ]);
+
+  const createOverlay = () => {
+    if (overlayEl) return;
+    overlayEl = hud.create(
+      'div.tutorial-overlay.mod-link',
+      {
+        onclick: performSkip,
+      },
+      h(
+        'div.tutorial-overlay-text',
+        feature.hasVR
+          ? 'Click here to add your performance!'
+          : 'A message about Vive not being found. Click here to go home.'
+      )
+    );
+  };
 
   const textTimeline = createTimeline([
     {
@@ -192,19 +140,7 @@ export default async (goto) => {
     },
     {
       time: 37.5,
-      callback: () => {
-        if (overlayAdded) return;
-        hud.create(
-          'div.tutorial-overlay.mod-hidden.mod-link',
-          {
-            onclick: performSkip,
-          },
-          h(
-            'div.tutorial-overlay-text',
-            'Click here to add your performance!'
-          )
-        );
-      },
+      callback: createOverlay,
     },
   ]);
 
@@ -258,6 +194,65 @@ export default async (goto) => {
     }
   };
 
+  const orb = new Orb();
+  const orb2 = new Orb();
+
+  const tutorialText = hud.create('div.tutorial-text');
+  const skipTutorialButton = hud.create(
+    'div.skip-tutorial-button',
+    {
+      onclick: createOverlay,
+    },
+    'Skip Tutorial'
+  );
+  hud.create('div.close-button',
+    {
+      onclick: () => router.navigate('/'),
+    },
+    '×'
+  );
+  const lineEl = hud.create('div.line', {
+    style: {
+      transform: 'scaleX(0)',
+    },
+  });
+
+  viewer.switchCamera('orthographic');
+  const originalCameraPosition = viewer.camera.position.clone();
+  const originalZoom = viewer.camera.zoom;
+  viewer.camera.position.y = 2;
+  viewer.camera.position.z = 1.3;
+  viewer.camera.zoom = 0.7;
+  viewer.camera.updateProjectionMatrix();
+
+  Room.rotate180();
+
+  await Promise.all([
+    audio.load({
+      src: '/public/sound/room-1.ogg',
+      loops: 2,
+      loopOffset: 0.5,
+    }),
+    sleep(1000),
+  ]);
+
+  hud.hideLoader();
+
+  const room = new Room({
+    url: TUTORIAL_RECORDING_URL,
+    showHead: true,
+    index: 1,
+  });
+  room.changeColor(waitRoomColor);
+
+  await sleep(2000);
+
+  room.load();
+
+  audio.play();
+  audio.mute();
+  audio.fadeIn();
+
   textTimeline.on('keyframe', handleKeyframe);
   viewer.events.on('tick', tick);
   window.addEventListener('resize', updateWindowDimensions);
@@ -267,7 +262,6 @@ export default async (goto) => {
     viewer.camera.position.copy(originalCameraPosition);
     viewer.camera.zoom = originalZoom;
     viewer.camera.updateProjectionMatrix();
-
     window.removeEventListener('resize', updateWindowDimensions);
     audio.reset();
     Room.reset();
