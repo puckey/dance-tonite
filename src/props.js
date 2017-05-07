@@ -119,7 +119,6 @@ const props = {
       color: settings.sphereColor.clone(),
     });
     const mesh = new Mesh(geometry, material);
-    mesh.castShadow = true;
     return mesh;
   }()),
 
