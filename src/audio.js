@@ -76,7 +76,7 @@ const audio = Object.assign(emitter(), {
           : new Audio();
         source = context.createMediaElementSource(audioElement);
         audioElement.src = param.src;
-        audioElement.loop = true;
+        audioElement.loop = param.loop === undefined ? true : param.loop;
         onPlay = () => {
           duration = audioElement.duration;
           audioElement.play();
@@ -99,7 +99,7 @@ const audio = Object.assign(emitter(), {
               // Load the file into the buffer
               source.buffer = response;
               duration = source.buffer.duration;
-              source.loop = true;
+              source.loop = param.loop === undefined ? true : param.loop;
               source.start(0);
               canPlay();
             },
