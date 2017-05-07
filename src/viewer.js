@@ -15,7 +15,7 @@ import feature from './utils/feature';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
-require('./lib/VRController')(THREE);
+require('./lib/ViveController')(THREE);
 
 const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
@@ -59,6 +59,13 @@ const vrEffect = new THREE.VREffect(renderer);
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
 
+const controller1 = new THREE.ViveController(0);
+const controller2 = new THREE.ViveController(1);
+
+// Use controllers:
+controller1.standingMatrix = controls.getStandingMatrix();
+controller2.standingMatrix = controls.getStandingMatrix();
+
 const createScene = () => {
   const scene = new THREE.Scene();
   const light = new THREE.DirectionalLight(0xffffff);
@@ -98,6 +105,7 @@ window.addEventListener('resize', () => {
 }, false);
 
 const scene = createScene();
+scene.add(controller1, controller2);
 
 let stats;
 const statsMeshOffsetPosition = new THREE.Vector3(0.3, 0.15, 1);
@@ -117,7 +125,7 @@ const viewer = {
   cameras,
   scene,
   renderScene: scene,
-  controllers: [{}, {}],
+  controllers: [controller1, controller2],
   controls,
   createScene,
   events,
@@ -141,7 +149,8 @@ const animate = () => {
   if (showStats) stats.begin();
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
-  THREE.VRController.update();
+  controller1.update();
+  controller2.update();
   controls.update();
   events.emit('tick', dt);
   Shadow.updateFollow(viewer.camera);
