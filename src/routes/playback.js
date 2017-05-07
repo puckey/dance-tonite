@@ -61,21 +61,6 @@ let orb;
 let playlist;
 let tick;
 let progressBar;
-let playClicked;
-let audioElement;
-
-if (feature.isMobile) {
-  playClicked = new Promise((resolve) => {
-    hud.create('div.play-button', {
-      onclick: () => {
-        this.classList.add('mod-hidden');
-        audioPool.fill();
-        audioElement = audioPool.get();
-        resolve();
-      },
-    }, 'Press to start');
-  });
-}
 
 export default {
   hud: hudSettings,
@@ -83,9 +68,6 @@ export default {
   mount: async (req) => {
     progressBar = hud.create('div.audio-progress-bar');
 
-    if (feature.isMobile) {
-      await playClicked;
-    }
     titles.mount();
     viewer.switchCamera('orthographic');
     orb = new Orb();

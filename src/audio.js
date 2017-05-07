@@ -71,7 +71,9 @@ const audio = Object.assign(emitter(), {
       }
 
       if (param.progressive) {
-        audioElement = param.audioElement || new Audio();
+        audioElement = feature.isMobile
+          ? audioPool.get()
+          : new Audio();
         source = context.createMediaElementSource(audioElement);
         audioElement.src = param.src;
         audioElement.loop = true;
@@ -127,7 +129,9 @@ const audio = Object.assign(emitter(), {
     // Cancel loading of audioElement:
     if (audioElement) {
       audioElement.removeEventListener('canplaythrough', onPlay);
-      audioPool.release(audioElement);
+      if (feature.isMobile) {
+        audioPool.release(audioElement);
+      }
       audioElement = null;
       onPlay = null;
     }
