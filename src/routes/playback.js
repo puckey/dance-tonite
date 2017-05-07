@@ -109,7 +109,6 @@ export default {
       moveCamera(audio.progress);
     };
 
-    viewer.scene.add(props.longGrid);
 
     await Promise.all([
       playlist.load({

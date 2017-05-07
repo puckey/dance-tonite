@@ -14,6 +14,7 @@ Promise.all([
   props.prepare(),
   feature.prepare().then(hud.prepare),
 ]).then(() => {
+  viewer.scene.add(props.longGrid);
   Room.reset();
   installRouter();
 });
