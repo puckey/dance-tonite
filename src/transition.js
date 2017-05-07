@@ -89,9 +89,9 @@ const fadeIn = async (maxFogDistance, duration) => {
 let entering;
 let fading;
 
-const enter = async (param) => {
+const enter = async (param = {}) => {
   // If fadeOut wasn't called before enter:
-  if (!fadedOut) {
+  if (!fadedOut && !param.immediate) {
     await fadeOut();
   }
   insideTransition = true;
@@ -104,12 +104,20 @@ const enter = async (param) => {
   textItem.updateLabel(param.text);
   floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
   floatingOrb.mesh.scale.set(4, 4, 4);
-  // Fade in the transition space:
-  await fadeIn(25);
+  const far = 25;
+  if (param.immediate) {
+    viewer.renderScene.fog.far = far;
+  } else {
+    await fadeIn(far);
+  }
 };
 
 export default {
   fadeOut,
+
+  isInside() {
+    return insideTransition;
+  },
 
   async enter(param) {
     entering = enter(param);

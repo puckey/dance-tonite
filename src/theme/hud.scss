@@ -273,6 +273,15 @@ svg * {
   animation: textFade 6s 1s;
 }
 
+.io-emulate-button {
+  position: fixed;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  padding: 1rem;
+  z-index: $interface-layer;
+}
+
 .close-button {
   position: fixed;
   top: 0;

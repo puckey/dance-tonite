@@ -55,14 +55,19 @@ timeline.on('keyframe', ({ show, hide }) => {
 });
 
 export default {
+  hide: () => {
+    for (const key in elements) {
+      elements[key].classList.add('mod-hidden');
+    }
+  },
   mount: () => {
-    for (const element in elements) {
-      hudEl.appendChild(elements[element]);
+    for (const key in elements) {
+      hudEl.appendChild(elements[key]);
     }
   },
   destroy: () => {
-    for (const element in elements) {
-      hudEl.removeChild(elements[element]);
+    for (const key in elements) {
+      hudEl.removeChild(elements[key]);
     }
   },
   tick: () => {

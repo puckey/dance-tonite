@@ -1,6 +1,5 @@
 import Orb from '../orb';
 import audio from '../audio';
-import audioPool from '../utils/audio-pool';
 import audioSrcOgg from '../public/sound/tonite.ogg';
 import audioSrcMp3 from '../public/sound/tonite.mp3';
 import Playlist from '../playlist';
@@ -13,13 +12,19 @@ import hud from '../hud';
 import feature from '../utils/feature';
 import { sleep } from '../utils/async';
 import Room from '../room';
-import { queryData } from '../utils/url';
-import props from '../props';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { roomDepth, roomOffset, holeHeight } = settings;
+
+const enterDaydreamTransition = (immediate) => {
+  titles.hide();
+  return transition.enter({
+    text: 'Put your hand up when you are ready',
+    immediate,
+  });
+};
 
 const toggleVR = async () => {
   if (!feature.hasVR) return;
@@ -31,12 +36,8 @@ const toggleVR = async () => {
     const removeMessage = hud.enterVR();
     await audio.fadeOut();
     viewer.switchCamera('default');
-    if (queryData.demo) {
-      transition.enter({
-        text: 'Let us know when you\'re ready',
-      });
-      // TODO listen for daydream button press
-      // await daydreamButtonPressed;
+    if (feature.isIODaydream) {
+      enterDaydreamTransition(true);
     } else {
       await sleep(1000);
       audio.pause();
@@ -44,16 +45,15 @@ const toggleVR = async () => {
       await sleep(4000);
       removeMessage();
     }
-
     audio.play();
   }
 };
 
 const hudSettings = {
-  menuAdd: true,
+  menuAdd: !feature.isIODaydream,
   menuEnter: toggleVR,
-  aboutButton: about.toggle,
-  colophon: true,
+  aboutButton: !feature.isIO && about.toggle,
+  colophon: !feature.isIO,
   chromeExperiment: true,
 };
 
@@ -62,14 +62,42 @@ let playlist;
 let tick;
 let progressBar;
 
+const restartPlayback = () => {
+  audio.rewind();
+  audio.play();
+};
+
 export default {
   hud: hudSettings,
 
   mount: async (req) => {
+    if (feature.isIODaydream) {
+      hud.create(
+        'div.io-emulate-button', {
+          onclick: async () => {
+            if (!viewer.vrEffect.isPresenting) {
+              restartPlayback();
+              return;
+            }
+            audio.pause();
+            if (transition.isInside()) {
+              await transition.fadeOut();
+              restartPlayback();
+              transition.exit();
+            } else {
+              enterDaydreamTransition();
+            }
+          },
+        },
+        'Press to emulate DayDream controller button'
+      );
+    }
+
     progressBar = hud.create('div.audio-progress-bar');
 
     titles.mount();
     viewer.switchCamera('orthographic');
+
     orb = new Orb();
 
     const moveCamera = (progress) => {
@@ -84,6 +112,7 @@ export default {
     playlist = new Playlist();
 
     tick = () => {
+      if (transition.isInside()) return;
       audio.tick();
       playlist.tick();
       titles.tick();
@@ -91,27 +120,31 @@ export default {
       moveCamera(audio.progress);
     };
 
-    hud.showLoader();
+    hud.showLoader('Loading sound');
 
-    await Promise.all([
-      playlist.load({
-        url: 'curated.json',
-        pathRecording: req.params.id,
-        loopIndex: parseInt(req.params.loopIndex, 10),
-      }),
-      audio.load({
-        audioElement,
-        src: audioSrc,
-        loops: settings.totalLoopCount,
-        progressive: true,
-      }),
-    ]);
+    await audio.load({
+      src: audioSrc,
+      loops: settings.totalLoopCount,
+      // Don't loop on daydream and vive stations during IO:
+      loop: !(feature.isIODaydream || feature.isIOVive),
+      progressive: true,
+    });
+
+    hud.showLoader('Loading performances');
+    await playlist.load({
+      url: 'curated.json',
+      pathRecording: req.params.id,
+      loopIndex: parseInt(req.params.loopIndex, 10),
+    });
+
     hud.hideLoader();
+
     audio.play();
     viewer.events.on('tick', tick);
   },
 
   unmount: () => {
+    viewer.vrEffect.exitPresent();
     audio.reset();
     viewer.events.off('tick', tick);
     orb.destroy();
