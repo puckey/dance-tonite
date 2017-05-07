@@ -105,7 +105,7 @@ const hud = {
     state = newState;
   },
 
-  showLoader(label = 'Just a sec...') {
+  showLoader(label = '') {
     elements.loaderOverlayText.innerHTML = label;
     elements.loaderOverlay.classList.remove('mod-hidden');
   },
