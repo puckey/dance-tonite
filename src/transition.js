@@ -64,16 +64,14 @@ const tick = (dt) => {
 
 const tweenFog = (from, to, duration = 2) => {
   viewer.renderScene.fog.far = from;
-  return new Promise(resolve => {
-    tween(
-      viewer.renderScene.fog,
-      {
-        far: to,
-        ease: 'easeOutCubic',
-        duration,
-      }
-    ).on('complete', resolve);
-  });
+  return tween(
+    viewer.renderScene.fog,
+    {
+      far: to,
+      ease: 'easeOutCubic',
+      duration,
+    }
+  ).promise;
 };
 
 const fadeOut = async (duration) => {
