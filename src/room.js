@@ -14,6 +14,8 @@ const PERFORMANCE_ELEMENT_COUNT = 21;
 const LIMB_ELEMENT_COUNT = 7;
 
 let roomIndex = 0;
+let wallMesh;
+let wallMeshes;
 let roomMesh;
 let roomMeshes;
 
@@ -143,6 +145,9 @@ export default class Room {
     for (const i in roomMeshes) {
       roomMeshes[i].setPositionAt(this.index, position);
       roomMeshes[i].needsUpdate('position');
+
+      wallMeshes[i].setPositionAt(this.index, position);
+      wallMeshes[i].needsUpdate('position');
     }
   }
 
@@ -228,8 +233,11 @@ export default class Room {
 }
 
 Room.switchModel = (model) => {
+  roomsGroup.remove(wallMesh);
   roomsGroup.remove(roomMesh);
+  wallMesh = wallMeshes[model];
   roomMesh = roomMeshes[model];
+  roomsGroup.add(wallMesh);
   roomsGroup.add(roomMesh);
 };
 
@@ -237,6 +245,20 @@ Room.reset = () => {
   roomsGroup.matrix.copy(IDENTITY_MATRIX);
   if (roomMesh) roomsGroup.remove(roomMesh);
   roomIndex = 0;
+  wallMeshes = {
+    default: createInstancedMesh({
+      count: 1,
+      geometry: props.wall.geometry,
+      color: getRoomColor,
+      material: props.wall.material,
+    }),
+    orthographic: createInstancedMesh({
+      count: 1,
+      geometry: props.orthographicWall.geometry,
+      color: getRoomColor,
+      material: props.orthographicWall.material,
+    }),
+  };
   roomMeshes = {
     default: createInstancedMesh({
       count: settings.loopCount,
@@ -253,7 +275,11 @@ Room.reset = () => {
   };
   roomMeshes.default.receiveShadow = true;
   roomMeshes.orthographic.receiveShadow = true;
+
+  wallMesh = wallMeshes.default;
   roomMesh = roomMeshes.default;
+
+  roomsGroup.add(wallMesh);
   roomsGroup.add(roomMesh);
   viewer.scene.add(roomsGroup);
 };
@@ -261,4 +287,3 @@ Room.reset = () => {
 Room.rotate180 = () => {
   roomsGroup.matrix.copy(ROTATION_MATRIX);
 };
-

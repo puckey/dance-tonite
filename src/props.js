@@ -1,7 +1,8 @@
 import * as THREE from './lib/three';
 
-// import roomUrl from './public/models/obj/space-bigger-holes.obj';
+import wallUrl from './public/models/obj/first-wall.obj';
 import roomUrl from './public/models/obj/space-bigger-holes.obj';
+import isometricWallUrl from './public/models/obj/first-wall-isometric.obj';
 import isometricRoomUrl from './public/models/obj/space-isometric.obj';
 import roomTextureUrl from './public/models/obj/bake/VR_AOMap.png';
 import isometricRoomTextureUrl from './public/models/obj/bake/ISO_AOMap.png';
@@ -135,18 +136,24 @@ const props = {
 
   prepare: () => (
     Promise.all([
+      loadObject(wallUrl),
       loadObject(roomUrl),
+      loadObject(isometricWallUrl),
       loadObject(isometricRoomUrl),
       preloadTexture(roomTextureUrl),
       preloadTexture(isometricRoomTextureUrl),
-    ]).then(([room, isometricRoom, texture, isometricTexture]) => {
+    ]).then(([wall, room, isometricWall, isometricRoom, texture, isometricTexture]) => {
+      wall.material = new THREE.MeshLambertMaterial();
       room.material = new THREE.MeshLambertMaterial();
       room.material.map = texture;
 
+      isometricWall.material = new THREE.MeshLambertMaterial();
       isometricRoom.material = new THREE.MeshLambertMaterial();
       isometricRoom.material.map = isometricTexture;
 
+      props.wall = wall;
       props.room = room;
+      props.orthographicWall = isometricWall;
       props.orthographicRoom = isometricRoom;
     })
   ),
