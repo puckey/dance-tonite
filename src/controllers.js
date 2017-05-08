@@ -49,27 +49,38 @@ function setButtonVisibility(hand, flag) {
   button.visible = flag;
 }
 
+const removeLeft = () => {
+  lText.updateLabel('');
+  leftPress = null;
+  setButtonVisibility('left', false);
+};
+
+const removeRight = () => {
+  rText.updateLabel('');
+  rightPress = null;
+  setButtonVisibility('right', false);
+};
+
 export default {
-  update({ left, right } = {}) {
+  update({ left, right, removeOnPress } = {}) {
     if (left) {
       lText.updateLabel(left.text);
       if (left.onPress) {
         setButtonVisibility('left', true);
       }
       leftPress = () => {
-        if (left.removeOnPress) {
-          lText.updateLabel('');
-          leftPress = null;
-          setButtonVisibility('left', false);
+        if (left.removeOnPress || removeOnPress) {
+          removeLeft();
+        }
+        if (removeOnPress) {
+          removeRight();
         }
         if (left.onPress) {
           left.onPress();
         }
       };
     } else {
-      lText.updateLabel('');
-      leftPress = null;
-      setButtonVisibility('left', false);
+      removeLeft();
     }
 
     if (right) {
@@ -78,19 +89,18 @@ export default {
         setButtonVisibility('right', true);
       }
       rightPress = () => {
-        if (right.removeOnPress) {
-          rText.updateLabel('');
-          rightPress = null;
-          setButtonVisibility('right', false);
+        if (right.removeOnPress || removeOnPress) {
+          removeRight();
+        }
+        if (removeOnPress) {
+          removeLeft();
         }
         if (right.onPress) {
           right.onPress();
         }
       };
     } else {
-      rText.updateLabel('');
-      rightPress = null;
-      setButtonVisibility('right', false);
+      removeRight();
     }
   },
 
