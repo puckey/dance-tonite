@@ -132,7 +132,7 @@ export default (req) => {
       });
       if (component.destroyed) return;
 
-      hud.showLoader('Loading performances');
+      hud.showLoader('Gathering user performances');
       await playlist.load({
         url: 'curated.json',
         pathRecording: req.params.id,
