@@ -26,7 +26,7 @@ const getLineTransform = (x1, y1, x2, y2, margin) => {
 export default (goto) => {
   let getLineTarget;
   let room;
-  const state = {};
+  const state = { minLayers: 0 };
   const elements = {};
   const objects = {};
 
