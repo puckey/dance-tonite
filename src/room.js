@@ -156,6 +156,10 @@ export default class Room {
       const mesh = roomMeshes[i];
       mesh.setColorAt(this.index, color);
       mesh.needsUpdate('color');
+
+      const wall = wallMeshes[i];
+      wall.setColorAt(this.index, color);
+      wall.needsUpdate('color');
     }
   }
 
@@ -244,6 +248,7 @@ Room.switchModel = (model) => {
 Room.reset = () => {
   roomsGroup.matrix.copy(IDENTITY_MATRIX);
   if (roomMesh) roomsGroup.remove(roomMesh);
+  if (wallMesh) roomsGroup.remove(wallMesh);
   roomIndex = 0;
   wallMeshes = {
     default: createInstancedMesh({
