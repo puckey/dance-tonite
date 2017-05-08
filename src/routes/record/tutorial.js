@@ -103,12 +103,12 @@ export default async (goto) => {
     },
     {
       time: 3,
-      text: 'This is the camera.',
+      text: 'This is the audience.',
       getPosition: () => orb.mesh.position,
     },
     {
       time: 8,
-      text: 'Dance for the camera!',
+      text: 'Dance for the audience!',
     },
     {
       time: 14,
