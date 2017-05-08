@@ -35,7 +35,11 @@ export default () => {
         }
 
         hud.hideLoader();
-        transition.reset();
+        if (transition.isInside()) {
+          await transition.fadeOut();
+        } else {
+          transition.reset();
+        }
         current = route(req);
         current.mount();
         hud.update(current.hud);

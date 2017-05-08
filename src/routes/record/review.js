@@ -10,6 +10,7 @@ import transition from '../../transition';
 import Room from '../../room';
 import { tempVector } from '../../utils/three';
 import { sleep } from '../../utils/async';
+import feature from '../../utils/feature';
 
 export default (goto) => {
   const { roomDepth, roomOffset } = settings;
@@ -52,12 +53,13 @@ export default (goto) => {
     const [recordingSrc] = await Promise.all([
       persisting,
       transition.enter({
-        text: 'Please take off your headset',
+        text: feature.isIOVive
+          ? 'Publishing your performance'
+          : 'Please take off your headset',
       }),
       sleep(5000),
     ]);
 
-    await transition.fadeOut();
     if (component.destroyed) return;
 
     goto(`/${recording.loopIndex}/${recordingSrc.replace('.json', '')}`);

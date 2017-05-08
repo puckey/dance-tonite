@@ -80,7 +80,6 @@ export default (req) => {
                 return;
               }
               audio.pause();
-              console.log(transition.isInside());
               if (transition.isInside()) {
                 await transition.fadeOut();
                 restartPlayback();
@@ -93,11 +92,12 @@ export default (req) => {
           'Press to emulate DayDream controller button'
         );
       }
-
       progressBar = hud.create('div.audio-progress-bar');
 
       titles.mount();
-      viewer.switchCamera('orthographic');
+      if (!viewer.vrEffect.isPresenting) {
+        viewer.switchCamera('orthographic');
+      }
 
       orb = new Orb();
 
@@ -141,7 +141,9 @@ export default (req) => {
       if (component.destroyed) return;
 
       hud.hideLoader();
-
+      if (transition.isInside()) {
+        transition.exit();
+      }
       audio.play();
       viewer.events.on('tick', tick);
     },
