@@ -70,13 +70,12 @@ module.exports = function( THREE ){
         //  Position and orientation.
 
         var pose = gamepad.pose;
-
-        if ( pose.position !== null ) scope.position.fromArray( pose.position );
+        var hasPosition = scope.visible = pose.position !== null;
+        if ( hasPosition ) scope.position.fromArray( pose.position );
         if ( pose.orientation !== null ) scope.quaternion.fromArray( pose.orientation );
         scope.matrix.compose( scope.position, scope.quaternion, scope.scale );
         scope.matrix.multiplyMatrices( scope.standingMatrix, scope.matrix );
         scope.matrixWorldNeedsUpdate = true;
-        scope.visible = true;
 
         //  Thumbpad and Buttons.
 
