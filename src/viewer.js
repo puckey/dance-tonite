@@ -130,6 +130,12 @@ const viewer = {
   createScene,
   events,
   renderer,
+  countActiveControllers: () => {
+    let count = 0;
+    if (controller1.visible) count += 1;
+    if (controller2.visible) count += 1;
+    return count;
+  },
   switchCamera: (name) => {
     Room.switchModel(
       name === 'orthographic'

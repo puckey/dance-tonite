@@ -47,6 +47,7 @@ export default (goto, req) => {
     audio.mute();
     audio.fadeIn();
     viewer.events.on('tick', tick);
+    viewer.events.off('tick', controllersTick);
   };
 
   const pressToFinish = {
@@ -138,6 +139,17 @@ export default (goto, req) => {
     hideHead: req.params.hideHead === '1',
   });
 
+  const controllersTick = () => {
+    const count = viewer.countActiveControllers();
+    controllers.update(count === 2 ? pressToStart : null);
+    instructions.setSubText(count === 2
+      ? 'press right controller to start'
+      : count === 1
+        ? 'turn on both of your controllers'
+        : 'turn on your controllers'
+    );
+  };
+
   const component = {
     mount: async () => {
       await audio.load({
@@ -153,9 +165,8 @@ export default (goto, req) => {
 
       instructions.add();
       instructions.setMainText('');
-      instructions.setSubText('turn on your controllers');
+      viewer.events.on('tick', controllersTick);
 
-      controllers.update(pressToStart);
       controllers.add();
 
       orb = new Orb();

@@ -61,8 +61,13 @@ const removeRight = () => {
   setButtonVisibility('right', false);
 };
 
+let currentParam;
 export default {
-  update({ left, right, removeOnPress } = {}) {
+  update(param) {
+    if (param === currentParam) return;
+    console.log(param);
+    currentParam = param;
+    const { left, right, removeOnPress } = param || {};
     if (left) {
       lText.updateLabel(left.text);
       if (left.onPress) {

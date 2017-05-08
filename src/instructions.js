@@ -10,6 +10,8 @@ const { textColor } = settings;
 
 const group = new Group();
 let countdownVersion = 0;
+let mainTextString;
+let subTextString;
 
 //  for alignment testing
 // const mesh = new THREE.Mesh( new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({wireframe:true}) );
@@ -52,11 +54,15 @@ const instructions = {
   },
 
   setSubText(str) {
+    if (str === subTextString) return;
     subtext.updateLabel(str);
+    subTextString = str;
   },
 
   setMainText(str) {
+    if (str === mainTextString) return;
     mainText.updateLabel(str);
+    mainTextString = str;
   },
 
   async beginCountdown(seconds) {
