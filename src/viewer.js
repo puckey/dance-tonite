@@ -96,6 +96,7 @@ window.addEventListener('resize', () => {
 
   const { innerWidth, innerHeight } = window;
   vrEffect.setSize(innerWidth, innerHeight);
+  renderer.setSize(innerWidth, innerHeight);
   Object
     .values(cameras)
     .forEach((camera) => {
