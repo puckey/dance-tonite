@@ -65,7 +65,6 @@ let currentParam;
 export default {
   update(param) {
     if (param === currentParam) return;
-    console.log(param);
     currentParam = param;
     const { left, right, removeOnPress } = param || {};
     if (left) {
