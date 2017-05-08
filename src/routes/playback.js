@@ -1,6 +1,5 @@
 import Orb from '../orb';
 import audio from '../audio';
-import audioPool from '../utils/audio-pool';
 import audioSrcOgg from '../public/sound/tonite.ogg';
 import audioSrcMp3 from '../public/sound/tonite.mp3';
 import Playlist from '../playlist';
@@ -13,79 +12,92 @@ import hud from '../hud';
 import feature from '../utils/feature';
 import { sleep } from '../utils/async';
 import Room from '../room';
-import { queryData } from '../utils/url';
-import props from '../props';
 
+// Chromium does not support mp3:
+// TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { roomDepth, roomOffset, holeHeight } = settings;
-let progressBar;
+
+const enterDaydreamTransition = (immediate) => {
+  titles.hide();
+  return transition.enter({
+    text: 'Put your hand up when you are ready',
+    immediate,
+  });
+};
 
 const toggleVR = async () => {
+  if (!feature.hasVR) return;
   if (viewer.vrEffect.isPresenting) {
-    hud.exitVR();
     viewer.vrEffect.exitPresent();
     viewer.switchCamera('orthographic');
   } else {
-    hud.enterVR();
-    // TODO: figure out if we can build in a timeout before entering vr:
     viewer.vrEffect.requestPresent();
+    const removeMessage = hud.enterVR();
     await audio.fadeOut();
     viewer.switchCamera('default');
-
-    if (queryData.demo) {
-      transition.enter({
-        text: 'Let us know when you\'re ready',
-      });
-      // TODO listen for daydream button press
-      // await daydreamButtonPressed;
+    if (feature.isIODaydream) {
+      enterDaydreamTransition(true);
     } else {
-      await sleep(5000);
+      await sleep(1000);
+      audio.pause();
+      audio.rewind();
+      await sleep(4000);
+      removeMessage();
     }
-
-    audio.rewind();
     audio.play();
   }
+};
+
+const hudSettings = {
+  menuAdd: !feature.isIODaydream,
+  menuEnter: toggleVR,
+  aboutButton: !feature.isIO && about.toggle,
+  colophon: !feature.isIO,
+  chromeExperiment: true,
 };
 
 let orb;
 let playlist;
 let tick;
+let progressBar;
 
-const hudSettings = {
-  menuAdd: true,
-  menuEnter: toggleVR,
-  aboutButton: about.toggle,
-  colophon: true,
-  chromeExperiment: true,
+const restartPlayback = () => {
+  audio.rewind();
+  audio.play();
 };
-
-let playClicked;
-let audioElement;
-if (feature.isMobile) {
-  playClicked = new Promise((resolve) => {
-    hudSettings.playButton = function () {
-      this.classList.add('mod-hidden');
-      audioPool.fill();
-      audioElement = audioPool.get();
-      resolve();
-    };
-  });
-}
 
 export default {
   hud: hudSettings,
 
   mount: async (req) => {
-    if (!progressBar) {
-      progressBar = document.querySelector('.audio-progress-bar');
+    if (feature.isIODaydream) {
+      hud.create(
+        'div.io-emulate-button', {
+          onclick: async () => {
+            if (!viewer.vrEffect.isPresenting) {
+              restartPlayback();
+              return;
+            }
+            audio.pause();
+            if (transition.isInside()) {
+              await transition.fadeOut();
+              restartPlayback();
+              transition.exit();
+            } else {
+              enterDaydreamTransition();
+            }
+          },
+        },
+        'Press to emulate DayDream controller button'
+      );
     }
-    progressBar.style.width = '100vw';
 
-    if (feature.isMobile) {
-      await playClicked;
-    }
+    progressBar = hud.create('div.audio-progress-bar');
+
     titles.mount();
     viewer.switchCamera('orthographic');
+
     orb = new Orb();
 
     const moveCamera = (progress) => {
@@ -100,6 +112,7 @@ export default {
     playlist = new Playlist();
 
     tick = () => {
+      if (transition.isInside()) return;
       audio.tick();
       playlist.tick();
       titles.tick();
@@ -107,29 +120,31 @@ export default {
       moveCamera(audio.progress);
     };
 
-    hud.showLoader('');
-    viewer.scene.add(props.longGrid);
+    hud.showLoader('Loading sound');
 
-    await Promise.all([
-      playlist.load({
-        url: 'curated.json',
-        pathRecording: req.params.id,
-        loopIndex: parseInt(req.params.loopIndex, 10),
-      }),
-      audio.load({
-        audioElement,
-        src: audioSrc,
-        loops: settings.totalLoopCount,
-        progressive: true,
-      }),
-    ]);
+    await audio.load({
+      src: audioSrc,
+      loops: settings.totalLoopCount,
+      // Don't loop on daydream and vive stations during IO:
+      loop: !(feature.isIODaydream || feature.isIOVive),
+      progressive: true,
+    });
+
+    hud.showLoader('Loading performances');
+    await playlist.load({
+      url: 'curated.json',
+      pathRecording: req.params.id,
+      loopIndex: parseInt(req.params.loopIndex, 10),
+    });
+
     hud.hideLoader();
+
     audio.play();
     viewer.events.on('tick', tick);
   },
 
   unmount: () => {
-    progressBar.style.width = 0;
+    viewer.vrEffect.exitPresent();
     audio.reset();
     viewer.events.off('tick', tick);
     orb.destroy();

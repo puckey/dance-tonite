@@ -2,6 +2,7 @@ import router from '../router';
 import playback from './playback';
 import record from './record';
 import plane from './plane';
+import version from './version';
 import notFound from './not-found';
 import transition from '../transition';
 import hud from '../hud';
@@ -11,6 +12,7 @@ import Room from '../room';
 let current;
 
 const routes = {
+  '/version': version,
   '/plane': plane,
   '/record/:loopIndex?/:hideHead?': record,
   '/:loopIndex?/:id?': playback,
@@ -21,6 +23,7 @@ router.on('navigate', () => {
   if (current) {
     audio.fadeOut();
     current.unmount();
+    hud.clear();
     Room.reset();
     current = null;
   }

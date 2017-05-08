@@ -11,16 +11,17 @@ import { tempVector } from './utils/three';
 import settings from './settings';
 import Room from './room';
 import * as Shadow from './shadow';
+import feature from './utils/feature';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
-require('./lib/VRController')(THREE);
+require('./lib/ViveController')(THREE);
 
 const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
 const orthographicDistance = 4;
 
-const showStats = (window.location.hash.indexOf('fps') == -1) ? false : true;
+const showStats = !(window.location.hash.indexOf('fps') === -1);
 
 const cameras = (function () {
   const aspect = getWindowAspect();
@@ -48,7 +49,7 @@ renderer.setClearColor(0x000000);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.sortObjects = false;
-Shadow.configureRenderer( renderer );
+Shadow.configureRenderer(renderer);
 
 const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);
@@ -58,17 +59,24 @@ const vrEffect = new THREE.VREffect(renderer);
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
 
+const controller1 = new THREE.ViveController(0);
+const controller2 = new THREE.ViveController(1);
+
+// Use controllers:
+controller1.standingMatrix = controls.getStandingMatrix();
+controller2.standingMatrix = controls.getStandingMatrix();
+
 const createScene = () => {
   const scene = new THREE.Scene();
   const light = new THREE.DirectionalLight(0xffffff);
   light.position.set(-1, 0.6, -1).normalize();
 
-  const ambientLight = new THREE.AmbientLight( 0x444444, 0.7 );
+  const ambientLight = new THREE.AmbientLight(0x444444, 0.7);
   const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
 
-  scene.add( hemisphereLight );
-  scene.add( light, ambientLight );
-  scene.add( Shadow.shadowLight, Shadow.shadowTarget );
+  scene.add(hemisphereLight);
+  scene.add(light, ambientLight);
+  scene.add(Shadow.shadowLight, Shadow.shadowTarget);
   //  Uncomment to see shadow volume
   // scene.add( Shadow.helper );
   scene.fog = new THREE.Fog(0x000000, 0, 75);
@@ -97,19 +105,19 @@ window.addEventListener('resize', () => {
 }, false);
 
 const scene = createScene();
+scene.add(controller1, controller2);
 
 let stats;
-const statsMeshOffsetPosition = new THREE.Vector3(0.3,0.15,1);
+const statsMeshOffsetPosition = new THREE.Vector3(0.3, 0.15, 1);
 
 if (showStats) {
   stats = new Stats();
-  document.body.appendChild( stats.dom );
+  document.body.appendChild(stats.dom);
 
-  scene.add( stats.mesh );
-  stats.mesh.scale.set( 2.5, 2.5, 2.5 );
-  stats.mesh.rotation.set( 0.0, -Math.PI, 0 );
+  scene.add(stats.mesh);
+  stats.mesh.scale.set(2.5, 2.5, 2.5);
+  stats.mesh.rotation.set(0.0, -Math.PI, 0);
 }
-
 
 
 const viewer = {
@@ -117,7 +125,7 @@ const viewer = {
   cameras,
   scene,
   renderScene: scene,
-  controllers: [{}, {}],
+  controllers: [controller1, controller2],
   controls,
   createScene,
   events,
@@ -129,9 +137,9 @@ const viewer = {
         : 'default',
     );
     viewer.camera = cameras[name];
-    Shadow.setShadowProfile( name );
+    Shadow.setShadowProfile(name);
   },
-  vrEffect
+  vrEffect,
 };
 
 const clock = new THREE.Clock();
@@ -141,12 +149,16 @@ const animate = () => {
   if (showStats) stats.begin();
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
-  THREE.VRController.update();
+  controller1.update();
+  controller2.update();
   controls.update();
   events.emit('tick', dt);
-  Shadow.updateFollow( viewer.camera );
+  Shadow.updateFollow(viewer.camera);
   if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
   vrEffect.render(viewer.renderScene, viewer.camera);
+  if (vrEffect.isPresenting && feature.hasExternalDisplay) {
+    renderer.render(viewer.renderScene, viewer.camera);
+  }
   events.emit('render', dt);
   if (showStats) stats.end();
 };

@@ -36,7 +36,6 @@ export default class Playlist {
           room.load(callback);
         },
         (error) => {
-          console.log('done');
           if (error) {
             reject(error);
           } else {

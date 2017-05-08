@@ -46,7 +46,7 @@ export default async (goto) => {
     audio.fadeOut();
     await transition.fadeOut();
     viewer.events.off('tick', tick);
-    const [uri] = await Promise.all([
+    const [recordingSrc] = await Promise.all([
       persisting,
       transition.enter({
         text: 'Please take off your headset',
@@ -54,8 +54,8 @@ export default async (goto) => {
       sleep(5000),
     ]);
     await transition.fadeOut();
-    goto(`/${recording.loopIndex}/${uri.replace('.json', '')}`);
     transition.exit({ immediate: true });
+      goto(`/${recording.loopIndex}/${recordingSrc.replace('.json', '')}`);
   };
 
   const performRedo = async () => {
@@ -81,8 +81,6 @@ export default async (goto) => {
   await transition.fadeOut();
   audio.play();
   viewer.events.on('tick', tick);
-  controllers.setButtonVisibility('right', true);
-  controllers.setButtonVisibility('left', true);
   controllers.update({
     left: {
       text: 'press to redo',
