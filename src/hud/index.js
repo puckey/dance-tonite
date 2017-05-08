@@ -116,11 +116,10 @@ const hud = {
 
   enterVR: () => {
     const el = hud.add(
-      h(
+      componentContext(
       'div.vr-info-overlay.mod-entering-vr',
-      h('div.vr-info-overlay-text', 'Put on your VR headset')
+      componentContext('div.vr-info-overlay-text', 'Put on your VR headset')
     ), false);
-    
     return () => {
       hud.remove(el);
     };

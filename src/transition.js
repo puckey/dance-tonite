@@ -7,9 +7,9 @@ import * as THREE from './lib/three';
 import { offsetFrom } from './utils/three';
 import settings from './settings';
 
-// Scene storage
+let transitionVersion = 0;
+
 const transitionScene = new THREE.Scene();
-let mainScene;
 
 // Set up stage
 const textCreator = SDFText.creator();
@@ -62,16 +62,18 @@ const tick = (dt) => {
   pivot.position.copy(viewer.camera.position);
 };
 
+let tweener;
 const tweenFog = (from, to, duration = 2) => {
   viewer.renderScene.fog.far = from;
-  return tween(
+  tweener = tween(
     viewer.renderScene.fog,
     {
       far: to,
       ease: 'easeOutCubic',
       duration,
     }
-  ).promise;
+  );
+  return tweener.promise;
 };
 
 const fadeOut = async (duration) => {
@@ -86,61 +88,66 @@ const fadeIn = async (maxFogDistance, duration) => {
   await fading;
 };
 
-let entering;
 let fading;
+const revealFar = 300;
+const transitionSpaceFar = 25;
 
-const enter = async (param = {}) => {
-  // If fadeOut wasn't called before enter:
-  if (!fadedOut && !param.immediate) {
-    await fadeOut();
-  }
-  insideTransition = true;
-  mainScene = viewer.scene;
-  viewer.renderScene = transitionScene;
-  transitionScene.fog = new THREE.Fog(0x000000, 0, 0);
-
-  floatingOrb.fadeIn();
-  viewer.events.on('tick', tick);
-  textItem.updateLabel(param.text);
-  floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
-  floatingOrb.mesh.scale.set(4, 4, 4);
-  const far = 25;
-  if (param.immediate) {
-    viewer.renderScene.fog.far = far;
-  } else {
-    await fadeIn(far);
-  }
-};
-
-export default {
+const transition = {
   fadeOut,
 
   isInside() {
     return insideTransition;
   },
 
-  async enter(param) {
-    entering = enter(param);
-    await Promise.all([entering, fading]);
-  },
-
-  async exit({ immediate } = {}) {
-    await Promise.all([entering, fading]);
-    if (!insideTransition) return;
-    if (!fadedOut && !immediate) {
+  async enter(param = {}) {
+    const version = transitionVersion;
+    // If fadeOut wasn't called before enter:
+    if (!fadedOut) {
       await fadeOut();
     }
-    viewer.events.off('tick', tick);
+    insideTransition = true;
+    if (version !== transitionVersion) {
+      return;
+    }
+    viewer.renderScene = transitionScene;
+    transitionScene.fog = new THREE.Fog(0x000000, 0, 0);
 
-    // Switch scenes:
-    viewer.renderScene = mainScene;
-
-    insideTransition = false;
-    const far = 300;
-    if (immediate) {
-      viewer.renderScene.fog.far = far;
+    floatingOrb.fadeIn();
+    viewer.events.on('tick', tick);
+    textItem.updateLabel(param.text);
+    floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
+    floatingOrb.mesh.scale.set(4, 4, 4);
+    if (param.immediate) {
+      viewer.renderScene.fog.far = transitionSpaceFar;
     } else {
-      await fadeIn(far);
+      await fadeIn(transitionSpaceFar);
+    }
+  },
+
+  async exit() {
+    transitionVersion += 1;
+    const version = transitionVersion;
+    if (!fadedOut) {
+      await fadeOut();
+    }
+    transition.reset(true);
+    if (version === transitionVersion) {
+      await fadeIn(revealFar);
+    }
+  },
+
+  reset(soft) {
+    insideTransition = false;
+    fadedOut = false;
+    viewer.events.off('tick', tick);
+    viewer.renderScene = viewer.scene;
+    if (tweener) tweener.cancel();
+    insideTransition = false;
+    if (!soft) {
+      viewer.renderScene.fog.far = revealFar;
+      transitionVersion += 1;
     }
   },
 };
+
+export default transition;

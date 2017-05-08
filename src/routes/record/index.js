@@ -4,8 +4,9 @@ import tutorial from './tutorial';
 import instructions from '../../instructions';
 import router from '../../router';
 import hud from '../../hud';
+import audio from '../../audio';
 
-let unmountStep;
+let current;
 
 const components = {
   record,
@@ -13,30 +14,35 @@ const components = {
   tutorial,
 };
 
-export default {
-  hud: { },
-  mount: (req) => {
-    const goto = async (step) => {
-      if (unmountStep) {
-        unmountStep();
-        hud.clear();
-      }
-      const component = components[step];
-      if (component) {
-        unmountStep = await components[step](goto, req);
-      } else {
-        unmountStep = null;
-        router.navigate(step);
-      }
-    };
-    goto('tutorial');
-  },
+export default (req) => (
+  {
+    hud: { },
+    mount: () => {
+      const goto = (step) => {
+        if (current) {
+          current.unmount();
+          hud.clear();
+        }
+        const component = components[step];
+        if (component) {
+          current = components[step](goto, req);
+          current.mount();
+        } else {
+          current = null;
+          router.navigate(step);
+        }
+      };
+      // Start at tutorial:
+      goto('tutorial');
+    },
 
-  unmount: () => {
-    instructions.remove();
-    if (unmountStep) {
-      unmountStep();
-      unmountStep = null;
-    }
-  },
-};
+    unmount: () => {
+      audio.fadeOut();
+      instructions.reset();
+      if (current) {
+        current.unmount();
+        current = null;
+      }
+    },
+  }
+);

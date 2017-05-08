@@ -26,129 +26,137 @@ const enterDaydreamTransition = (immediate) => {
   });
 };
 
-const toggleVR = async () => {
-  if (!feature.hasVR) return;
-  if (viewer.vrEffect.isPresenting) {
-    viewer.vrEffect.exitPresent();
-    viewer.switchCamera('orthographic');
-  } else {
-    viewer.vrEffect.requestPresent();
-    const removeMessage = hud.enterVR();
-    await audio.fadeOut();
-    viewer.switchCamera('default');
-    if (feature.isIODaydream) {
-      enterDaydreamTransition(true);
+export default (req) => {
+  const toggleVR = async () => {
+    if (!feature.hasVR) return;
+    if (viewer.vrEffect.isPresenting) {
+      viewer.vrEffect.exitPresent();
+      viewer.switchCamera('orthographic');
     } else {
-      await sleep(1000);
-      audio.pause();
-      audio.rewind();
-      await sleep(4000);
-      removeMessage();
+      viewer.vrEffect.requestPresent();
+      const removeMessage = hud.enterVR();
+      await audio.fadeOut();
+      viewer.switchCamera('default');
+      if (feature.isIODaydream) {
+        enterDaydreamTransition(true);
+      } else {
+        await sleep(1000);
+        audio.pause();
+        audio.rewind();
+        await sleep(4000);
+        removeMessage();
+      }
+      audio.play();
     }
+  };
+
+  const hudSettings = {
+    menuAdd: !feature.isIODaydream,
+    menuEnter: toggleVR,
+    aboutButton: !feature.isIO && about.toggle,
+    colophon: !feature.isIO,
+    chromeExperiment: true,
+  };
+
+  let orb;
+  let playlist;
+  let tick;
+  let progressBar;
+
+  const restartPlayback = () => {
+    audio.rewind();
     audio.play();
-  }
-};
+  };
 
-const hudSettings = {
-  menuAdd: !feature.isIODaydream,
-  menuEnter: toggleVR,
-  aboutButton: !feature.isIO && about.toggle,
-  colophon: !feature.isIO,
-  chromeExperiment: true,
-};
-
-let orb;
-let playlist;
-let tick;
-let progressBar;
-
-const restartPlayback = () => {
-  audio.rewind();
-  audio.play();
-};
-
-export default {
-  hud: hudSettings,
-
-  mount: async (req) => {
-    if (feature.isIODaydream) {
-      hud.create(
-        'div.io-emulate-button', {
-          onclick: async () => {
-            if (!viewer.vrEffect.isPresenting) {
-              restartPlayback();
-              return;
-            }
-            audio.pause();
-            if (transition.isInside()) {
-              await transition.fadeOut();
-              restartPlayback();
-              transition.exit();
-            } else {
-              enterDaydreamTransition();
-            }
+  const component = {
+    hud: hudSettings,
+    mount: async () => {
+      if (feature.isIODaydream) {
+        hud.create(
+          'div.io-emulate-button', {
+            onclick: async () => {
+              if (!viewer.vrEffect.isPresenting) {
+                restartPlayback();
+                return;
+              }
+              audio.pause();
+              console.log(transition.isInside());
+              if (transition.isInside()) {
+                await transition.fadeOut();
+                restartPlayback();
+                transition.exit();
+              } else {
+                enterDaydreamTransition();
+              }
+            },
           },
-        },
-        'Press to emulate DayDream controller button'
-      );
-    }
+          'Press to emulate DayDream controller button'
+        );
+      }
 
-    progressBar = hud.create('div.audio-progress-bar');
+      progressBar = hud.create('div.audio-progress-bar');
 
-    titles.mount();
-    viewer.switchCamera('orthographic');
+      titles.mount();
+      viewer.switchCamera('orthographic');
 
-    orb = new Orb();
+      orb = new Orb();
 
-    const moveCamera = (progress) => {
-      const emptySpace = 2.5;
-      const z = ((progress - emptySpace) * roomDepth) + roomOffset;
-      viewer.camera.position.set(0, holeHeight, -z);
-      orb.move(-z);
-    };
+      const moveCamera = (progress) => {
+        const emptySpace = 2.5;
+        const z = ((progress - emptySpace) * roomDepth) + roomOffset;
+        viewer.camera.position.set(0, holeHeight, -z);
+        orb.move(-z);
+      };
 
-    moveCamera(0);
-    Room.rotate180();
-    playlist = new Playlist();
+      moveCamera(0);
+      Room.rotate180();
+      playlist = new Playlist();
 
-    tick = () => {
-      if (transition.isInside()) return;
-      audio.tick();
-      playlist.tick();
-      titles.tick();
-      progressBar.style.transform = `scaleX(${audio.progress / settings.totalLoopCount})`;
-      moveCamera(audio.progress);
-    };
+      tick = () => {
+        if (transition.isInside()) return;
+        audio.tick();
+        playlist.tick();
+        titles.tick();
+        progressBar.style.transform = `scaleX(${audio.progress / settings.totalLoopCount})`;
+        moveCamera(audio.progress);
+      };
 
-    hud.showLoader('Loading sound');
+      hud.showLoader('Loading sound');
 
-    await audio.load({
-      src: audioSrc,
-      loops: settings.totalLoopCount,
-      // Don't loop on daydream and vive stations during IO:
-      loop: !(feature.isIODaydream || feature.isIOVive),
-      progressive: true,
-    });
+      await audio.load({
+        src: audioSrc,
+        loops: settings.totalLoopCount,
+        // Don't loop on daydream and vive stations during IO:
+        loop: !(feature.isIODaydream || feature.isIOVive),
+        progressive: true,
+      });
+      if (component.destroyed) return;
 
-    hud.showLoader('Loading performances');
-    await playlist.load({
-      url: 'curated.json',
-      pathRecording: req.params.id,
-      loopIndex: parseInt(req.params.loopIndex, 10),
-    });
+      hud.showLoader('Loading performances');
+      await playlist.load({
+        url: 'curated.json',
+        pathRecording: req.params.id,
+        loopIndex: parseInt(req.params.loopIndex, 10),
+      });
+      if (component.destroyed) return;
 
-    hud.hideLoader();
+      hud.hideLoader();
 
-    audio.play();
-    viewer.events.on('tick', tick);
-  },
+      audio.play();
+      viewer.events.on('tick', tick);
+    },
 
-  unmount: () => {
-    viewer.vrEffect.exitPresent();
-    audio.reset();
-    viewer.events.off('tick', tick);
-    orb.destroy();
-    titles.destroy();
-    playlist.destroy();
-  },
+    unmount: () => {
+      component.destroyed = true;
+      if (viewer.vrEffect.isPresenting) {
+        viewer.vrEffect.exitPresent();
+      }
+      audio.reset();
+      viewer.events.off('tick', tick);
+      orb.destroy();
+      titles.destroy();
+      playlist.destroy();
+    },
+  };
+  return component;
 };

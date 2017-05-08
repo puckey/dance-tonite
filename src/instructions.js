@@ -9,6 +9,7 @@ const textCreator = SDFText.creator();
 const { textColor } = settings;
 
 const group = new Group();
+let countdownVersion = 0;
 
 //  for alignment testing
 // const mesh = new THREE.Mesh( new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({wireframe:true}) );
@@ -43,6 +44,13 @@ const instructions = {
     scene.remove(group);
   },
 
+  reset() {
+    countdownVersion += 1;
+    instructions.remove();
+    instructions.setSubText('');
+    instructions.setMainText('');
+  },
+
   setSubText(str) {
     subtext.updateLabel(str);
   },
@@ -52,15 +60,23 @@ const instructions = {
   },
 
   async beginCountdown(seconds) {
+    countdownVersion += 1;
+    const version = countdownVersion;
     instructions.add();
     let remaining = seconds;
     while (remaining > 0) {
+      if (version !== countdownVersion) {
+        remaining = 0;
+        continue;
+      }
       instructions.setMainText(Math.floor(remaining).toString());
       const pause = 1 + remaining % 1;
       remaining -= pause;
       await sleep(pause * 1000);
     }
-    instructions.remove();
+    if (version === countdownVersion) {
+      instructions.remove();
+    }
   },
 };
 

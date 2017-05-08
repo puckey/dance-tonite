@@ -19,16 +19,6 @@ const routes = {
   '/*': notFound,
 };
 
-router.on('navigate', () => {
-  if (current) {
-    audio.fadeOut();
-    current.unmount();
-    hud.clear();
-    Room.reset();
-    current = null;
-  }
-});
-
 export default () => {
   Object
     .keys(routes)
@@ -36,11 +26,19 @@ export default () => {
       router.get(url, async (req, event) => {
         const route = routes[url];
         if (!route || event.parent()) return;
+        if (current) {
+          audio.fadeOut();
+          current.unmount();
+          hud.clear();
+          Room.reset();
+          current = null;
+        }
+
         hud.hideLoader();
-        await transition.exit({ immediate: true });
-        route.mount(req);
-        hud.update(route.hud);
-        current = route;
+        transition.reset();
+        current = route(req);
+        current.mount();
+        hud.update(current.hud);
       });
     });
 };

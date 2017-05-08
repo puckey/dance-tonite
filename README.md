@@ -23,7 +23,3 @@
 ## Changing color of recording room
 Go to /record?color=[color].
 Where `color` is one of: `green` `red` `orange` `blue` `pink`
-
-## Known caveats
-
-Pressing the back button in your browser while mid-transition (when the scene fades to black in recording mode) messes up the routing system. Refresh to fix.

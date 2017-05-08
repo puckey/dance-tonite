@@ -11,7 +11,6 @@ import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { Vector3 } from '../../lib/three';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
-import transition from '../../transition';
 
 // TODO: replace with better recording:
 const TUTORIAL_RECORDING_URL = '1030619465488-e65b1335.json?dance';
@@ -24,15 +23,12 @@ const getLineTransform = (x1, y1, x2, y2, margin) => {
   return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
 };
 
-export default async (goto) => {
-  hud.showLoader();
-  let windowWidth;
-  let windowHeight;
-  let lineOriginX;
-  let lineOriginY;
+export default (goto) => {
   let getLineTarget;
-  let minLayers = 0;
-  let overlayEl;
+  let room;
+  const state = {};
+  const elements = {};
+  const objects = {};
 
   const TEMP_VECTOR = new Vector3();
   const worldToScreen = (position) => {
@@ -40,8 +36,8 @@ export default async (goto) => {
     TEMP_VECTOR
       .copy(position)
       .project(viewer.camera);
-    TEMP_VECTOR.x = (TEMP_VECTOR.x + 1) * (windowWidth * 0.5);
-    TEMP_VECTOR.y = (-TEMP_VECTOR.y + 1) * (windowHeight * 0.5);
+    TEMP_VECTOR.x = (TEMP_VECTOR.x + 1) * (state.windowWidth * 0.5);
+    TEMP_VECTOR.y = (-TEMP_VECTOR.y + 1) * (state.windowHeight * 0.5);
 
     return TEMP_VECTOR;
   };
@@ -49,7 +45,7 @@ export default async (goto) => {
   const performSkip = async () => {
     // TODO: we need to make sure the user has a vr device capable of room vr:
     if (feature.hasVR) {
-      skipTutorialButton.classList.add('mod-hidden');
+      elements.skipTutorialButton.classList.add('mod-hidden');
       const removeOverlay = hud.enterVR();
       await viewer.vrEffect.requestPresent();
       // Wait for the VR overlay to cover the screen:
@@ -67,8 +63,8 @@ export default async (goto) => {
       time: 0,
       callback: () => {
         room.changeColor(waitRoomColor);
-        orb2.fadeOut();
-        orb.fadeIn();
+        objects.orb2.fadeOut();
+        objects.orb.fadeIn();
       },
     },
     {
@@ -80,8 +76,8 @@ export default async (goto) => {
   ]);
 
   const createOverlay = () => {
-    if (overlayEl) return;
-    overlayEl = hud.create(
+    if (elements.overlayEl) return;
+    elements.overlayEl = hud.create(
       'div.tutorial-overlay.mod-link',
       {
         onclick: performSkip,
@@ -103,12 +99,12 @@ export default async (goto) => {
     },
     {
       time: 3,
-      text: 'This is the audience.',
-      getPosition: () => orb.mesh.position,
+      text: 'This is your audience.',
+      getPosition: () => objects.orb.mesh.position,
     },
     {
       time: 8,
-      text: 'Dance for the audience!',
+      text: 'Dance for your audience!',
     },
     {
       time: 14,
@@ -149,7 +145,7 @@ export default async (goto) => {
     room.gotoTime(
       audio.time,
       Math.max(
-        minLayers,
+        state.minLayers,
         Math.ceil(audio.totalProgress / 2)
       )
     );
@@ -158,121 +154,131 @@ export default async (goto) => {
     textTimeline.tick(audio.currentTime);
 
     const z = (progress - 0.5) * -roomDepth - roomOffset;
-    orb.move(z);
+    objects.orb.move(z);
     if (audio.totalProgress > 1) {
-      orb2.move(z - roomDepth * 2);
+      objects.orb2.move(z - roomDepth * 2);
     }
 
     if (getLineTarget) {
       const { x, y } = worldToScreen(getLineTarget());
-      lineEl.style.transform = getLineTransform(
-        lineOriginX,
-        lineOriginY,
+      elements.lineEl.style.transform = getLineTransform(
+        state.lineOriginX,
+        state.lineOriginY,
         x,
         y,
-        windowHeight * 0.03
+        state.windowHeight * 0.03
       );
     }
   };
 
   const updateWindowDimensions = () => {
-    windowWidth = window.innerWidth;
-    windowHeight = window.innerHeight;
-    lineOriginX = windowWidth / 2;
-    lineOriginY = tutorialText.offsetHeight * 1.2;
+    state.windowWidth = window.innerWidth;
+    state.windowHeight = window.innerHeight;
+    state.lineOriginX = state.windowWidth / 2;
+    state.lineOriginY = elements.tutorialText.offsetHeight * 1.2;
   };
 
   const handleKeyframe = ({ text, getPosition, layers }) => {
     // just !text would return true on empty string, so:
     if (text !== undefined) {
-      tutorialText.innerHTML = text;
+      elements.tutorialText.innerHTML = text;
     }
     getLineTarget = getPosition;
-    lineEl.style.opacity = getPosition ? 1 : 0;
+    elements.lineEl.style.opacity = getPosition ? 1 : 0;
     if (layers) {
-      minLayers = layers;
+      state.minLayers = layers;
     }
   };
 
-  const orb = new Orb();
-  const orb2 = new Orb();
+  const component = {
+    mount: async () => {
+      hud.showLoader();
+      objects.orb = new Orb();
+      objects.orb2 = new Orb();
 
-  const tutorialText = hud.create('div.tutorial-text');
-  const skipTutorialButton = hud.create(
-    'div.skip-tutorial-button',
-    {
-      onclick: createOverlay,
+      elements.tutorialText = hud.create('div.tutorial-text');
+      elements.skipTutorialButton = hud.create(
+        'div.skip-tutorial-button',
+        {
+          onclick: createOverlay,
+        },
+        'Skip Tutorial'
+      );
+      hud.create('div.close-button',
+        {
+          onclick: () => router.navigate('/'),
+        },
+        '×'
+      );
+      elements.lineEl = hud.create('div.line', {
+        style: {
+          transform: 'scaleX(0)',
+        },
+      });
+
+      viewer.switchCamera('orthographic');
+      state.originalCameraPosition = viewer.camera.position.clone();
+      state.originalZoom = viewer.camera.zoom;
+      viewer.camera.position.y = 2;
+      viewer.camera.position.z = 1.3;
+      viewer.camera.zoom = 0.7;
+      viewer.camera.updateProjectionMatrix();
+
+      Room.rotate180();
+
+      await Promise.all([
+        audio.load({
+          src: '/public/sound/room-1.ogg',
+          loops: 2,
+          loopOffset: 0.5,
+        }),
+        sleep(1000),
+      ]);
+      if (component.destroyed) return;
+
+      hud.hideLoader();
+
+      room = new Room({
+        url: TUTORIAL_RECORDING_URL,
+        showHead: true,
+        index: 1,
+      });
+      room.changeColor(waitRoomColor);
+
+      await sleep(2000);
+      if (component.destroyed) return;
+      room.load();
+
+      audio.play();
+      audio.mute();
+      audio.fadeIn();
+
+      textTimeline.on('keyframe', handleKeyframe);
+      viewer.events.on('tick', tick);
+      window.addEventListener('resize', updateWindowDimensions);
+      updateWindowDimensions();
     },
-    'Skip Tutorial'
-  );
-  hud.create('div.close-button',
-    {
-      onclick: () => router.navigate('/'),
+    unmount: () => {
+      component.destroyed = true;
+      objects.orb.destroy();
+      objects.orb2.destroy();
+      viewer.camera.position.copy(state.originalCameraPosition);
+      viewer.camera.zoom = state.originalZoom;
+      viewer.camera.updateProjectionMatrix();
+      window.removeEventListener('resize', updateWindowDimensions);
+      audio.reset();
+      Room.reset();
+      audio.fadeOut();
+      if (room) {
+        room.destroy();
+      }
+      viewer.camera.position.y = 0;
+      viewer.camera.zoom = 1;
+      viewer.camera.updateProjectionMatrix();
+      viewer.events.off('tick', tick);
+      textTimeline.off('keyframe', handleKeyframe);
     },
-    '×'
-  );
-  const lineEl = hud.create('div.line', {
-    style: {
-      transform: 'scaleX(0)',
-    },
-  });
-
-  viewer.switchCamera('orthographic');
-  const originalCameraPosition = viewer.camera.position.clone();
-  const originalZoom = viewer.camera.zoom;
-  viewer.camera.position.y = 2;
-  viewer.camera.position.z = 1.3;
-  viewer.camera.zoom = 0.7;
-  viewer.camera.updateProjectionMatrix();
-
-  Room.rotate180();
-
-  await Promise.all([
-    audio.load({
-      src: '/public/sound/room-1.ogg',
-      loops: 2,
-      loopOffset: 0.5,
-    }),
-    sleep(1000),
-  ]);
-
-  hud.hideLoader();
-
-  const room = new Room({
-    url: TUTORIAL_RECORDING_URL,
-    showHead: true,
-    index: 1,
-  });
-  room.changeColor(waitRoomColor);
-
-  await sleep(2000);
-
-  room.load();
-
-  audio.play();
-  audio.mute();
-  audio.fadeIn();
-
-  textTimeline.on('keyframe', handleKeyframe);
-  viewer.events.on('tick', tick);
-  window.addEventListener('resize', updateWindowDimensions);
-  updateWindowDimensions();
-
-  return () => {
-    viewer.camera.position.copy(originalCameraPosition);
-    viewer.camera.zoom = originalZoom;
-    viewer.camera.updateProjectionMatrix();
-    window.removeEventListener('resize', updateWindowDimensions);
-    audio.reset();
-    Room.reset();
-    audio.fadeOut();
-    room.destroy();
-    orb.destroy();
-    orb2.destroy();
-    viewer.camera.position.y = 0;
-    viewer.camera.zoom = 1;
-    viewer.camera.updateProjectionMatrix();
-    viewer.events.off('tick', tick);
-    textTimeline.off('keyframe', handleKeyframe);
   };
+
+  return component;
 };

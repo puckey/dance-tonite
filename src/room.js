@@ -116,7 +116,8 @@ export default class Room {
 
   load(callback) {
     const frames = [];
-    streamJSON(`${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.url}`,
+    this.streamer = streamJSON(
+      `${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.url}`,
       (error, json) => {
         if (error || !json) {
           if (callback) {
@@ -222,6 +223,7 @@ export default class Room {
   destroy() {
     roomsGroup.remove(this.headMesh);
     roomsGroup.remove(this.handMesh);
+    if (this.streamer) this.streamer.cancel();
   }
 }
 

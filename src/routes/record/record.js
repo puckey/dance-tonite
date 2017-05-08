@@ -12,11 +12,15 @@ import dp from '../../debugplane';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
 
-const { roomDepth, roomOffset } = settings;
+export default (goto, req) => {
+  const { roomDepth, roomOffset } = settings;
 
-export default async (goto, req) => {
+  let room;
+  let orb;
+  let orb2;
+
   const performFinish = async () => {
-    instructions.remove();
+    instructions.reset();
     await Promise.all([
       // Wait for loop to finish:
       sleep(
@@ -24,14 +28,14 @@ export default async (goto, req) => {
         ? (audio.duration - audio.time + 0.1) * 1000
         : 0
       ).then(() => {
-        recording.stop();
+        if (!component.destroyed) recording.stop();
       }),
       audio.fadeOut(),
       transition.enter({
         text: 'Let’s review your performance',
       }),
     ]);
-    goto('review');
+    if (!component.destroyed) goto('review');
   };
 
   const performStart = async () => {
@@ -45,8 +49,11 @@ export default async (goto, req) => {
     left: {
       text: 'press to restart',
       removeOnPress: true,
-      onPress: () => {
-        goto('record');
+      onPress: async () => {
+        await transition.enter({
+          text: 'Let’s try that again...',
+        });
+        if (!component.destroyed) goto('record');
       },
     },
     right: {
@@ -63,6 +70,7 @@ export default async (goto, req) => {
       onPress: performStart,
     },
   };
+
   const timeline = createTimeline([
     {
       time: 0,
@@ -105,40 +113,53 @@ export default async (goto, req) => {
     hideHead: req.params.hideHead === '1',
   });
 
-  await audio.load({
-    src: `/public/sound/room-${recording.loopIndex}.ogg`,
-    loops: 2,
-    loopOffset: 0.5,
-  });
-  await transition.exit();
+  const component = {
+    mount: async () => {
+      await audio.load({
+        src: `/public/sound/room-${recording.loopIndex}.ogg`,
+        loops: 2,
+        loopOffset: 0.5,
+      });
+      if (component.destroyed) return;
 
-  instructions.add();
-  instructions.setMainText('');
-  instructions.setSubText('turn on your controllers');
+      viewer.switchCamera('default');
+      room = new Room({ recording });
+      room.changeColor(waitRoomColor);
 
-  controllers.update(pressToStart);
+      instructions.add();
+      instructions.setMainText('');
+      instructions.setSubText('turn on your controllers');
 
-  viewer.camera.position.z = 0;
-  viewer.switchCamera('default');
+      controllers.update(pressToStart);
+      controllers.add();
 
-  const room = new Room({ recording });
-  room.changeColor(waitRoomColor);
+      orb = new Orb();
+      orb2 = new Orb();
 
-  const orb = new Orb();
-  const orb2 = new Orb();
+      viewer.scene.add(dp.outline);
 
-  viewer.scene.add(dp.outline);
-  controllers.add();
-  return () => {
-    instructions.remove();
-    controllers.remove();
-    viewer.events.off('tick', tick);
-    audio.reset();
-    Room.reset();
-    audio.fadeOut();
-    room.destroy();
-    orb.destroy();
-    orb2.destroy();
-    viewer.scene.remove(dp.outline);
+      if (transition.isInside()) {
+        await transition.exit();
+      }
+    },
+
+    unmount: () => {
+      component.destroyed = true;
+      instructions.reset();
+      controllers.update();
+      controllers.remove();
+      viewer.events.off('tick', tick);
+      audio.reset();
+      Room.reset();
+      audio.fadeOut();
+      if (room) {
+        room.destroy();
+        orb.destroy();
+        orb2.destroy();
+      }
+      viewer.scene.remove(dp.outline);
+    },
   };
+
+  return component;
 };

@@ -1,11 +1,13 @@
 const fetchSupported = window.fetch !== undefined;
 
 const streamJsonFetch = (url, callback) => {
+  let destroyed = false;
   fetch(url).then((response) => {
     const reader = response.body.getReader();
     let partial = '';
     const decoder = new TextDecoder();
     const parseResult = (result) => {
+      if (destroyed) return;
       partial += decoder.decode(result.value || new Uint8Array(), {
         stream: !result.done,
       });
@@ -31,9 +33,15 @@ const streamJsonFetch = (url, callback) => {
     );
     readFromResponse();
   });
+  return {
+    cancel: () => {
+      destroyed = true;
+    },
+  };
 };
 
 const streamJsonXHR = (url, callback) => {
+  let destroyed = false;
   const xhr = new XMLHttpRequest();
   let pos = 0;
 
@@ -42,6 +50,7 @@ const streamJsonXHR = (url, callback) => {
   };
 
   xhr.onprogress = () => {
+    if (destroyed) return;
     const pieces = xhr
       .response
       .slice(pos)
@@ -60,12 +69,19 @@ const streamJsonXHR = (url, callback) => {
   };
 
   xhr.onerror = () => {
-    callback(Error('Connection failed'));
+    if (!destroyed) {
+      callback(Error('Connection failed'));
+    }
   };
-
   xhr.responseType = 'text';
   xhr.open('GET', url);
   xhr.send();
+  return {
+    cancel: () => {
+      xhr.abort();
+      destroyed = true;
+    },
+  };
 };
 
 export default (url, callback) => (

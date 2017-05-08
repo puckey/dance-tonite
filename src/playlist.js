@@ -17,6 +17,7 @@ export default class Playlist {
 
   async load({ url, pathRecording, loopIndex }) {
     const urls = await storage.loadPlaylist(url);
+    if (this.destroyed) return;
     await new Promise((resolve, reject) => {
       if (pathRecording) urls[loopIndex - 1] = `${pathRecording}.json`;
       this.rooms = urls.map(
@@ -25,18 +26,19 @@ export default class Playlist {
           index,
         }),
       );
+      const destroyedErrorName = 'playlist destroyed';
       asyncEach(
         this.rooms,
         4,
         (room, callback) => {
           // If destroyed, callback with error to stop loading further files:
           if (this.destroyed) {
-            return callback(Error('playlist was destroyed'));
+            return callback(Error(destroyedErrorName));
           }
           room.load(callback);
         },
         (error) => {
-          if (error) {
+          if (error && error.name !== destroyedErrorName) {
             reject(error);
           } else {
             resolve();
