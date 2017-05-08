@@ -11,6 +11,7 @@ import instructions from '../../instructions';
 import dp from '../../debugplane';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
+import feature from '../../utils/feature';
 
 export default (goto, req) => {
   const { roomDepth, roomOffset } = settings;
@@ -19,7 +20,10 @@ export default (goto, req) => {
   let orb;
   let orb2;
 
+  let performedFinish = false;
   const performFinish = async () => {
+    if (performedFinish) return;
+    performedFinish = true;
     instructions.reset();
     await Promise.all([
       // Wait for loop to finish:
@@ -70,6 +74,19 @@ export default (goto, req) => {
     },
   };
 
+  const numberWords = [
+    'one',
+    'two',
+    'three',
+    'four',
+    'five',
+    'six',
+    'seven',
+    'eight',
+    'nine',
+    'ten',
+  ];
+
   const timeline = createTimeline([
     {
       time: 0,
@@ -80,8 +97,17 @@ export default (goto, req) => {
         if (audio.totalProgress > 1) {
           controllers.update(pressToFinish);
         }
-        instructions.setSubText('start in');
-        instructions.beginCountdown(audio.loopDuration - audio.time);
+        const round = Math.floor(audio.totalProgress / 2);
+        const subText = (feature.isIOVive && round === 10)
+          ? 'last round'
+          : `round ${numberWords[round] || round}`;
+        instructions.setSubText(subText);
+        instructions.beginCountdown(Math.round(audio.loopDuration - audio.time));
+        // IO users are limited to 10 layers:
+        if (feature.isIOVive && round === 11) {
+          performFinish();
+          controllers.update();
+        }
       },
     },
     {

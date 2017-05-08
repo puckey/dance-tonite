@@ -69,10 +69,9 @@ const instructions = {
         remaining = 0;
         continue;
       }
-      instructions.setMainText(Math.floor(remaining).toString());
-      const pause = 1 + remaining % 1;
-      remaining -= pause;
-      await sleep(pause * 1000);
+      instructions.setMainText(remaining.toString());
+      remaining--;
+      await sleep(1000);
     }
     if (version === countdownVersion) {
       instructions.remove();
