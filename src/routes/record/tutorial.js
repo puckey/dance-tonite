@@ -99,12 +99,12 @@ export default (goto) => {
     },
     {
       time: 3,
-      text: 'This is your audience.',
+      text: 'This is the camera.',
       getPosition: () => objects.orb.mesh.position,
     },
     {
       time: 8,
-      text: 'Dance for your audience!',
+      text: 'Dance for your the camera!',
     },
     {
       time: 14,
