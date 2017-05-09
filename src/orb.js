@@ -28,11 +28,11 @@ export default class Orb {
   }
 
   hide() {
-    this.mesh.material.color.copy(BLACK);
+    viewer.scene.remove(this.mesh);
   }
 
   show() {
-    this.mesh.material.color.copy(settings.sphereColor);
+    viewer.scene.add(this.mesh);
   }
 
   fadeOut() {

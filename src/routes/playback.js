@@ -6,7 +6,7 @@ import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
 import about from '../about';
-import titles from '../titles';
+import createTitles from '../titles';
 import transition from '../transition';
 import hud from '../hud';
 import feature from '../utils/feature';
@@ -17,6 +17,8 @@ import Room from '../room';
 // TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { roomDepth, roomOffset, holeHeight } = settings;
+
+let titles;
 
 const enterDaydreamTransition = (immediate) => {
   titles.hide();
@@ -94,12 +96,13 @@ export default (req) => {
       }
       progressBar = hud.create('div.audio-progress-bar');
 
-      titles.mount();
       if (!viewer.vrEffect.isPresenting) {
         viewer.switchCamera('orthographic');
       }
 
       orb = new Orb();
+      titles = createTitles(orb);
+      titles.mount();
 
       const moveCamera = (progress) => {
         const emptySpace = 2.5;
@@ -120,14 +123,6 @@ export default (req) => {
         progressBar.style.transform = `scaleX(${audio.progress / settings.totalLoopCount})`;
         moveCamera(audio.progress);
       };
-
-      titles.on('text-shown', () => {
-        orb.hide();
-      });
-
-      titles.on('no-text-shown', () => {
-        orb.show();
-      });
 
       hud.showLoader('Loading sound');
 
