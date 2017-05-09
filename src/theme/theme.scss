@@ -5,6 +5,7 @@ $mobile-wrapper-width: ($min-width * 2) / 3;
 $max-base-factor: 40px;
 $min-base-factor: 20px;
 $base-factor: ($min-base-factor / $min-width) * 100vw;
+$line-width: .075rem;
 
 // Colors
 $background-color: #000;

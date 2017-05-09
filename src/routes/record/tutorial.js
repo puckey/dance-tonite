@@ -78,15 +78,18 @@ export default (goto) => {
   const createOverlay = () => {
     if (elements.overlayEl) return;
     elements.overlayEl = hud.create(
-      'div.tutorial-overlay.mod-link',
+      'div.tutorial-overlay',
       {
         onclick: performSkip,
       },
       h(
         'div.tutorial-overlay-text',
-        feature.hasVR
-          ? 'Click here to add your performance!'
-          : 'A message about Vive not being found. Click here to go home.'
+        h(
+          'span',
+          feature.hasVR
+            ? 'Add your performance'
+            : 'A message about Vive not being found. Click here to go home.'
+        ),
       )
     );
   };

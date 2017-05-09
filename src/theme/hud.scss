@@ -152,7 +152,7 @@ svg * {
   top: 0;
   left: 0;
   width: 100px;
-  height: 3px;
+  height: $line-width * 1.5;
   background: $text-color;
   z-index: $interface-layer;
   transform-origin: 0 100%;
@@ -254,6 +254,11 @@ svg * {
   font-size: 2rem;
   user-select: none;
   max-width: 75vw;
+  cursor: pointer;
+
+  span {
+    border-bottom: solid $line-width * 2 $text-color;
+  }
 }
 
 .vr-info-overlay {
