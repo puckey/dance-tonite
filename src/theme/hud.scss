@@ -114,6 +114,8 @@ svg * {
   justify-content: center;
   z-index: $interface-layer;
   pointer-events: none;
+  user-select: none;
+  cursor: default;
 }
 
 .splash-title--top {
