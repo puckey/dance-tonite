@@ -115,6 +115,9 @@ const audio = Object.assign(emitter(), {
 
   play() {
     if (context) context.resume();
+    if (feature.isMobile) {
+      audioElement.play();
+    }
   },
 
   pause() {
