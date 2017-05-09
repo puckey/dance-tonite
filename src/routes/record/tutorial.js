@@ -104,7 +104,7 @@ export default (goto) => {
     },
     {
       time: 8,
-      text: 'Dance for your the camera!',
+      text: 'Dance!',
     },
     {
       time: 14,
