@@ -121,6 +121,14 @@ export default (req) => {
         moveCamera(audio.progress);
       };
 
+      titles.on('text-shown', () => {
+        orb.hide();
+      });
+
+      titles.on('no-text-shown', () => {
+        orb.show();
+      });
+
       hud.showLoader('Loading sound');
 
       await audio.load({

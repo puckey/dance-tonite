@@ -27,6 +27,14 @@ export default class Orb {
     );
   }
 
+  hide() {
+    this.mesh.material.color.copy(BLACK);
+  }
+
+  show() {
+    this.mesh.material.color.copy(settings.sphereColor);
+  }
+
   fadeOut() {
     this._fade(settings.sphereColor, BLACK);
   }
