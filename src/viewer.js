@@ -10,7 +10,6 @@ import Stats from './lib/stats';
 import { tempVector } from './utils/three';
 import settings from './settings';
 import Room from './room';
-import * as Shadow from './shadow';
 import feature from './utils/feature';
 
 require('./lib/VREffect')(THREE);
@@ -49,7 +48,6 @@ renderer.setClearColor(0x000000);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.sortObjects = false;
-Shadow.configureRenderer(renderer);
 
 const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);
@@ -68,17 +66,14 @@ controller2.standingMatrix = controls.getStandingMatrix();
 
 const createScene = () => {
   const scene = new THREE.Scene();
-  const light = new THREE.DirectionalLight(0xeeeeee);
+  const light = new THREE.DirectionalLight(0xffffff);
   light.position.set(-1.42, 2.26, 0.74).normalize();
 
-  const ambientLight = new THREE.AmbientLight(0x444444, 2.4);
-  const hemisphereLight = new THREE.HemisphereLight(0x303030, 0x000000);
+  const ambientLight = new THREE.AmbientLight(0x444444, 0.7);
+  const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
 
   scene.add(hemisphereLight);
   scene.add(light, ambientLight);
-  scene.add(Shadow.shadowLight, Shadow.shadowTarget);
-  //  Uncomment to see shadow volume
-  // scene.add( Shadow.helper );
   scene.fog = new THREE.Fog(0x000000, 0, 75);
   return scene;
 };
@@ -144,7 +139,6 @@ const viewer = {
         : 'default',
     );
     viewer.camera = cameras[name];
-    Shadow.setShadowProfile(name);
   },
   vrEffect,
 };
@@ -160,7 +154,6 @@ const animate = () => {
   controller2.update();
   controls.update();
   events.emit('tick', dt);
-  Shadow.updateFollow(viewer.camera);
   if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
   vrEffect.render(viewer.renderScene, viewer.camera);
   if (vrEffect.isPresenting && feature.hasExternalDisplay) {
