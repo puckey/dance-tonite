@@ -22,7 +22,7 @@ const events = emitter();
 const orthographicDistance = 4;
 
 const showStats = !(window.location.hash.indexOf('fps') === -1);
-const shadowsEnabled = true;
+const shadowsEnabled = false;
 
 const cameras = (function () {
   const aspect = getWindowAspect();

@@ -9,7 +9,7 @@ import settings from './settings';
 import { recordCostumeColor } from './theme/colors';
 
 require('./lib/OBJLoader')(THREE);
-const aoEnabled = true;
+const aoEnabled = false;
 
 const {
   OBJLoader,

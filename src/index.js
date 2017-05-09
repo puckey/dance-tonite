@@ -12,7 +12,7 @@ import audioPool from './utils/audio-pool';
 
 window.THREE = THREE;
 
-const gridEnabled = true;
+const gridEnabled = false;
 
 (async () => {
   await Promise.all([
