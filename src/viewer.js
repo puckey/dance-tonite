@@ -108,7 +108,7 @@ const scene = createScene();
 scene.add(controller1, controller2);
 
 let stats;
-const statsMeshOffsetPosition = new THREE.Vector3(0.3, 0.15, 1);
+const statsMeshOffsetPosition = new THREE.Vector3(-0.3, 0.15, -1.5);
 
 if (showStats) {
   stats = new Stats();
@@ -116,7 +116,6 @@ if (showStats) {
 
   scene.add(stats.mesh);
   stats.mesh.scale.set(2.5, 2.5, 2.5);
-  stats.mesh.rotation.set(0.0, -Math.PI, 0);
 }
 
 
