@@ -145,6 +145,7 @@ export default (goto) => {
     },
     {
       time: 37.5,
+      text: '',
       callback: createOverlay,
     },
   ]);
