@@ -152,6 +152,7 @@ export default (goto, req) => {
 
   const component = {
     mount: async () => {
+      Room.reset();
       await audio.load({
         src: `/public/sound/room-${recording.loopIndex}.ogg`,
         loops: 2,
@@ -186,7 +187,6 @@ export default (goto, req) => {
       controllers.remove();
       viewer.events.off('tick', tick);
       audio.reset();
-      Room.reset();
       audio.fadeOut();
       if (room) {
         room.destroy();

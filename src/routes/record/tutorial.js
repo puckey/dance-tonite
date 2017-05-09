@@ -192,6 +192,7 @@ export default (goto) => {
 
   const component = {
     mount: async () => {
+      Room.reset();
       hud.showLoader();
       objects.orb = new Orb();
       objects.orb2 = new Orb();
@@ -241,7 +242,7 @@ export default (goto) => {
       room = new Room({
         url: TUTORIAL_RECORDING_URL,
         showHead: true,
-        index: 1,
+        index: 0,
       });
       room.changeColor(waitRoomColor);
 
@@ -267,7 +268,6 @@ export default (goto) => {
       viewer.camera.updateProjectionMatrix();
       window.removeEventListener('resize', updateWindowDimensions);
       audio.reset();
-      Room.reset();
       audio.fadeOut();
       if (room) {
         room.destroy();

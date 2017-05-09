@@ -84,6 +84,9 @@ export default (goto) => {
 
   const component = {
     mount: async () => {
+      Room.reset({
+        showAllWalls: true,
+      });
       Room.rotate180();
       playlist = new Playlist({ recording });
 
@@ -123,7 +126,6 @@ export default (goto) => {
       component.destroyed = true;
       controllers.update();
       controllers.remove();
-      Room.reset();
       audio.fadeOut();
       playlist.destroy();
     },

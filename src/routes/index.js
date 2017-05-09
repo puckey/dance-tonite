@@ -7,7 +7,6 @@ import notFound from './not-found';
 import transition from '../transition';
 import hud from '../hud';
 import audio from '../audio';
-import Room from '../room';
 
 let current;
 
@@ -30,7 +29,6 @@ export default () => {
           audio.fadeOut();
           current.unmount();
           hud.clear();
-          Room.reset();
           current = null;
         }
 

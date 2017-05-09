@@ -3,14 +3,17 @@ import asyncEach from 'async/eachLimit';
 import storage from './storage';
 import Room from './room';
 import audio from './audio';
+import { waitRoomColor } from './theme/colors';
 
 export default class Playlist {
   constructor({ recording } = {}) {
     this.isRecording = !!recording;
+    const rooms = this.rooms = [];
     if (recording) {
-      const rooms = this.rooms = [];
-      for (let i = 0; i < 10; i++) {
-        rooms.push(new Room({ recording }));
+      for (let index = 1; index < 20; index += 2) {
+        const room = new Room({ recording, index });
+        room.changeColor(waitRoomColor);
+        rooms.push(room);
       }
     }
   }
@@ -53,7 +56,7 @@ export default class Playlist {
     for (let i = 0; i < this.rooms.length; i++) {
       const room = this.rooms[i];
       let time = audio.time;
-      const oddRoom = i % 2 === 0;
+      const oddRoom = room.placementIndex % 2 === 0;
       if (oddRoom) {
         time += audio.loopDuration;
       }

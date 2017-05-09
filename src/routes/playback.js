@@ -73,6 +73,7 @@ export default (req) => {
   const component = {
     hud: hudSettings,
     mount: async () => {
+      Room.reset();
       if (feature.isIODaydream) {
         hud.create(
           'div.io-emulate-button', {

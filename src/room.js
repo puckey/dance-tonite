@@ -5,7 +5,7 @@ import { tempQuaternion, tempVector, createInstancedMesh } from './utils/three';
 import viewer from './viewer';
 import settings from './settings';
 import audio from './audio';
-import { getCostumeColor, getRoomColor, recordCostumeColor } from './theme/colors';
+import { getCostumeColor, getRoomColor, recordCostumeColor, recordRoomColor } from './theme/colors';
 import streamJSON from './lib/stream-json';
 
 const PROTOCOL = location.protocol;
@@ -68,24 +68,27 @@ const transformMesh = (
 };
 
 export default class Room {
-  constructor({ url, recording }) {
+  constructor({ url, recording, index }) {
+    this.placementIndex = index === undefined
+      ? roomIndex
+      : index;
     this.index = roomIndex;
+    roomIndex += 1;
+
     this.isRecording = !!recording;
+    this.url = url;
     if (recording) {
       this.hideHead = recording.hideHead;
-    }
-    this.url = url;
-    roomIndex += 1;
-    if (recording) {
       this.frames = recording.frames;
       this.createMeshes();
+      this.changeColor(recordRoomColor);
     }
     this.position = new THREE.Vector3();
 
     this.position.set(
       0,
       0,
-      settings.roomOffset + (this.index * (settings.roomDepth + 0.001)),
+      settings.roomOffset + (this.placementIndex * (settings.roomDepth + 0.001)),
     );
     this.updatePosition();
   }
@@ -146,8 +149,10 @@ export default class Room {
       roomMeshes[i].setPositionAt(this.index, position);
       roomMeshes[i].needsUpdate('position');
 
-      wallMeshes[i].setPositionAt(this.index, position);
-      wallMeshes[i].needsUpdate('position');
+      if (this.index < wallMeshes[i].numInstances) {
+        wallMeshes[i].setPositionAt(this.index, position);
+        wallMeshes[i].needsUpdate('position');
+      }
     }
   }
 
@@ -245,20 +250,20 @@ Room.switchModel = (model) => {
   roomsGroup.add(roomMesh);
 };
 
-Room.reset = () => {
+Room.reset = ({ showAllWalls } = {}) => {
   roomsGroup.matrix.copy(IDENTITY_MATRIX);
   if (roomMesh) roomsGroup.remove(roomMesh);
   if (wallMesh) roomsGroup.remove(wallMesh);
   roomIndex = 0;
   wallMeshes = {
     default: createInstancedMesh({
-      count: 1,
+      count: showAllWalls ? settings.loopCount : 1,
       geometry: props.wall.geometry,
       color: getRoomColor,
       material: props.wall.material,
     }),
     orthographic: createInstancedMesh({
-      count: 1,
+      count: showAllWalls ? settings.loopCount : 1,
       geometry: props.orthographicWall.geometry,
       color: getRoomColor,
       material: props.orthographicWall.material,
