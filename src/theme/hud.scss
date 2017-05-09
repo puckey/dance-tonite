@@ -311,7 +311,7 @@ svg * {
   height: 1rem;
   background: none;
   cursor: pointer;
-  z-index: $interface-layer;
+  z-index: $popover-layer;
   user-select: none;
 
   @media screen and (max-width: $min-width) {
