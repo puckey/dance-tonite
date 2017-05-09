@@ -22,6 +22,7 @@ const events = emitter();
 const orthographicDistance = 4;
 
 const showStats = !(window.location.hash.indexOf('fps') === -1);
+const shadowsEnabled = true;
 
 const cameras = (function () {
   const aspect = getWindowAspect();
@@ -49,7 +50,9 @@ renderer.setClearColor(0x000000);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.sortObjects = false;
-Shadow.configureRenderer(renderer);
+
+if (shadowsEnabled)
+  Shadow.configureRenderer(renderer);
 
 const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);
@@ -76,9 +79,12 @@ const createScene = () => {
 
   scene.add(hemisphereLight);
   scene.add(light, ambientLight);
-  scene.add(Shadow.shadowLight, Shadow.shadowTarget);
-  //  Uncomment to see shadow volume
-  // scene.add( Shadow.helper );
+
+  if (shadowsEnabled) {  
+    scene.add(Shadow.shadowLight, Shadow.shadowTarget);
+    //  Uncomment to see shadow volume
+    // scene.add( Shadow.helper );
+  }
   scene.fog = new THREE.Fog(0x000000, 0, 75);
   return scene;
 };
@@ -142,7 +148,8 @@ const viewer = {
         : 'default',
     );
     viewer.camera = cameras[name];
-    Shadow.setShadowProfile(name);
+
+    if (shadowsEnabled) Shadow.setShadowProfile(name);
   },
   vrEffect,
 };
@@ -158,7 +165,7 @@ const animate = () => {
   controller2.update();
   controls.update();
   events.emit('tick', dt);
-  Shadow.updateFollow(viewer.camera);
+  if (shadowsEnabled) Shadow.updateFollow(viewer.camera);
   if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
   vrEffect.render(viewer.renderScene, viewer.camera);
   if (vrEffect.isPresenting && feature.hasExternalDisplay) {

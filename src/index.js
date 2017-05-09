@@ -12,12 +12,14 @@ import audioPool from './utils/audio-pool';
 
 window.THREE = THREE;
 
+const gridEnabled = true;
+
 (async () => {
   await Promise.all([
     props.prepare(),
     feature.prepare().then(hud.prepare),
   ]);
-  viewer.scene.add(props.longGrid);
+  if (gridEnabled) viewer.scene.add(props.longGrid);
   Room.reset();
 
   // If we are on a mobile device, we need a touch event in order

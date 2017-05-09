@@ -9,6 +9,7 @@ import settings from './settings';
 import { recordCostumeColor } from './theme/colors';
 
 require('./lib/OBJLoader')(THREE);
+const aoEnabled = true;
 
 const {
   OBJLoader,
@@ -141,10 +142,10 @@ const props = {
       preloadTexture(isometricRoomTextureUrl),
     ]).then(([room, isometricRoom, texture, isometricTexture]) => {
       room.material = new THREE.MeshLambertMaterial();
-      room.material.map = texture;
+      if (aoEnabled) room.material.map = texture;
 
       isometricRoom.material = new THREE.MeshLambertMaterial();
-      isometricRoom.material.map = isometricTexture;
+      if (aoEnabled) isometricRoom.material.map = isometricTexture;
 
       props.room = room;
       props.orthographicRoom = isometricRoom;
