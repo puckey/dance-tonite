@@ -106,6 +106,7 @@ module.exports = function( THREE ){
 		var canvas = renderer.domElement;
 		var defaultLeftBounds = [ 0.0, 0.0, 0.5, 1.0 ];
 		var defaultRightBounds = [ 0.5, 0.0, 0.5, 1.0 ];
+		var VRResolutionRatio = 1.0;
 
 		function onVRDisplayPresentChange() {
 
@@ -115,8 +116,6 @@ module.exports = function( THREE ){
 			if ( scope.isPresenting ) {
 
 				var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
-				var eyeWidth = eyeParamsL.renderWidth;
-				var eyeHeight = eyeParamsL.renderHeight;
 
 				if ( ! wasPresenting ) {
 
@@ -124,8 +123,9 @@ module.exports = function( THREE ){
 					rendererSize = renderer.getSize();
 
 					renderer.setPixelRatio( 1 );
-					renderer.setSize( eyeWidth * 2, eyeHeight, false );
+					renderer.setSize( eyeParamsL.renderWidth * 2, eyeParamsL.renderHeight, false );
 
+					scope.setVRResolutionRatio(VRResolutionRatio)
 				}
 
 			} else if ( wasPresenting ) {
@@ -133,11 +133,55 @@ module.exports = function( THREE ){
 				renderer.setPixelRatio( rendererPixelRatio );
 				renderer.setSize( rendererSize.width, rendererSize.height, rendererUpdateStyle );
 
+				// return the mirrored content to full size
+		        canvas.style.width = 100 + "%";
+		        canvas.style.height = 100 + "%";
+
+			}
+		}
+
+		window.addEventListener( 'vrdisplaypresentchange', onVRDisplayPresentChange, false );
+
+		// Set the resolution draw and presented in VR. This ratio only affects the area of the
+		// canvas we render to and submit to VRDisplay (no canvas resizing required), so 
+		// this function is fast enough to call every frame
+		this.setVRResolutionRatio = function (ratio) {
+			VRResolutionRatio = THREE.Math.clamp(ratio, 0, 1.0);
+
+			if ( vrDisplay !== undefined && vrDisplay.isPresenting ) {
+
+				// since we're already presenting, this doesn't need to be initiated by user interaction
+				requestPresentToVRDisplay();
+
+		        if (vrDisplay.capabilities.hasExternalDisplay) {
+
+		          // scale mirrored content up to fill the screen (even if we're just drawing to 
+		          // a small part of it)
+		          canvas.style.width = (1.0/VRResolutionRatio) * 100 + "%";
+		          canvas.style.height = (1.0/VRResolutionRatio) * 100 + "%";
+
+		          console.log("here we go! ")
+		        }
 			}
 
 		}
 
-		window.addEventListener( 'vrdisplaypresentchange', onVRDisplayPresentChange, false );
+		function requestPresentToVRDisplay() {
+			var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
+
+			// render size of each divided by total canvas size 
+			var boundsWidth = Math.floor(eyeParamsL.renderWidth * VRResolutionRatio) / canvas.width;
+	   	 	var boundsHeight = Math.floor(eyeParamsL.renderHeight * VRResolutionRatio) / canvas.height;
+
+	   	 	console.log("VR resolution: ", VRResolutionRatio, " ", boundsWidth, "x" , boundsHeight)
+
+			return vrDisplay.requestPresent([{
+	          source: canvas,
+	      	  leftBounds: [0.0, 0.0, boundsWidth, boundsHeight],
+	      	  rightBounds: [boundsWidth, 0.0, boundsWidth, boundsHeight]
+	        }]);
+		}
+
 
 		this.setFullScreen = function( boolean ) {
 
@@ -159,7 +203,7 @@ module.exports = function( THREE ){
 
 				if ( boolean ) {
 
-					resolve( vrDisplay.requestPresent( [ { source: canvas } ] ) );
+					resolve( requestPresentToVRDisplay() );
 
 				} else {
 
@@ -338,8 +382,8 @@ module.exports = function( THREE ){
 
 				} else {
 
-					renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
-					renderer.setScissor( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
+					renderer.setViewport( renderRectL.x, renderRectL.y + (size.height - renderRectL.height), renderRectL.width, renderRectL.height );
+					renderer.setScissor( renderRectL.x, renderRectL.y + (size.height - renderRectL.height), renderRectL.width, renderRectL.height );
 
 				}
 				renderer.render( scene, cameraL, renderTarget, forceClear );
@@ -352,8 +396,8 @@ module.exports = function( THREE ){
 
 				} else {
 
-					renderer.setViewport( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
-					renderer.setScissor( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
+					renderer.setViewport( renderRectR.x, renderRectR.y + (size.height - renderRectR.height), renderRectR.width, renderRectR.height );
+					renderer.setScissor( renderRectR.x, renderRectR.y + (size.height - renderRectR.height), renderRectR.width, renderRectR.height );
 
 				}
 				renderer.render( scene, cameraR, renderTarget, forceClear );
