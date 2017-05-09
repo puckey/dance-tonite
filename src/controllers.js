@@ -2,6 +2,7 @@ import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
+import router from './router';
 
 const [leftController, rightController] = viewer.controllers;
 
@@ -121,3 +122,22 @@ export default {
 
   setButtonVisibility,
 };
+
+
+//  # googleIO2017
+const MENU_PRESS_RESET_TIME = 3000;
+let menuPressTime;
+leftController.addEventListener('menudown', menuHeld);
+
+function menuHeld(){
+  menuPressTime = Date.now();
+  leftController.addEventListener('menuup', menuReleased);
+}
+
+function menuReleased(){
+  if( Date.now() - menuPressTime > MENU_PRESS_RESET_TIME ){
+    console.log( 'resetting' );
+    router.navigate('/');
+  }
+  leftController.removeEventListener('menuup', menuReleased );
+}
