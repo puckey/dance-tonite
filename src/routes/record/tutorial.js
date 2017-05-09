@@ -243,6 +243,7 @@ export default (goto) => {
         url: TUTORIAL_RECORDING_URL,
         showHead: true,
         index: 0,
+        recording: true,
       });
       room.changeColor(waitRoomColor);
 

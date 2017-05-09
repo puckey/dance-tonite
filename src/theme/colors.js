@@ -1,5 +1,4 @@
 import { Color } from '../lib/three';
-import { queryData } from '../utils/url';
 
 const green = new Color(0x55b848);
 const red = new Color(0xef4f36);
@@ -28,11 +27,12 @@ const pairCount = pairs.length;
 export const getRoomColor = roomIndex => pairs[roomIndex % pairCount][0];
 export const getCostumeColor = roomIndex => pairs[roomIndex % pairCount][1];
 export const namedColors = { green, red, orange, purple, blue, pink };
+export const roomColors = { green, red, orange, blue, pink };
 
 const pairColor = (color) => pairs.filter(
   ([controllerColor]) => controllerColor === color
 )[0][1];
 
-export const recordRoomColor = namedColors[queryData.color] || namedColors.green;
-export const recordCostumeColor = queryData.color ? pairColor(recordRoomColor) : namedColors.red;
+export const recordRoomColor = namedColors[window.localStorage.getItem('color')] || namedColors.green;
+export const recordCostumeColor = window.localStorage.getItem('color') ? pairColor(recordRoomColor) : namedColors.red;
 export const waitRoomColor = new Color(0xcccccc);
