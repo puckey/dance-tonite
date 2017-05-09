@@ -17,7 +17,6 @@ window.THREE = THREE;
     props.prepare(),
     feature.prepare().then(hud.prepare),
   ]);
-  viewer.scene.add(props.longGrid);
 
   // If we are on a mobile device, we need a touch event in order
   // to play the audio:
