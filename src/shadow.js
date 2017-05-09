@@ -40,16 +40,14 @@ let zOffset = 1.05;
 export function setShadowProfile( name ){
   const { shadow } = shadowLight;
   if( name === 'orthographic' ){
-    console.log( 'setting shadow profile to orthographic' );
+    // console.log( 'setting shad/**/ow profile to orthographic' );
     zOffset = 1.05;
-    // setPosition( -0.25, 2, 1.05 );
     updateShadowSize( 1024, 2048 );
     setShadowPlaneSize( 5, 15 );
   }
   else{
-    console.log( 'setting shadow profile to default' );
+    // console.log( 'setting shadow profile to default' );
     zOffset = -1.225;
-    // setPosition( 0, 2, -1.225 );
     updateShadowSize( 1024, 2048 );
     setShadowPlaneSize( 4, 8 );
   }
