@@ -94,24 +94,40 @@ svg * {
 }
 
 .splash-title {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  padding: 4rem 1rem;
   font-size: 10vw;
+  text-align: center;
   text-transform: uppercase;
   font-feature-settings: 'ss01';
-  z-index: $interface-layer;
   pointer-events: none;
   box-sizing: border-box;
 }
 
-.mod-in-vr .splash-title {
+.splash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $interface-layer;
+}
+
+.splash-title--top {
+  align-self: flex-start;
+}
+
+.splash-title--bottom {
+  align-self: flex-end;
+}
+
+.mod-in-vr .splash {
   display: none;
 }
 
-.mod-in-vr .splash-title {
+.mod-in-vr .splash {
   display: none;
 }
 

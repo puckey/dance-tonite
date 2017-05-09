@@ -3,16 +3,19 @@ import audio from './audio';
 import createTimeline from './lib/timeline';
 
 const hudEl = document.querySelector('.hud');
-const elements = {
-  splashTitleLCD: h(
-    'div.splash-title.splash-title-lcd.mod-hidden',
-    'LCD Sound\nsystem'
-  ),
-  splashTitleDance: h(
-    'div.splash-title.splash-title-dance.mod-hidden',
-    'Dance Tonite'
-  ),
-};
+
+const splashTitle = h(
+  'div.splash-title',
+  ' '
+);
+const splash = h(
+  'div.splash',
+  h('div.splash-title--top', ''),
+  splashTitle,
+  h('div.splash-title--bottom', ''),
+);
+
+const elements = { splash };
 
 const chromeExperiment = document.querySelector('.chrome-experiment');
 
@@ -20,28 +23,70 @@ const timeline = createTimeline([
   {
     time: 0,
     show: [chromeExperiment],
-    hide: [elements.splashTitleLCD, elements.splashTitleDance],
   },
   {
-    time: 0.3,
-    show: [elements.splashTitleLCD],
+    time: 2.6,
+    text: 'dance',
   },
   {
-    time: 0.6,
-    show: [elements.splashTitleDance],
-    hide: [elements.splashTitleLCD],
+    time: 3.1,
+    text: 'dance<br>dance',
   },
   {
-    time: 1,
-    hide: [elements.splashTitleDance],
+    time: 4.1,
+    text: 'dance<br>dance<br>dance',
   },
   {
-    time: 1.2,
+    time: 5.1,
+    text: ' ',
+  },
+  {
+    time: 6.1,
+    text: 'tonite',
+  },
+  {
+    time: 6.6,
+    text: 'tonite<br>tonite',
+  },
+  {
+    time: 7.1,
+    text: 'tonite<br>tonite<br>tonite',
+  },
+  {
+    time: 8.1,
+    text: ' ',
+  },
+  {
+    time: 9.1,
+    text: 'lcd',
+  },
+  {
+    time: 9.6,
+    text: 'lcd<br>sound',
+  },
+  {
+    time: 10.1,
+    text: 'lcd<br>sound<br>system',
+  },
+  {
+    time: 11.1,
+    text: 'lcd<br>sound',
+  },
+  {
+    time: 11.6,
+    text: 'lcd',
+  },
+  {
+    time: 12,
+    text: ' ',
+  },
+  {
+    time: 9,
     hide: [chromeExperiment],
   },
 ]);
 
-timeline.on('keyframe', ({ show, hide }) => {
+timeline.on('keyframe', ({ show, hide, text }) => {
   if (show) {
     for (let i = 0; i < show.length; i++) {
       show[i].classList.remove('mod-hidden');
@@ -51,6 +96,9 @@ timeline.on('keyframe', ({ show, hide }) => {
     for (let i = 0; i < hide.length; i++) {
       hide[i].classList.add('mod-hidden');
     }
+  }
+  if (text) {
+    splashTitle.innerHTML = text;
   }
 });
 
@@ -71,6 +119,6 @@ export default {
     }
   },
   tick: () => {
-    timeline.tick(audio.progress);
+    timeline.tick(audio.currentTime);
   },
 };
