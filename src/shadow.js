@@ -44,7 +44,7 @@ export function setShadowProfile( name ){
     zOffset = 1.05;
     // setPosition( -0.25, 2, 1.05 );
     updateShadowSize( 1024, 2048 );
-    setShadowPlaneSize( 5, 10 );
+    setShadowPlaneSize( 5, 15 );
   }
   else{
     console.log( 'setting shadow profile to default' );

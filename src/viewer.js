@@ -68,11 +68,11 @@ controller2.standingMatrix = controls.getStandingMatrix();
 
 const createScene = () => {
   const scene = new THREE.Scene();
-  const light = new THREE.DirectionalLight(0xffffff);
+  const light = new THREE.DirectionalLight(0xeeeeee);
   light.position.set(-1.42, 2.26, 0.74).normalize();
 
-  const ambientLight = new THREE.AmbientLight(0x444444, 0.7);
-  const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
+  const ambientLight = new THREE.AmbientLight(0x444444, 2.4);
+  const hemisphereLight = new THREE.HemisphereLight(0x303030, 0x000000);
 
   scene.add(hemisphereLight);
   scene.add(light, ambientLight);
