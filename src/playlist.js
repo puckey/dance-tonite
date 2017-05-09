@@ -3,7 +3,7 @@ import asyncEach from 'async/eachLimit';
 import storage from './storage';
 import Room from './room';
 import audio from './audio';
-import { waitRoomColor } from './theme/colors';
+import { recordRoomColor } from './theme/colors';
 
 export default class Playlist {
   constructor({ recording } = {}) {
@@ -12,7 +12,7 @@ export default class Playlist {
     if (recording) {
       for (let index = 1; index < 20; index += 2) {
         const room = new Room({ recording, index });
-        room.changeColor(waitRoomColor);
+        room.changeColor(recordRoomColor);
         rooms.push(room);
       }
     }
