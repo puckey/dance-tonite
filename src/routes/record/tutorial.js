@@ -13,7 +13,7 @@ import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
 
 // TODO: replace with better recording:
-const TUTORIAL_RECORDING_URL = '1030619465488-e65b1335.json?dance';
+const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
 
 const { roomDepth, roomOffset } = settings;
 
@@ -126,13 +126,19 @@ export default (goto) => {
       text: 'Dance together!',
     },
     {
-      time: 28,
+      time: 32,
       text: 'Add up to 10 copies of yourself.',
-      layers: 5,
+      layers: 3,
     },
     {
-      time: 32,
-      text: '',
+      time: 33,
+      text: 'Add up to 10 copies of yourself.',
+      layers: 4,
+    },
+    {
+      time: 34,
+      text: 'Add up to 10 copies of yourself.',
+      layers: 5,
     },
     {
       time: 37.5,
