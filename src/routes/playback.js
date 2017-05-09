@@ -26,6 +26,8 @@ const enterDaydreamTransition = (immediate) => {
   });
 };
 
+
+
 export default (req) => {
   const toggleVR = async () => {
     if (!feature.hasVR) return;
@@ -38,6 +40,7 @@ export default (req) => {
       await audio.fadeOut();
       viewer.switchCamera('default');
       if (feature.isIODaydream) {
+        viewer.daydreamController.addEventListener('touchpaddown', this.component.onclick)
         enterDaydreamTransition(true);
       } else {
         await sleep(1000);
@@ -113,6 +116,7 @@ export default (req) => {
       playlist = new Playlist();
 
       tick = () => {
+        daydreamController.update()
         if (transition.isInside()) return;
         audio.tick();
         playlist.tick();

@@ -16,6 +16,7 @@ import feature from './utils/feature';
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
 require('./lib/ViveController')(THREE);
+require('./lib/DaydreamController')(THREE);
 
 const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
@@ -61,6 +62,7 @@ controls.standing = true;
 
 const controller1 = new THREE.ViveController(0);
 const controller2 = new THREE.ViveController(1);
+const daydreamController = new THREE.DaydreamController();
 
 // Use controllers:
 controller1.standingMatrix = controls.getStandingMatrix();
