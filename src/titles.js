@@ -26,51 +26,43 @@ export default (orb) => {
       show: [chromeExperiment],
     },
     {
-      time: 2.6,
+      time: 4.1,
       text: 'lcd',
     },
     {
-      time: 3.6,
+      time: 5.1,
       text: 'lcd<br>sound',
     },
     {
-      time: 4.6,
+      time: 6.1,
       text: 'lcd<br>sound<br>system',
     },
     {
-      time: 5.6,
-      text: ' ',
-    },
-    {
-      time: 6.6,
+      time: 7.1,
       text: 'dance',
     },
     {
-      time: 7.6,
+      time: 8.1,
       text: 'dance<br>dance',
     },
     {
-      time: 8.6,
+      time: 9.1,
       text: 'dance<br>dance<br>dance',
     },
     {
-      time: 9.6,
-      text: ' ',
-    },
-    {
-      time: 10.6,
+      time: 10.1,
       text: 'tonite',
     },
     {
-      time: 11.6,
+      time: 11.1,
       text: 'tonite<br>tonite',
     },
     {
-      time: 12.6,
+      time: 12.1,
       text: 'tonite<br>tonite<br>tonite',
     },
     {
-      time: 13.6,
+      time: 13.1,
       text: ' ',
     },
     {
