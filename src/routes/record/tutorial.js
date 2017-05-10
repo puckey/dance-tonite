@@ -105,6 +105,7 @@ export default (goto) => {
       time: 0.5,
       text: 'This is you.',
       getPosition: () => room.getHeadPosition(0, audio.time),
+      layers: 1,
     },
     {
       time: 3,
@@ -114,6 +115,16 @@ export default (goto) => {
     {
       time: 8,
       text: 'Dance!',
+    },
+    {
+      time: 10.5,
+      text: '(Don’t bump into the camera)',
+      getPosition: null,
+    },
+    {
+      time: 13.5,
+      text: '',
+      getPosition: null,
     },
     {
       time: 14,
@@ -135,6 +146,10 @@ export default (goto) => {
       text: 'Dance together!',
     },
     {
+      time: 26.5,
+      text: '(Don’t bump into each other)',
+    },
+    {
       time: 32,
       text: 'Add up to 10 copies of yourself.',
       layers: 3,
@@ -150,9 +165,9 @@ export default (goto) => {
       layers: 5,
     },
     {
-      time: 37.5,
+      time: 38,
       text: '',
-      callback: createOverlay,
+      callback: !feature.isIOVive ? createOverlay : null,
     },
   ]);
 
@@ -162,12 +177,12 @@ export default (goto) => {
       audio.time,
       Math.max(
         state.minLayers,
-        Math.ceil(audio.totalProgress / 2)
+        Math.ceil((audio.totalProgress / 2) % 3)
       )
     );
     const progress = audio.progress - 1; // value between -1 and 1
     colorTimeline.tick(audio.progress);
-    textTimeline.tick(audio.currentTime);
+    textTimeline.tick(audio.currentTime % 48);
 
     const z = (progress - 0.5) * -roomDepth - roomOffset;
     objects.orb.move(z);
@@ -201,7 +216,7 @@ export default (goto) => {
     }
     getLineTarget = getPosition;
     elements.lineEl.style.opacity = getPosition ? 1 : 0;
-    if (layers) {
+    if (layers !== undefined) {
       state.minLayers = layers;
     }
   };
