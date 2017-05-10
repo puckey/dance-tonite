@@ -112,9 +112,9 @@ export default (req) => {
       Room.rotate180();
       playlist = new Playlist();
 
-      tick = () => {
+      tick = (dt) => {
         if (transition.isInside()) return;
-        audio.tick();
+        audio.tick(dt);
         playlist.tick();
         titles.tick();
         progressBar.style.transform = `scaleX(${audio.progress / settings.totalLoopCount})`;
