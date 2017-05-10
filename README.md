@@ -15,11 +15,8 @@
 
 ## Configuring for flows
 - Visit `/version` to set up a browser to take on a specific flow during IO. This value is reflected in: `feature.isIODaydream` & `feature.isIOVive`.
+- Here you can also select the color of the room when it is in recording mode to match the color of the space.
 
 ## Debug plane
 - To add a debug plane to the recording room, visit `/plane` then trigger in all four corners of the room.
 - To remove the debug plane again, visit `/plane` then press reset.
-
-## Changing color of recording room
-Go to /record?color=[color].
-Where `color` is one of: `green` `red` `orange` `blue` `pink`
