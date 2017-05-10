@@ -7,6 +7,7 @@ import notFound from './not-found';
 import transition from '../transition';
 import hud from '../hud';
 import audio from '../audio';
+import feature from '../utils/feature';
 
 let current;
 
@@ -17,6 +18,11 @@ const routes = {
   '/:loopIndex?/:id?': playback,
   '/*': notFound,
 };
+
+// #googleIO2017: redirect from homepage to record mode on first load:
+if (feature.isIOVive && window.location.pathname === '/') {
+  window.location = '/record';
+}
 
 export default () => {
   Object

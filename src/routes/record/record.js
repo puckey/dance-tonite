@@ -99,12 +99,13 @@ export default (goto, req) => {
           controllers.update(pressToFinish);
         }
         const round = Math.floor(audio.totalProgress / 2);
+        // #googleIO2017: Display 'LAST ROUND' on 10th round:
         const subText = (feature.isIOVive && round === 9)
           ? 'last round'
           : `round ${numberWords[round] || round}`;
         instructions.setSubText(subText);
         instructions.beginCountdown(Math.round(audio.loopDuration - audio.time));
-        // IO users are limited to 10 layers:
+        // #googleIO2017: IO users are limited to 10 layers:
         if (feature.isIOVive && round === 10) {
           performFinish();
           controllers.update();

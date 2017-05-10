@@ -14,7 +14,7 @@ let lastTime = 0;
 let startTime;
 let audioElement;
 let request;
-let onPlay;
+let onCanPlayThrough;
 
 const FADE_OUT_SECONDS = 2;
 const ALMOST_ZERO = 1e-4;
@@ -74,19 +74,17 @@ const audio = Object.assign(emitter(), {
         audioElement = feature.isMobile
           ? audioPool.get()
           : new Audio();
-        source = context.createMediaElementSource(audioElement);
+        audioElement.addEventListener('ended', () => audio.emit('ended'));
+        audioElement.autoplay = true;
         audioElement.src = param.src;
         audioElement.loop = param.loop === undefined ? true : param.loop;
-        onPlay = () => {
+        onCanPlayThrough = () => {
           duration = audioElement.duration;
-          audioElement.play();
           canPlay();
-          audioElement.removeEventListener('canplaythrough', onPlay);
+          audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
         };
-        if (feature.isMobile) {
-          audioElement.play();
-        }
-        audioElement.addEventListener('canplaythrough', onPlay);
+        audioElement.addEventListener('canplaythrough', onCanPlayThrough);
+        source = context.createMediaElementSource(audioElement);
       } else {
         source = context.createBufferSource();
         request = new XMLHttpRequest();
@@ -124,6 +122,10 @@ const audio = Object.assign(emitter(), {
     if (context) context.suspend();
   },
 
+  gotoTime(time) {
+    audioElement.currentTime = time;
+  },
+
   reset() {
     if (context) {
       context.close();
@@ -131,12 +133,12 @@ const audio = Object.assign(emitter(), {
     }
     // Cancel loading of audioElement:
     if (audioElement) {
-      audioElement.removeEventListener('canplaythrough', onPlay);
+      audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
       if (feature.isMobile) {
         audioPool.release(audioElement);
       }
       audioElement = null;
-      onPlay = null;
+      onCanPlayThrough = null;
     }
     if (request) {
       request.abort();

@@ -39,6 +39,9 @@ export default (req) => {
       const removeMessage = hud.enterVR();
       await audio.fadeOut();
       viewer.switchCamera('default');
+      // 
+      // #googleIO2017: when toggling to VR mode in daydream, we enter
+      // the transition space and tell users to hold up their hand when ready:
       if (feature.isIODaydream) {
         enterDaydreamTransition(true);
       } else {
@@ -53,9 +56,13 @@ export default (req) => {
   };
 
   const hudSettings = {
-    menuAdd: !feature.isIODaydream,
-    menuEnter: toggleVR,
+    // #googleIO2017: hide add button
+    menuAdd: !feature.isIO,
+    // #googleIO2017: hide 'enter vr' button for vive stations:
+    menuEnter: !feature.isIOVive && toggleVR,
+    // #googleIO2017: hide about button
     aboutButton: !feature.isIO && about.toggle,
+    // #googleIO2017: hide colophon element
     colophon: !feature.isIO,
     chromeExperiment: true,
   };
@@ -64,6 +71,7 @@ export default (req) => {
   let playlist;
   let tick;
   let progressBar;
+  const loopIndex = parseInt(req.params.loopIndex, 10);
 
   const restartPlayback = () => {
     audio.rewind();
@@ -74,6 +82,11 @@ export default (req) => {
     hud: hudSettings,
     mount: async () => {
       Room.reset();
+
+      // #googleIO2017: On Daydream, have the controller's button:
+      // - restart playback if not presenting
+      // - if presenting, enter transition space that tells user to put hand up
+      // - if in transition space, fades out again and starts playback
       if (feature.isIODaydream) {
         hud.create(
           'div.io-emulate-button', {
@@ -120,7 +133,9 @@ export default (req) => {
         if (transition.isInside()) return;
         audio.tick();
         playlist.tick();
-        titles.tick();
+        if (!feature.isIOVive) {
+          titles.tick();
+        }
         progressBar.style.transform = `scaleX(${audio.progress / settings.totalLoopCount})`;
         moveCamera(audio.progress);
       };
@@ -130,17 +145,18 @@ export default (req) => {
       await audio.load({
         src: audioSrc,
         loops: settings.totalLoopCount,
-        // Don't loop on daydream and vive stations during IO:
+        // #googleIO2017: Don't loop on daydream and vive stations:
         loop: !(feature.isIODaydream || feature.isIOVive),
         progressive: true,
       });
+
       if (component.destroyed) return;
 
       hud.showLoader('Gathering user performances');
       await playlist.load({
         url: 'curated.json',
         pathRecording: req.params.id,
-        loopIndex: parseInt(req.params.loopIndex, 10),
+        loopIndex,
       });
       if (component.destroyed) return;
 
@@ -148,6 +164,23 @@ export default (req) => {
       if (transition.isInside()) {
         transition.exit();
       }
+      if (feature.isIOVive && loopIndex) {
+        // Start at 3 rooms before the recording, or 60 seconds before
+        // the end of the track – whichever comes first.
+        const watchTime = 30;
+        const startTime = Math.min(
+          (loopIndex - 2) * audio.loopDuration,
+          audio.duration - watchTime
+        );
+        audio.gotoTime(startTime);
+        setTimeout(() => {
+          audio.fadeOut();
+          transition.enter({
+            text: 'Please take off your headset',
+          });
+        }, watchTime * 1000);
+      }
+      audio.fadeIn();
       audio.play();
       viewer.events.on('tick', tick);
     },

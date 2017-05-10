@@ -1,7 +1,10 @@
+import emitter from 'mitt';
+
 import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
+import feature from './utils/feature';
 import router from './router';
 
 const [leftController, rightController] = viewer.controllers;
@@ -63,81 +66,97 @@ const removeRight = () => {
 };
 
 let currentParam;
-export default {
-  update(param) {
-    if (param === currentParam) return;
-    currentParam = param;
-    const { left, right, removeOnPress } = param || {};
-    if (left) {
-      lText.updateLabel(left.text);
-      if (left.onPress) {
-        setButtonVisibility('left', true);
-      }
-      leftPress = () => {
-        if (left.removeOnPress || removeOnPress) {
-          removeLeft();
-        }
-        if (removeOnPress) {
-          removeRight();
-        }
+const controllers = Object.assign(
+  emitter(),
+  {
+    update(param) {
+      if (param === currentParam) return;
+      currentParam = param;
+      const { left, right, removeOnPress } = param || {};
+      if (left) {
+        lText.updateLabel(left.text);
         if (left.onPress) {
-          left.onPress();
+          setButtonVisibility('left', true);
         }
-      };
-    } else {
-      removeLeft();
-    }
-
-    if (right) {
-      rText.updateLabel(right.text);
-      if (right.onPress) {
-        setButtonVisibility('right', true);
+        leftPress = () => {
+          if (left.removeOnPress || removeOnPress) {
+            removeLeft();
+          }
+          if (removeOnPress) {
+            removeRight();
+          }
+          if (left.onPress) {
+            left.onPress();
+          }
+        };
+      } else {
+        removeLeft();
       }
-      rightPress = () => {
-        if (right.removeOnPress || removeOnPress) {
-          removeRight();
-        }
-        if (removeOnPress) {
-          removeLeft();
-        }
+
+      if (right) {
+        rText.updateLabel(right.text);
         if (right.onPress) {
-          right.onPress();
+          setButtonVisibility('right', true);
         }
-      };
-    } else {
-      removeRight();
-    }
-  },
+        rightPress = () => {
+          if (right.removeOnPress || removeOnPress) {
+            removeRight();
+          }
+          if (removeOnPress) {
+            removeLeft();
+          }
+          if (right.onPress) {
+            right.onPress();
+          }
+        };
+      } else {
+        removeRight();
+      }
+    },
 
-  add() {
-    leftController.add(lhand);
-    rightController.add(rhand);
-  },
+    add() {
+      leftController.add(lhand);
+      rightController.add(rhand);
+    },
 
-  remove() {
-    rightPress = leftPress = null;
-    leftController.remove(lhand);
-    rightController.remove(rhand);
-  },
+    remove() {
+      rightPress = leftPress = null;
+      leftController.remove(lhand);
+      rightController.remove(rhand);
+    },
 
-  setButtonVisibility,
-};
-
-
-//  # googleIO2017
-const MENU_PRESS_RESET_TIME = 3000;
-let menuPressTime;
-leftController.addEventListener('menudown', menuHeld);
-
-function menuHeld(){
-  menuPressTime = Date.now();
-  leftController.addEventListener('menuup', menuReleased);
-}
-
-function menuReleased(){
-  if( Date.now() - menuPressTime > MENU_PRESS_RESET_TIME ){
-    console.log( 'resetting' );
-    router.navigate('/');
+    setButtonVisibility,
   }
-  leftController.removeEventListener('menuup', menuReleased );
+);
+
+// #googleIO2017: emit 'menulongpress' and 'triggerlongpress' events for Vive station:
+if (feature.isIOVive) {
+  const PRESS_RESET_TIME = 2000;
+  const subscribe = (controller, buttonName) => {
+    let timeOutId;
+
+    controller.addEventListener(`${buttonName}down`, () => {
+      timeOutId = setTimeout(
+        () => controllers.emit(`${buttonName}longpress`),
+        PRESS_RESET_TIME
+      );
+    });
+
+    controller.addEventListener(
+      `${buttonName}up`,
+      () => clearTimeout(timeOutId)
+    );
+  };
+
+  // Add menu and trigger long press events for both controllers:
+  [leftController, rightController].forEach(controller => {
+    ['menu', 'trigger'].forEach(event => subscribe(controller, event));
+  });
+
+  controllers.on('menulongpress', () => {
+    window.location = '/record';
+  });
 }
+
+export default controllers;
+

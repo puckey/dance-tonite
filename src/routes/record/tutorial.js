@@ -11,6 +11,7 @@ import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { Vector3 } from '../../lib/three';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
+import controllers from '../../controllers';
 
 // TODO: replace with better recording:
 const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
@@ -93,6 +94,11 @@ export default (goto) => {
       )
     );
   };
+
+  // #googleIO2017: long press trigger button to display 'Add your performance' button:
+  if (feature.isIOVive) {
+    controllers.on('triggerlongpress', createOverlay);
+  }
 
   const textTimeline = createTimeline([
     {
@@ -213,14 +219,18 @@ export default (goto) => {
         {
           onclick: createOverlay,
         },
-        'Skip Tutorial'
+        // #googleIO2017: we display 'Tutorial' in the bottom right so people
+        // understand what they're watching.
+        feature.isIOVive ? 'Dance Tonite Tutorial' : 'Skip Tutorial'
       );
-      hud.create('div.close-button',
-        {
-          onclick: () => router.navigate('/'),
-        },
-        '×'
-      );
+      if (!feature.isIOVive) {
+        hud.create('div.close-button',
+          {
+            onclick: () => router.navigate('/'),
+          },
+          '×'
+        );
+      }
       elements.lineEl = hud.create('div.line', {
         style: {
           transform: 'scaleX(0)',
@@ -288,6 +298,10 @@ export default (goto) => {
       viewer.camera.updateProjectionMatrix();
       viewer.events.off('tick', tick);
       textTimeline.off('keyframe', handleKeyframe);
+      // #googleIO2017: remove event listener which was added above:
+      if (feature.isIOVive) {
+        controllers.off('triggerlongpress', createOverlay);
+      }
     },
   };
 
