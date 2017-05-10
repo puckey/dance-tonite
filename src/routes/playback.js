@@ -20,14 +20,6 @@ const { roomDepth, roomOffset, holeHeight } = settings;
 
 let titles;
 
-const enterDaydreamTransition = (immediate) => {
-  titles.hide();
-  return transition.enter({
-    text: 'Put your hand up when you are ready',
-    immediate,
-  });
-};
-
 export default (req) => {
   const toggleVR = async () => {
     if (!feature.hasVR) return;
@@ -36,15 +28,14 @@ export default (req) => {
       viewer.switchCamera('orthographic');
     } else {
       viewer.vrEffect.requestPresent();
-      const removeMessage = hud.enterVR();
-      await audio.fadeOut();
-      viewer.switchCamera('default');
-      // 
-      // #googleIO2017: when toggling to VR mode in daydream, we enter
-      // the transition space and tell users to hold up their hand when ready:
+      // #googleIO2017: in daydream, we don't show the vr overlay:
       if (feature.isIODaydream) {
-        enterDaydreamTransition(true);
+        await audio.fadeOut();
+        viewer.switchCamera('default');
       } else {
+        const removeMessage = hud.enterVR();
+        await audio.fadeOut();
+        viewer.switchCamera('default');
         await sleep(1000);
         audio.pause();
         audio.rewind();
@@ -83,31 +74,6 @@ export default (req) => {
     mount: async () => {
       Room.reset();
 
-      // #googleIO2017: On Daydream, have the controller's button:
-      // - restart playback if not presenting
-      // - if presenting, enter transition space that tells user to put hand up
-      // - if in transition space, fades out again and starts playback
-      if (feature.isIODaydream) {
-        hud.create(
-          'div.io-emulate-button', {
-            onclick: async () => {
-              if (!viewer.vrEffect.isPresenting) {
-                restartPlayback();
-                return;
-              }
-              audio.pause();
-              if (transition.isInside()) {
-                await transition.fadeOut();
-                restartPlayback();
-                transition.exit();
-              } else {
-                enterDaydreamTransition();
-              }
-            },
-          },
-          'Press to emulate DayDream controller button'
-        );
-      }
       progressBar = hud.create('div.audio-progress-bar');
 
       if (!viewer.vrEffect.isPresenting) {
@@ -183,6 +149,51 @@ export default (req) => {
       audio.fadeIn();
       audio.play();
       viewer.events.on('tick', tick);
+
+      // #googleIO2017: On Daydream, have the controller's button:
+      // - restart playback if not presenting
+      // - if presenting, enter transition space that tells user to put hand up
+      // - if in transition space, fades out again and starts playback
+      if (feature.isIODaydream) {
+        let daydreamState;
+        const enterDaydreamTransition = (immediate) => {
+          daydreamState = 'when-ready';
+          titles.hide();
+          return transition.enter({
+            text: 'Put your hand up when you are ready',
+            immediate,
+          });
+        };
+        enterDaydreamTransition(true);
+        viewer.daydreamController.on(
+          'touchpaddown',
+          async () => {
+            if (!viewer.vrEffect.isPresenting) {
+              restartPlayback();
+              return;
+            }
+            audio.pause();
+            if (daydreamState === 'when-ready') {
+              daydreamState = 'playback';
+              await transition.fadeOut();
+              restartPlayback();
+              transition.exit();
+            } else if (/thank-you|playback/.test(daydreamState)) {
+              if (daydreamState === 'playback') {
+                await transition.exit();
+              }
+              enterDaydreamTransition();
+            }
+          }
+        );
+        audio.on('ended', () => {
+          daydreamState = 'thank-you';
+          audio.fadeOut();
+          transition.enter({
+            text: 'Please take off your headset.',
+          });
+        });
+      }
     },
 
     unmount: () => {

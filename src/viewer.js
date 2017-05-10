@@ -11,6 +11,7 @@ import { tempVector } from './utils/three';
 import settings from './settings';
 import Room from './room';
 import feature from './utils/feature';
+import daydreamController from './lib/daydream-controller';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
@@ -119,6 +120,7 @@ if (showStats) {
 const viewer = {
   camera: cameras.default,
   cameras,
+  daydreamController,
   scene,
   renderScene: scene,
   controllers: [controller1, controller2],
@@ -152,6 +154,9 @@ const animate = () => {
   vrEffect.requestAnimationFrame(animate);
   controller1.update();
   controller2.update();
+  if (feature.isIODaydream) {
+    viewer.daydreamController.update();
+  }
   controls.update();
   events.emit('tick', dt);
   if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
