@@ -173,7 +173,7 @@ module.exports = function( THREE ){
 			var boundsWidth = Math.floor(eyeParamsL.renderWidth * VRResolutionRatio) / canvas.width;
 	   	 	var boundsHeight = Math.floor(eyeParamsL.renderHeight * VRResolutionRatio) / canvas.height;
 
-	   	 	console.log("VR resolution: ", VRResolutionRatio, " ", boundsWidth, "x" , boundsHeight)
+	   	 	console.log("VR resolution: ", VRResolutionRatio, " ", eyeParamsL.renderWidth * VRResolutionRatio, "x", eyeParamsL.renderHeight * VRResolutionRatio)
 
 			return vrDisplay.requestPresent([{
 	          source: canvas,

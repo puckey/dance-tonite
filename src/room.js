@@ -166,7 +166,7 @@ export default class Room {
     const { frames } = this;
     if (!frames) return;
 
-    const frameNumber = secondsToFrames(seconds);
+    const frameNumber = secondsToFrames(seconds); // TODO: This every frame?
 
     if (frames.length <= frameNumber) return;
     let positions = frames[frameNumber];
