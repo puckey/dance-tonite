@@ -176,7 +176,7 @@ export default (req) => {
         setTimeout(() => {
           audio.fadeOut();
           transition.enter({
-            text: 'Please take off your headset',
+            text: 'Thanks for your performance! Please take off your headset.',
           });
         }, watchTime * 1000);
       }
