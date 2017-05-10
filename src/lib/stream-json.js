@@ -84,8 +84,5 @@ const streamJsonXHR = (url, callback) => {
   };
 };
 
-export default (url, callback) => (
-  fetchSupported
-    ? streamJsonFetch(url, callback)
-    : streamJsonXHR(url, callback)
-);
+// NOTE: Not including Fetch version, because performance:
+export default streamJsonXHR;
