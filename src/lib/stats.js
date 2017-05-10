@@ -93,6 +93,8 @@ var Stats = function () {
 
 			if ( time > prevTime + 1000 ) {
 
+				this.fps = ( frames * 1000 ) / ( time - prevTime ); // UGLY HACK
+
 				fpsPanel.update( ( frames * 1000 ) / ( time - prevTime ), 100 );
 
 				prevTime = time;

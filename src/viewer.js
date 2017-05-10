@@ -58,7 +58,7 @@ const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);
 
 const vrEffect = new THREE.VREffect(renderer);
-vrEffect.setVRResolutionRatio(0.1);
+vrEffect.setVRResolutionRatio(1.0);
 
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
@@ -158,6 +158,8 @@ const viewer = {
 const clock = new THREE.Clock();
 clock.start();
 
+let last = 0;
+
 const animate = () => {
   if (showStats) stats.begin();
   const dt = clock.getDelta();
@@ -174,6 +176,14 @@ const animate = () => {
   }
   events.emit('render', dt);
   if (showStats) stats.end();
+
+  if (showStats) {
+    if( Date.now() - last > 1000 ){
+      console.log( stats.fps )
+      last = Date.now();
+    }
+
+  }
 };
 
 animate();
