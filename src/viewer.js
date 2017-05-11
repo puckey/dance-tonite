@@ -104,15 +104,9 @@ const scene = createScene();
 scene.add(controller1, controller2);
 
 let stats;
-const statsMeshOffsetPosition = new THREE.Vector3(0.3, 0.15, 1);
 
 if (showStats) {
   stats = new Stats();
-  document.body.appendChild(stats.dom);
-
-  scene.add(stats.mesh);
-  stats.mesh.scale.set(2.5, 2.5, 2.5);
-  stats.mesh.rotation.set(0.0, -Math.PI, 0);
 }
 
 
@@ -147,6 +141,8 @@ const viewer = {
 const clock = new THREE.Clock();
 clock.start();
 
+let lastFPSLogTime = 0;
+
 const animate = () => {
   if (showStats) stats.begin();
   const dt = clock.getDelta();
@@ -158,13 +154,20 @@ const animate = () => {
   }
   controls.update();
   events.emit('tick', dt);
-  if (showStats) stats.mesh.position.copy(viewer.camera.position).add(statsMeshOffsetPosition);
   vrEffect.render(viewer.renderScene, viewer.camera);
   if (vrEffect.isPresenting && feature.hasExternalDisplay) {
     renderer.render(viewer.renderScene, viewer.camera);
   }
   events.emit('render', dt);
   if (showStats) stats.end();
+
+  if (showStats) {
+    if( Date.now() - lastFPSLogTime > 1000 ){
+      console.log( stats.fps )
+      lastFPSLogTime = Date.now();
+    }
+  }
+
 };
 
 animate();
