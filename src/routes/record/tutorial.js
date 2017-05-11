@@ -48,7 +48,9 @@ export default (goto) => {
     if (feature.hasVR) {
       elements.skipTutorialButton.classList.add('mod-hidden');
       const removeOverlay = hud.enterVR();
-      await viewer.vrEffect.requestPresent();
+      if (!viewer.vrEffect.isPresenting) {
+        await viewer.vrEffect.requestPresent();
+      }
       // Wait for the VR overlay to cover the screen:
       await sleep(500);
       goto('record');
@@ -88,7 +90,9 @@ export default (goto) => {
         h(
           'span',
           feature.hasVR
-            ? 'Add your performance'
+            ? feature.isIOVive
+              ? 'Press to enter VR'
+              : 'Add your performance'
             : 'A message about Vive not being found. Click here to go home.'
         ),
       )
@@ -97,7 +101,7 @@ export default (goto) => {
 
   // #googleIO2017: long press trigger button to display 'Add your performance' button:
   if (feature.isIOVive) {
-    controllers.on('triggerlongpress', createOverlay);
+    controllers.on('triggerlongpress', viewer.vrEffect.isPresenting ? performSkip : createOverlay);
   }
 
   const textTimeline = createTimeline([

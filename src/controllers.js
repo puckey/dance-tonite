@@ -5,7 +5,7 @@ import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
 import feature from './utils/feature';
-import router from './router';
+import { mount } from './routes/';
 
 const [leftController, rightController] = viewer.controllers;
 
@@ -154,7 +154,7 @@ if (feature.isIOVive) {
   });
 
   controllers.on('menulongpress', () => {
-    window.location = '/record';
+    mount('record');
   });
 }
 

@@ -11,6 +11,7 @@ import feature from '../utils/feature';
 
 let current;
 
+const components = { version, plane, record, playback };
 const routes = {
   '/version': version,
   '/plane': plane,
@@ -24,29 +25,31 @@ if (feature.isIOVive && window.location.pathname === '/') {
   window.location = '/record';
 }
 
-export default () => {
+export const mount = async (id, req = { params: {} }, event) => {
+  const route = routes[id] || components[id];
+  if (!route || (event && event.parent())) return;
+  if (current) {
+    audio.fadeOut();
+    current.unmount();
+    hud.clear();
+    current = null;
+  }
+
+  hud.hideLoader();
+  if (transition.isInside()) {
+    await transition.fadeOut();
+  } else {
+    transition.reset();
+  }
+  current = route(req);
+  current.mount();
+  hud.update(current.hud);
+};
+
+export const installRouter = () => {
   Object
     .keys(routes)
     .forEach((url) => {
-      router.get(url, async (req, event) => {
-        const route = routes[url];
-        if (!route || event.parent()) return;
-        if (current) {
-          audio.fadeOut();
-          current.unmount();
-          hud.clear();
-          current = null;
-        }
-
-        hud.hideLoader();
-        if (transition.isInside()) {
-          await transition.fadeOut();
-        } else {
-          transition.reset();
-        }
-        current = route(req);
-        current.mount();
-        hud.update(current.hud);
-      });
+      router.get(url, (req, event) => mount(url, req, event));
     });
 };

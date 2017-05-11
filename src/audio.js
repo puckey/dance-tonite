@@ -23,6 +23,7 @@ let scheduledTime;
 
 const audio = Object.assign(emitter(), {
   tick() {
+    if (!audioElement && !context) return;
     this.currentTime = audioElement
       ? audioElement.currentTime
       : (context.currentTime - startTime);

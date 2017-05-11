@@ -2,7 +2,7 @@ import 'babel-polyfill';
 
 import './theme/index.scss';
 import * as THREE from './lib/three';
-import installRouter from './routes';
+import { installRouter } from './routes';
 import props from './props';
 import feature from './utils/feature';
 import Room from './room';

@@ -24,7 +24,9 @@ export default (req) => {
   const toggleVR = async () => {
     if (!feature.hasVR) return;
     if (viewer.vrEffect.isPresenting) {
-      viewer.vrEffect.exitPresent();
+      if (!feature.isIOVive) {
+        viewer.vrEffect.exitPresent();
+      }
       viewer.switchCamera('orthographic');
     } else {
       viewer.vrEffect.requestPresent();
