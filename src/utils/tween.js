@@ -1,10 +1,17 @@
-import Tween from 'tweenr';
+import Tween from 'tween-ticker';
+import cubicInOut from 'eases/cubic-out';
+import viewer from '../viewer';
 
-const tween = Tween();
+const tween = new Tween({
+  eases: {
+    cubicInOut,
+  },
+});
 
-export default (elements, param, onTick) => {
+viewer.events.on('tick', tween.tick.bind(tween));
+
+export default (elements, param) => {
   const t = tween.to(elements, param);
-  if (onTick) t.on('update', onTick);
   t.promise = new Promise(resolve => {
     t.on('complete', resolve);
   });

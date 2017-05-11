@@ -11,12 +11,13 @@
   "dependencies": {
     "async": "^2.3.0",
     "babel-polyfill": "^6.23.0",
+    "eases": "^1.0.8",
     "grapnel": "^0.6.4",
     "hyperscript": "^2.0.2",
     "mitt": "^1.1.0",
     "parse-bmfont-ascii": "^1.0.6",
     "three-bmfont-text": "^2.2.1",
-    "tweenr": "^2.2.1",
+    "tween-ticker": "^3.3.2",
     "unfetch": "^2.1.2",
     "unique-s3-uploader": "0.0.2"
   },
