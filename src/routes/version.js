@@ -9,37 +9,31 @@ export default () => {
     ['io-daydream', 'IO Daydream'],
     ['io-vive', 'IO Vive'],
   ];
-  const choose = ({ id, color }) => {
-    if (!id) {
-      window.localStorage.removeItem('version');
-    } else {
-      window.localStorage.setItem('version', id);
-    }
 
-    if (!color) {
-      window.localStorage.removeItem('color');
+  const setOrRemove = (name, value) => {
+    if (!value) {
+      window.localStorage.removeItem(name);
     } else {
-      window.localStorage.setItem('color', color);
+      window.localStorage.setItem(name, value);
     }
-
-    hud.clear();
-    createElements();
   };
 
-  const createElements = () => {
-    const activeVersion = window.localStorage.getItem('version') || 'default';
-    const activeColor = window.localStorage.getItem('color') || 'default';
-
-    console.log(activeColor);
+  const render = () => {
+    hud.clear();
+    const activeVersion = window.localStorage.getItem('version');
+    const activeColor = window.localStorage.getItem('color');
 
     hud.create('div.choose-version',
       hud.h('ul',
-        choices.map(([id, name]) => (
+        choices.map(([version, name]) => (
           hud.h(
             'li.choose-version-button',
             {
-              onclick: () => choose({ id }),
-              style: activeVersion === id ? 'color: yellow' : null,
+              onclick: () => {
+                setOrRemove('version', version);
+                render();
+              },
+              style: activeVersion === version ? 'color: yellow' : null,
             },
             name
           )
@@ -53,8 +47,16 @@ export default () => {
               hud.h(
                 'div.choose-color-button',
                 {
-                  onclick: () => choose({ color }),
-                  style: `background: ${colors[color].getStyle()}; border: ${activeColor === color ? '3px solid white' : '0'}`,
+                  onclick: () => {
+                    setOrRemove('color', color === activeColor
+                      ? null
+                      : color);
+                    render();
+                  },
+                  style: `
+                    background: ${colors[color].getStyle()};
+                    border: ${activeColor === color ? '3px solid white' : '0'};
+                  `,
                 },
               )
             )),
@@ -72,7 +74,7 @@ export default () => {
   };
 
   return {
-    mount: createElements,
+    mount: render,
     unmount: () => { },
   };
 };
