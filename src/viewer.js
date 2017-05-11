@@ -45,12 +45,15 @@ const cameras = (function () {
 }());
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setClearColor(0x000000);
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.sortObjects = false;
+const monoRenderer = new THREE.WebGLRenderer({ antialias: true });
+[ renderer, monoRenderer ].forEach( function( renderer ){
+  renderer.setClearColor(0x000000);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.sortObjects = false;
+});
 
-const containerEl = h('div.viewer', renderer.domElement);
+const containerEl = h('div.viewer', monoRenderer.domElement);
 document.body.appendChild(containerEl);
 
 const vrEffect = new THREE.VREffect(renderer);
@@ -154,10 +157,12 @@ const animate = () => {
   }
   controls.update();
   events.emit('tick', dt);
-  vrEffect.render(viewer.renderScene, viewer.camera);
+
   if (vrEffect.isPresenting && feature.hasExternalDisplay) {
-    renderer.render(viewer.renderScene, viewer.camera);
+    vrEffect.render(viewer.renderScene, viewer.camera);
   }
+  monoRenderer.render(viewer.renderScene, viewer.camera);
+
   events.emit('render', dt);
   if (showStats) stats.end();
 
