@@ -5,7 +5,7 @@ const colorKeys = Object.keys(colors);
 
 export default () => {
   const choices = [
-    ['default', 'Default'],
+    [null, 'Default'],
     ['io-daydream', 'IO Daydream'],
     ['io-vive', 'IO Vive'],
   ];
