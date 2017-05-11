@@ -1,4 +1,3 @@
-const location = window.location;
 const userAgent = navigator.userAgent;
 
 const checkHasExternalDisplay = () => (
@@ -20,20 +19,34 @@ const checkHasExternalDisplay = () => (
 );
 
 const checkHasVR = () => (
-  new Promise((resolve) => {
-    if (!navigator.getVRDisplays) {
+  new Promise((resolve, reject) => {
+    if (navigator.getVRDisplays === undefined) {
       resolve(false);
       return;
     }
-    navigator
-      .getVRDisplays()
-      .then(() => {
-        resolve(true);
-      })
-      .catch((error) => {
-        console.log(error);
-        resolve(false);
-      });
+    navigator.getVRDisplays().then(() => {
+      resolve(true);
+    })
+    .catch(reject);
+  })
+);
+
+const checkHas6DOF = () => (
+  new Promise((resolve, reject) => {
+    if (navigator.getVRDisplays === undefined) {
+      resolve(false);
+      return;
+    }
+    navigator.getVRDisplays().then(
+      (displays) => {
+        resolve(
+          !!displays[0] &&
+          !!displays[0].capabilities &&
+          !!displays[0].capabilities.hasPosition &&
+          !!displays[0].capabilities.hasOrientation
+        );
+      }
+    ).catch(reject);
   })
 );
 
@@ -52,6 +65,9 @@ const feature = {
       }),
       checkHasVR().then((hasVR) => {
         feature.hasVR = hasVR;
+      }),
+      checkHas6DOF().then((has6DOF) => {
+        feature.has6DOF = has6DOF;
       }),
     ])
   ),
