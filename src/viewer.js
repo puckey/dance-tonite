@@ -159,10 +159,14 @@ const animate = () => {
   controls.update();
   events.emit('tick', dt);
 
-  if (vrEffect.isPresenting && feature.hasExternalDisplay) {
+  if (vrEffect.isPresenting) {
+    if (feature.hasExternalDisplay) {
+      monoRenderer.render(viewer.renderScene, viewer.camera);
+    }
     vrEffect.render(viewer.renderScene, viewer.camera);
+  } else {
+    monoRenderer.render(viewer.renderScene, viewer.camera);
   }
-  monoRenderer.render(viewer.renderScene, viewer.camera);
 
   events.emit('render', dt);
   if (showStats) stats.end();
