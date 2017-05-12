@@ -28,6 +28,13 @@ textItem.position.y = 3;
 transitionScene.add(pivot);
 transitionScene.add(props.grid);
 
+const debugMat = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load( './public/dummy.png' )});
+debugMat.name = 'DEBUG MATERIAL';
+const debugMesh = new THREE.Mesh(new THREE.BoxGeometry(0,0,0),debugMat);
+debugMesh.frustumCulled = false;
+transitionScene.add( debugMesh );
+
+
 const floatingOrb = new Orb(transitionScene);
 
 let time = 0;

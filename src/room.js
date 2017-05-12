@@ -292,8 +292,16 @@ Room.reset = ({ showAllWalls } = {}) => {
   roomsGroup.add(wallMesh);
   roomsGroup.add(roomMesh);
   viewer.scene.add(roomsGroup);
+
+  viewer.scene.add( debugMesh );
 };
 
 Room.rotate180 = () => {
   roomsGroup.matrix.copy(ROTATION_MATRIX);
 };
+
+
+const debugMat = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load( './public/dummy.png' )});
+debugMat.name = 'DEBUG MATERIAL';
+const debugMesh = new THREE.Mesh(new THREE.BoxGeometry(0,0,0),debugMat);
+debugMesh.frustumCulled = false;
