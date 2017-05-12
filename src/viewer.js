@@ -95,6 +95,7 @@ window.addEventListener('resize', () => {
 
   const { innerWidth, innerHeight } = window;
   vrEffect.setSize(innerWidth, innerHeight);
+  monoRenderer.setSize(innerWidth, innerHeight);
   Object
     .values(cameras)
     .forEach((camera) => {
