@@ -36,6 +36,7 @@ export default (goto) => {
   let playlist;
 
   const tick = () => {
+    Room.clear();
     audio.tick();
     playlist.tick();
     moveCamera(audio.totalProgress + 0.5);

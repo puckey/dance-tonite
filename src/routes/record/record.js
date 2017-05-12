@@ -122,6 +122,7 @@ export default (goto, req) => {
   ]);
 
   const tick = () => {
+    Room.clear();
     audio.tick();
     room.gotoTime(audio.time);
     const progress = audio.progress - 1; // value between -1 and 1

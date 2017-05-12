@@ -100,6 +100,7 @@ export default (req) => {
       tick = () => {
         if (transition.isInside()) return;
         audio.tick();
+        Room.clear();
         playlist.tick();
         // #googleIO2017: Hide titles for IO Vive:
         if (!feature.isIOVive) {

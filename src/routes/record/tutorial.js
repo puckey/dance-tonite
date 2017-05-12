@@ -177,6 +177,7 @@ export default (goto) => {
 
   const tick = () => {
     audio.tick();
+    Room.clear();
     room.gotoTime(
       audio.time,
       Math.max(
