@@ -100,6 +100,7 @@ export default (req) => {
       tick = () => {
         if (transition.isInside()) return;
         audio.tick();
+        Room.clear();
         playlist.tick();
         if (!feature.isIOVive) {
           titles.tick();

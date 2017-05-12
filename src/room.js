@@ -18,6 +18,8 @@ let wallMesh;
 let wallMeshes;
 let roomMesh;
 let roomMeshes;
+let headMesh;
+let handMesh;
 
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
 const roomsGroup = new THREE.Group();
@@ -50,6 +52,7 @@ const transformMesh = (
   index,
   arrayOffset,
   scale,
+  color,
   offset,
 ) => {
   instancedMesh.setPositionAt(
@@ -63,6 +66,10 @@ const transformMesh = (
   instancedMesh.setScaleAt(
     index,
     tempVector(scale, scale, scale)
+  );
+  instancedMesh.setColorAt(
+    index,
+    color,
   );
   instancedMesh.needsUpdate();
 };
@@ -80,43 +87,22 @@ export default class Room {
     if (recording) {
       this.hideHead = recording.hideHead;
       this.frames = recording.frames;
-      this.createMeshes();
       this.changeColor(recordRoomColor);
     }
-    this.position = new THREE.Vector3();
 
-    this.position.set(
+    this.costumeColor = this.isRecording
+      ? recordCostumeColor
+      : getCostumeColor(this.index);
+
+    this.position = new THREE.Vector3(
       0,
       0,
       settings.roomOffset + (this.placementIndex * (settings.roomDepth + 0.001)),
     );
     this.updatePosition();
-  }
-
-  createMeshes() {
-    const color = this.isRecording
+    this.costumeColor = this.isRecording
       ? recordCostumeColor
       : getCostumeColor(this.index);
-    const count = this.isRecording
-      ? 20
-      : this.layerCount;
-    this.handMesh = createInstancedMesh({
-      count: count * 2,
-      geometry: props.hand.geometry,
-      color,
-    });
-    this.handMesh.castShadow = true;
-    roomsGroup.add(this.handMesh);
-
-    if (!this.hideHead) {
-      this.headMesh = createInstancedMesh({
-        count,
-        geometry: props.head.geometry,
-        color,
-      });
-      this.headMesh.castShadow = true;
-      roomsGroup.add(this.headMesh);
-    }
   }
 
   load(callback) {
@@ -135,7 +121,6 @@ export default class Room {
           this.frames = frames;
           this.hideHead = meta.hideHead;
           this.layerCount = meta.count;
-          this.createMeshes();
         } else {
           frames.push(json);
         }
@@ -181,7 +166,6 @@ export default class Room {
     if (!frames) return;
 
     const frameNumber = secondsToFrames(seconds);
-
     if (frames.length <= frameNumber) return;
     let positions = frames[frameNumber];
     if (!positions) return;
@@ -194,10 +178,6 @@ export default class Room {
 
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
-    if (this.headMesh) {
-      this.headMesh.geometry.maxInstancedCount = count;
-    }
-    this.handMesh.geometry.maxInstancedCount = count * 2;
 
     // Check if data is still a string:
     if (positions[0] === '[') {
@@ -207,28 +187,31 @@ export default class Room {
     for (let i = 0; i < count; i++) {
       if (!this.hideHead) {
         transformMesh(
-          this.headMesh,
+          headMesh,
           positions,
-          i,
+          headMesh.geometry.maxInstancedCount++,
           i * PERFORMANCE_ELEMENT_COUNT,
           scale,
+          this.costumeColor,
           this.position
         );
       }
       transformMesh(
-        this.handMesh,
+        handMesh,
         positions,
-        i * 2,
+        handMesh.geometry.maxInstancedCount++,
         i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT,
         scale,
+        this.costumeColor,
         this.position
       );
       transformMesh(
-        this.handMesh,
+        handMesh,
         positions,
-        i * 2 + 1,
+        handMesh.geometry.maxInstancedCount++,
         i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT * 2,
         scale,
+        this.costumeColor,
         this.position
       );
     }
@@ -240,6 +223,10 @@ export default class Room {
     if (this.streamer) this.streamer.cancel();
   }
 }
+
+Room.clear = () => {
+  handMesh.geometry.maxInstancedCount = headMesh.geometry.maxInstancedCount = 0;
+};
 
 Room.switchModel = (model) => {
   roomsGroup.remove(wallMesh);
@@ -289,11 +276,24 @@ Room.reset = ({ showAllWalls } = {}) => {
   wallMesh = wallMeshes.default;
   roomMesh = roomMeshes.default;
 
+  headMesh = createInstancedMesh({
+    count: settings.loopCount * 30,
+    geometry: props.head.geometry,
+  });
+  headMesh.geometry.maxInstancedCount = 0;
+
+  handMesh = createInstancedMesh({
+    count: settings.loopCount * 30,
+    geometry: props.hand.geometry,
+  });
+  handMesh.geometry.maxInstancedCount = 0;
+
+  roomsGroup.add(headMesh);
+  roomsGroup.add(handMesh);
   roomsGroup.add(wallMesh);
   roomsGroup.add(roomMesh);
   viewer.scene.add(roomsGroup);
-
-  viewer.scene.add( debugMesh );
+  viewer.scene.add(debugMesh);
 };
 
 Room.rotate180 = () => {
