@@ -142,6 +142,7 @@ export default (req) => {
         );
         audio.gotoTime(startTime);
         setTimeout(() => {
+          if (component.destroyed) return;
           audio.fadeOut();
           transition.enter({
             text: 'Thanks for your performance! Please take off your headset.',
@@ -200,7 +201,7 @@ export default (req) => {
 
     unmount: () => {
       component.destroyed = true;
-      if (viewer.vrEffect.isPresenting) {
+      if (viewer.vrEffect.isPresenting && !feature.isIOVive) {
         viewer.vrEffect.exitPresent();
       }
       audio.reset();
