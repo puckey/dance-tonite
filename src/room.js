@@ -286,13 +286,13 @@ Room.reset = ({ showAllWalls } = {}) => {
   roomMesh = roomMeshes.default;
 
   headMesh = createInstancedMesh({
-    count: settings.loopCount * 30,
+    count: settings.loopCount * 10,
     geometry: props.head.geometry,
   });
   headMesh.geometry.maxInstancedCount = 0;
 
   handMesh = createInstancedMesh({
-    count: settings.loopCount * 30,
+    count: settings.loopCount * 10 * 2,
     geometry: props.hand.geometry,
   });
   handMesh.geometry.maxInstancedCount = 0;
