@@ -250,6 +250,9 @@ Room.reset = ({ showAllWalls } = {}) => {
   roomsGroup.matrix.copy(IDENTITY_MATRIX);
   if (roomMesh) roomsGroup.remove(roomMesh);
   if (wallMesh) roomsGroup.remove(wallMesh);
+  if (headMesh) roomsGroup.remove(headMesh);
+  if (handMesh) roomsGroup.remove(handMesh);
+
   roomIndex = 0;
   wallMeshes = {
     default: createInstancedMesh({
