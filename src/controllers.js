@@ -6,6 +6,7 @@ import viewer from './viewer';
 import settings from './settings';
 import feature from './utils/feature';
 import { mount } from './routes/';
+import transition from './transition';
 
 const [leftController, rightController] = viewer.controllers;
 
@@ -154,6 +155,7 @@ if (feature.isIOVive) {
   });
 
   controllers.on('menulongpress', () => {
+    transition.reset();
     mount('record');
   });
 }

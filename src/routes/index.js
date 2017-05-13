@@ -29,7 +29,7 @@ export const mount = async (id, req = { params: {} }, event) => {
   const route = routes[id] || components[id];
   if (!route || (event && event.parent())) return;
   if (current) {
-    audio.fadeOut();
+    audio.reset();
     current.unmount();
     hud.clear();
     current = null;
@@ -39,7 +39,6 @@ export const mount = async (id, req = { params: {} }, event) => {
   if (transition.isInside()) {
     await transition.fadeOut();
   }
-  transition.reset();
   current = route(req);
   current.mount();
   hud.update(current.hud);

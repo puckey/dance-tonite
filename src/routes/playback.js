@@ -101,14 +101,19 @@ export default (req) => {
         if (transition.isInside()) return;
         audio.tick();
         playlist.tick();
+        // #googleIO2017: Hide titles for IO Vive:
         if (!feature.isIOVive) {
           titles.tick();
         }
         progressBar.style.transform = `scaleX(${audio.progress / settings.totalLoopCount})`;
         moveCamera(audio.progress);
       };
+      viewer.events.on('tick', tick);
 
-      hud.showLoader('Loading sound');
+      // #googleIO2017: Hide loading message:
+      if (!feature.isIOVive) {
+        hud.showLoader('Loading sound');
+      }
 
       await audio.load({
         src: audioSrc,
@@ -120,7 +125,10 @@ export default (req) => {
 
       if (component.destroyed) return;
 
-      hud.showLoader('Gathering user performances');
+      // #googleIO2017: Hide loading message:
+      if (!feature.isIOVive) {
+        hud.showLoader('Gathering user performances');
+      }
       await playlist.load({
         url: 'curated.json',
         pathRecording: req.params.id,
@@ -151,7 +159,6 @@ export default (req) => {
       }
       audio.fadeIn();
       audio.play();
-      viewer.events.on('tick', tick);
 
       // #googleIO2017: On Daydream, have the controller's button:
       // - restart playback if not presenting
@@ -204,7 +211,6 @@ export default (req) => {
       if (viewer.vrEffect.isPresenting && !feature.isIOVive) {
         viewer.vrEffect.exitPresent();
       }
-      audio.reset();
       viewer.events.off('tick', tick);
       orb.destroy();
       titles.destroy();

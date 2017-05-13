@@ -50,7 +50,8 @@ const audio = Object.assign(emitter(), {
   },
 
   load(param) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+      if (context) context.close();
       context = new AudioContext();
       gainNode = context.createGain();
       // Reset time, set loop count
@@ -128,10 +129,7 @@ const audio = Object.assign(emitter(), {
   },
 
   reset() {
-    if (context) {
-      context.close();
-      context = null;
-    }
+    audio.fadeOut();
     // Cancel loading of audioElement:
     if (audioElement) {
       audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
