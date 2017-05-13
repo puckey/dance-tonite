@@ -319,6 +319,7 @@ export default (goto) => {
       textTimeline.off('keyframe', handleKeyframe);
       // #googleIO2017: remove event listener which was added above:
       if (feature.isIOVive) {
+        controllers.off('triggerlongpress', performSkip);
         controllers.off('triggerlongpress', createOverlay);
       }
     },
