@@ -89,19 +89,16 @@ const tweenFog = (from, to, duration = 2) => {
   return tweener.promise;
 };
 
-const fadeOut = async (duration) => {
+const fadeOut = (duration) => {
   fadedOut = true;
-  fading = tweenFog(25, 0, duration);
-  await fading;
+  return tweenFog(25, 0, duration);
 };
 
-const fadeIn = async (maxFogDistance, duration) => {
+const fadeIn = (maxFogDistance, duration) => {
   fadedOut = false;
-  fading = tweenFog(0, maxFogDistance, duration);
-  await fading;
+  return tweenFog(0, maxFogDistance, duration);
 };
 
-let fading;
 const revealFar = 300;
 const transitionSpaceFar = 25;
 
