@@ -187,6 +187,7 @@ export default (goto, req) => {
       controllers.update();
       controllers.remove();
       viewer.events.off('tick', tick);
+      viewer.events.off('tick', controllersTick);
       audio.reset();
       audio.fadeOut();
       if (room) {
