@@ -6,6 +6,7 @@ import * as SDFText from './sdftext';
 import * as THREE from './lib/three';
 import { offsetFrom } from './utils/three';
 import settings from './settings';
+import dummyTextureUrl from './public/dummy.png';
 
 let transitionVersion = 0;
 
@@ -28,12 +29,17 @@ textItem.position.y = 3;
 transitionScene.add(pivot);
 transitionScene.add(props.grid);
 
-const debugMat = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load( './public/dummy.png' )});
-debugMat.name = 'DEBUG MATERIAL';
-const debugMesh = new THREE.Mesh(new THREE.BoxGeometry(0,0,0),debugMat);
+const debugMesh = new THREE.Mesh(
+  new THREE.BoxGeometry(0, 0, 0),
+  new THREE.MeshBasicMaterial({
+    map: new THREE.TextureLoader().load(dummyTextureUrl),
+  })
+);
 debugMesh.frustumCulled = false;
-transitionScene.add( debugMesh );
-
+// Move an extra invisible object3d with a texture to the end of scene's children
+// array in order to solve a texture glitch as described in:
+// https://github.com/puckey/you-move-me/issues/129
+transitionScene.add(debugMesh);
 
 const floatingOrb = new Orb(transitionScene);
 

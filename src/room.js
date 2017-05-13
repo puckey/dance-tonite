@@ -8,8 +8,9 @@ import audio from './audio';
 import { getCostumeColor, getRoomColor, recordCostumeColor, recordRoomColor } from './theme/colors';
 import streamJSON from './lib/stream-json';
 
-const PROTOCOL = location.protocol;
+import dummyTextureUrl from './public/dummy.png';
 
+const PROTOCOL = location.protocol;
 const PERFORMANCE_ELEMENT_COUNT = 21;
 const LIMB_ELEMENT_COUNT = 7;
 
@@ -22,6 +23,14 @@ let roomMeshes;
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
 const roomsGroup = new THREE.Group();
 roomsGroup.matrixAutoUpdate = false;
+
+const debugMesh = new THREE.Mesh(
+  new THREE.BoxGeometry(0, 0, 0),
+  new THREE.MeshBasicMaterial({
+    map: new THREE.TextureLoader().load(dummyTextureUrl),
+  })
+);
+debugMesh.frustumCulled = false;
 
 const ROTATION_MATRIX = new THREE.Matrix4().makeRotationAxis(
   new THREE.Vector3(0, 1, 0).normalize(),
@@ -293,15 +302,12 @@ Room.reset = ({ showAllWalls } = {}) => {
   roomsGroup.add(roomMesh);
   viewer.scene.add(roomsGroup);
 
-  viewer.scene.add( debugMesh );
+  // Move an extra invisible object3d with a texture to the end of scene's children
+  // array in order to solve a texture glitch as described in:
+  // https://github.com/puckey/you-move-me/issues/129
+  viewer.scene.add(debugMesh);
 };
 
 Room.rotate180 = () => {
   roomsGroup.matrix.copy(ROTATION_MATRIX);
 };
-
-
-const debugMat = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load( './public/dummy.png' )});
-debugMat.name = 'DEBUG MATERIAL';
-const debugMesh = new THREE.Mesh(new THREE.BoxGeometry(0,0,0),debugMat);
-debugMesh.frustumCulled = false;
