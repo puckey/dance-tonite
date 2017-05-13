@@ -175,10 +175,7 @@ export default (goto, req) => {
       orb2 = new Orb();
 
       viewer.scene.add(dp.outline);
-
-      if (transition.isInside()) {
-        await transition.exit();
-      }
+      transition.exit();
     },
 
     unmount: () => {
