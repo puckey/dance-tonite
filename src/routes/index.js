@@ -38,9 +38,8 @@ export const mount = async (id, req = { params: {} }, event) => {
   hud.hideLoader();
   if (transition.isInside()) {
     await transition.fadeOut();
-  } else {
-    transition.reset();
   }
+  transition.reset();
   current = route(req);
   current.mount();
   hud.update(current.hud);
