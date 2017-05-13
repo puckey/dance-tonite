@@ -11,6 +11,8 @@
 
 ## Deployments
 
+Password to access deployments: CYtTx8gMi7qyPJZ
+
 - __Staging__: Commits on master branch are automatically deployed to staging: https://staging-dance-tonite.puckey.studio
 - __Production__: Commits on deploy-dance-tonite are automatically deployed to production: https://dance-tonite.puckey.studio
 
