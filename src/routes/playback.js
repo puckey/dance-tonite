@@ -189,9 +189,6 @@ export default (req) => {
               restartPlayback();
               transition.exit();
             } else if (/thank-you|playback/.test(daydreamState)) {
-              if (daydreamState === 'playback') {
-                await transition.exit();
-              }
               enterDaydreamTransition();
             }
           }
