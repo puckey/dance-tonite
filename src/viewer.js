@@ -45,15 +45,14 @@ const cameras = (function () {
 }());
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-const monoRenderer = new THREE.WebGLRenderer({ antialias: true });
-[ renderer, monoRenderer ].forEach( function( renderer ){
+[ renderer ].forEach( function( renderer ){
   renderer.setClearColor(0x000000);
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.sortObjects = false;
 });
 
-const containerEl = h('div.viewer', monoRenderer.domElement);
+const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);
 
 const vrEffect = new THREE.VREffect(renderer);
@@ -95,7 +94,10 @@ window.addEventListener('resize', () => {
 
   const { innerWidth, innerHeight } = window;
   vrEffect.setSize(innerWidth, innerHeight);
-  monoRenderer.setSize(innerWidth, innerHeight);
+
+  renderer.domElement.style.width = innerWidth + "px";
+  renderer.domElement.style.height = innerHeight + "px";
+
   Object
     .values(cameras)
     .forEach((camera) => {
@@ -159,13 +161,9 @@ const animate = () => {
   controls.update();
   events.emit('tick', dt);
 
-  if (vrEffect.isPresenting) {
-    if (feature.hasExternalDisplay) {
-      monoRenderer.render(viewer.renderScene, viewer.camera);
-    }
-    vrEffect.render(viewer.renderScene, viewer.camera);
-  } else {
-    monoRenderer.render(viewer.renderScene, viewer.camera);
+  vrEffect.render(viewer.renderScene, viewer.camera);
+  if (vrEffect.isPresenting && feature.hasExternalDisplay) {
+      renderer.render(viewer.renderScene, viewer.camera);
   }
 
   events.emit('render', dt);
