@@ -53,7 +53,7 @@ export default (goto, req) => {
   const pressToFinish = {
     removeOnPress: true,
     left: {
-      text: 'press to restart',
+      text: 'press to redo',
       onPress: async () => {
         await transition.enter({
           text: 'Let’s try that again...',
