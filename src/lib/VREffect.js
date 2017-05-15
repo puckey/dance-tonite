@@ -134,10 +134,13 @@ module.exports = function( THREE ){
 				renderer.setSize( rendererSize.width, rendererSize.height, rendererUpdateStyle );
 
 				// return the mirrored content to full size
-		        canvas.style.width = 100 + "%";
-		        canvas.style.height = 100 + "%";
+		        //canvas.style.width = 100 + "%";
+		        //canvas.style.height = 100 + "%";
 
 			}
+  			
+  			renderer.domElement.style.width = rendererSize.width + "px";
+  			renderer.domElement.style.height = rendererSize.height + "px";
 		}
 
 		window.addEventListener( 'vrdisplaypresentchange', onVRDisplayPresentChange, false );
