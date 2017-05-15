@@ -56,6 +56,9 @@ const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);
 
 const vrEffect = new THREE.VREffect(renderer);
+if (feature.isIODaydream) {
+  vrEffect.setVRResolutionRatio(0.5);
+}
 
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
