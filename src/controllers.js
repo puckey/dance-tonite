@@ -8,7 +8,45 @@ import feature from './utils/feature';
 import { mount } from './routes/';
 import transition from './transition';
 
-const [leftController, rightController] = viewer.controllers;
+// const [leftController, rightController] = viewer.controllers;
+
+let leftController;
+let rightController;
+
+const controllerViewGroup = new THREE.Group();
+window.cg = controllerViewGroup;
+
+function handleLeftPress(){
+  if (leftPress) leftPress();
+}
+
+function handleRightPress(){
+  if (rightPress) rightPress();
+}
+
+viewer.events.on('controllerConnected', function( controller ){
+
+  let mesh;
+  if( controller.gamepad.hand === 'left' ){
+    leftController = controller;
+    controller.addEventListener('thumbpad press began', handleLeftPress );
+    mesh = lhand;
+
+  }
+  else{
+    rightController = controller;
+    controller.addEventListener('thumbpad press began', handleRightPress );
+    mesh = rhand;
+  }
+  controller.add( mesh );
+
+  controllerViewGroup.add( controller );
+
+  controller.addEventListener( 'vr controller disconnected', function(){
+    controllerViewGroup.remove( controller );
+    controller.remove( mesh );
+  });
+});
 
 const textCreator = SDFText.creator();
 
@@ -38,13 +76,6 @@ lText.position.set(-0.12, 0, -0.022);
 let leftPress;
 let rightPress;
 
-leftController.addEventListener('thumbpaddown', () => {
-  if (leftPress) leftPress();
-});
-
-rightController.addEventListener('thumbpaddown', () => {
-  if (rightPress) rightPress();
-});
 
 const rButton = rhand.getObjectByName('button');
 const lButton = lhand.getObjectByName('button');
@@ -116,14 +147,12 @@ const controllers = Object.assign(
     },
 
     add() {
-      leftController.add(lhand);
-      rightController.add(rhand);
+      viewer.scene.add( controllerViewGroup );
     },
 
     remove() {
       rightPress = leftPress = null;
-      leftController.remove(lhand);
-      rightController.remove(rhand);
+      viewer.scene.remove( controllerViewGroup );
     },
 
     setButtonVisibility,

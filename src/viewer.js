@@ -16,6 +16,7 @@ import daydreamController from './lib/daydream-controller';
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
 require('./lib/ViveController')(THREE);
+require('./lib/VRController')(THREE);
 
 const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
@@ -63,12 +64,27 @@ if (feature.isIODaydream) {
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
 
-const controller1 = new THREE.ViveController(0);
-const controller2 = new THREE.ViveController(1);
+const controllers = [];
 
-// Use controllers:
-controller1.standingMatrix = controls.getStandingMatrix();
-controller2.standingMatrix = controls.getStandingMatrix();
+window.addEventListener('vr controller connected', function( {detail:controller} ){
+
+  if( controller.gamepadStyle === 'daydream' ){
+    return;
+  }
+
+  controller.standingMatrix = controls.getStandingMatrix();
+  controller.head = cameras.default;
+
+  // controllers.push( controller );
+  if( controller.gamepad.hand === 'left' ){
+    controllers[ 0 ] = controller;
+  }
+  else{
+    controllers[ 1 ] = controller;
+  }
+
+  events.emit( 'controllerConnected', controller );
+});
 
 const createScene = () => {
   const scene = new THREE.Scene();
@@ -110,7 +126,6 @@ window.addEventListener('resize', () => {
 }, false);
 
 const scene = createScene();
-scene.add(controller1, controller2);
 
 let stats;
 
@@ -125,15 +140,15 @@ const viewer = {
   daydreamController,
   scene,
   renderScene: scene,
-  controllers: [controller1, controller2],
+  controllers,
   controls,
   createScene,
   events,
   renderer,
   countActiveControllers: () => {
     let count = 0;
-    if (controller1.visible) count += 1;
-    if (controller2.visible) count += 1;
+    if (controllers[0] !==undefined && controllers[0].visible) count += 1;
+    if (controllers[1] !==undefined && controllers[1].visible) count += 1;
     return count;
   },
   switchCamera: (name) => {
@@ -156,8 +171,9 @@ const animate = () => {
   if (showStats) stats.begin();
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
-  controller1.update();
-  controller2.update();
+
+  THREE.VRController.update();
+
   if (feature.isIODaydream) {
     viewer.daydreamController.update();
   }
