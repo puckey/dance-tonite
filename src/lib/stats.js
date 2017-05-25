@@ -16,5 +16,5 @@ export default (interval = 1000) => {
     console.log(`${roundToDecimals(fps, 1)} fps`);
     frames = 0;
     prevTime = time;
-  };
+  }
 };
