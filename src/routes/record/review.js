@@ -54,10 +54,7 @@ export default (goto) => {
     const [recordingSrc] = await Promise.all([
       persisting,
       transition.enter({
-        // #googleIO2017
-        text: feature.isIOVive
-          ? 'Publishing your performance'
-          : 'Please take off your headset',
+        text: 'Please take off your headset',
       }),
       sleep(5000),
     ]);

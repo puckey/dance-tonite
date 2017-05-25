@@ -90,19 +90,12 @@ export default (goto) => {
         h(
           'span',
           feature.hasVR
-            ? feature.isIOVive
-              ? 'Press to enter VR'
-              : 'Add your performance'
+            ? 'Add your performance'
             : 'A message about Vive not being found. Click here to go home.'
         ),
       )
     );
   };
-
-  // #googleIO2017: long press trigger button to display 'Add your performance' button:
-  if (feature.isIOVive) {
-    controllers.on('triggerlongpress', viewer.vrEffect.isPresenting ? performSkip : createOverlay);
-  }
 
   const textTimeline = createTimeline([
     {
@@ -171,7 +164,7 @@ export default (goto) => {
     {
       time: 38,
       text: '',
-      callback: !feature.isIOVive ? createOverlay : null,
+      callback: createOverlay,
     },
   ]);
 
@@ -239,18 +232,14 @@ export default (goto) => {
         {
           onclick: createOverlay,
         },
-        // #googleIO2017: we display 'Tutorial' in the bottom right so people
-        // understand what they're watching.
-        feature.isIOVive ? 'Dance Tonite Tutorial' : 'Skip Tutorial'
+        'Skip Tutorial'
       );
-      if (!feature.isIOVive) {
-        hud.create('div.close-button',
-          {
-            onclick: () => router.navigate('/'),
-          },
-          '×'
-        );
-      }
+      hud.create('div.close-button',
+        {
+          onclick: () => router.navigate('/'),
+        },
+        '×'
+      );
       elements.lineEl = hud.create('div.line', {
         style: {
           transform: 'scaleX(0)',
@@ -318,11 +307,6 @@ export default (goto) => {
       viewer.camera.updateProjectionMatrix();
       viewer.events.off('tick', tick);
       textTimeline.off('keyframe', handleKeyframe);
-      // #googleIO2017: remove event listener which was added above:
-      if (feature.isIOVive) {
-        controllers.off('triggerlongpress', performSkip);
-        controllers.off('triggerlongpress', createOverlay);
-      }
     },
   };
 

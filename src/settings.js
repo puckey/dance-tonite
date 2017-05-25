@@ -20,6 +20,9 @@ export default {
   // The amount of loops that can be recorded:
   loopCount: 21,
 
+  // The maximum amount of layers allowed in recording mode:
+  maxLayerCount: 20,
+
   // The total amount of loops contained in the playback file:
   totalLoopCount: 26,
   textColor: '#ffff07',
