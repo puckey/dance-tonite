@@ -6,7 +6,7 @@ import h from 'hyperscript';
 import emitter from 'mitt';
 
 import * as THREE from './lib/three';
-import Stats from './lib/stats';
+import stats from './lib/stats';
 import { tempVector } from './utils/three';
 import settings from './settings';
 import Room from './room';
@@ -20,8 +20,6 @@ require('./lib/ViveController')(THREE);
 const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
 const orthographicDistance = 4;
-
-const showStats = !(window.location.hash.indexOf('fps') === -1);
 
 const cameras = (function () {
   const aspect = getWindowAspect();
@@ -109,13 +107,6 @@ window.addEventListener('resize', () => {
 const scene = createScene();
 scene.add(controller1, controller2);
 
-let stats;
-
-if (showStats) {
-  stats = new Stats();
-}
-
-
 const viewer = {
   camera: cameras.default,
   cameras,
@@ -147,10 +138,7 @@ const viewer = {
 const clock = new THREE.Clock();
 clock.start();
 
-let lastFPSLogTime = 0;
-
 const animate = () => {
-  if (showStats) stats.begin();
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
   controller1.update();
@@ -167,15 +155,7 @@ const animate = () => {
   }
 
   events.emit('render', dt);
-  if (showStats) stats.end();
-
-  if (showStats) {
-    if( Date.now() - lastFPSLogTime > 1000 ){
-      console.log( stats.fps )
-      lastFPSLogTime = Date.now();
-    }
-  }
-
+  if (feature.stats) stats();
 };
 
 animate();

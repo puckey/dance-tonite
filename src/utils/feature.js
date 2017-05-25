@@ -40,6 +40,7 @@ const feature = {
   isMobile: /android|ipad|iphone|iemobile/i.test(userAgent),
   isAndroid: /android/i.test(userAgent),
   isChrome: /chrome/i.test(userAgent),
+  stats: /fps/.test(window.location.hash),
   prepare: () => (
     Promise.all([
       checkHasExternalDisplay().then((hasExternalDisplay) => {
