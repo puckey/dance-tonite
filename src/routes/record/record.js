@@ -8,10 +8,8 @@ import createTimeline from '../../lib/timeline';
 import controllers from '../../controllers';
 import transition from '../../transition';
 import instructions from '../../instructions';
-import dp from '../../debugplane';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
-import feature from '../../utils/feature';
 
 export default (goto, req) => {
   const { roomDepth, roomOffset } = settings;
@@ -173,7 +171,6 @@ export default (goto, req) => {
       orb = new Orb();
       orb2 = new Orb();
 
-      viewer.scene.add(dp.outline);
       transition.exit();
     },
 
@@ -191,7 +188,6 @@ export default (goto, req) => {
         orb.destroy();
         orb2.destroy();
       }
-      viewer.scene.remove(dp.outline);
     },
   };
 
