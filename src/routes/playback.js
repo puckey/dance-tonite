@@ -1,4 +1,5 @@
 import Orb from '../orb';
+import MegaOrb from '../megaorb';
 import audio from '../audio';
 import audioSrcOgg from '../public/sound/tonite.ogg';
 import audioSrcMp3 from '../public/sound/tonite.mp3';
@@ -49,6 +50,7 @@ export default (req) => {
   };
 
   let orb;
+  let megaOrb;
   let playlist;
   let tick;
   let progressBar;
@@ -66,6 +68,7 @@ export default (req) => {
       }
 
       orb = new Orb();
+      megaOrb = new MegaOrb();
       titles = createTitles(orb);
       titles.mount();
 
@@ -117,6 +120,8 @@ export default (req) => {
       }
       audio.fadeIn();
       audio.play();
+
+      positionMegaOrb( megaOrb, audio );
     },
 
     unmount: () => {
@@ -132,3 +137,12 @@ export default (req) => {
   };
   return component;
 };
+
+//  duration / loopDuration causes the mega orb to be too far off-screen
+//  move it back a ways so we can see it more immediately
+const endPosMoveAhead = 0.86;
+
+function positionMegaOrb( orb, audio ){
+  const endPos = -( audio.duration * endPosMoveAhead / audio.loopDuration * roomDepth );
+  orb.move(endPos);
+}
