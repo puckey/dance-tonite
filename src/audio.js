@@ -15,18 +15,18 @@ let startTime;
 let audioElement;
 let request;
 let onCanPlayThrough;
+let onPause;
+let onPlay;
+let pauseTime;
 
 const FADE_OUT_SECONDS = 2;
 const ALMOST_ZERO = 1e-4;
 
 let scheduledTime;
-
 const audio = Object.assign(emitter(), {
   tick() {
-    if (!audioElement && !context) return;
-    this.currentTime = audioElement
-      ? audioElement.currentTime
-      : (context.currentTime - startTime);
+    if ((!audioElement && !context) || !startTime) return;
+    this.currentTime = (pauseTime || (Date.now() - startTime)) / 1000;
     const time = this.time = this.currentTime % duration;
 
     const { loopDuration } = this;
@@ -63,7 +63,6 @@ const audio = Object.assign(emitter(), {
       const canPlay = () => {
         this.duration = duration;
         this.loopDuration = duration / loopCount;
-        startTime = context.currentTime;
         context.suspend();
         resolve(param.src);
       };
@@ -85,7 +84,18 @@ const audio = Object.assign(emitter(), {
           canPlay();
           audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
         };
+        onPause = () => {
+          this.paused = true;
+          this.pauseTime = audioElement.currentTime * 1000;
+        };
+        onPlay = () => {
+          startTime = Date.now() - audioElement.currentTime * 1000;
+          this.paused = false;
+          this.pauseTime = null;
+        };
         audioElement.addEventListener('canplaythrough', onCanPlayThrough);
+        audioElement.addEventListener('pause', onPause)
+        audioElement.addEventListener('play', onPlay)
         source = context.createMediaElementSource(audioElement);
       } else {
         source = context.createBufferSource();
@@ -126,6 +136,7 @@ const audio = Object.assign(emitter(), {
 
   gotoTime(time) {
     audioElement.currentTime = time;
+    startTime = Date.now() - time * 1000;
   },
 
   reset() {
@@ -133,6 +144,8 @@ const audio = Object.assign(emitter(), {
     // Cancel loading of audioElement:
     if (audioElement) {
       audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
+      audioElement.removeEventListener('pause', onPause);
+      audioElement.removeEventListener('play', onPlay);
       if (feature.isMobile) {
         audioPool.release(audioElement);
       }
@@ -144,6 +157,7 @@ const audio = Object.assign(emitter(), {
       request.onload = null;
       request = null;
     }
+    pauseTime = startTime = null;
   },
 
   rewind() {
