@@ -13,6 +13,7 @@ import hud from '../hud';
 import feature from '../utils/feature';
 import { sleep } from '../utils/async';
 import Room from '../room';
+import progressBar from '../progress-bar';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
@@ -53,16 +54,13 @@ export default (req) => {
   let megaOrb;
   let playlist;
   let tick;
-  let progressBar;
   const loopIndex = parseInt(req.params.loopIndex, 10);
 
   const component = {
     hud: hudSettings,
     mount: async () => {
+      progressBar.create();
       Room.reset();
-
-      progressBar = hud.create('div.audio-progress-bar');
-
       if (!viewer.vrEffect.isPresenting) {
         viewer.switchCamera('orthographic');
       }
@@ -89,7 +87,7 @@ export default (req) => {
         Room.clear();
         playlist.tick();
         titles.tick();
-        progressBar.style.transform = `scaleX(${audio.progress / settings.totalLoopCount})`;
+        progressBar.tick();
         moveCamera(audio.progress);
       };
       viewer.events.on('tick', tick);
@@ -107,7 +105,7 @@ export default (req) => {
 
       hud.showLoader('Gathering user performances');
 
-      await playlist.load({
+      playlist.load({
         url: 'curated.json',
         pathRecording: req.params.id,
         loopIndex,
@@ -133,6 +131,7 @@ export default (req) => {
       orb.destroy();
       titles.destroy();
       playlist.destroy();
+      progressBar.destroy();
     },
   };
   return component;
