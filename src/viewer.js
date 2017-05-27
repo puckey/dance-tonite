@@ -41,12 +41,10 @@ const cameras = (function () {
 }());
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-[ renderer ].forEach( function( renderer ){
-  renderer.setClearColor(0x000000);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.sortObjects = false;
-});
+renderer.setClearColor(0x000000);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(windowSize.width, windowSize.height);
+renderer.sortObjects = false;
 
 const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);

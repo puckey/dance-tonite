@@ -11,7 +11,6 @@ import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { Vector3 } from '../../lib/three';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
-import controllers from '../../controllers';
 import windowSize from '../../utils/windowSize';
 
 // TODO: replace with better recording:
