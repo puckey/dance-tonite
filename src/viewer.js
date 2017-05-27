@@ -11,25 +11,24 @@ import { tempVector } from './utils/three';
 import settings from './settings';
 import Room from './room';
 import feature from './utils/feature';
+import windowSize from './utils/windowSize';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
 require('./lib/ViveController')(THREE);
 
-const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
 const orthographicDistance = 4;
 
 const cameras = (function () {
-  const aspect = getWindowAspect();
-
-  const perspective = new THREE.PerspectiveCamera(70, aspect, 0.1, 1000);
+  const { aspectRatio } = windowSize;
+  const perspective = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
   perspective.lookAt(tempVector(0, 0, 1));
   perspective.position.y = settings.holeHeight;
 
   const orthographic = new THREE.OrthographicCamera(
-    -orthographicDistance * aspect,
-    orthographicDistance * aspect,
+    -orthographicDistance * aspectRatio,
+    orthographicDistance * aspectRatio,
     orthographicDistance,
     -orthographicDistance,
     -100,
@@ -78,27 +77,25 @@ const createScene = () => {
   return scene;
 };
 
-window.addEventListener('resize', () => {
-  const aspect = getWindowAspect();
+windowSize.on('resize', ({ width, height, aspectRatio }) => {
   const { orthographic } = cameras;
   Object.assign(
     orthographic,
     {
-      left: -orthographicDistance * aspect,
-      right: orthographicDistance * aspect,
+      left: -orthographicDistance * aspectRatio,
+      right: orthographicDistance * aspectRatio,
     },
   );
 
-  const { innerWidth, innerHeight } = window;
-  vrEffect.setSize(innerWidth, innerHeight);
+  vrEffect.setSize(width, height);
 
-  renderer.domElement.style.width = innerWidth + "px";
-  renderer.domElement.style.height = innerHeight + "px";
+  renderer.domElement.style.width = `${width}px`;
+  renderer.domElement.style.height = `${height}px`;
 
   Object
     .values(cameras)
     .forEach((camera) => {
-      camera.aspect = aspect;
+      camera.aspect = aspectRatio;
       camera.updateProjectionMatrix();
     });
 }, false);

@@ -12,6 +12,7 @@ import { Vector3 } from '../../lib/three';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
 import controllers from '../../controllers';
+import windowSize from '../../utils/windowSize';
 
 // TODO: replace with better recording:
 const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
@@ -37,8 +38,8 @@ export default (goto) => {
     TEMP_VECTOR
       .copy(position)
       .project(viewer.camera);
-    TEMP_VECTOR.x = (TEMP_VECTOR.x + 1) * (state.windowWidth * 0.5);
-    TEMP_VECTOR.y = (-TEMP_VECTOR.y + 1) * (state.windowHeight * 0.5);
+    TEMP_VECTOR.x = (TEMP_VECTOR.x + 1) * (windowSize.width * 0.5);
+    TEMP_VECTOR.y = (-TEMP_VECTOR.y + 1) * (windowSize.height * 0.5);
 
     return TEMP_VECTOR;
   };
@@ -200,10 +201,8 @@ export default (goto) => {
     }
   };
 
-  const updateWindowDimensions = () => {
-    state.windowWidth = window.innerWidth;
-    state.windowHeight = window.innerHeight;
-    state.lineOriginX = state.windowWidth / 2;
+  const updateWindowDimensions = ({ width, height }) => {
+    state.lineOriginX = width / 2;
     state.lineOriginY = elements.tutorialText.offsetHeight * 1.2;
   };
 
@@ -286,8 +285,8 @@ export default (goto) => {
 
       textTimeline.on('keyframe', handleKeyframe);
       viewer.events.on('tick', tick);
-      window.addEventListener('resize', updateWindowDimensions);
-      updateWindowDimensions();
+      windowSize.on('resize', updateWindowDimensions);
+      updateWindowDimensions(windowSize);
     },
     unmount: () => {
       component.destroyed = true;
@@ -296,7 +295,7 @@ export default (goto) => {
       viewer.camera.position.copy(state.originalCameraPosition);
       viewer.camera.zoom = state.originalZoom;
       viewer.camera.updateProjectionMatrix();
-      window.removeEventListener('resize', updateWindowDimensions);
+      windowSize.off('resize', updateWindowDimensions);
       audio.reset();
       audio.fadeOut();
       if (room) {
