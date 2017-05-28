@@ -195,7 +195,7 @@ export default (goto) => {
         state.lineOriginY,
         x,
         y,
-        state.windowHeight * 0.03
+        windowSize.height * 0.03
       );
     }
   };
