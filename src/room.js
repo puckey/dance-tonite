@@ -1,7 +1,7 @@
 import * as THREE from './lib/three';
 
 import props from './props';
-import { tempQuaternion, tempVector, createInstancedMesh } from './utils/three';
+import { tempQuaternion, tempQuaternion2, tempVector, createInstancedMesh } from './utils/three';
 import viewer from './viewer';
 import settings from './settings';
 import audio from './audio';
@@ -40,24 +40,60 @@ const ROTATION_MATRIX = new THREE.Matrix4().makeRotationAxis(
 );
 const IDENTITY_MATRIX = new THREE.Matrix4();
 
-const secondsToFrames = (seconds) => Math.floor((seconds % (audio.loopDuration * 2)) * 90);
-
 const getPosition = (positions, arrayOffset, offset) => tempVector(
   positions[arrayOffset] * 0.0001,
   positions[arrayOffset + 1] * 0.0001,
   positions[arrayOffset + 2] * 0.0001 - settings.roomOffset
 ).add(offset);
 
-const getQuaternion = (positions, arrayOffset) => tempQuaternion(
+const getQuaternion = (
+  positions, arrayOffset, _tempQuaternion = tempQuaternion) => _tempQuaternion(
   positions[arrayOffset + 3] * 0.0001,
   positions[arrayOffset + 4] * 0.0001,
   positions[arrayOffset + 5] * 0.0001,
   positions[arrayOffset + 6] * 0.0001
 );
 
+const getFrame = (frames, number) => {
+  let frame = frames[number];
+  if (!frame) frame--;
+  // Check if data is still a string:
+  if (frame[0] === '[') {
+    frame = frames[number] = JSON.parse(frame);
+  }
+  return frame;
+};
+
+const avgPosition = (lower, higher, ratio, offset, position) => {
+  const x1 = lower[offset] * 0.0001;
+  const y1 = lower[offset + 1] * 0.0001;
+  const z1 = lower[offset + 2] * 0.0001;
+  if (!higher) {
+    return tempVector(x1, y1, z1 - settings.roomOffset).add(position);
+  }
+  const x2 = higher[offset] * 0.0001;
+  const y2 = higher[offset + 1] * 0.0001;
+  const z2 = higher[offset + 2] * 0.0001;
+  return tempVector(
+    x1 + (x2 - x1) * ratio,
+    y1 + (y2 - y1) * ratio,
+    z1 + (z2 - z1) * ratio - settings.roomOffset
+  ).add(position);
+};
+
+const avgQuaternion = (lower, higher, ratio, offset) => {
+  const quaternion = getQuaternion(lower, offset);
+  if (higher) {
+    quaternion.slerp(getQuaternion(higher, offset, tempQuaternion2), ratio);
+  }
+  return quaternion;
+};
+
 const transformMesh = (
   instancedMesh,
-  positions,
+  lower,
+  higher,
+  ratio,
   index,
   arrayOffset,
   scale,
@@ -66,11 +102,22 @@ const transformMesh = (
 ) => {
   instancedMesh.setPositionAt(
     index,
-    getPosition(positions, arrayOffset, offset)
+    avgPosition(
+      lower,
+      higher,
+      ratio,
+      arrayOffset,
+      offset
+    )
   );
   instancedMesh.setQuaternionAt(
     index,
-    getQuaternion(positions, arrayOffset, offset)
+    avgQuaternion(
+      lower,
+      higher,
+      ratio,
+      arrayOffset
+    )
   );
   instancedMesh.setScaleAt(
     index,
@@ -84,7 +131,7 @@ const transformMesh = (
 };
 
 export default class Room {
-  constructor({ url, recording, index }) {
+  constructor({ url, recording, index, pathRecording }) {
     this.placementIndex = index === undefined
       ? roomIndex
       : index;
@@ -93,6 +140,7 @@ export default class Room {
 
     this.isRecording = !!recording;
     this.url = url;
+    this.pathRecording = pathRecording;
     if (recording) {
       this.hideHead = recording.hideHead;
       this.frames = recording.frames;
@@ -117,7 +165,7 @@ export default class Room {
   load(callback) {
     const frames = [];
     this.streamer = streamJSON(
-      `${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.url}`,
+      `${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.pathRecording ? '' : '30FPS/'}${this.url}`,
       (error, json) => {
         if (error || !json) {
           if (callback) {
@@ -130,6 +178,7 @@ export default class Room {
           this.frames = frames;
           this.hideHead = meta.hideHead;
           this.layerCount = meta.count;
+          this.fps = meta.fps || 90;
         } else {
           frames.push(json);
         }
@@ -162,25 +211,41 @@ export default class Room {
     }
   }
 
+  secondsToFrame(seconds) {
+    return (seconds % (audio.loopDuration * 2)) * this.fps;
+  }
+
   getHeadPosition(index, seconds) {
-    return getPosition(
-      this.frames[secondsToFrames(seconds)],
+    const { frames } = this;
+    const frameNumber = this.secondsToFrame(seconds);
+    const lower = Math.floor(frameNumber);
+    const higher = Math.ceil(frameNumber);
+    const ratio = frameNumber % 1;
+    const lowerFrame = getFrame(frames, lower);
+    const higherFrame = (higher >= frames.length)
+      ? null
+      : getFrame(frames, higher);
+    const position = avgPosition(
+      lowerFrame,
+      higherFrame,
+      ratio,
       index * PERFORMANCE_ELEMENT_COUNT,
       this.position
     ).applyMatrix4(roomsGroup.matrix);
+    return position;
   }
 
   gotoTime(seconds, maxLayers) {
-    const { frames } = this;
+    const { frames, position, costumeColor } = this;
     if (!frames) return;
 
-    const frameNumber = secondsToFrames(seconds);
+    const frameNumber = this.secondsToFrame(seconds);
     if (frames.length <= frameNumber) return;
-    let positions = frames[frameNumber];
-    if (!positions) return;
 
     // TODO: figure out why we can't use just 'positions.length / PERFORMANCE_ELEMENT_COUNT' here:
-    let count = this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
+    let count = this.layerCount || (
+      this.frames[Math.floor(frameNumber)].length / PERFORMANCE_ELEMENT_COUNT
+    );
     if (maxLayers !== undefined) {
       count = Math.min(maxLayers, count);
     }
@@ -188,40 +253,48 @@ export default class Room {
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
 
-    // Check if data is still a string:
-    if (positions[0] === '[') {
-      positions = frames[frameNumber] = JSON.parse(positions);
-    }
+    const lower = Math.floor(frameNumber);
+    let higher = Math.ceil(frameNumber);
+    if (higher >= frames.length) higher = null;
+    const ratio = frameNumber % 1;
+    const lowerFrame = getFrame(frames, lower);
+    const higherFrame = higher && getFrame(frames, higher);
 
     for (let i = 0; i < count; i++) {
       if (!this.hideHead) {
         transformMesh(
           headMesh,
-          positions,
+          lowerFrame,
+          higherFrame,
+          ratio,
           headMesh.geometry.maxInstancedCount++,
           i * PERFORMANCE_ELEMENT_COUNT,
           scale,
-          this.costumeColor,
-          this.position
+          costumeColor,
+          position
         );
       }
       transformMesh(
         handMesh,
-        positions,
+        lowerFrame,
+        higherFrame,
+        ratio,
         handMesh.geometry.maxInstancedCount++,
         i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT,
         scale,
-        this.costumeColor,
-        this.position
+        costumeColor,
+        position
       );
       transformMesh(
         handMesh,
-        positions,
+        lowerFrame,
+        higherFrame,
+        ratio,
         handMesh.geometry.maxInstancedCount++,
         i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT * 2,
         scale,
-        this.costumeColor,
-        this.position
+        costumeColor,
+        position
       );
     }
   }

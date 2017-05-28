@@ -22,12 +22,17 @@ export default class Playlist {
     const urls = await storage.loadPlaylist(url);
     if (this.destroyed) return;
     await new Promise((resolve, reject) => {
-      if (pathRecording) urls[loopIndex - 1] = `${pathRecording}.json`;
       this.rooms = urls.map(
-        (recordingUrl, index) => new Room({
-          url: recordingUrl,
-          index,
-        }),
+        (recordingUrl, index) => {
+          const isPathRecording = loopIndex - 1 === index;
+          return new Room({
+            url: pathRecording
+              ? `${pathRecording}.json`
+              : recordingUrl,
+            index,
+            pathRecording: isPathRecording,
+          });
+        },
       );
       const destroyedErrorName = 'playlist destroyed';
       asyncEach(

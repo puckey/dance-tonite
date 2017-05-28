@@ -2,12 +2,15 @@ import * as THREE from '../lib/three';
 
 const VECTOR = new THREE.Vector3();
 const QUATERNION = new THREE.Quaternion();
+const QUATERNION_2 = new THREE.Quaternion();
 const COLOR = new THREE.Color();
 const LAMBERT_MATERIAL = new THREE.MeshLambertMaterial();
 
 export const tempVector = (x = 0, y = 0, z = 0) => VECTOR.set(x, y, z);
 
 export const tempQuaternion = (x = 0, y = 0, z = 0, w = 0) => QUATERNION.set(x, y, z, w);
+
+export const tempQuaternion2 = (x = 0, y = 0, z = 0, w = 0) => QUATERNION_2.set(x, y, z, w);
 
 export const tempColor = (r = 0, g = 0, b = 0) => COLOR.set(r, g, b);
 
