@@ -28,10 +28,6 @@ export default (req) => {
     if (viewer.vrEffect.isPresenting) {
       viewer.vrEffect.exitPresent();
       viewer.switchCamera('orthographic');
-
-      if (feature.isMobile) {
-        progressBar.create();
-      }
     } else {
       viewer.vrEffect.requestPresent();
       const removeMessage = hud.enterVR();
@@ -43,10 +39,6 @@ export default (req) => {
       await sleep(4000);
       removeMessage();
       audio.play();
-
-      if (feature.isMobile) {
-        progressBar.destroy();
-      }
     }
   };
 
@@ -94,7 +86,9 @@ export default (req) => {
         Room.clear();
         playlist.tick();
         titles.tick();
-        progressBar.tick();
+        if (!feature.isMobile || !viewer.vrEffect.isPresenting) {
+          progressBar.tick();
+        }
         moveCamera(audio.progress);
       };
       viewer.events.on('tick', tick);
