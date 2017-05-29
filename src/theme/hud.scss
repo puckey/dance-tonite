@@ -186,9 +186,10 @@ svg * {
 .play-button {
   position: fixed;
   top: 50%;
-  left: 50%;
-  transform: translateX(-50%);
   z-index: $popover-layer;
+  width: 100%;
+  transform: translateY(-1rem);
+  text-align: center;
 }
 
 .spinner,
