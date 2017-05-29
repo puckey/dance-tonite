@@ -37,8 +37,10 @@ export default {
   },
 
   tick() {
-    const ratio = moveRatio || (audio.progress / settings.totalLoopCount);
-    targetRatio = targetRatio * 0.8 + ratio * 0.2;
-    progressEl.style.transform = `scaleX(${targetRatio})`;
+    if (progressEl) {
+      const ratio = moveRatio || (audio.progress / settings.totalLoopCount);
+      targetRatio = targetRatio * 0.8 + ratio * 0.2;
+      progressEl.style.transform = `scaleX(${targetRatio})`;
+    }
   },
 };
