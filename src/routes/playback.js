@@ -47,7 +47,6 @@ export default (req) => {
     menuEnter: toggleVR,
     aboutButton: about.toggle,
     colophon: true,
-    chromeExperiment: true,
   };
 
   let orb;

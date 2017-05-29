@@ -17,7 +17,7 @@ const elements = {
   loaderOverlay: '.loader-overlay',
   loaderOverlayText: '.loader-overlay-text',
   playButton: '.play-button',
-  chromeExperiment: '.chrome-experiment',
+  colophon: '.colophon',
 };
 
 const defaultState = {
@@ -25,7 +25,7 @@ const defaultState = {
   menuEnter: false,
   aboutButton: false,
   colophon: false,
-  chromeExperiment: false,
+  colophon: false,
 };
 
 let state = { };
