@@ -12,6 +12,10 @@ import { Vector3 } from '../../lib/three';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
 import windowSize from '../../utils/windowSize';
+import audioSrcOgg from '../../public/sound/room-1.ogg';
+import audioSrcMp3 from '../../public/sound/room-1.mp3';
+
+const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 
 // TODO: replace with better recording:
 const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
@@ -256,7 +260,7 @@ export default (goto) => {
 
       await Promise.all([
         audio.load({
-          src: '/public/sound/room-1.ogg',
+          src: audioSrc,
           loops: 2,
           loopOffset: 0.5,
         }),
