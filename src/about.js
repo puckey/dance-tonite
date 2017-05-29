@@ -1,6 +1,7 @@
 import h from 'hyperscript';
 import fetch from 'unfetch';
 import audio from './audio';
+import feature from './utils/feature';
 import aboutSrc from './content/about.md';
 
 let visible = false;
@@ -11,11 +12,15 @@ const toggle = async () => {
   document.body.classList[visible ? 'remove' : 'add']('mod-overflow-hidden');
   about.classList[visible ? 'remove' : 'add']('mod-hidden');
   if (visible) {
-    audio.fadeOut().then(() => {
-      if (visible) {
-        audio.pause();
-      }
-    });
+    if (feature.isMobile) {
+      audio.pause();
+    } else {
+      audio.fadeOut().then(() => {
+        if (visible) {
+          audio.pause();
+        }
+      });
+    }
   } else {
     audio.play();
     audio.fadeIn(0.5);

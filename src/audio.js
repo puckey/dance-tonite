@@ -119,13 +119,12 @@ const audio = Object.assign(emitter(), {
 
   play() {
     if (context) context.resume();
-    if (audioElement) {
-      audioElement.play();
-    }
+    if (audioElement) audioElement.play();
   },
 
   pause() {
     if (context) context.suspend();
+    if (audioElement) audioElement.pause();
   },
 
   gotoTime(time) {
