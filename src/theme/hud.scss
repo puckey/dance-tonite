@@ -172,17 +172,7 @@ svg * {
   display: inline-block;
 }
 
-.loader-overlay-text {
-  position: fixed;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  margin-top: 2rem;
-  text-align: center;
-  z-index: $popover-layer;
-  pointer-events: none;
-}
-
+.loader-overlay-text,
 .play-button {
   position: fixed;
   top: 50%;
@@ -190,6 +180,11 @@ svg * {
   width: 100%;
   transform: translateY(-1rem);
   text-align: center;
+}
+
+.loader-overlay-text {
+  pointer-events: none;
+  transform: translateY(2rem);
 }
 
 .spinner,
@@ -288,15 +283,6 @@ svg * {
 
 .mod-entering-vr .vr-info-overlay-text {
   animation: textFade 6s 1s;
-}
-
-.io-emulate-button {
-  position: fixed;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  padding: 1rem;
-  z-index: $interface-layer;
 }
 
 .close-button {
