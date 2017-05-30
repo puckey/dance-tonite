@@ -54,7 +54,7 @@ export default {
       const [x2, y2, z2] = roomsLayout[higher];
       x = (x1 + (x2 - x1) * ratio) * settings.roomWidth;
       y = (y1 + (y2 - y1) * ratio) * settings.roomHeight;
-      z = (z1 + (z2 - z1) * ratio) * settings.roomDepth + settings.roomOffset;
+      z = (z1 + (z2 - z1) * ratio) * (settings.roomDepth + 0.0001) + settings.roomOffset;
     }
     return roomPosition
       ? roomPosition.set(x, y, z)
