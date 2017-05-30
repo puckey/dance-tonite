@@ -15,6 +15,7 @@ let startTime;
 let audioElement;
 let request;
 let onCanPlayThrough;
+let muted = false;
 
 const FADE_OUT_SECONDS = 2;
 const ALMOST_ZERO = 1e-4;
@@ -157,7 +158,20 @@ const audio = Object.assign(emitter(), {
   },
 
   mute() {
+    if (scheduledTime) {
+      gainNode.gain.cancelScheduledValues(scheduledTime);
+    }
     gainNode.gain.value = 0.001;
+  },
+
+  unmute() {
+    gainNode.gain.value = 1;
+  },
+
+  toggleMute() {
+    this[muted ? 'unmute' : 'mute']();
+    muted = !muted;
+    return muted;
   },
 
   async fadeOut(fadeDuration = FADE_OUT_SECONDS) {

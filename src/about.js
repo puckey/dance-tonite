@@ -10,7 +10,7 @@ let fetched = false;
 const toggle = async () => {
   visible = !visible;
   document.body.classList[visible ? 'remove' : 'add']('mod-overflow-hidden');
-  about.classList[visible ? 'remove' : 'add']('mod-hidden');
+  about.classList[visible ? 'remove' : 'add']('mod-display-none');
   if (visible) {
     if (feature.isMobile) {
       audio.pause();
@@ -36,7 +36,7 @@ const toggle = async () => {
   }
 };
 
-const about = h('div.about.mod-hidden');
+const about = h('div.about.mod-display-none');
 const closeButton = h('div.close-button', { onclick: toggle }, '×');
 document.body.appendChild(about);
 

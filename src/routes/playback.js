@@ -6,7 +6,6 @@ import audioSrcMp3 from '../public/sound/tonite.mp3';
 import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
-import about from '../about';
 import createTitles from '../titles';
 import transition from '../transition';
 import hud from '../hud';
@@ -45,7 +44,6 @@ export default (req) => {
   const hudSettings = {
     menuAdd: true,
     menuEnter: toggleVR,
-    aboutButton: about.toggle,
     colophon: true,
   };
 
