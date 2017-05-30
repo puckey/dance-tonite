@@ -35,5 +35,9 @@ window.THREE = THREE;
     });
   }
 
+  const { aboutButton, muteButton } = hud.elements;
+  aboutButton.classList.remove('mod-hidden');
+  muteButton.classList.remove('mod-hidden');
+
   installRouter();
 })();
