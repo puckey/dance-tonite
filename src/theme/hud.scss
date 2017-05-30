@@ -316,7 +316,9 @@ svg * {
   cursor: pointer;
   z-index: $popover-layer;
   user-select: none;
+}
 
+.about .close-button {
   @media screen and (max-width: $min-width) {
     position: absolute;
   }
