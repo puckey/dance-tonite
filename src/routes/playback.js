@@ -112,8 +112,8 @@ export default (req) => {
         pathRecording: req.params.id,
         loopIndex,
       }).then(() => {
-        window.addEventListener('mousedown', (event) => {
-          console.log(closestHead(event, playlist.rooms));
+        window.addEventListener('mousedown', ({ clientX, clientY }) => {
+          console.log(closestHead(clientX, clientY, playlist.rooms));
         }, false);
       });
       if (component.destroyed) return;
