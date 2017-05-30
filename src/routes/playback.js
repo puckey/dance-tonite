@@ -137,8 +137,11 @@ export default (req) => {
         }, watchTime * 1000);
       }
 
-      audio.fadeIn();
-      audio.play();
+      // Safari won't play unless we wait until next tick
+      setTimeout(() => {
+        audio.play();
+        audio.fadeIn();
+      });
 
       positionMegaOrb(megaOrb);
     },
