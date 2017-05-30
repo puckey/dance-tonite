@@ -15,7 +15,6 @@
   top: 0;
   left: 0;
   display: flex;
-  flex-direction: column;
   z-index: $interface-layer;
 }
 
@@ -35,13 +34,9 @@ svg * {
   user-select: none;
 }
 
-.menu-left .menu-item {
+.menu-left .menu-item:first-of-type {
   padding-right: 0;
   padding-left: 1rem;
-}
-
-.menu-left .menu-item:first-of-type {
-  padding-top: 0.4rem;
 }
 
 .menu .menu-item + .menu-item {
