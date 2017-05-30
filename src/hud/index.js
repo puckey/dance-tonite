@@ -129,14 +129,17 @@ const hud = {
   },
 
   enterVR: () => {
-    const el = hud.add(
-      componentContext(
-      'div.vr-info-overlay.mod-entering-vr',
-      componentContext('div.vr-info-overlay-text', 'Put on your VR headset')
-    ), false);
-    return () => {
-      hud.remove(el);
-    };
+    if (!feature.isMobile) {
+      const el = hud.add(
+        componentContext(
+        'div.vr-info-overlay.mod-entering-vr',
+        componentContext('div.vr-info-overlay-text', 'Put on your VR headset')
+      ), false);
+      return () => {
+        hud.remove(el);
+      };
+    }
+    return () => {};
   },
 
   create(/* tag, attrs, [text?, Elements?,...] */) {
