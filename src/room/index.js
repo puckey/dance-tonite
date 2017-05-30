@@ -17,12 +17,11 @@ import {
 } from '../theme/colors';
 import streamJSON from '../lib/stream-json';
 import * as roomUtils from './utils';
+import * as serializer from '../utils/serializer';
 import layout from './layout';
 import dummyTextureUrl from '../public/dummy.png';
 
 const PROTOCOL = location.protocol;
-const PERFORMANCE_ELEMENT_COUNT = 21;
-const LIMB_ELEMENT_COUNT = 7;
 
 let roomIndex = 0;
 let wallMesh;
@@ -124,9 +123,10 @@ export default class Room {
   }
 
   getHeadPosition(index, seconds) {
-    return roomUtils.getPosition(
+    return serializer.getPosition(
       this.frames[roomUtils.secondsToFrames(seconds)],
-      index * PERFORMANCE_ELEMENT_COUNT,
+      index,
+      0,
       this.position
     ).applyMatrix4(roomsGroup.matrix);
   }
@@ -140,8 +140,8 @@ export default class Room {
     let positions = frames[frameNumber];
     if (!positions) return;
 
-    // TODO: figure out why we can't use just 'positions.length / PERFORMANCE_ELEMENT_COUNT' here:
-    let count = this.layerCount || (positions.length / PERFORMANCE_ELEMENT_COUNT);
+    // TODO: figure out why we can't use just serializer.count here:
+    let count = this.layerCount || serializer.count(positions);
     if (maxLayers !== undefined) {
       count = Math.min(maxLayers, count);
     }
@@ -160,7 +160,8 @@ export default class Room {
           headMesh,
           positions,
           headMesh.geometry.maxInstancedCount++,
-          i * PERFORMANCE_ELEMENT_COUNT,
+          i,
+          0, // head
           scale,
           this.costumeColor,
           this.position
@@ -170,7 +171,8 @@ export default class Room {
         handMesh,
         positions,
         handMesh.geometry.maxInstancedCount++,
-        i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT,
+        i,
+        1, // first hand
         scale,
         this.costumeColor,
         this.position
@@ -179,7 +181,8 @@ export default class Room {
         handMesh,
         positions,
         handMesh.geometry.maxInstancedCount++,
-        i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT * 2,
+        i,
+        2, // second hand
         scale,
         this.costumeColor,
         this.position

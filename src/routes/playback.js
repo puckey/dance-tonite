@@ -14,6 +14,7 @@ import { sleep } from '../utils/async';
 import Room from '../room';
 import progressBar from '../progress-bar';
 import layout from '../room/layout';
+import closestHead from '../utils/closestHead';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
@@ -110,6 +111,10 @@ export default (req) => {
         url: 'curated.json',
         pathRecording: req.params.id,
         loopIndex,
+      }).then(() => {
+        window.addEventListener('mousedown', (event) => {
+          console.log(closestHead(event, playlist.rooms));
+        }, false);
       });
       if (component.destroyed) return;
 
