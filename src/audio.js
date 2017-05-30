@@ -115,6 +115,7 @@ const audio = Object.assign(emitter(), {
       }
       source.connect(gainNode);
       gainNode.connect(context.destination);
+      if (muted) this.mute();
     });
   },
 
@@ -153,7 +154,7 @@ const audio = Object.assign(emitter(), {
   rewind() {
     if (audioElement) {
       audioElement.currentTime = 0;
-      gainNode.gain.value = 1;
+      gainNode.gain.value = muted ? 0.001 : 1;
     }
   },
 
@@ -188,7 +189,7 @@ const audio = Object.assign(emitter(), {
   },
 
   async fadeIn(fadeDuration = FADE_OUT_SECONDS) {
-    if (!context) return;
+    if (!context || muted) return;
     if (scheduledTime) {
       gainNode.gain.cancelScheduledValues(scheduledTime);
     }
