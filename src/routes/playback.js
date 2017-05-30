@@ -117,6 +117,26 @@ export default (req) => {
       if (transition.isInside()) {
         transition.exit();
       }
+
+      if (loopIndex) {
+        // Start at 3 rooms before the recording, or 60 seconds before
+        // the end of the track – whichever comes first.
+        const watchTime = 30;
+        const startTime = Math.min(
+          (loopIndex - 2) * audio.loopDuration,
+          audio.duration - watchTime
+        );
+        audio.gotoTime(startTime);
+        setTimeout(() => {
+          if (component.destroyed) return;
+          audio.fadeOut();
+          transition.enter({
+            text: 'Please take off your headset',
+          });
+          // TODO add share screen
+        }, watchTime * 1000);
+      }
+
       audio.fadeIn();
       audio.play();
 
