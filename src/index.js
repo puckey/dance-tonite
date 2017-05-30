@@ -9,6 +9,7 @@ import Room from './room';
 import hud from './hud';
 import viewer from './viewer';
 import audioPool from './utils/audio-pool';
+import playIconSvg from './hud/icons/play.svg';
 
 window.THREE = THREE;
 
@@ -25,13 +26,14 @@ window.THREE = THREE;
     Room.reset();
     viewer.switchCamera('orthographic');
     await new Promise((resolve) => {
-      hud.create('div.play-button', {
+      const play = hud.create('div.loader-overlay', hud.create('div.play-button.mod-fill', {
         onclick: function () {
-          this.classList.add('mod-hidden');
+          play.classList.add('mod-hidden');
           audioPool.fill();
           resolve();
         },
-      }, 'Press to Dance Tonite');
+      }), hud.create('div.play-button-text', 'Press play to Dance Tonite'));
+      document.querySelector('.play-button').innerHTML = playIconSvg;
     });
   }
 
