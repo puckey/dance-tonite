@@ -13,6 +13,7 @@ import feature from '../utils/feature';
 import { sleep } from '../utils/async';
 import Room from '../room';
 import progressBar from '../progress-bar';
+import layout from '../room/layout';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
@@ -68,10 +69,11 @@ export default (req) => {
       titles.mount();
 
       const moveCamera = (progress) => {
-        const emptySpace = 2.5;
-        const z = ((progress - emptySpace) * roomDepth) + roomOffset;
-        viewer.camera.position.set(0, holeHeight, -z);
-        orb.move(-z);
+        const position = layout.getPosition(progress + 0.5);
+        position.y += holeHeight;
+        position.z *= -1;
+        viewer.camera.position.copy(position);
+        orb.position.copy(position);
       };
 
       moveCamera(0);
@@ -141,6 +143,5 @@ export default (req) => {
 const endPosMoveAhead = 0.86;
 
 const positionMegaOrb = (orb) => {
-  const endPos = -(audio.duration * endPosMoveAhead / audio.loopDuration * roomDepth);
-  orb.move(endPos);
+  orb.position.z = -(audio.duration * endPosMoveAhead / audio.loopDuration * roomDepth);
 };

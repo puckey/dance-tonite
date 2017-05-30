@@ -62,3 +62,18 @@ export const serializeMatrix = (matrix) => {
     .concat(SERIALIZE_ROTATION.toArray())
     .map(compressNumber);
 };
+
+const ROTATION_MATRIX = new THREE.Matrix4().makeRotationAxis(
+  new THREE.Vector3(0, 1, 0).normalize(),
+  Math.PI
+);
+
+const IDENTITY_MATRIX = new THREE.Matrix4();
+
+export const set180RotationMatrix = (object) => {
+  object.matrix.copy(ROTATION_MATRIX);
+};
+
+export const setIdentityMatrix = (object) => {
+  object.matrix.copy(IDENTITY_MATRIX);
+};

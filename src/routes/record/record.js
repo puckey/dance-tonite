@@ -125,9 +125,9 @@ export default (goto, req) => {
     timeline.tick(audio.progress);
 
     const z = (progress - 0.5) * roomDepth + roomOffset;
-    orb.move(z);
+    orb.position.z = z;
     if (audio.totalProgress > 1) {
-      orb2.move(z + roomDepth * 2);
+      orb2.position.z = z + roomDepth * 2;
     }
     recording.tick();
   };

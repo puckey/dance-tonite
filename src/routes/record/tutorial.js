@@ -187,9 +187,9 @@ export default (goto) => {
     textTimeline.tick(audio.currentTime % 48);
 
     const z = (progress - 0.5) * -roomDepth - roomOffset;
-    objects.orb.move(z);
+    objects.orb.position.z = z;
     if (audio.totalProgress > 1) {
-      objects.orb2.move(z - roomDepth * 2);
+      objects.orb2.position.z = z - roomDepth * 2;
     }
 
     if (getLineTarget) {

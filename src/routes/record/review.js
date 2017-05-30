@@ -10,7 +10,6 @@ import transition from '../../transition';
 import Room from '../../room';
 import { tempVector } from '../../utils/three';
 import { sleep } from '../../utils/async';
-import feature from '../../utils/feature';
 
 export default (goto) => {
   const { roomDepth, roomOffset } = settings;
