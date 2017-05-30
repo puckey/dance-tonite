@@ -8,6 +8,8 @@ import createTimeline from '../../lib/timeline';
 import controllers from '../../controllers';
 import transition from '../../transition';
 import instructions from '../../instructions';
+import hud from '../../hud';
+import router from '../../router';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
 
@@ -170,6 +172,14 @@ export default (goto, req) => {
 
       orb = new Orb();
       orb2 = new Orb();
+
+      // Create close button
+      hud.create('div.close-button',
+        {
+          onclick: () => router.navigate('/'),
+        },
+        '×'
+      );
 
       transition.exit();
     },
