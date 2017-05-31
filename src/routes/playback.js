@@ -19,7 +19,7 @@ import closestHead from '../utils/closestHead';
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
-const { roomDepth, roomOffset, holeHeight } = settings;
+const { roomDepth, holeHeight } = settings;
 
 let titles;
 
@@ -54,6 +54,8 @@ export default (req) => {
   let playlist;
   let tick;
   const loopIndex = parseInt(req.params.loopIndex, 10);
+
+  let onMouseMove;
 
   const component = {
     hud: hudSettings,
@@ -90,7 +92,7 @@ export default (req) => {
         if (!feature.isMobile || !viewer.vrEffect.isPresenting) {
           progressBar.tick();
         }
-        moveCamera(audio.progress);
+        moveCamera(audio.progress || 0);
       };
       viewer.events.on('tick', tick);
 
@@ -112,9 +114,18 @@ export default (req) => {
         pathRecording: req.params.id,
         loopIndex,
       }).then(() => {
-        window.addEventListener('mousedown', ({ clientX, clientY }) => {
-          console.log(closestHead(clientX, clientY, playlist.rooms));
-        }, false);
+        if (component.destroyed) return;
+        onMouseMove = ({ clientX, clientY }) => {
+          const [roomIndex, performanceIndex] = closestHead(
+            clientX,
+            clientY,
+            playlist.rooms
+          );
+          if (roomIndex !== undefined) {
+            console.log({ roomIndex, performanceIndex });
+          }
+        };
+        window.addEventListener('mousemove', onMouseMove);
       });
       if (component.destroyed) return;
 
@@ -158,6 +169,7 @@ export default (req) => {
       titles.destroy();
       playlist.destroy();
       progressBar.destroy();
+      window.removeEventListener('mousemove', onMouseMove);
     },
   };
   return component;

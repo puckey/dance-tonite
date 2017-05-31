@@ -131,11 +131,17 @@ export default class Room {
     ).applyMatrix4(roomsGroup.matrix);
   }
 
+  get frame() {
+    return this.frameNumber === undefined
+      ? null
+      : this.frames[this.frameNumber];
+  }
+
   gotoTime(seconds, maxLayers) {
     const { frames } = this;
     if (!frames) return;
 
-    const frameNumber = roomUtils.secondsToFrames(seconds);
+    const frameNumber = this.frameNumber = roomUtils.secondsToFrames(seconds);
     if (frames.length <= frameNumber) return;
     let positions = frames[frameNumber];
     if (!positions) return;
