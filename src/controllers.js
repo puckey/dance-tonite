@@ -25,7 +25,7 @@ function handleRightPress(){
 }
 
 viewer.events.on('controllerConnected', function( controller ){
-  console.log('controller connected', controller );
+  // console.log('controller connected', controller );
 
   //  avoid non-handedness of oculus remote
   if( controller.gamepad.hand === '' ){
