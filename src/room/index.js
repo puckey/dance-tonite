@@ -109,6 +109,7 @@ export default class Room {
       .add(this.position)
       .add(roomOffset);
     const type = layout.getModel(this.placementIndex);
+    if (type === 'PLANE') return;
     const meshes = meshesByType[type] || meshesByType.HORIZONTAL;
     for (const i in meshes) {
       const mesh = meshes[i];
