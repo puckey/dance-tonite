@@ -120,7 +120,7 @@ export default class Room {
       mesh.needsUpdate('position');
 
       mesh = wallMeshes[i];
-      if (this.index < mesh.numInstances) {
+      if (layout.hasWall(this.placementIndex)) {
         mesh.setPositionAt(mesh.geometry.maxInstancedCount++, position);
         mesh.needsUpdate('position');
       }
@@ -243,13 +243,13 @@ Room.reset = ({ showAllWalls } = {}) => {
   roomIndex = 0;
   wallMeshes = {
     default: createInstancedMesh({
-      count: showAllWalls ? layout.roomCount : 1,
+      count: layout.roomCount,
       geometry: props.wall.geometry,
       color: getRoomColor,
       material: props.wall.material,
     }),
     orthographic: createInstancedMesh({
-      count: showAllWalls ? layout.roomCount : 1,
+      count: layout.roomCount,
       geometry: props.orthographicWall.geometry,
       color: getRoomColor,
       material: props.orthographicWall.material,

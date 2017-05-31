@@ -68,6 +68,10 @@ export default {
       : tempVector(x, y, z);
   },
 
+  hasWall(index) {
+    return !!layout[index][3].wall;
+  },
+
   getType(index) {
     return layout[index][3].type;
   },
