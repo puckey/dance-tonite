@@ -112,13 +112,14 @@ export default class Room {
     if (type === 'PLANE') return;
     const meshes = meshesByType[type] || meshesByType.HORIZONTAL;
     for (const i in meshes) {
-      const mesh = meshes[i];
+      let mesh = meshes[i];
       mesh.setPositionAt(mesh.geometry.maxInstancedCount++, position);
       mesh.needsUpdate('position');
 
-      if (this.index < wallMeshes[i].numInstances) {
-        meshes[i].setPositionAt(this.index, position);
-        meshes[i].needsUpdate('position');
+      mesh = wallMeshes[i];
+      if (this.index < mesh.numInstances) {
+        mesh.setPositionAt(mesh.geometry.maxInstancedCount++, position);
+        mesh.needsUpdate('position');
       }
     }
   }
