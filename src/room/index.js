@@ -29,8 +29,12 @@ let wallMesh;
 let wallMeshes;
 let roomMesh;
 let roomVerticalMesh;
+let horizontalVerticalCornerMesh;
+let verticalHorizontalCornerMesh;
 let roomMeshes;
 let roomVerticalMeshes;
+let horizontalVerticalCornerMeshes;
+let verticalHorizontalCornerMeshes;
 let headMesh;
 let handMesh;
 
@@ -63,8 +67,6 @@ export default class Room {
       this.frames = recording.frames;
       this.changeColor(recordRoomColor);
     }
-
-    console.log(layout.getModel(placementIndex));
 
     this.costumeColor = this.isRecording
       ? recordCostumeColor
@@ -109,7 +111,7 @@ export default class Room {
       .add(this.position)
       .add(roomOffset);
     position.y -= 1;
-    const type = layout.getModel(this.placementIndex);
+    const type = layout.getType(this.placementIndex);
     if (type === 'PLANE') return;
     const meshes = meshesByType[type] || meshesByType.HORIZONTAL;
     for (const i in meshes) {
@@ -216,12 +218,19 @@ Room.switchModel = (model) => {
   roomsGroup.remove(wallMesh);
   roomsGroup.remove(roomMesh);
   roomsGroup.remove(roomVerticalMesh);
+  roomsGroup.remove(horizontalVerticalCornerMesh);
+  roomsGroup.remove(verticalHorizontalCornerMesh);
   wallMesh = wallMeshes[model];
   roomMesh = roomMeshes[model];
   roomVerticalMesh = roomVerticalMeshes[model];
+  horizontalVerticalCornerMesh = horizontalVerticalCornerMeshes[model];
+  verticalHorizontalCornerMesh = verticalHorizontalCornerMeshes[model];
+
   roomsGroup.add(wallMesh);
   roomsGroup.add(roomMesh);
   roomsGroup.add(roomVerticalMesh);
+  roomsGroup.add(horizontalVerticalCornerMesh);
+  roomsGroup.add(verticalHorizontalCornerMesh);
 };
 
 Room.reset = ({ showAllWalls } = {}) => {
@@ -274,6 +283,36 @@ Room.reset = ({ showAllWalls } = {}) => {
       material: props.orthographicRoom.material,
     }),
   };
+  horizontalVerticalCornerMeshes = {
+    default: createInstancedMesh({
+      count: 1,
+      geometry: props.orthographicHorizontalVerticalCorner.geometry,
+      color: getRoomColor,
+      material: props.orthographicHorizontalVerticalCorner.material,
+    }),
+    orthographic: createInstancedMesh({
+      count: 1,
+      geometry: props.orthographicHorizontalVerticalCorner.geometry,
+      color: getRoomColor,
+      material: props.orthographicHorizontalVerticalCorner.material,
+    }),
+  };
+  verticalHorizontalCornerMeshes = {
+    default: createInstancedMesh({
+      count: 1,
+      geometry: props.orthographicVerticalHorizontalCorner.geometry,
+      color: getRoomColor,
+      material: props.orthographicVerticalHorizontalCorner.material,
+    }),
+    orthographic: createInstancedMesh({
+      count: 1,
+      geometry: props.orthographicVerticalHorizontalCorner.geometry,
+      color: getRoomColor,
+      material: props.orthographicVerticalHorizontalCorner.material,
+    }),
+  };
+
+
   roomMeshes.default.receiveShadow = true;
   roomMeshes.orthographic.receiveShadow = true;
 
@@ -301,6 +340,8 @@ Room.reset = ({ showAllWalls } = {}) => {
   meshesByType = {
     HORIZONTAL: roomMeshes,
     VERTICAL: roomVerticalMeshes,
+    HORIZONTAL_CORNER: horizontalVerticalCornerMeshes,
+    VERTICAL_CORNER: verticalHorizontalCornerMeshes,
   };
 
   roomsGroup.add(headMesh);
