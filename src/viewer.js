@@ -6,34 +6,30 @@ import h from 'hyperscript';
 import emitter from 'mitt';
 
 import * as THREE from './lib/three';
-import Stats from './lib/stats';
+import stats from './lib/stats';
 import { tempVector } from './utils/three';
 import settings from './settings';
 import Room from './room';
 import feature from './utils/feature';
-import daydreamController from './lib/daydream-controller';
+import windowSize from './utils/windowSize';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
 require('./lib/ViveController')(THREE);
 require('./lib/VRController')(THREE);
 
-const getWindowAspect = () => window.innerWidth / window.innerHeight;
 const events = emitter();
 const orthographicDistance = 4;
 
-const showStats = !(window.location.hash.indexOf('fps') === -1);
-
 const cameras = (function () {
-  const aspect = getWindowAspect();
-
-  const perspective = new THREE.PerspectiveCamera(70, aspect, 0.1, 1000);
+  const { aspectRatio } = windowSize;
+  const perspective = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
   perspective.lookAt(tempVector(0, 0, 1));
   perspective.position.y = settings.holeHeight;
 
   const orthographic = new THREE.OrthographicCamera(
-    -orthographicDistance * aspect,
-    orthographicDistance * aspect,
+    -orthographicDistance * aspectRatio,
+    orthographicDistance * aspectRatio,
     orthographicDistance,
     -orthographicDistance,
     -100,
@@ -46,20 +42,15 @@ const cameras = (function () {
 }());
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-[ renderer ].forEach( function( renderer ){
-  renderer.setClearColor(0x000000);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.sortObjects = false;
-});
+renderer.setClearColor(0x000000);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(windowSize.width, windowSize.height);
+renderer.sortObjects = false;
 
 const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);
 
 const vrEffect = new THREE.VREffect(renderer);
-if (feature.isIODaydream) {
-  vrEffect.setVRResolutionRatio(0.9);
-}
 
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
@@ -96,48 +87,38 @@ const createScene = () => {
 
   scene.add(hemisphereLight);
   scene.add(light, ambientLight);
-  scene.fog = new THREE.Fog(0x000000, 0, 75);
+  scene.fog = new THREE.Fog(0x000000, 0, 120);
   return scene;
 };
 
-window.addEventListener('resize', () => {
-  const aspect = getWindowAspect();
+windowSize.on('resize', ({ width, height, aspectRatio }) => {
   const { orthographic } = cameras;
   Object.assign(
     orthographic,
     {
-      left: -orthographicDistance * aspect,
-      right: orthographicDistance * aspect,
+      left: -orthographicDistance * aspectRatio,
+      right: orthographicDistance * aspectRatio,
     },
   );
 
-  const { innerWidth, innerHeight } = window;
-  vrEffect.setSize(innerWidth, innerHeight);
+  vrEffect.setSize(width, height);
 
-  renderer.domElement.style.width = innerWidth + "px";
-  renderer.domElement.style.height = innerHeight + "px";
+  renderer.domElement.style.width = `${width}px`;
+  renderer.domElement.style.height = `${height}px`;
 
   Object
     .values(cameras)
     .forEach((camera) => {
-      camera.aspect = aspect;
+      camera.aspect = aspectRatio;
       camera.updateProjectionMatrix();
     });
 }, false);
 
 const scene = createScene();
 
-let stats;
-
-if (showStats) {
-  stats = new Stats();
-}
-
-
 const viewer = {
   camera: cameras.default,
   cameras,
-  daydreamController,
   scene,
   renderScene: scene,
   controllers,
@@ -165,10 +146,7 @@ const viewer = {
 const clock = new THREE.Clock();
 clock.start();
 
-let lastFPSLogTime = 0;
-
 const animate = () => {
-  if (showStats) stats.begin();
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
 
@@ -177,24 +155,17 @@ const animate = () => {
   if (feature.isIODaydream) {
     viewer.daydreamController.update();
   }
+
   controls.update();
   events.emit('tick', dt);
 
   vrEffect.render(viewer.renderScene, viewer.camera);
   if (vrEffect.isPresenting && feature.hasExternalDisplay) {
-      renderer.render(viewer.renderScene, viewer.camera);
+    renderer.render(viewer.renderScene, viewer.camera);
   }
 
   events.emit('render', dt);
-  if (showStats) stats.end();
-
-  if (showStats) {
-    if( Date.now() - lastFPSLogTime > 1000 ){
-      console.log( stats.fps )
-      lastFPSLogTime = Date.now();
-    }
-  }
-
+  if (feature.stats) stats();
 };
 
 animate();

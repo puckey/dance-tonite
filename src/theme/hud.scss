@@ -3,11 +3,19 @@
   position: fixed;
   right: 0;
   bottom: 0;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   z-index: $interface-layer;
-  list-style: none;
-  text-align: right;
   transition: opacity 0.3s;
+}
+
+.menu-left {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  z-index: $interface-layer;
 }
 
 svg {
@@ -23,9 +31,15 @@ svg * {
   margin: 0;
   cursor: pointer;
   padding-right: 1rem;
+  user-select: none;
 }
 
-.menu-item + .menu-item {
+.menu-left .menu-item:first-of-type {
+  padding-right: 0;
+  padding-left: 1rem;
+}
+
+.menu .menu-item + .menu-item {
   padding-bottom: 1.5rem;
 }
 
@@ -54,6 +68,12 @@ svg * {
   height: 2rem;
 }
 
+.menu-left .menu-item-icon {
+  top: 0.6rem;
+  margin-left: 0;
+  margin-right: 0.3rem;
+}
+
 .menu-item.mod-disabled {
   cursor: not-allowed;
 }
@@ -71,26 +91,6 @@ svg * {
 
 .mod-no-stroke {
   stroke-width: 0;
-}
-
-.about-button {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: $interface-layer;
-  cursor: pointer;
-}
-
-.audio-progress-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100vw;
-  height: 0.1rem;
-  background: $text-color;
-  z-index: $interface-layer;
-  transform: scaleX(0);
-  transform-origin: left;
 }
 
 .splash-title {
@@ -145,6 +145,7 @@ svg * {
   text-align: center;
   z-index: $interface-layer;
   user-select: none;
+  pointer-events: none;
 }
 
 .line {
@@ -159,44 +160,54 @@ svg * {
   will-change: transform;
 }
 
-.chrome-experiment {
+.colophon {
   position: fixed;
   left: 0;
   bottom: 0;
   padding: 1rem;
   z-index: $interface-layer;
   transition: opacity 1s ease-out;
-  pointer-events: none;
   user-select: none;
 }
 
-.chrome-experiment img {
-  width: 5rem;
+.colophon img {
+  height: 2.5rem;
 }
 
-.chrome-experiment img + img {
+.colophon a {
+  text-decoration: none;
+}
+
+.colophon-divider {
   border-left: 1px solid $text-color;
-  padding-left: 0.5rem;
-  margin-left: 0.5rem;
-}
-
-.loader-overlay-text {
-  position: fixed;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  margin-top: 2rem;
-  text-align: center;
-  z-index: $popover-layer;
-  pointer-events: none;
+  margin: 0 0.5rem;
+  height: 2.5rem;
+  display: inline-block;
 }
 
 .play-button {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -6rem -3.75rem;
+  padding: 3rem;
   z-index: $popover-layer;
+}
+
+.loader-overlay-text,
+.play-button-text {
+  position: fixed;
+  top: 50%;
+  z-index: $popover-layer;
+  width: 100%;
+  transform: translateY(2rem);
+  text-align: center;
+}
+
+.loader-overlay-text {
+  pointer-events: none;
 }
 
 .spinner,
@@ -297,15 +308,6 @@ svg * {
   animation: textFade 6s 1s;
 }
 
-.io-emulate-button {
-  position: fixed;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  padding: 1rem;
-  z-index: $interface-layer;
-}
-
 .close-button {
   position: fixed;
   top: 0;
@@ -315,10 +317,13 @@ svg * {
   width: 1rem;
   height: 1rem;
   background: none;
+  line-height: 1;
   cursor: pointer;
   z-index: $popover-layer;
   user-select: none;
+}
 
+.about .close-button {
   @media screen and (max-width: $min-width) {
     position: absolute;
   }

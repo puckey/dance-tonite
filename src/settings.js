@@ -4,7 +4,7 @@ export default {
   // Room dimensions:
   roomDepth: 6,
   roomHeight: 4,
-  roomWidth: 4,
+  roomWidth: 5,
 
   // The amount to offset the recording within the room:
   roomOffset: -0.2 * 6,
@@ -19,6 +19,9 @@ export default {
 
   // The amount of loops that can be recorded:
   loopCount: 21,
+
+  // The maximum amount of layers allowed in recording mode:
+  maxLayerCount: 20,
 
   // The total amount of loops contained in the playback file:
   totalLoopCount: 26,

@@ -11,7 +11,11 @@ import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { Vector3 } from '../../lib/three';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
-import controllers from '../../controllers';
+import windowSize from '../../utils/windowSize';
+import audioSrcOgg from '../../public/sound/room-1.ogg';
+import audioSrcMp3 from '../../public/sound/room-1.mp3';
+
+const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 
 // TODO: replace with better recording:
 const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
@@ -37,8 +41,8 @@ export default (goto) => {
     TEMP_VECTOR
       .copy(position)
       .project(viewer.camera);
-    TEMP_VECTOR.x = (TEMP_VECTOR.x + 1) * (state.windowWidth * 0.5);
-    TEMP_VECTOR.y = (-TEMP_VECTOR.y + 1) * (state.windowHeight * 0.5);
+    TEMP_VECTOR.x = (TEMP_VECTOR.x + 1) * (windowSize.width * 0.5);
+    TEMP_VECTOR.y = (-TEMP_VECTOR.y + 1) * (windowSize.height * 0.5);
 
     return TEMP_VECTOR;
   };
@@ -90,19 +94,12 @@ export default (goto) => {
         h(
           'span',
           feature.hasVR
-            ? feature.isIOVive
-              ? 'Press to enter VR'
-              : 'Add your performance'
+            ? 'Add your performance'
             : 'A message about Vive not being found. Click here to go home.'
         ),
       )
     );
   };
-
-  // #googleIO2017: long press trigger button to display 'Add your performance' button:
-  if (feature.isIOVive) {
-    controllers.on('triggerlongpress', viewer.vrEffect.isPresenting ? performSkip : createOverlay);
-  }
 
   const textTimeline = createTimeline([
     {
@@ -171,7 +168,7 @@ export default (goto) => {
     {
       time: 38,
       text: '',
-      callback: !feature.isIOVive ? createOverlay : null,
+      callback: createOverlay,
     },
   ]);
 
@@ -190,9 +187,9 @@ export default (goto) => {
     textTimeline.tick(audio.currentTime % 48);
 
     const z = (progress - 0.5) * -roomDepth - roomOffset;
-    objects.orb.move(z);
+    objects.orb.position.z = z;
     if (audio.totalProgress > 1) {
-      objects.orb2.move(z - roomDepth * 2);
+      objects.orb2.position.z = z - roomDepth * 2;
     }
 
     if (getLineTarget) {
@@ -202,15 +199,13 @@ export default (goto) => {
         state.lineOriginY,
         x,
         y,
-        state.windowHeight * 0.03
+        windowSize.height * 0.03
       );
     }
   };
 
-  const updateWindowDimensions = () => {
-    state.windowWidth = window.innerWidth;
-    state.windowHeight = window.innerHeight;
-    state.lineOriginX = state.windowWidth / 2;
+  const updateWindowDimensions = ({ width, height }) => {
+    state.lineOriginX = width / 2;
     state.lineOriginY = elements.tutorialText.offsetHeight * 1.2;
   };
 
@@ -239,18 +234,14 @@ export default (goto) => {
         {
           onclick: createOverlay,
         },
-        // #googleIO2017: we display 'Tutorial' in the bottom right so people
-        // understand what they're watching.
-        feature.isIOVive ? 'Dance Tonite Tutorial' : 'Skip Tutorial'
+        'Skip Tutorial'
       );
-      if (!feature.isIOVive) {
-        hud.create('div.close-button',
-          {
-            onclick: () => router.navigate('/'),
-          },
-          '×'
-        );
-      }
+      hud.create('div.close-button',
+        {
+          onclick: () => router.navigate('/'),
+        },
+        '×'
+      );
       elements.lineEl = hud.create('div.line', {
         style: {
           transform: 'scaleX(0)',
@@ -269,7 +260,7 @@ export default (goto) => {
 
       await Promise.all([
         audio.load({
-          src: '/public/sound/room-1.ogg',
+          src: audioSrc,
           loops: 2,
           loopOffset: 0.5,
         }),
@@ -297,8 +288,8 @@ export default (goto) => {
 
       textTimeline.on('keyframe', handleKeyframe);
       viewer.events.on('tick', tick);
-      window.addEventListener('resize', updateWindowDimensions);
-      updateWindowDimensions();
+      windowSize.on('resize', updateWindowDimensions);
+      updateWindowDimensions(windowSize);
     },
     unmount: () => {
       component.destroyed = true;
@@ -307,7 +298,7 @@ export default (goto) => {
       viewer.camera.position.copy(state.originalCameraPosition);
       viewer.camera.zoom = state.originalZoom;
       viewer.camera.updateProjectionMatrix();
-      window.removeEventListener('resize', updateWindowDimensions);
+      windowSize.off('resize', updateWindowDimensions);
       audio.reset();
       audio.fadeOut();
       if (room) {
@@ -318,11 +309,6 @@ export default (goto) => {
       viewer.camera.updateProjectionMatrix();
       viewer.events.off('tick', tick);
       textTimeline.off('keyframe', handleKeyframe);
-      // #googleIO2017: remove event listener which was added above:
-      if (feature.isIOVive) {
-        controllers.off('triggerlongpress', performSkip);
-        controllers.off('triggerlongpress', createOverlay);
-      }
     },
   };
 

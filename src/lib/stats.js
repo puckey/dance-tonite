@@ -1,56 +1,20 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.Stats = factory());
-}(this, (function () { 'use strict';
-
 /**
  * @author mrdoob / http://mrdoob.com/
- * heavily modified by @customlogic
+ * reduced by @customlogic & @puckey
  */
 
-var Stats = function () {
-	var beginTime = ( performance || Date ).now(), prevTime = beginTime, frames = 0;
+const roundToDecimals = (val, d) => Number(`${Math.round(`${val}e${d}`)}e-${d}`);
 
-	return {
-
-		begin: function () {
-
-			beginTime = ( performance || Date ).now();
-
-		},
-
-		end: function () {
-
-			frames ++;
-
-			var time = ( performance || Date ).now();
-
-			if ( time > prevTime + 1000 ) {
-				this.fps = ( frames * 1000 ) / ( time - prevTime );
-
-				prevTime = time;
-				frames = 0;
-
-			}
-
-
-
-			return time;
-
-		},
-
-		update: function () {
-
-			beginTime = this.end();
-
-		},
-
-
-	};
-
+let prevTime;
+let frames = 0;
+export default (interval = 1000) => {
+  frames++;
+  const time = (performance || Date).now();
+  if (prevTime === undefined) prevTime = time;
+  if (time > prevTime + interval) {
+    const fps = (frames * 1000) / (time - prevTime);
+    console.log(`${roundToDecimals(fps, 1)} fps`);
+    frames = 0;
+    prevTime = time;
+  }
 };
-
-return Stats;
-
-})));

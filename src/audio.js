@@ -15,6 +15,7 @@ let startTime;
 let audioElement;
 let request;
 let onCanPlayThrough;
+let muted = false;
 
 const FADE_OUT_SECONDS = 2;
 const ALMOST_ZERO = 1e-4;
@@ -24,14 +25,18 @@ let scheduledTime;
 const audio = Object.assign(emitter(), {
   tick() {
     if (!audioElement && !context) return;
-    this.currentTime = audioElement
+    const currentTime = this.currentTime = audioElement
       ? audioElement.currentTime
-      : (context.currentTime - startTime);
-    const time = this.time = this.currentTime % duration;
+      : context.currentTime - startTime;
+    const time = this.time = duration > 0
+      ? currentTime % duration
+      : currentTime;
 
     const { loopDuration } = this;
     // The position within the track as a multiple of loopDuration:
-    this.progress = time / loopDuration;
+    this.progress = time > 0
+      ? time / loopDuration
+      : 0;
 
     // The position within the individual loop as a value between 0 - 1:
     this.loopProgress = (time % loopDuration) / loopDuration;
@@ -110,18 +115,18 @@ const audio = Object.assign(emitter(), {
       }
       source.connect(gainNode);
       gainNode.connect(context.destination);
+      if (muted) this.mute();
     });
   },
 
   play() {
     if (context) context.resume();
-    if (feature.isMobile) {
-      audioElement.play();
-    }
+    if (audioElement) audioElement.play();
   },
 
   pause() {
     if (context) context.suspend();
+    if (audioElement) audioElement.pause();
   },
 
   gotoTime(time) {
@@ -149,12 +154,25 @@ const audio = Object.assign(emitter(), {
   rewind() {
     if (audioElement) {
       audioElement.currentTime = 0;
-      gainNode.gain.value = 1;
+      gainNode.gain.value = muted ? 0.001 : 1;
     }
   },
 
   mute() {
+    if (scheduledTime) {
+      gainNode.gain.cancelScheduledValues(scheduledTime);
+    }
     gainNode.gain.value = 0.001;
+  },
+
+  unmute() {
+    gainNode.gain.value = 1;
+  },
+
+  toggleMute() {
+    this[muted ? 'unmute' : 'mute']();
+    muted = !muted;
+    return muted;
   },
 
   async fadeOut(fadeDuration = FADE_OUT_SECONDS) {
@@ -171,7 +189,7 @@ const audio = Object.assign(emitter(), {
   },
 
   async fadeIn(fadeDuration = FADE_OUT_SECONDS) {
-    if (!context) return;
+    if (!context || muted) return;
     if (scheduledTime) {
       gainNode.gain.cancelScheduledValues(scheduledTime);
     }

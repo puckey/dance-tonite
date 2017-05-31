@@ -165,35 +165,5 @@ const controllers = Object.assign(
   }
 );
 
-// #googleIO2017: emit 'menulongpress' and 'triggerlongpress' events for Vive station:
-if (feature.isIOVive) {
-  const PRESS_RESET_TIME = 2000;
-  const subscribe = (controller, buttonName) => {
-    let timeOutId;
-
-    controller.addEventListener(`${buttonName}down`, () => {
-      timeOutId = setTimeout(
-        () => controllers.emit(`${buttonName}longpress`),
-        PRESS_RESET_TIME
-      );
-    });
-
-    controller.addEventListener(
-      `${buttonName}up`,
-      () => clearTimeout(timeOutId)
-    );
-  };
-
-  // Add menu and trigger long press events for both controllers:
-  [leftController, rightController].forEach(controller => {
-    ['menu', 'trigger'].forEach(event => subscribe(controller, event));
-  });
-
-  controllers.on('menulongpress', () => {
-    transition.reset();
-    mount('record');
-  });
-}
-
 export default controllers;
 

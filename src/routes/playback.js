@@ -1,17 +1,19 @@
 import Orb from '../orb';
+import MegaOrb from '../megaorb';
 import audio from '../audio';
 import audioSrcOgg from '../public/sound/tonite.ogg';
 import audioSrcMp3 from '../public/sound/tonite.mp3';
 import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
-import about from '../about';
 import createTitles from '../titles';
 import transition from '../transition';
 import hud from '../hud';
 import feature from '../utils/feature';
 import { sleep } from '../utils/async';
 import Room from '../room';
+import progressBar from '../progress-bar';
+import layout from '../room/layout';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
@@ -24,73 +26,55 @@ export default (req) => {
   const toggleVR = async () => {
     if (!feature.hasVR) return;
     if (viewer.vrEffect.isPresenting) {
-      if (!feature.isIOVive) {
-        viewer.vrEffect.exitPresent();
-      }
+      viewer.vrEffect.exitPresent();
       viewer.switchCamera('orthographic');
     } else {
       viewer.vrEffect.requestPresent();
-      // #googleIO2017: in daydream, we don't show the vr overlay:
-      if (feature.isIODaydream) {
-        await audio.fadeOut();
-        viewer.switchCamera('default');
-      } else {
-        const removeMessage = hud.enterVR();
-        await audio.fadeOut();
-        viewer.switchCamera('default');
-        await sleep(1000);
-        audio.pause();
-        audio.rewind();
-        await sleep(4000);
-        removeMessage();
-      }
+      const removeMessage = hud.enterVR();
+      await audio.fadeOut();
+      viewer.switchCamera('default');
+      await sleep(1000);
+      audio.pause();
+      audio.rewind();
+      await sleep(4000);
+      removeMessage();
       audio.play();
     }
   };
 
   const hudSettings = {
-    // #googleIO2017: hide add button
-    menuAdd: !feature.isIO,
-    // #googleIO2017: hide 'enter vr' button for vive stations:
-    menuEnter: !feature.isIOVive && toggleVR,
-    // #googleIO2017: hide about button
-    aboutButton: !feature.isIO && about.toggle,
-    // #googleIO2017: hide colophon element
-    colophon: !feature.isIO,
-    chromeExperiment: true,
+    menuAdd: true,
+    menuEnter: toggleVR,
+    colophon: true,
   };
 
   let orb;
+  let megaOrb;
   let playlist;
   let tick;
-  let progressBar;
   const loopIndex = parseInt(req.params.loopIndex, 10);
-
-  const restartPlayback = () => {
-    audio.rewind();
-    audio.play();
-  };
 
   const component = {
     hud: hudSettings,
     mount: async () => {
+      progressBar.create();
       Room.reset();
-
-      progressBar = hud.create('div.audio-progress-bar');
-
       if (!viewer.vrEffect.isPresenting) {
         viewer.switchCamera('orthographic');
       }
 
       orb = new Orb();
+      megaOrb = new MegaOrb();
       titles = createTitles(orb);
       titles.mount();
 
       const moveCamera = (progress) => {
-        const emptySpace = 2.5;
-        const z = ((progress - emptySpace) * roomDepth) + roomOffset;
-        viewer.camera.position.set(0, holeHeight, -z);
-        orb.move(-z);
+        const position = layout.getPosition(progress + 0.5);
+        position.y += holeHeight;
+        position.z *= -1;
+        viewer.camera.position.copy(position);
+        orb.position.copy(position);
+        megaOrb.setProgress( audio.time / audio.duration );
       };
 
       moveCamera(0);
@@ -102,35 +86,28 @@ export default (req) => {
         audio.tick();
         Room.clear();
         playlist.tick();
-        // #googleIO2017: Hide titles for IO Vive:
-        if (!feature.isIOVive) {
-          titles.tick();
+        titles.tick();
+        if (!feature.isMobile || !viewer.vrEffect.isPresenting) {
+          progressBar.tick();
         }
-        progressBar.style.transform = `scaleX(${audio.progress / settings.totalLoopCount})`;
         moveCamera(audio.progress);
       };
       viewer.events.on('tick', tick);
 
-      // #googleIO2017: Hide loading message:
-      if (!feature.isIOVive) {
-        hud.showLoader('Loading sound');
-      }
+      hud.showLoader('Loading sound');
 
       await audio.load({
         src: audioSrc,
         loops: settings.totalLoopCount,
-        // #googleIO2017: Don't loop on daydream and vive stations:
-        loop: !(feature.isIODaydream || feature.isIOVive),
+        loop: true,
         progressive: true,
       });
 
       if (component.destroyed) return;
 
-      // #googleIO2017: Hide loading message:
-      if (!feature.isIOVive) {
-        hud.showLoader('Gathering user performances');
-      }
-      await playlist.load({
+      hud.showLoader('Gathering user performances');
+
+      playlist.load({
         url: 'curated.json',
         pathRecording: req.params.id,
         loopIndex,
@@ -141,7 +118,8 @@ export default (req) => {
       if (transition.isInside()) {
         transition.exit();
       }
-      if (feature.isIOVive && loopIndex) {
+
+      if (loopIndex) {
         // Start at 3 rooms before the recording, or 60 seconds before
         // the end of the track – whichever comes first.
         const watchTime = 30;
@@ -154,66 +132,39 @@ export default (req) => {
           if (component.destroyed) return;
           audio.fadeOut();
           transition.enter({
-            text: 'Thanks for your performance! Please take off your headset.',
+            text: 'Please take off your headset',
           });
+          // TODO add share screen
         }, watchTime * 1000);
       }
-      audio.fadeIn();
-      audio.play();
 
-      // #googleIO2017: On Daydream, have the controller's button:
-      // - restart playback if not presenting
-      // - if presenting, enter transition space that tells user to put hand up
-      // - if in transition space, fades out again and starts playback
-      if (feature.isIODaydream) {
-        let daydreamState;
-        const enterDaydreamTransition = (immediate) => {
-          daydreamState = 'when-ready';
-          titles.hide();
-          return transition.enter({
-            text: 'Put your hand up when you are ready',
-            immediate,
-          });
-        };
-        enterDaydreamTransition(true);
-        viewer.daydreamController.on(
-          'touchpaddown',
-          async () => {
-            if (!viewer.vrEffect.isPresenting) {
-              restartPlayback();
-              return;
-            }
-            audio.pause();
-            if (daydreamState === 'when-ready') {
-              daydreamState = 'playback';
-              await transition.fadeOut();
-              restartPlayback();
-              transition.exit();
-            } else if (/thank-you|playback/.test(daydreamState)) {
-              enterDaydreamTransition();
-            }
-          }
-        );
-        audio.on('ended', () => {
-          daydreamState = 'thank-you';
-          audio.fadeOut();
-          transition.enter({
-            text: 'Please take off your headset.',
-          });
-        });
-      }
+      // Safari won't play unless we wait until next tick
+      setTimeout(() => {
+        audio.play();
+        audio.fadeIn();
+      });
+
     },
 
     unmount: () => {
       component.destroyed = true;
-      if (viewer.vrEffect.isPresenting && !feature.isIOVive) {
+      if (viewer.vrEffect.isPresenting) {
         viewer.vrEffect.exitPresent();
       }
       viewer.events.off('tick', tick);
       orb.destroy();
       titles.destroy();
       playlist.destroy();
+      progressBar.destroy();
     },
   };
   return component;
+};
+
+//  duration / loopDuration causes the mega orb to be too far off-screen
+//  move it back a ways so we can see it more immediately
+const endPosMoveAhead = 0.86;
+
+const positionMegaOrb = (orb) => {
+  orb.position.z = -(audio.duration * endPosMoveAhead / audio.loopDuration * roomDepth);
 };

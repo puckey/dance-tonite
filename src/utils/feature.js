@@ -1,4 +1,3 @@
-const location = window.location;
 const userAgent = navigator.userAgent;
 
 const checkHasExternalDisplay = () => (
@@ -37,14 +36,11 @@ const checkHasVR = () => (
   })
 );
 
-const version = window.localStorage.getItem('version');
-
 const feature = {
   isMobile: /android|ipad|iphone|iemobile/i.test(userAgent),
   isAndroid: /android/i.test(userAgent),
   isChrome: /chrome/i.test(userAgent),
-  isIODaydream: version === 'io-daydream',
-  isIOVive: version === 'io-vive',
+  stats: /fps/.test(window.location.hash),
   prepare: () => (
     Promise.all([
       checkHasExternalDisplay().then((hasExternalDisplay) => {
@@ -56,7 +52,5 @@ const feature = {
     ])
   ),
 };
-
-feature.isIO = !!feature.isIODaydream || !!feature.isIOVive;
 
 export default feature;
