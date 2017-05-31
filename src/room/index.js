@@ -28,9 +28,13 @@ let roomIndex = 0;
 let wallMesh;
 let wallMeshes;
 let roomMesh;
+let roomVerticalMesh;
 let roomMeshes;
+let roomVerticalMeshes;
 let headMesh;
 let handMesh;
+
+let meshesByType;
 
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
 const roomsGroup = new THREE.Group();
@@ -46,7 +50,7 @@ debugMesh.frustumCulled = false;
 
 export default class Room {
   constructor({ url, recording, index }) {
-    this.placementIndex = index === undefined
+    const placementIndex = this.placementIndex = index === undefined
       ? roomIndex
       : index;
     this.index = roomIndex;
@@ -60,12 +64,14 @@ export default class Room {
       this.changeColor(recordRoomColor);
     }
 
+    console.log(layout.getModel(placementIndex));
+
     this.costumeColor = this.isRecording
       ? recordCostumeColor
       : getCostumeColor(this.index);
 
     this.position = layout.getPosition(
-      this.placementIndex,
+      placementIndex,
       new THREE.Vector3(),
       !!recording
     );
@@ -99,14 +105,19 @@ export default class Room {
   }
 
   updatePosition() {
-    const position = tempVector().add(this.position).add(roomOffset);
-    for (const i in roomMeshes) {
-      roomMeshes[i].setPositionAt(this.index, position);
-      roomMeshes[i].needsUpdate('position');
+    const position = tempVector()
+      .add(this.position)
+      .add(roomOffset);
+    const type = layout.getModel(this.placementIndex);
+    const meshes = meshesByType[type] || meshesByType.HORIZONTAL;
+    for (const i in meshes) {
+      const mesh = meshes[i];
+      mesh.setPositionAt(mesh.geometry.maxInstancedCount++, position);
+      mesh.needsUpdate('position');
 
       if (this.index < wallMeshes[i].numInstances) {
-        wallMeshes[i].setPositionAt(this.index, position);
-        wallMeshes[i].needsUpdate('position');
+        meshes[i].setPositionAt(this.index, position);
+        meshes[i].needsUpdate('position');
       }
     }
   }
@@ -201,10 +212,13 @@ Room.clear = () => {
 Room.switchModel = (model) => {
   roomsGroup.remove(wallMesh);
   roomsGroup.remove(roomMesh);
+  roomsGroup.remove(roomVerticalMesh);
   wallMesh = wallMeshes[model];
   roomMesh = roomMeshes[model];
+  roomVerticalMesh = roomVerticalMeshes[model];
   roomsGroup.add(wallMesh);
   roomsGroup.add(roomMesh);
+  roomsGroup.add(roomVerticalMesh);
 };
 
 Room.reset = ({ showAllWalls } = {}) => {
@@ -243,11 +257,31 @@ Room.reset = ({ showAllWalls } = {}) => {
       material: props.orthographicRoom.material,
     }),
   };
+  roomVerticalMeshes = {
+    default: createInstancedMesh({
+      count: layout.roomCount,
+      geometry: props.orthographicVerticalRoom.geometry,
+      color: getRoomColor,
+      material: props.room.material,
+    }),
+    orthographic: createInstancedMesh({
+      count: layout.roomCount,
+      geometry: props.orthographicVerticalRoom.geometry,
+      color: getRoomColor,
+      material: props.orthographicRoom.material,
+    }),
+  };
   roomMeshes.default.receiveShadow = true;
   roomMeshes.orthographic.receiveShadow = true;
 
   wallMesh = wallMeshes.default;
+  wallMesh.geometry.maxInstancedCount = 0;
+
   roomMesh = roomMeshes.default;
+  roomMesh.geometry.maxInstancedCount = 0;
+
+  roomVerticalMesh = roomMeshes.default;
+  roomVerticalMesh.geometry.maxInstancedCount = 0;
 
   headMesh = createInstancedMesh({
     count: layout.roomCount * 10,
@@ -260,6 +294,11 @@ Room.reset = ({ showAllWalls } = {}) => {
     geometry: props.hand.geometry,
   });
   handMesh.geometry.maxInstancedCount = 0;
+
+  meshesByType = {
+    HORIZONTAL: roomMeshes,
+    VERTICAL: roomVerticalMeshes,
+  };
 
   roomsGroup.add(headMesh);
   roomsGroup.add(handMesh);

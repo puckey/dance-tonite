@@ -43,6 +43,7 @@ export const createInstancedMesh = ({
   instancedMesh.visible = true;
   instancedMesh.castShadow = false;
   instancedMesh.receiveShadow = false;
+  instancedMesh.geometry.maxInstancedCount = 0;
   return instancedMesh;
 };
 
