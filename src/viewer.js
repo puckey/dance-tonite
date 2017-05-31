@@ -18,7 +18,7 @@ require('./lib/VRControls')(THREE);
 require('./lib/ViveController')(THREE);
 
 const events = emitter();
-const orthographicDistance = 4;
+const orthographicDistance = 8;
 
 const cameras = (function () {
   const { aspectRatio } = windowSize;

@@ -19,8 +19,8 @@ const rooms = [
   [0, -2, 9, 'VERTICAL'],
   [0, -3, 9, 'VERTICAL'],
   [0, -4, 9, 'VERTICAL_CORNER'],
-                               [-1, -4, 10, 'PLANE', true], [0, -4, 10, 'PLANE'], [1, -4, 10, 'PLANE', true],
-  [-2, -4, 11, 'PLANE', true], [-1, -4, 11, 'PLANE', true], [0, -4, 11, 'PLANE'], [1, -4, 11, 'PLANE', true], [2, -4, 11, 'PLANE', true],
+                                                            [0, -4, 10, 'PLANE'],
+                               [-1, -4, 11, 'PLANE', true], [0, -4, 11, 'PLANE'], [1, -4, 11, 'PLANE', true],
   [-2, -4, 12, 'PLANE', true], [-1, -4, 12, 'PLANE', true], [0, -4, 12, 'PLANE'], [1, -4, 12, 'PLANE', true], [2, -4, 12, 'PLANE', true],
   [-2, -4, 13, 'PLANE', true], [-1, -4, 13, 'PLANE', true], [0, -4, 13, 'PLANE'], [1, -4, 13, 'PLANE', true], [2, -4, 13, 'PLANE', true],
                                [-1, -4, 14, 'PLANE', true], [0, -4, 14, 'PLANE'], [1, -4, 14, 'PLANE', true],
@@ -29,9 +29,6 @@ const rooms = [
   [0, -4, 17],
   [0, -4, 18],
   [0, -4, 19],
-  [0, -4, 20],
-  [0, -4, 21],
-  [0, -4, 22],
 ];
 
 const layout = rooms.filter(([,,, type]) => type !== 'EMPTY');

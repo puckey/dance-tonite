@@ -108,6 +108,7 @@ export default class Room {
     const position = tempVector()
       .add(this.position)
       .add(roomOffset);
+    position.y -= 1;
     const type = layout.getModel(this.placementIndex);
     if (type === 'PLANE') return;
     const meshes = meshesByType[type] || meshesByType.HORIZONTAL;
