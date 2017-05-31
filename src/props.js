@@ -117,13 +117,6 @@ const props = {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
   }()),
 
-  longGrid: (function createGrid() {
-    const longGrid = new GridHelper(400, 800, 0xaaaa00, 0xaaaa00);
-    longGrid.position.y = -0.01;
-    longGrid.position.z = 0.25;
-    return longGrid;
-  }()),
-
   prepare: () => Promise.all(
     Object.keys(props)
       .filter(id => Array.isArray(props[id]))
