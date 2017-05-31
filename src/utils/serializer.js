@@ -6,7 +6,8 @@ export const PERFORMANCE_ELEMENT_COUNT = 21;
 export const LIMB_ELEMENT_COUNT = 7;
 
 export const getPosition = (positions, performanceIndex, limbIndex, offset) => {
-  const arrayOffset = performanceIndex * PERFORMANCE_ELEMENT_COUNT + limbIndex * LIMB_ELEMENT_COUNT;
+  const arrayOffset = performanceIndex * PERFORMANCE_ELEMENT_COUNT
+    + limbIndex * LIMB_ELEMENT_COUNT;
   const position = tempVector(
     positions[arrayOffset] * 0.0001,
     positions[arrayOffset + 1] * 0.0001,
@@ -17,7 +18,8 @@ export const getPosition = (positions, performanceIndex, limbIndex, offset) => {
 };
 
 export const getQuaternion = (positions, performanceIndex, limbIndex) => {
-  const arrayOffset = performanceIndex * PERFORMANCE_ELEMENT_COUNT + limbIndex * LIMB_ELEMENT_COUNT;
+  const arrayOffset = performanceIndex * PERFORMANCE_ELEMENT_COUNT
+    + limbIndex * LIMB_ELEMENT_COUNT;
   return tempQuaternion(
     positions[arrayOffset + 3] * 0.0001,
     positions[arrayOffset + 4] * 0.0001,
@@ -26,7 +28,9 @@ export const getQuaternion = (positions, performanceIndex, limbIndex) => {
   );
 };
 
-export const count = (serializedPositions) => serializedPositions.length / PERFORMANCE_ELEMENT_COUNT;
+export const count = (serializedPositions) => {
+  return serializedPositions.length / PERFORMANCE_ELEMENT_COUNT;
+};
 
 // TODO: figure the optimal rounding of these values:
 const compressNumber = number => Math.round(number * 10000);
