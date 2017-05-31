@@ -1,7 +1,7 @@
 import router from '../router';
 import playback from './playback';
 import record from './record';
-import gif from './gif';
+//import gif from './gif';
 import notFound from './not-found';
 import transition from '../transition';
 import hud from '../hud';
@@ -9,11 +9,12 @@ import audio from '../audio';
 
 let current;
 
-const components = { record, playback, gif };
+// const components = { record, playback, gif };
+const components = { record, playback };
 const routes = {
   '/record/:loopIndex?/:hideHead?': record,
   '/:loopIndex?/:id?': playback,
-  '/gif/:loopIndex?/:id?': gif,
+  //'/gif/:loopIndex?/:id?': gif,
   '/*': notFound,
 };
 

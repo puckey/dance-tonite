@@ -15,6 +15,8 @@ import { sleep } from '../utils/async';
 import Room from '../room';
 import progressBar from '../progress-bar';
 
+import capture from '../lib/ccaptureWrapper';
+
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
@@ -89,6 +91,7 @@ export default (req) => {
         titles.tick();
         progressBar.tick();
         moveCamera(audio.progress);
+        capture(viewer.scene, viewer.camera); // ***************************
       };
       viewer.events.on('tick', tick);
 
