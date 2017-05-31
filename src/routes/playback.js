@@ -74,6 +74,7 @@ export default (req) => {
         position.z *= -1;
         viewer.camera.position.copy(position);
         orb.position.copy(position);
+        megaOrb.setProgress( audio.time / audio.duration );
       };
 
       moveCamera(0);
@@ -143,7 +144,6 @@ export default (req) => {
         audio.fadeIn();
       });
 
-      positionMegaOrb(megaOrb);
     },
 
     unmount: () => {
