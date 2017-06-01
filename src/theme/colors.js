@@ -27,7 +27,7 @@ const pairCount = pairs.length;
 
 const pairByRoomIndex = (roomIndex) => {
   const [x, y, z] = layout.getRoom(roomIndex);
-  return pairs[(x * 2 - y + z) % pairCount];
+  return pairs[(x * 2 + Math.ceil(Math.abs(y)) + z) % pairCount];
 };
 
 export const getRoomColor = roomIndex => pairByRoomIndex(roomIndex)[0];

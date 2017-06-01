@@ -3,8 +3,12 @@ import { loadModel } from './utils/three';
 import settings from './settings';
 import { recordCostumeColor } from './theme/colors';
 
-import wallUrl from './public/models/obj/first-wall.obj';
-import roomUrl from './public/models/obj/space-bigger-holes.obj';
+import wallUrl from './public/models/obj/new-rooms/vr/first-wall.obj';
+import roomUrl from './public/models/obj/new-rooms/vr/horizontal-room.obj';
+import verticalRoomUrl from './public/models/obj/new-rooms/vr/vertical-room.obj';
+import horizontalVerticalCornerUrl from './public/models/obj/new-rooms/vr/horizontal-vertical-corner.obj';
+import verticalHorizontalCornerUrl from './public/models/obj/new-rooms/vr/vertical-horizontal-corner.obj';
+
 import isometricWallUrl from './public/models/obj/new-rooms/first-wall.obj';
 import isometricHorizontalRoomUrl from './public/models/obj/new-rooms/horizontal-room.obj';
 import isometricVerticalRoomUrl from './public/models/obj/new-rooms/vertical-room.obj';
@@ -28,6 +32,9 @@ const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor }
 
 const props = {
   room: [roomUrl, roomTextureUrl],
+  verticalRoom: [verticalRoomUrl],
+  horizontalVerticalCorner: [horizontalVerticalCornerUrl],
+  verticalHorizontalCorner: [verticalHorizontalCornerUrl],
   wall: [wallUrl],
   orthographicWall: [isometricWallUrl],
   orthographicRoom: [
