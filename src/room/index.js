@@ -331,22 +331,25 @@ Room.reset = ({ showAllWalls } = {}) => {
       material: props.orthographicVerticalHorizontalCorner.material,
     }),
   };
-
+  [
+    horizontalVerticalCornerMeshes,
+    verticalHorizontalCornerMeshes,
+    roomVerticalMeshes,
+    floorMeshes,
+    roomMeshes,
+    wallMeshes,
+  ].forEach(meshes => {
+    meshes.default.geometry.maxInstancedCount = 0;
+    meshes.orthographic.geometry.maxInstancedCount = 0;
+  });
 
   roomMeshes.default.receiveShadow = true;
   roomMeshes.orthographic.receiveShadow = true;
 
   wallMesh = wallMeshes.default;
-  wallMesh.geometry.maxInstancedCount = 0;
-
   roomMesh = roomMeshes.default;
-  roomMesh.geometry.maxInstancedCount = 0;
-
   floorMesh = floorMeshes.default;
-  floorMesh.geometry.maxInstancedCount = 0;
-
   roomVerticalMesh = roomMeshes.default;
-  roomVerticalMesh.geometry.maxInstancedCount = 0;
 
   headMesh = createInstancedMesh({
     count: layout.roomCount * 10,
