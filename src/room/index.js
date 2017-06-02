@@ -272,23 +272,23 @@ Room.reset = ({ showAllWalls } = {}) => {
   roomVerticalMeshes = {
     default: createInstancedMesh({
       count: layout.roomCount,
-      geometry: props.orthographicVerticalRoom.geometry,
+      geometry: props.verticalRoom.geometry,
       color: getRoomColor,
-      material: props.room.material,
+      material: props.verticalRoom.material,
     }),
     orthographic: createInstancedMesh({
       count: layout.roomCount,
       geometry: props.orthographicVerticalRoom.geometry,
       color: getRoomColor,
-      material: props.orthographicRoom.material,
+      material: props.orthographicVerticalRoom.material,
     }),
   };
   horizontalVerticalCornerMeshes = {
     default: createInstancedMesh({
       count: 1,
-      geometry: props.orthographicHorizontalVerticalCorner.geometry,
+      geometry: props.horizontalVerticalCorner.geometry,
       color: getRoomColor,
-      material: props.orthographicHorizontalVerticalCorner.material,
+      material: props.horizontalVerticalCorner.material,
     }),
     orthographic: createInstancedMesh({
       count: 1,
@@ -300,9 +300,9 @@ Room.reset = ({ showAllWalls } = {}) => {
   verticalHorizontalCornerMeshes = {
     default: createInstancedMesh({
       count: 1,
-      geometry: props.orthographicVerticalHorizontalCorner.geometry,
+      geometry: props.verticalHorizontalCorner.geometry,
       color: getRoomColor,
-      material: props.orthographicVerticalHorizontalCorner.material,
+      material: props.verticalHorizontalCorner.material,
     }),
     orthographic: createInstancedMesh({
       count: 1,
@@ -359,5 +359,3 @@ Room.reset = ({ showAllWalls } = {}) => {
 Room.rotate180 = () => {
   set180RotationMatrix(roomsGroup);
 };
-
-Room.roomsGroup = roomsGroup;
