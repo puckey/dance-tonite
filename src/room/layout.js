@@ -75,6 +75,11 @@ export default {
     return !!layout[index][3].wall;
   },
 
+  isOdd(index) {
+    const [, y, z] = layout[index];
+    return (z + Math.abs(Math.round(y))) % 2 === 0;
+  },
+
   getType(index) {
     return layout[index][3].type;
   },
