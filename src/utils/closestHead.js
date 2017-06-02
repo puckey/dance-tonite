@@ -33,6 +33,7 @@ export default (screenX, screenY, rooms) => {
       const head = serializer.getPosition(frame, j, 0, position);
       head.z += settings.roomOffset;
       head.z *= -1;
+      head.x *= -1;
       const distance = ray.distanceSqToPoint(head);
       if (distance < closestDistance && distance) {
         roomIndex = i;
