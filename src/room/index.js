@@ -359,3 +359,5 @@ Room.reset = ({ showAllWalls } = {}) => {
 Room.rotate180 = () => {
   set180RotationMatrix(roomsGroup);
 };
+
+Room.roomsGroup = roomsGroup;
