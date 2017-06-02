@@ -72,6 +72,7 @@ export default class Room {
     this.costumeColor = this.isRecording
       ? recordCostumeColor
       : getCostumeColor(this.index);
+    this.currentTime = 0;
   }
 
   load(callback) {
@@ -131,6 +132,14 @@ export default class Room {
     ).applyMatrix4(roomsGroup.matrix);
   }
 
+  getHeadOrientation(index, seconds) {
+    return serializer.getQuaternion(
+      this.frames[roomUtils.secondsToFrames(seconds)],
+      index,
+      0
+    );
+  }
+
   get frame() {
     return this.frameNumber === undefined
       ? null
@@ -140,6 +149,8 @@ export default class Room {
   gotoTime(seconds, maxLayers) {
     const { frames } = this;
     if (!frames) return;
+
+    this.currentTime = seconds;
 
     const frameNumber = this.frameNumber = roomUtils.secondsToFrames(seconds);
     if (frames.length <= frameNumber) return;

@@ -15,6 +15,7 @@ import Room from '../room';
 import progressBar from '../progress-bar';
 import layout from '../room/layout';
 import closestHead from '../utils/closestHead';
+import outline from '../outline';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
@@ -70,6 +71,7 @@ export default (req) => {
       megaOrb = new MegaOrb();
       titles = createTitles(orb);
       titles.mount();
+      outline.mount();
 
       const moveCamera = (progress) => {
         const position = layout.getPosition(progress + 0.5);
@@ -93,6 +95,7 @@ export default (req) => {
           progressBar.tick();
         }
         moveCamera(audio.progress || 0);
+        outline.update( playlist, audio );
       };
       viewer.events.on('tick', tick);
 
@@ -122,7 +125,7 @@ export default (req) => {
             playlist.rooms
           );
           if (roomIndex !== undefined) {
-            console.log({ roomIndex, performanceIndex });
+            outline.set( roomIndex, performanceIndex );
           }
         };
         window.addEventListener('mousemove', onMouseMove);
@@ -182,3 +185,6 @@ const endPosMoveAhead = 0.86;
 const positionMegaOrb = (orb) => {
   orb.position.z = -(audio.duration * endPosMoveAhead / audio.loopDuration * roomDepth);
 };
+
+
+window.audio = audio;
