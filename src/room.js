@@ -7,7 +7,7 @@ import settings from './settings';
 import audio from './audio';
 import { getCostumeColor, getRoomColor, recordCostumeColor, recordRoomColor } from './theme/colors';
 import streamJSON from './lib/stream-json';
-
+import { queryData } from './utils/url';
 import dummyTextureUrl from './public/dummy.png';
 
 const PROTOCOL = location.protocol;
@@ -165,7 +165,7 @@ export default class Room {
   load(callback) {
     const frames = [];
     this.streamer = streamJSON(
-      `${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.pathRecording ? '' : '30FPS/'}${this.url}`,
+      `${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.pathRecording ? '' : `${queryData.fps || 10}FPS/`}${this.url}`,
       (error, json) => {
         if (error || !json) {
           if (callback) {
