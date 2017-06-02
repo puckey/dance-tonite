@@ -4,6 +4,7 @@ import settings from '../settings';
 import windowSize from '../utils/windowSize';
 import * as serializer from '../utils/serializer';
 import { tempVector } from '../utils/three';
+import Room from '../room';
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -20,20 +21,19 @@ export default (screenX, screenY, rooms) => {
   let closestDistance = Number.MAX_VALUE;
 
   for (let i = 0; i < rooms.length; i++) {
-    const { frame, position } = rooms[i];
+    const { frame, position, index } = rooms[i];
     if (!frame) continue;
     const roomPos = tempVector(
-      position.x,
+      -position.x,
       position.y,
       -position.z
     );
     // Skip rooms that are too far away:
     if (ray.distanceSqToPoint(roomPos) > MIN_ROOM_DISTANCE) continue;
     for (let j = 0, l = serializer.count(frame); j < l; j++) {
-      const head = serializer.getPosition(frame, j, 0, position);
-      head.z += settings.roomOffset;
-      head.z *= -1;
-      head.x *= -1;
+      const head = serializer
+        .getPosition(frame, j, 0, position)
+        .applyMatrix4(Room.group.matrix);
       const distance = ray.distanceSqToPoint(head);
       if (distance < closestDistance && distance) {
         roomIndex = i;
