@@ -72,17 +72,13 @@ export default class Room {
 
     this.costumeColor = this.isRecording
       ? recordCostumeColor
-      : getCostumeColor(this.index);
-
+      : getCostumeColor(this.placementIndex);
     this.position = layout.getPosition(
       placementIndex,
       new THREE.Vector3(),
       !!recording
     );
     this.updatePosition();
-    this.costumeColor = this.isRecording
-      ? recordCostumeColor
-      : getCostumeColor(this.index);
   }
 
   load(callback) {
@@ -115,15 +111,20 @@ export default class Room {
     position.y -= 1;
     const type = layout.getType(this.placementIndex);
     const meshes = meshesByType[type] || meshesByType.HORIZONTAL;
+    const color = getRoomColor(this.placementIndex);
     for (const i in meshes) {
       let mesh = meshes[i];
-      mesh.setPositionAt(mesh.geometry.maxInstancedCount++, position);
-      mesh.needsUpdate('position');
+      let index = mesh.geometry.maxInstancedCount++;
+      mesh.setPositionAt(index, position);
+      mesh.setColorAt(index, color);
+      mesh.needsUpdate();
 
       mesh = wallMeshes[i];
       if (layout.hasWall(this.placementIndex)) {
-        mesh.setPositionAt(mesh.geometry.maxInstancedCount++, position);
-        mesh.needsUpdate('position');
+        index = mesh.geometry.maxInstancedCount++;
+        mesh.setPositionAt(index, position);
+        mesh.setColorAt(index, color);
+        mesh.needsUpdate();
       }
     }
   }
