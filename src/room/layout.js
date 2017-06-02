@@ -47,7 +47,7 @@ const rooms = [
 const layout = rooms.filter(([,,, { type }]) => type !== 'EMPTY');
 
 const timelineLayout = rooms.filter(([,,, { timeline }]) => timeline !== false);
-console.log(layout.length, timelineLayout.length);
+
 export default {
   getPosition(position, roomPosition, reviewMode) {
     let x = 0;
