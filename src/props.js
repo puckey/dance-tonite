@@ -8,6 +8,7 @@ import roomUrl from './public/models/obj/new-rooms/vr/horizontal-room.obj';
 import verticalRoomUrl from './public/models/obj/new-rooms/vr/vertical-room.obj';
 import horizontalVerticalCornerUrl from './public/models/obj/new-rooms/vr/horizontal-vertical-corner.obj';
 import verticalHorizontalCornerUrl from './public/models/obj/new-rooms/vr/vertical-horizontal-corner.obj';
+import floorUrl from './public/models/obj/new-rooms/floor.obj';
 
 import isometricWallUrl from './public/models/obj/new-rooms/first-wall.obj';
 import isometricHorizontalRoomUrl from './public/models/obj/new-rooms/horizontal-room.obj';
@@ -33,6 +34,7 @@ const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor }
 const props = {
   room: [roomUrl, roomTextureUrl],
   verticalRoom: [verticalRoomUrl],
+  floor: [floorUrl],
   horizontalVerticalCorner: [horizontalVerticalCornerUrl],
   verticalHorizontalCorner: [verticalHorizontalCornerUrl],
   wall: [wallUrl],

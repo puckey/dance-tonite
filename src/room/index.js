@@ -28,10 +28,12 @@ let roomIndex = 0;
 let wallMesh;
 let wallMeshes;
 let roomMesh;
+let floorMesh;
 let roomVerticalMesh;
 let horizontalVerticalCornerMesh;
 let verticalHorizontalCornerMesh;
 let roomMeshes;
+let floorMeshes;
 let roomVerticalMeshes;
 let horizontalVerticalCornerMeshes;
 let verticalHorizontalCornerMeshes;
@@ -112,7 +114,6 @@ export default class Room {
       .add(roomOffset);
     position.y -= 1;
     const type = layout.getType(this.placementIndex);
-    if (type === 'PLANE') return;
     const meshes = meshesByType[type] || meshesByType.HORIZONTAL;
     for (const i in meshes) {
       let mesh = meshes[i];
@@ -220,8 +221,11 @@ Room.switchModel = (model) => {
   roomsGroup.remove(roomVerticalMesh);
   roomsGroup.remove(horizontalVerticalCornerMesh);
   roomsGroup.remove(verticalHorizontalCornerMesh);
+  roomsGroup.remove(floorMesh);
+
   wallMesh = wallMeshes[model];
   roomMesh = roomMeshes[model];
+  floorMesh = floorMeshes[model];
   roomVerticalMesh = roomVerticalMeshes[model];
   horizontalVerticalCornerMesh = horizontalVerticalCornerMeshes[model];
   verticalHorizontalCornerMesh = verticalHorizontalCornerMeshes[model];
@@ -231,6 +235,7 @@ Room.switchModel = (model) => {
   roomsGroup.add(roomVerticalMesh);
   roomsGroup.add(horizontalVerticalCornerMesh);
   roomsGroup.add(verticalHorizontalCornerMesh);
+  roomsGroup.add(floorMesh);
 };
 
 Room.reset = ({ showAllWalls } = {}) => {
@@ -267,6 +272,20 @@ Room.reset = ({ showAllWalls } = {}) => {
       geometry: props.orthographicRoom.geometry,
       color: getRoomColor,
       material: props.orthographicRoom.material,
+    }),
+  };
+  floorMeshes = {
+    default: createInstancedMesh({
+      count: layout.roomCount,
+      geometry: props.floor.geometry,
+      color: getRoomColor,
+      material: props.floor.material,
+    }),
+    orthographic: createInstancedMesh({
+      count: layout.roomCount,
+      geometry: props.floor.geometry,
+      color: getRoomColor,
+      material: props.floor.material,
     }),
   };
   roomVerticalMeshes = {
@@ -322,6 +341,9 @@ Room.reset = ({ showAllWalls } = {}) => {
   roomMesh = roomMeshes.default;
   roomMesh.geometry.maxInstancedCount = 0;
 
+  floorMesh = floorMeshes.default;
+  floorMesh.geometry.maxInstancedCount = 0;
+
   roomVerticalMesh = roomMeshes.default;
   roomVerticalMesh.geometry.maxInstancedCount = 0;
 
@@ -342,6 +364,7 @@ Room.reset = ({ showAllWalls } = {}) => {
     VERTICAL: roomVerticalMeshes,
     HORIZONTAL_CORNER: horizontalVerticalCornerMeshes,
     VERTICAL_CORNER: verticalHorizontalCornerMeshes,
+    PLANE: floorMeshes,
   };
 
   roomsGroup.add(headMesh);
