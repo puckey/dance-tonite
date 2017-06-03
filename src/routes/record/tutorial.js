@@ -199,6 +199,7 @@ export default (goto) => {
         state.windowHeight * 0.03
       );
     }
+    capture(viewer.scene, viewer.camera); // ***************************
   };
 
   const updateWindowDimensions = ({ width, height }) => {
