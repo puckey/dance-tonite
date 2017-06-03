@@ -19,15 +19,20 @@ const checkHasExternalDisplay = () => (
 );
 
 const checkHasVR = () => (
-  new Promise((resolve, reject) => {
-    if (navigator.getVRDisplays === undefined) {
+  new Promise((resolve) => {
+    if (!navigator.getVRDisplays) {
       resolve(false);
       return;
     }
-    navigator.getVRDisplays().then(() => {
-      resolve(true);
-    })
-    .catch(reject);
+    navigator
+      .getVRDisplays()
+      .then(() => {
+        resolve(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        resolve(false);
+      });
   })
 );
 
@@ -50,14 +55,11 @@ const checkHas6DOF = () => (
   })
 );
 
-const version = window.localStorage.getItem('version');
-
 const feature = {
   isMobile: /android|ipad|iphone|iemobile/i.test(userAgent),
   isAndroid: /android/i.test(userAgent),
   isChrome: /chrome/i.test(userAgent),
-  isIODaydream: version === 'io-daydream',
-  isIOVive: version === 'io-vive',
+  stats: /fps/.test(window.location.hash),
   prepare: () => (
     Promise.all([
       checkHasExternalDisplay().then((hasExternalDisplay) => {
@@ -72,7 +74,5 @@ const feature = {
     ])
   ),
 };
-
-feature.isIO = !!feature.isIODaydream || !!feature.isIOVive;
 
 export default feature;
