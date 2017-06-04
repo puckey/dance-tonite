@@ -74,7 +74,7 @@ export default (req) => {
         position.z *= -1;
         viewer.camera.position.copy(position);
         orb.position.copy(position);
-        megaOrb.setProgress( audio.time / audio.duration );
+        megaOrb.setProgress(audio.time / audio.duration);
       };
 
       moveCamera(0);
@@ -143,7 +143,6 @@ export default (req) => {
         audio.play();
         audio.fadeIn();
       });
-
     },
 
     unmount: () => {
@@ -159,12 +158,4 @@ export default (req) => {
     },
   };
   return component;
-};
-
-//  duration / loopDuration causes the mega orb to be too far off-screen
-//  move it back a ways so we can see it more immediately
-const endPosMoveAhead = 0.86;
-
-const positionMegaOrb = (orb) => {
-  orb.position.z = -(audio.duration * endPosMoveAhead / audio.loopDuration * roomDepth);
 };
