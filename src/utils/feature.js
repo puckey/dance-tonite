@@ -1,31 +1,32 @@
 const userAgent = navigator.userAgent;
-
 /*
-const vrFeatures = {
-  hasVR: false,
-  hasExternalDisplay: false,
-  has3DOF: false,
-  has6DOF: false,
-};
-if (navigator.getVRDisplays !== undefined) {
-  navigator.getVRDisplays().then((displays) => {
-    if (!!displays && displays.length) {
-      vrFeatures.hasVR = true;
-      //  We’re going to take the FIRST display and call it a day.
-      //  I look forward to the day this becomes an issue ;)
-      const display = displays[0];
-      if (display.capabilities !== undefined) {
-        Object.assign(vrFeatures, {
-          hasExternalDisplay: !!display.capabilities.hasExternalDisplay,
-          has3DOF: !!display.capabilities.hasPosition +
-            !!display.capabilities.hasOrientation === 1,
-          has6DOF: !!display.capabilities.hasPosition && !!display.capabilities.hasOrientation,
-        });
-      }
-    }
+const checkVRFeatures = () => {
+  Object.assign(feature, {
+    hasVR: false,
+    hasExternalDisplay: false,
+    has3DOF: false,
+    has6DOF: false,
   });
-}*/
-
+  if (navigator.getVRDisplays !== undefined) {
+    navigator.getVRDisplays().then((displays) => {
+      if (!!displays && displays.length) {
+        feature.hasVR = true;
+        //  We’re going to take the FIRST display and call it a day.
+        //  I look forward to the day this becomes an issue ;)
+        const display = displays[0];
+        if (display.capabilities !== undefined) {
+          Object.assign(feature, {
+            hasExternalDisplay: !!display.capabilities.hasExternalDisplay,
+            has3DOF: !!display.capabilities.hasPosition +
+              !!display.capabilities.hasOrientation === 1,
+            has6DOF: !!display.capabilities.hasPosition && !!display.capabilities.hasOrientation,
+          });
+        }
+      }
+    });
+  }
+};
+*/
 
 const checkHasExternalDisplay = () => (
   new Promise((resolve, reject) => {
