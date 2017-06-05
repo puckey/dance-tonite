@@ -10,8 +10,18 @@ import hud from './hud';
 import viewer from './viewer';
 import audioPool from './utils/audio-pool';
 import playIconSvg from './hud/icons/play.svg';
+import firebaseUploader from './utils/firebase-uploader';
 
 window.THREE = THREE;
+
+// This is a test of the firebase uploading
+// TODO: remove this!
+const roomID = 20;
+const fakeData = "[102340,234234,34534,345345]";
+firebaseUploader.upload(fakeData, roomID, function(result) {
+  console.log("file uploaded!", result)
+});
+
 
 (async () => {
   await Promise.all([
