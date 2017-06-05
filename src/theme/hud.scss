@@ -146,6 +146,12 @@ svg * {
   z-index: $interface-layer;
   user-select: none;
   pointer-events: none;
+
+  @media (max-width: 540px) {
+    top: 1rem;
+    padding-top: 3rem;
+    font-size: 1rem;
+  }
 }
 
 .line {
