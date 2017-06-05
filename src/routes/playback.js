@@ -128,14 +128,16 @@ export default (req) => {
           audio.duration - watchTime
         );
         audio.gotoTime(startTime);
-        setTimeout(() => {
-          if (component.destroyed) return;
-          audio.fadeOut();
-          transition.enter({
-            text: 'Please take off your headset',
-          });
-          // TODO add share screen
-        }, watchTime * 1000);
+        if (viewer.vrEffect.isPresenting) {
+          setTimeout(() => {
+            if (component.destroyed) return;
+            audio.fadeOut();
+            transition.enter({
+              text: 'Please take off your headset',
+            });
+            // TODO add share screen
+          }, watchTime * 1000);
+        }
       }
 
       // Safari won't play unless we wait until next tick
