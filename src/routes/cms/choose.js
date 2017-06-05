@@ -2,12 +2,15 @@
 import { h, render } from 'preact';
 
 import hud from '../../hud';
-import Choose from './components/Choose';
 import router from '../../router';
+import Choose from './containers/Choose';
 
 export default (req) => (
   {
-    hud: { },
+    hud: {
+      muteButton: false,
+      aboutButton: false,
+    },
     mount: () => {
       render((
         <Choose

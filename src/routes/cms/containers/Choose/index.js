@@ -2,12 +2,12 @@
 import { h, Component } from 'preact';
 import './style.scss';
 
-import Room from '../Room';
-import Container from '../Container';
-import Error from '../Error';
-import Align from '../Align';
-import Close from '../Close';
-import PaginatedList from '../PaginatedList';
+import Room from '../../components/Room';
+import Container from '../../components/Container';
+import Error from '../../components/Error';
+import Align from '../../components/Align';
+import Close from '../../components/Close';
+import PaginatedList from '../../components/PaginatedList';
 
 const choices = [
   {
