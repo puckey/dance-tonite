@@ -18,7 +18,7 @@ import layout from '../room/layout';
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
-const { roomDepth, roomOffset, holeHeight } = settings;
+const { holeHeight } = settings;
 
 let titles;
 
