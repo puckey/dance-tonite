@@ -1,5 +1,7 @@
 import * as THREE from '../lib/three';
 
+require('../lib/OBJLoader')(THREE);
+
 const VECTOR = new THREE.Vector3();
 const QUATERNION = new THREE.Quaternion();
 const COLOR = new THREE.Color();
@@ -41,6 +43,7 @@ export const createInstancedMesh = ({
   instancedMesh.visible = true;
   instancedMesh.castShadow = false;
   instancedMesh.receiveShadow = false;
+  instancedMesh.geometry.maxInstancedCount = 0;
   return instancedMesh;
 };
 
@@ -77,3 +80,36 @@ export const set180RotationMatrix = (object) => {
 export const setIdentityMatrix = (object) => {
   object.matrix.copy(IDENTITY_MATRIX);
 };
+
+export const loadModel = async ([objUrl, textureUrl]) => {
+  const [object, texture] = await Promise.all([
+    loadObject(objUrl),
+    textureUrl ? loadTexture(textureUrl) : null,
+  ]);
+  object.material = new THREE.MeshLambertMaterial();
+  if (texture) {
+    object.material.map = texture;
+  }
+  return object;
+};
+
+const loadObject = (url) => new Promise(
+  (resolve, reject) => {
+    new THREE.OBJLoader().load(url,
+      object => resolve(object.children[0]),
+      () => {},
+      reject,
+    );
+  }
+);
+
+const loadTexture = (url) => new Promise(
+  (resolve, reject) => {
+    new THREE.TextureLoader().load(
+      url,
+      resolve,
+      () => {},
+      reject
+    );
+  }
+);
