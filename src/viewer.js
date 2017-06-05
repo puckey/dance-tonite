@@ -18,7 +18,7 @@ require('./lib/VRControls')(THREE);
 require('./lib/ViveController')(THREE);
 
 const events = emitter();
-const orthographicDistance = 4;
+const orthographicDistance = 8;
 
 const cameras = (function () {
   const { aspectRatio } = windowSize;
@@ -71,7 +71,7 @@ const createScene = () => {
 
   scene.add(hemisphereLight);
   scene.add(light, ambientLight);
-  scene.fog = new THREE.Fog(0x000000, 0, 75);
+  scene.fog = new THREE.Fog(0x000000, 0, 120);
   return scene;
 };
 

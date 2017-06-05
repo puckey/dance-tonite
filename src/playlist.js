@@ -4,6 +4,7 @@ import storage from './storage';
 import Room from './room';
 import audio from './audio';
 import { recordRoomColor } from './theme/colors';
+import layout from './room/layout';
 
 export default class Playlist {
   constructor({ recording } = {}) {
@@ -61,8 +62,7 @@ export default class Playlist {
     for (let i = 0; i < this.rooms.length; i++) {
       const room = this.rooms[i];
       let time = audio.time;
-      const oddRoom = room.placementIndex % 2 === 0;
-      if (oddRoom) {
+      if (layout.isOdd(room.placementIndex)) {
         time += audio.loopDuration;
       }
       room.gotoTime(time % (audio.loopDuration * 2));

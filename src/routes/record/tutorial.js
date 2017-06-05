@@ -12,6 +12,10 @@ import { Vector3 } from '../../lib/three';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
 import windowSize from '../../utils/windowSize';
+import audioSrcOgg from '../../public/sound/room-1.ogg';
+import audioSrcMp3 from '../../public/sound/room-1.mp3';
+
+const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 
 // TODO: replace with better recording:
 const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
@@ -105,7 +109,7 @@ export default (goto) => {
       layers: 1,
     },
     {
-      time: 3,
+      time: 5,
       text: 'This is the camera.',
       getPosition: () => objects.orb.mesh.position,
     },
@@ -183,9 +187,9 @@ export default (goto) => {
     textTimeline.tick(audio.currentTime % 48);
 
     const z = (progress - 0.5) * -roomDepth - roomOffset;
-    objects.orb.move(z);
+    objects.orb.position.z = z;
     if (audio.totalProgress > 1) {
-      objects.orb2.move(z - roomDepth * 2);
+      objects.orb2.position.z = z - roomDepth * 2;
     }
 
     if (getLineTarget) {
@@ -195,12 +199,12 @@ export default (goto) => {
         state.lineOriginY,
         x,
         y,
-        state.windowHeight * 0.03
+        windowSize.height * 0.04
       );
     }
   };
 
-  const updateWindowDimensions = ({ width, height }) => {
+  const updateWindowDimensions = ({ width }) => {
     state.lineOriginX = width / 2;
     state.lineOriginY = elements.tutorialText.offsetHeight * 1.2;
   };
@@ -249,14 +253,13 @@ export default (goto) => {
       state.originalZoom = viewer.camera.zoom;
       viewer.camera.position.y = 2;
       viewer.camera.position.z = 1.3;
-      viewer.camera.zoom = 0.7;
       viewer.camera.updateProjectionMatrix();
 
       Room.rotate180();
 
       await Promise.all([
         audio.load({
-          src: '/public/sound/room-1.ogg',
+          src: audioSrc,
           loops: 2,
           loopOffset: 0.5,
         }),
@@ -301,7 +304,6 @@ export default (goto) => {
         room.destroy();
       }
       viewer.camera.position.y = 0;
-      viewer.camera.zoom = 1;
       viewer.camera.updateProjectionMatrix();
       viewer.events.off('tick', tick);
       textTimeline.off('keyframe', handleKeyframe);

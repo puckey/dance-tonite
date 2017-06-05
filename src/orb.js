@@ -11,7 +11,7 @@ export default class Orb {
   constructor(scene) {
     this.mesh = props.sphere.clone();
     this.mesh.material = this.mesh.material.clone();
-    const position = this.mesh.position;
+    const position = this.position = this.mesh.position;
     position.y = settings.holeHeight;
     position.z = 1000;
     (scene || viewer.scene).add(this.mesh);
@@ -41,10 +41,6 @@ export default class Orb {
 
   fadeIn() {
     this._fade(BLACK, settings.sphereColor);
-  }
-
-  move(z) {
-    this.mesh.position.z = z;
   }
 
   destroy() {

@@ -1,14 +1,26 @@
-import * as THREE from './lib/three';
+import * as THREE from '../lib/three';
 
-import props from './props';
-import { tempQuaternion, tempQuaternion2, tempVector, createInstancedMesh } from './utils/three';
-import viewer from './viewer';
-import settings from './settings';
-import audio from './audio';
-import { getCostumeColor, getRoomColor, recordCostumeColor, recordRoomColor } from './theme/colors';
-import streamJSON from './lib/stream-json';
-import { queryData } from './utils/url';
-import dummyTextureUrl from './public/dummy.png';
+import { queryData } from '../utils/url';
+import props from '../props';
+import {
+  tempVector,
+  createInstancedMesh,
+  setIdentityMatrix,
+  set180RotationMatrix,
+} from '../utils/three';
+import viewer from '../viewer';
+import settings from '../settings';
+import {
+  getCostumeColor,
+  getRoomColor,
+  recordCostumeColor,
+  recordRoomColor,
+} from '../theme/colors';
+import streamJSON from '../lib/stream-json';
+import * as roomUtils from './utils';
+import layout from './layout';
+import dummyTextureUrl from '../public/dummy.png';
+import audio from '../audio';
 
 const PROTOCOL = location.protocol;
 const PERFORMANCE_ELEMENT_COUNT = 21;
@@ -18,9 +30,19 @@ let roomIndex = 0;
 let wallMesh;
 let wallMeshes;
 let roomMesh;
+let floorMesh;
+let roomVerticalMesh;
+let horizontalVerticalCornerMesh;
+let verticalHorizontalCornerMesh;
 let roomMeshes;
+let floorMeshes;
+let roomVerticalMeshes;
+let horizontalVerticalCornerMeshes;
+let verticalHorizontalCornerMeshes;
 let headMesh;
 let handMesh;
+
+let meshesByType;
 
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
 const roomsGroup = new THREE.Group();
@@ -34,26 +56,6 @@ const debugMesh = new THREE.Mesh(
 );
 debugMesh.frustumCulled = false;
 
-const ROTATION_MATRIX = new THREE.Matrix4().makeRotationAxis(
-  new THREE.Vector3(0, 1, 0).normalize(),
-  Math.PI
-);
-const IDENTITY_MATRIX = new THREE.Matrix4();
-
-const getPosition = (positions, arrayOffset, offset) => tempVector(
-  positions[arrayOffset] * 0.0001,
-  positions[arrayOffset + 1] * 0.0001,
-  positions[arrayOffset + 2] * 0.0001 - settings.roomOffset
-).add(offset);
-
-const getQuaternion = (
-  positions, arrayOffset, _tempQuaternion = tempQuaternion) => _tempQuaternion(
-  positions[arrayOffset + 3] * 0.0001,
-  positions[arrayOffset + 4] * 0.0001,
-  positions[arrayOffset + 5] * 0.0001,
-  positions[arrayOffset + 6] * 0.0001
-);
-
 const getFrame = (frames, number) => {
   let frame = frames[number];
   if (!frame) frame--;
@@ -64,75 +66,9 @@ const getFrame = (frames, number) => {
   return frame;
 };
 
-const avgPosition = (lower, higher, ratio, offset, position) => {
-  const x1 = lower[offset] * 0.0001;
-  const y1 = lower[offset + 1] * 0.0001;
-  const z1 = lower[offset + 2] * 0.0001;
-  if (!higher) {
-    return tempVector(x1, y1, z1 - settings.roomOffset).add(position);
-  }
-  const x2 = higher[offset] * 0.0001;
-  const y2 = higher[offset + 1] * 0.0001;
-  const z2 = higher[offset + 2] * 0.0001;
-  return tempVector(
-    x1 + (x2 - x1) * ratio,
-    y1 + (y2 - y1) * ratio,
-    z1 + (z2 - z1) * ratio - settings.roomOffset
-  ).add(position);
-};
-
-const avgQuaternion = (lower, higher, ratio, offset) => {
-  const quaternion = getQuaternion(lower, offset);
-  if (higher) {
-    quaternion.slerp(getQuaternion(higher, offset, tempQuaternion2), ratio);
-  }
-  return quaternion;
-};
-
-const transformMesh = (
-  instancedMesh,
-  lower,
-  higher,
-  ratio,
-  index,
-  arrayOffset,
-  scale,
-  color,
-  offset,
-) => {
-  instancedMesh.setPositionAt(
-    index,
-    avgPosition(
-      lower,
-      higher,
-      ratio,
-      arrayOffset,
-      offset
-    )
-  );
-  instancedMesh.setQuaternionAt(
-    index,
-    avgQuaternion(
-      lower,
-      higher,
-      ratio,
-      arrayOffset
-    )
-  );
-  instancedMesh.setScaleAt(
-    index,
-    tempVector(scale, scale, scale)
-  );
-  instancedMesh.setColorAt(
-    index,
-    color,
-  );
-  instancedMesh.needsUpdate();
-};
-
 export default class Room {
   constructor({ url, recording, index, pathRecording }) {
-    this.placementIndex = index === undefined
+    const placementIndex = this.placementIndex = index === undefined
       ? roomIndex
       : index;
     this.index = roomIndex;
@@ -149,17 +85,13 @@ export default class Room {
 
     this.costumeColor = this.isRecording
       ? recordCostumeColor
-      : getCostumeColor(this.index);
-
-    this.position = new THREE.Vector3(
-      0,
-      0,
-      settings.roomOffset + (this.placementIndex * (settings.roomDepth + 0.001)),
+      : getCostumeColor(this.placementIndex);
+    this.position = layout.getPosition(
+      placementIndex,
+      new THREE.Vector3(),
+      !!recording
     );
     this.updatePosition();
-    this.costumeColor = this.isRecording
-      ? recordCostumeColor
-      : getCostumeColor(this.index);
   }
 
   load(callback) {
@@ -187,14 +119,26 @@ export default class Room {
   }
 
   updatePosition() {
-    const position = tempVector().add(this.position).add(roomOffset);
-    for (const i in roomMeshes) {
-      roomMeshes[i].setPositionAt(this.index, position);
-      roomMeshes[i].needsUpdate('position');
+    const position = tempVector()
+      .add(this.position)
+      .add(roomOffset);
+    position.y -= 1;
+    const type = layout.getType(this.placementIndex);
+    const meshes = meshesByType[type] || meshesByType.HORIZONTAL;
+    const color = getRoomColor(this.placementIndex);
+    for (const i in meshes) {
+      let mesh = meshes[i];
+      let index = mesh.geometry.maxInstancedCount++;
+      mesh.setPositionAt(index, position);
+      mesh.setColorAt(index, color);
+      mesh.needsUpdate();
 
-      if (this.index < wallMeshes[i].numInstances) {
-        wallMeshes[i].setPositionAt(this.index, position);
-        wallMeshes[i].needsUpdate('position');
+      mesh = wallMeshes[i];
+      if (layout.hasWall(this.placementIndex)) {
+        index = mesh.geometry.maxInstancedCount++;
+        mesh.setPositionAt(index, position);
+        mesh.setColorAt(index, color);
+        mesh.needsUpdate();
       }
     }
   }
@@ -225,7 +169,7 @@ export default class Room {
     const higherFrame = (higher >= frames.length)
       ? null
       : getFrame(frames, higher);
-    const position = avgPosition(
+    const position = roomUtils.avgPosition(
       lowerFrame,
       higherFrame,
       ratio,
@@ -262,7 +206,7 @@ export default class Room {
 
     for (let i = 0; i < count; i++) {
       if (!this.hideHead) {
-        transformMesh(
+        roomUtils.transformMesh(
           headMesh,
           lowerFrame,
           higherFrame,
@@ -274,7 +218,7 @@ export default class Room {
           position
         );
       }
-      transformMesh(
+      roomUtils.transformMesh(
         handMesh,
         lowerFrame,
         higherFrame,
@@ -285,7 +229,7 @@ export default class Room {
         costumeColor,
         position
       );
-      transformMesh(
+      roomUtils.transformMesh(
         handMesh,
         lowerFrame,
         higherFrame,
@@ -313,14 +257,28 @@ Room.clear = () => {
 Room.switchModel = (model) => {
   roomsGroup.remove(wallMesh);
   roomsGroup.remove(roomMesh);
+  roomsGroup.remove(roomVerticalMesh);
+  roomsGroup.remove(horizontalVerticalCornerMesh);
+  roomsGroup.remove(verticalHorizontalCornerMesh);
+  roomsGroup.remove(floorMesh);
+
   wallMesh = wallMeshes[model];
   roomMesh = roomMeshes[model];
+  floorMesh = floorMeshes[model];
+  roomVerticalMesh = roomVerticalMeshes[model];
+  horizontalVerticalCornerMesh = horizontalVerticalCornerMeshes[model];
+  verticalHorizontalCornerMesh = verticalHorizontalCornerMeshes[model];
+
   roomsGroup.add(wallMesh);
   roomsGroup.add(roomMesh);
+  roomsGroup.add(roomVerticalMesh);
+  roomsGroup.add(horizontalVerticalCornerMesh);
+  roomsGroup.add(verticalHorizontalCornerMesh);
+  roomsGroup.add(floorMesh);
 };
 
 Room.reset = ({ showAllWalls } = {}) => {
-  roomsGroup.matrix.copy(IDENTITY_MATRIX);
+  setIdentityMatrix(roomsGroup);
   if (roomMesh) roomsGroup.remove(roomMesh);
   if (wallMesh) roomsGroup.remove(wallMesh);
   if (headMesh) roomsGroup.remove(headMesh);
@@ -329,13 +287,13 @@ Room.reset = ({ showAllWalls } = {}) => {
   roomIndex = 0;
   wallMeshes = {
     default: createInstancedMesh({
-      count: showAllWalls ? settings.loopCount : 1,
+      count: layout.roomCount,
       geometry: props.wall.geometry,
       color: getRoomColor,
       material: props.wall.material,
     }),
     orthographic: createInstancedMesh({
-      count: showAllWalls ? settings.loopCount : 1,
+      count: layout.roomCount,
       geometry: props.orthographicWall.geometry,
       color: getRoomColor,
       material: props.orthographicWall.material,
@@ -343,35 +301,113 @@ Room.reset = ({ showAllWalls } = {}) => {
   };
   roomMeshes = {
     default: createInstancedMesh({
-      count: settings.loopCount,
+      count: layout.roomCount,
       geometry: props.room.geometry,
       color: getRoomColor,
       material: props.room.material,
     }),
     orthographic: createInstancedMesh({
-      count: settings.loopCount,
+      count: layout.roomCount,
       geometry: props.orthographicRoom.geometry,
       color: getRoomColor,
       material: props.orthographicRoom.material,
     }),
   };
+  floorMeshes = {
+    default: createInstancedMesh({
+      count: layout.roomCount,
+      geometry: props.floor.geometry,
+      color: getRoomColor,
+      material: props.floor.material,
+    }),
+    orthographic: createInstancedMesh({
+      count: layout.roomCount,
+      geometry: props.floor.geometry,
+      color: getRoomColor,
+      material: props.floor.material,
+    }),
+  };
+  roomVerticalMeshes = {
+    default: createInstancedMesh({
+      count: layout.roomCount,
+      geometry: props.verticalRoom.geometry,
+      color: getRoomColor,
+      material: props.verticalRoom.material,
+    }),
+    orthographic: createInstancedMesh({
+      count: layout.roomCount,
+      geometry: props.orthographicVerticalRoom.geometry,
+      color: getRoomColor,
+      material: props.orthographicVerticalRoom.material,
+    }),
+  };
+  horizontalVerticalCornerMeshes = {
+    default: createInstancedMesh({
+      count: 1,
+      geometry: props.horizontalVerticalCorner.geometry,
+      color: getRoomColor,
+      material: props.horizontalVerticalCorner.material,
+    }),
+    orthographic: createInstancedMesh({
+      count: 1,
+      geometry: props.orthographicHorizontalVerticalCorner.geometry,
+      color: getRoomColor,
+      material: props.orthographicHorizontalVerticalCorner.material,
+    }),
+  };
+  verticalHorizontalCornerMeshes = {
+    default: createInstancedMesh({
+      count: 1,
+      geometry: props.verticalHorizontalCorner.geometry,
+      color: getRoomColor,
+      material: props.verticalHorizontalCorner.material,
+    }),
+    orthographic: createInstancedMesh({
+      count: 1,
+      geometry: props.orthographicVerticalHorizontalCorner.geometry,
+      color: getRoomColor,
+      material: props.orthographicVerticalHorizontalCorner.material,
+    }),
+  };
+  [
+    horizontalVerticalCornerMeshes,
+    verticalHorizontalCornerMeshes,
+    roomVerticalMeshes,
+    floorMeshes,
+    roomMeshes,
+    wallMeshes,
+  ].forEach(meshes => {
+    meshes.default.geometry.maxInstancedCount = 0;
+    meshes.orthographic.geometry.maxInstancedCount = 0;
+  });
+
   roomMeshes.default.receiveShadow = true;
   roomMeshes.orthographic.receiveShadow = true;
 
   wallMesh = wallMeshes.default;
   roomMesh = roomMeshes.default;
+  floorMesh = floorMeshes.default;
+  roomVerticalMesh = roomMeshes.default;
 
   headMesh = createInstancedMesh({
-    count: settings.loopCount * 10,
+    count: layout.roomCount * 10,
     geometry: props.head.geometry,
   });
   headMesh.geometry.maxInstancedCount = 0;
 
   handMesh = createInstancedMesh({
-    count: settings.loopCount * 10 * 2,
+    count: layout.roomCount * 10 * 2,
     geometry: props.hand.geometry,
   });
   handMesh.geometry.maxInstancedCount = 0;
+
+  meshesByType = {
+    HORIZONTAL: roomMeshes,
+    VERTICAL: roomVerticalMeshes,
+    HORIZONTAL_CORNER: horizontalVerticalCornerMeshes,
+    VERTICAL_CORNER: verticalHorizontalCornerMeshes,
+    PLANE: floorMeshes,
+  };
 
   roomsGroup.add(headMesh);
   roomsGroup.add(handMesh);
@@ -386,5 +422,5 @@ Room.reset = ({ showAllWalls } = {}) => {
 };
 
 Room.rotate180 = () => {
-  roomsGroup.matrix.copy(ROTATION_MATRIX);
+  set180RotationMatrix(roomsGroup);
 };

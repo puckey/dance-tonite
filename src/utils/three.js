@@ -1,5 +1,7 @@
 import * as THREE from '../lib/three';
 
+require('../lib/OBJLoader')(THREE);
+
 const VECTOR = new THREE.Vector3();
 const QUATERNION = new THREE.Quaternion();
 const QUATERNION_2 = new THREE.Quaternion();
@@ -44,6 +46,7 @@ export const createInstancedMesh = ({
   instancedMesh.visible = true;
   instancedMesh.castShadow = false;
   instancedMesh.receiveShadow = false;
+  instancedMesh.geometry.maxInstancedCount = 0;
   return instancedMesh;
 };
 
@@ -65,3 +68,51 @@ export const serializeMatrix = (matrix) => {
     .concat(SERIALIZE_ROTATION.toArray())
     .map(compressNumber);
 };
+
+const ROTATION_MATRIX = new THREE.Matrix4().makeRotationAxis(
+  new THREE.Vector3(0, 1, 0).normalize(),
+  Math.PI
+);
+
+const IDENTITY_MATRIX = new THREE.Matrix4();
+
+export const set180RotationMatrix = (object) => {
+  object.matrix.copy(ROTATION_MATRIX);
+};
+
+export const setIdentityMatrix = (object) => {
+  object.matrix.copy(IDENTITY_MATRIX);
+};
+
+export const loadModel = async ([objUrl, textureUrl]) => {
+  const [object, texture] = await Promise.all([
+    loadObject(objUrl),
+    textureUrl ? loadTexture(textureUrl) : null,
+  ]);
+  object.material = new THREE.MeshLambertMaterial();
+  if (texture) {
+    object.material.map = texture;
+  }
+  return object;
+};
+
+const loadObject = (url) => new Promise(
+  (resolve, reject) => {
+    new THREE.OBJLoader().load(url,
+      object => resolve(object.children[0]),
+      () => {},
+      reject,
+    );
+  }
+);
+
+const loadTexture = (url) => new Promise(
+  (resolve, reject) => {
+    new THREE.TextureLoader().load(
+      url,
+      resolve,
+      () => {},
+      reject
+    );
+  }
+);

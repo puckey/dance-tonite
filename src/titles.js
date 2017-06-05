@@ -18,12 +18,12 @@ export default (orb) => {
 
   const elements = { splash };
 
-  const chromeExperiment = document.querySelector('.chrome-experiment');
+  const colophon = document.querySelector('.colophon');
 
   const timeline = createTimeline([
     {
       time: 0,
-      show: [chromeExperiment],
+      show: [colophon],
     },
     {
       time: 4.1,
@@ -67,7 +67,7 @@ export default (orb) => {
     },
     {
       time: 15,
-      hide: [chromeExperiment],
+      hide: [colophon],
     },
   ]);
 

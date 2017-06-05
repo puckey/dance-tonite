@@ -8,9 +8,10 @@ import storage from '../../storage';
 import controllers from '../../controllers';
 import transition from '../../transition';
 import Room from '../../room';
+import hud from '../../hud';
+import router from '../../router';
 import { tempVector } from '../../utils/three';
 import { sleep } from '../../utils/async';
-import feature from '../../utils/feature';
 
 export default (goto) => {
   const { roomDepth, roomOffset } = settings;
@@ -118,6 +119,15 @@ export default (goto) => {
         },
       });
       controllers.add();
+
+      // Create close button
+      hud.create('div.close-button',
+        {
+          onclick: () => router.navigate('/'),
+        },
+        '×'
+      );
+
       transition.exit();
     },
 

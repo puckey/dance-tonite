@@ -1,31 +1,41 @@
 import hyperscript from 'hyperscript';
 import router from '../router';
 import feature from '../utils/feature';
+import audio from '../audio';
+import about from '../about';
 import addIconSvg from './icons/addvr.svg';
 import enterIconSvg from './icons/entervr.svg';
 import enterIconDisabledSvg from './icons/x_entervr.svg';
 import aboutIconSvg from './icons/about.svg';
+import speakerIconSvg from './icons/speaker.svg';
+import speakerMuteIconSvg from './icons/mute_speaker.svg';
 import viewer from '../viewer';
 
 const componentContext = hyperscript.context();
-const h = hyperscript.context();
+
+const toggleMute = () => {
+  const muted = audio.toggleMute();
+  elements.muteButton.querySelector('.menu-item-icon').innerHTML =
+    muted ? speakerMuteIconSvg : speakerIconSvg;
+};
 
 const elements = {
   menuAdd: '.menu-item-add',
   menuEnter: '.menu-item-enter',
-  aboutButton: '.about-button',
+  aboutButton: '.menu-item-about',
+  muteButton: '.menu-item-mute',
   loaderOverlay: '.loader-overlay',
   loaderOverlayText: '.loader-overlay-text',
   playButton: '.play-button',
-  chromeExperiment: '.chrome-experiment',
+  colophon: '.colophon',
 };
 
 const defaultState = {
   menuAdd: false,
   menuEnter: false,
-  aboutButton: false,
+  aboutButton: about.toggle,
+  muteButton: toggleMute,
   colophon: false,
-  chromeExperiment: false,
 };
 
 let state = { };
@@ -74,6 +84,7 @@ const hud = {
     // Add icons
     elements.menuAdd.querySelector('.menu-item-icon').innerHTML = addIconSvg;
     elements.aboutButton.querySelector('.menu-item-icon').innerHTML = aboutIconSvg;
+    elements.muteButton.querySelector('.menu-item-icon').innerHTML = speakerIconSvg;
   },
 
   update(param = {}) {
@@ -96,7 +107,7 @@ const hud = {
         const visible = !!handler;
         const el = elements[key];
         if (el && visible !== state[key]) {
-          el.classList[visible ? 'remove' : 'add']('mod-hidden');
+          el.classList[visible ? 'remove' : 'add']('mod-display-none');
         }
         if (typeof handler === 'function') {
           el.addEventListener('click', handler);
@@ -115,14 +126,17 @@ const hud = {
   },
 
   enterVR: () => {
-    const el = hud.add(
-      componentContext(
-      'div.vr-info-overlay.mod-entering-vr',
-      componentContext('div.vr-info-overlay-text', 'Put on your VR headset')
-    ), false);
-    return () => {
-      hud.remove(el);
-    };
+    if (!feature.isMobile) {
+      const el = hud.add(
+        componentContext(
+        'div.vr-info-overlay.mod-entering-vr',
+        componentContext('div.vr-info-overlay-text', 'Put on your VR headset')
+      ), false);
+      return () => {
+        hud.remove(el);
+      };
+    }
+    return () => {};
   },
 
   create(/* tag, attrs, [text?, Elements?,...] */) {
