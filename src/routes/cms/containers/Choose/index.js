@@ -7,6 +7,7 @@ import Container from '../../components/Container';
 import Error from '../../components/Error';
 import Align from '../../components/Align';
 import Close from '../../components/Close';
+import Mute from '../../components/Mute';
 import PaginatedList from '../../components/PaginatedList';
 
 const choices = [
@@ -81,6 +82,9 @@ export default class Choose extends Component {
     }
     return (
       <Container>
+        <Align type="top-left">
+          <Mute />
+        </Align>
         <Align type="bottom-right">
           <PaginatedList
             item={item}
