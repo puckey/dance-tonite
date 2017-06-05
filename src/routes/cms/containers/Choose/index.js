@@ -95,10 +95,10 @@ export default class Choose extends Component {
           />
         </Align>
         {
-          roomId === undefined
+          !choices[roomId]
             ? (
               <Align type="center">
-                <Error>Room not defined</Error>
+                <Error>Room not found</Error>
               </Align>
             )
             : <Room loopIndex={roomId} recordingId={item.id} key={item.id} />
