@@ -11,8 +11,6 @@ const hasNextPage = (currentPage, totalPages) => totalPages > currentPage + 1;
 
 const hasPrevPage = currentPage => currentPage - 1 > -1;
 
-const countPages = (totalItems, itemsPerPage) => Math.ceil(totalItems / itemsPerPage);
-
 const getOffset = (page, itemsPerPage) => page * itemsPerPage;
 
 export default class PaginatedList extends Component {
