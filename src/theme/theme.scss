@@ -10,8 +10,10 @@ $line-width: .075rem;
 // Colors
 $background-color: #000;
 $text-color: #ff0;
+$color-inactive: transparentize($text-color, .5);
 
 // Z indices
 $scene-layer: 10;
+$cms-layer: 19;
 $interface-layer: 20;
 $popover-layer: 30;
