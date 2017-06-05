@@ -5,6 +5,8 @@ import hud from '../../hud';
 import router from '../../router';
 import Choose from './containers/Choose';
 
+let root;
+
 export default (req) => (
   {
     hud: {
@@ -12,7 +14,7 @@ export default (req) => (
       aboutButton: false,
     },
     mount: () => {
-      render((
+      root = render((
         <Choose
           roomId={req.params.roomId}
           goHome={() => router.navigate('/')}
@@ -20,6 +22,8 @@ export default (req) => (
       ), hud.elements.hud);
     },
 
-    unmount: () => { },
+    unmount: () => {
+      render(() => null, hud.elements.hud, root);
+    },
   }
 );
