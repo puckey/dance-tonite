@@ -23,7 +23,7 @@ export default class MuteButton extends Component {
   render(props, { muted }) {
     return (
       <div
-        className="menu-item-icon mod-fill"
+        className="menu-item-icon mod-fill mod-no-stroke"
         dangerouslySetInnerHTML={{ __html: muted ? speakerMuteIconSvg : speakerIconSvg }}
         onClick={this.toggleMute}
       />
