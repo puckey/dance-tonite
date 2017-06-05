@@ -24,7 +24,8 @@
     "three-bmfont-text": "^2.2.1",
     "tween-ticker": "^3.3.2",
     "unfetch": "^2.1.2",
-    "unique-s3-uploader": "0.0.2"
+    "unique-s3-uploader": "0.0.2",
+    "webvr-polyfill": "^0.9.34"
   },
   "devDependencies": {
     "autoprefixer-loader": "^3.2.0",

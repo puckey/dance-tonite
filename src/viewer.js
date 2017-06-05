@@ -13,9 +13,17 @@ import Room from './room';
 import feature from './utils/feature';
 import windowSize from './utils/windowSize';
 
+import 'webvr-polyfill';
+
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
 require('./lib/ViveController')(THREE);
+
+
+//if (feature.isMobile) {
+  const polyfill = new window.WebVRPolyfill();
+  console.log("using polyfill", polyfill)
+//}
 
 const events = emitter();
 const orthographicDistance = 4;
