@@ -8,6 +8,7 @@ import Room from '../../../../room';
 import settings from '../../../../settings';
 import createTimeline from '../../../../lib/timeline';
 import layout from '../../../../room/layout';
+import feature from '../../../../utils/feature';
 
 const { roomDepth, roomOffset } = settings;
 
@@ -41,36 +42,6 @@ const tick = () => {
 let room;
 
 export default class RoomComponent extends Component {
-  async asyncMount({ recordingId, roomIndex }) {
-    Room.reset();
-    objects.orb = new Orb();
-    objects.orb2 = new Orb();
-    viewer.switchCamera('orthographic');
-    state.originalCameraPosition = viewer.camera.position.clone();
-    state.originalZoom = viewer.camera.zoom;
-    viewer.camera.position.y = 2;
-    viewer.camera.position.z = 1.3;
-
-    viewer.camera.zoom = 0.7;
-    viewer.camera.updateProjectionMatrix();
-    Room.rotate180();
-    await audio.load({
-      src: `/public/sound/room-${layout.loopIndex(roomIndex)}.mp3`,
-      loops: 2,
-      loopOffset: 0.5,
-    });
-    if (!this.mounted) return;
-    audio.play();
-    room = new Room({
-      url: `${recordingId}.json`,
-      showHead: true,
-      index: 0,
-      recording: true,
-    });
-    room.load();
-    viewer.events.on('tick', tick);
-  }
-
   componentDidMount() {
     this.mounted = true;
     this.asyncMount(this.props);
@@ -92,5 +63,35 @@ export default class RoomComponent extends Component {
     viewer.camera.zoom = 1;
     viewer.camera.updateProjectionMatrix();
     viewer.events.off('tick', tick);
+  }
+
+  async asyncMount({ recordingId, roomIndex }) {
+    Room.reset();
+    objects.orb = new Orb();
+    objects.orb2 = new Orb();
+    if (!viewer.vrEffect.isPresenting) viewer.switchCamera('orthographic');
+    state.originalCameraPosition = viewer.camera.position.clone();
+    state.originalZoom = viewer.camera.zoom;
+    viewer.camera.position.y = 2;
+    viewer.camera.position.z = 1.3;
+
+    viewer.camera.zoom = 0.7;
+    viewer.camera.updateProjectionMatrix();
+    Room.rotate180();
+    await audio.load({
+      src: `/public/sound/room-${layout.loopIndex(roomIndex)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
+      loops: 2,
+      loopOffset: 0.5,
+    });
+    if (!this.mounted) return;
+    audio.play();
+    room = new Room({
+      url: `${recordingId}.json`,
+      showHead: true,
+      index: 0,
+      recording: true,
+    });
+    room.load();
+    viewer.events.on('tick', tick);
   }
 }

@@ -1,11 +1,12 @@
 /** @jsx h */
-import { h, Component } from 'preact';
+import { h } from 'preact';
 import './style.scss';
+import MenuItem from '../MenuItem';
 import audio from '../../../../audio';
 import speakerIconSvg from '../../../../hud/icons/speaker.svg';
 import speakerMuteIconSvg from '../../../../hud/icons/mute_speaker.svg';
 
-export default class MuteButton extends Component {
+export default class MuteButton extends MenuItem {
   constructor() {
     super();
 
@@ -23,7 +24,7 @@ export default class MuteButton extends Component {
   render(props, { muted }) {
     return (
       <div
-        className="menu-item-icon mod-fill mod-no-stroke"
+        className="cms-menu-item"
         dangerouslySetInnerHTML={{ __html: muted ? speakerMuteIconSvg : speakerIconSvg }}
         onClick={this.toggleMute}
       />

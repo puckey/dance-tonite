@@ -8,6 +8,7 @@ import Error from '../../components/Error';
 import Align from '../../components/Align';
 import Close from '../../components/Close';
 import Mute from '../../components/Mute';
+import EnterVR from '../../components/EnterVR';
 import PaginatedList from '../../components/PaginatedList';
 
 const choices = [
@@ -75,15 +76,11 @@ export default class Choose extends Component {
     this.setState({ item });
   }
 
-  render({ roomIndex, goHome }, { removed, items, item }) {
-    if (removed) {
-      setTimeout(goHome);
-      return;
-    }
+  render({ roomIndex, goHome }, { items, item }) {
     return (
       <Container>
-        <Align type="top-left">
-          <Mute />
+        <Align type="top-left row">
+          <EnterVR /><Mute />
         </Align>
         <Align type="bottom-right">
           <PaginatedList
@@ -94,18 +91,14 @@ export default class Choose extends Component {
         </Align>
         <Align type="top-right">
           <Close
-            onClick={() => {
-              this.setState({
-                removed: true,
-              });
-            }}
+            onClick={goHome}
           />
         </Align>
         {
           roomIndex === undefined
             ? (
               <Align type="center">
-                <Error>Room not defined</Error>
+                <Error>Room not found</Error>
               </Align>
             )
             : <Room roomIndex={roomIndex} recordingId={item.id} key={item.id} />
