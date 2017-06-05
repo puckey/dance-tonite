@@ -99,7 +99,7 @@ export default class Room {
   load(callback) {
     const frames = [];
     this.streamer = streamJSON(
-      `${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.pathRecording ? '' : `${queryData.fps || 10}FPS/`}${this.url}`,
+      `${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.pathRecording ? '' : `${queryData.fps || 15}FPS/`}${this.url}`,
       (error, json) => {
         if (error || !json) {
           if (callback) {
