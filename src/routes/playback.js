@@ -52,7 +52,7 @@ export default (req) => {
   let megaOrb;
   let playlist;
   let tick;
-  const loopIndex = parseInt(req.params.loopIndex, 10);
+  const roomIndex = parseInt(req.params.roomIndex, 10);
 
   const component = {
     hud: hudSettings,
@@ -110,7 +110,7 @@ export default (req) => {
       playlist.load({
         url: 'curated.json',
         pathRecording: req.params.id,
-        loopIndex,
+        pathRoomIndex: roomIndex,
       });
       if (component.destroyed) return;
 
@@ -119,12 +119,12 @@ export default (req) => {
         transition.exit();
       }
 
-      if (loopIndex) {
+      if (roomIndex) {
         // Start at 3 rooms before the recording, or 60 seconds before
         // the end of the track – whichever comes first.
         const watchTime = 30;
         const startTime = Math.min(
-          (loopIndex - 2) * audio.loopDuration,
+          (roomIndex - 2) * audio.loopDuration,
           audio.duration - watchTime
         );
         audio.gotoTime(startTime);

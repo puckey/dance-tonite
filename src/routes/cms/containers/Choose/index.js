@@ -75,7 +75,7 @@ export default class Choose extends Component {
     this.setState({ item });
   }
 
-  render({ roomId, goHome }, { removed, items, item }) {
+  render({ roomIndex, goHome }, { removed, items, item }) {
     if (removed) {
       setTimeout(goHome);
       return;
@@ -102,13 +102,13 @@ export default class Choose extends Component {
           />
         </Align>
         {
-          roomId === undefined
+          roomIndex === undefined
             ? (
               <Align type="center">
                 <Error>Room not defined</Error>
               </Align>
             )
-            : <Room loopIndex={roomId} recordingId={item.id} key={item.id} />
+            : <Room roomIndex={roomIndex} recordingId={item.id} key={item.id} />
         }
       </Container>
     );

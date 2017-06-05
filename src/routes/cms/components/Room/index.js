@@ -7,6 +7,7 @@ import viewer from '../../../../viewer';
 import Room from '../../../../room';
 import settings from '../../../../settings';
 import createTimeline from '../../../../lib/timeline';
+import layout from '../../../../room/layout';
 
 const { roomDepth, roomOffset } = settings;
 
@@ -40,7 +41,7 @@ const tick = () => {
 let room;
 
 export default class RoomComponent extends Component {
-  async asyncMount({ recordingId, loopIndex }) {
+  async asyncMount({ recordingId, roomIndex }) {
     Room.reset();
     objects.orb = new Orb();
     objects.orb2 = new Orb();
@@ -54,7 +55,7 @@ export default class RoomComponent extends Component {
     viewer.camera.updateProjectionMatrix();
     Room.rotate180();
     await audio.load({
-      src: `/public/sound/room-${loopIndex}.mp3`,
+      src: `/public/sound/room-${layout.loopIndex(roomIndex)}.mp3`,
       loops: 2,
       loopOffset: 0.5,
     });

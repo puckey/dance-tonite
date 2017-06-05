@@ -14,7 +14,7 @@ export default (req) => (
     mount: () => {
       render((
         <Choose
-          roomId={req.params.roomId}
+          roomIndex={req.params.roomId}
           goHome={() => router.navigate('/')}
         />
       ), hud.elements.hud);

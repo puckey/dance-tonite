@@ -19,15 +19,15 @@ export default class Playlist {
     }
   }
 
-  async load({ url, pathRecording, loopIndex }) {
+  async load({ url, pathRecording, pathRoomIndex }) {
     const urls = await storage.loadPlaylist(url);
     if (this.destroyed) return;
     await new Promise((resolve, reject) => {
       this.rooms = urls.map(
         (recordingUrl, index) => {
-          const isPathRecording = loopIndex - 1 === index;
+          const isPathRecording = index === pathRoomIndex - 1;
           return new Room({
-            url: pathRecording
+            url: isPathRecording
               ? `${pathRecording}.json`
               : recordingUrl,
             index,
