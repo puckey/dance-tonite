@@ -21,6 +21,7 @@ import * as roomUtils from './utils';
 import layout from './layout';
 import dummyTextureUrl from '../public/dummy.png';
 import audio from '../audio';
+import * as serializer from '../utils/serializer';
 
 const PROTOCOL = location.protocol;
 const PERFORMANCE_ELEMENT_COUNT = 21;
@@ -77,6 +78,7 @@ export default class Room {
     this.isRecording = !!recording;
     this.url = url;
     this.pathRecording = pathRecording;
+    this.fps = 90;
     if (recording) {
       this.hideHead = recording.hideHead;
       this.frames = recording.frames;
@@ -110,7 +112,9 @@ export default class Room {
           this.frames = frames;
           this.hideHead = meta.hideHead;
           this.layerCount = meta.count;
-          this.fps = meta.fps || 90;
+          if (meta.fps) {
+            this.fps = meta.fps;
+          }
         } else {
           frames.push(json);
         }
@@ -169,7 +173,7 @@ export default class Room {
     const higherFrame = (higher >= frames.length)
       ? null
       : getFrame(frames, higher);
-    const position = roomUtils.avgPosition(
+    const position = serializer.avgPosition(
       lowerFrame,
       higherFrame,
       ratio,
@@ -182,13 +186,16 @@ export default class Room {
   gotoTime(seconds, maxLayers) {
     const { frames, position, costumeColor } = this;
     if (!frames) return;
-
     const frameNumber = this.secondsToFrame(seconds);
-    if (frames.length <= frameNumber) return;
+    const lower = Math.floor(frameNumber);
+    let higher = Math.ceil(frameNumber);
+    if (higher >= frames.length) higher = null;
 
+    if (frames.length <= lower) return;
+    const frame = getFrame(frames, lower);
     // TODO: figure out why we can't use just 'positions.length / PERFORMANCE_ELEMENT_COUNT' here:
     let count = this.layerCount || (
-      this.frames[Math.floor(frameNumber)].length / PERFORMANCE_ELEMENT_COUNT
+      frame.length / PERFORMANCE_ELEMENT_COUNT
     );
     if (maxLayers !== undefined) {
       count = Math.min(maxLayers, count);
@@ -197,9 +204,6 @@ export default class Room {
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
 
-    const lower = Math.floor(frameNumber);
-    let higher = Math.ceil(frameNumber);
-    if (higher >= frames.length) higher = null;
     const ratio = frameNumber % 1;
     const lowerFrame = getFrame(frames, lower);
     const higherFrame = higher && getFrame(frames, higher);
