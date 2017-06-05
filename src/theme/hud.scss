@@ -192,9 +192,13 @@ svg * {
   left: 50%;
   width: 1.5rem;
   height: 1.5rem;
-  margin: -6rem -3.75rem;
+  margin: -3.75rem;
   padding: 3rem;
   z-index: $popover-layer;
+}
+
+.play-button svg {
+  height: 1.5rem;
 }
 
 .loader-overlay-text,
