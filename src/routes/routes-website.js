@@ -3,8 +3,8 @@ const playback = require('./playback').default;
 
 export default {
   routes: {
-    '/record/:loopIndex?/:hideHead?': record,
-    '/:loopIndex?/:id?': playback,
+    '/record/:roomIndex?/:hideHead?': record,
+    '/:roomIndex?/:id?': playback,
   },
   components: { record, playback }
 };
