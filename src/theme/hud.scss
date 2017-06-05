@@ -170,7 +170,8 @@ svg * {
   user-select: none;
 }
 
-.colophon img {
+.colophon svg {
+  width: 5rem;
   height: 2.5rem;
 }
 
@@ -180,7 +181,7 @@ svg * {
 
 .colophon-divider {
   border-left: 1px solid $text-color;
-  margin: 0 0.5rem;
+  margin: 0 0.25rem 0 0.75rem;
   height: 2.5rem;
   display: inline-block;
 }
