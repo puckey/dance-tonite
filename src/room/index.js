@@ -14,6 +14,7 @@ import {
   getRoomColor,
   recordCostumeColor,
   recordRoomColor,
+  highlightColor,
 } from '../theme/colors';
 import streamJSON from '../lib/stream-json';
 import * as roomUtils from './utils';
@@ -120,6 +121,11 @@ export default class Room {
       .applyMatrix4(roomsGroup.matrix);
   }
 
+  isHighlighted(performance) {
+    return Room.outline.room === this.index
+      && Room.outline.performance === performance;
+  }
+
   changeColor(color) {
     for (const i in roomMeshes) {
       const mesh = roomMeshes[i];
@@ -189,7 +195,9 @@ export default class Room {
       positions = frames[frameNumber] = JSON.parse(positions);
     }
 
+    const { position } = this;
     for (let i = 0; i < count; i++) {
+      const color = this.isHighlighted(i) ? highlightColor : this.costumeColor;
       if (!this.hideHead) {
         roomUtils.transformMesh(
           headMesh,
@@ -198,8 +206,8 @@ export default class Room {
           i,
           0, // head
           scale,
-          this.costumeColor,
-          this.position
+          color,
+          position
         );
       }
       roomUtils.transformMesh(
@@ -209,8 +217,8 @@ export default class Room {
         i,
         1, // first hand
         scale,
-        this.costumeColor,
-        this.position
+        color,
+        position
       );
       roomUtils.transformMesh(
         handMesh,
@@ -219,8 +227,8 @@ export default class Room {
         i,
         2, // second hand
         scale,
-        this.costumeColor,
-        this.position
+        color,
+        position
       );
     }
   }
@@ -246,6 +254,7 @@ Room.switchModel = (model) => {
 };
 
 Room.reset = ({ showAllWalls } = {}) => {
+  Room.setHighlight();
   setIdentityMatrix(roomsGroup);
   if (roomMesh) roomsGroup.remove(roomMesh);
   if (wallMesh) roomsGroup.remove(wallMesh);
@@ -316,6 +325,13 @@ Room.rotate180 = () => {
 };
 
 Room.group = roomsGroup;
+
+Room.highlight = {};
+
+Room.setHighlight = ([roomIndex, performanceIndex] = []) => {
+  Room.highlight.roomIndex = roomIndex;
+  Room.highlight.performanceIndex = performanceIndex;
+};
 
 export function getHandMesh() {
   return handMesh;

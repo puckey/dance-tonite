@@ -15,13 +15,13 @@ import Room from '../room';
 import progressBar from '../progress-bar';
 import layout from '../room/layout';
 import closestHead from '../utils/closestHead';
-import outline from '../outline';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { roomDepth, holeHeight } = settings;
-
+let pointerX;
+let pointerY;
 let titles;
 
 export default (req) => {
@@ -95,6 +95,15 @@ export default (req) => {
 
       tick = () => {
         if (transition.isInside()) return;
+        if (!viewer.vrEffect.isPresenting) {
+          Room.setHighlight(
+            closestHead(
+              pointerX,
+              pointerY,
+              playlist.rooms
+            )
+          );
+        }
         audio.tick();
         Room.clear();
         playlist.tick();
@@ -107,7 +116,6 @@ export default (req) => {
         } else {
           moveCamera(audio.progress || 0);
         }
-        outline.update();
       };
       viewer.events.on('tick', tick);
 
@@ -131,14 +139,8 @@ export default (req) => {
       }).then(() => {
         if (component.destroyed) return;
         onMouseMove = ({ clientX, clientY }) => {
-          const [roomIndex, performanceIndex] = closestHead(
-            clientX,
-            clientY,
-            playlist.rooms
-          );
-          if (roomIndex !== undefined) {
-            outline.set(playlist, roomIndex, performanceIndex);
-          }
+          pointerX = clientX;
+          pointerY = clientY;
         };
 
         onMouseDown = ({ clientX, clientY }) => {
