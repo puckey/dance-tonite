@@ -43,9 +43,13 @@ export default class Choose extends Component {
             { starred ? 'Unstar' : 'Star' }
           </div>
           { starred &&
-            <input autoFocus type="text" className="inbox-title-input" id="performanceTitle">
-              Enter title
-            </input>
+            <input
+              autoFocus
+              placeHolder="Performance Title"
+              type="text"
+              className="inbox-title-input"
+              id="performanceTitle"
+            />
           }
           <div className="inbox-menu-item">Next &rarr;</div>
         </Align>
