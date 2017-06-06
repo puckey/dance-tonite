@@ -10,6 +10,7 @@ const config = {
 firebase.initializeApp(config);
 
 const generateTokenURL = 'https://us-central1-you-move-me.cloudfunctions.net/getUploadToken';
+const processSubmissionURL = 'https://us-central1-you-move-me.cloudfunctions.net/processSubmission';
 
 const auth = firebase.auth();
 const storageRef = firebase.storage().ref();
@@ -26,26 +27,115 @@ const login = (callback) => { // this will return immediately if the user is alr
   );
 }
 
-const requestUploadToken = (roomID, callback) => {
+const contactServer = (URL, dataToSend) => {
+  return new Promise((resolve, reject) => {
+    login((error) => {
+      if (error) throw error;
+
+      const request = new XMLHttpRequest();
+      request.open('PUT', URL, true);
+
+      request.onload = function() {
+        if (request.status >= 200 && request.status < 400) {
+          const response = JSON.parse(request.responseText);
+
+          console.log(response);
+
+          if (!response.success) {
+            reject("error connecting to server");
+          } else {
+            const data = response.data;
+            resolve(data);
+          }
+
+        } else {
+          // problem reaching server
+          reject( "error connecting to server" );
+        }
+      };
+
+      request.onerror = function(error) {
+        reject( error );
+      };
+
+
+      request.setRequestHeader("Content-Type", "application/json");
+      request.send(JSON.stringify(dataToSend));
+    });
+
+  });
+}
+
+const requestUploadToken = (roomID) => {
+  const dataToSend = { 'room':roomID }; 
+  return contactServer(generateTokenURL, dataToSend)
+}
+
+const uploadDataString = (dataString, filename, uploadToken) => {
+
+  return new Promise((resolve, reject) => {
+    const targetFileRef = storageRef.child('_incoming/' + filename);
+
+    // metadata we want to store with the file
+    const metadata = {
+      contentType: 'application/json',
+      customMetadata: {
+        'token': uploadToken
+      }
+    };
+
+    const uploadTask = targetFileRef.putString(dataString, undefined, metadata);
+
+    uploadTask.on('state_changed', function(snapshot){
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+      console.log('Upload is ' + progress + '% done');
+      // TODO: emit upload progress events
+
+    }, function(error) {
+      reject( error );
+    }, function() {
+      // Handle successful uploads on complete
+      const snapshot = uploadTask.snapshot;
+      var fileURL = snapshot.downloadURL;
+
+      console.log("uploaded", fileURL)
+      resolve( fileURL );
+    });
+  });
+}
+
+const startSubmissionProcessing = (token) => {
+  const dataToSend = { 'token':token }; 
+  return contactServer(processSubmissionURL, dataToSend)
+
+
+  /*
   login((error) => {
     if (error) throw error;
 
     const request = new XMLHttpRequest();
-    request.open('PUT', generateTokenURL, true);
+    request.open('PUT', processSubmissionURL, true);
 
     request.onload = function() {
       if (request.status >= 200 && request.status < 400) {
         // Success!
-        const data = JSON.parse(request.responseText);
+        const response = JSON.parse(request.responseText);
 
-        console.log(data);
+        console.log(response);
 
-        const filename = data.uri;
-        const token = data.token;
+        if (!response.success) {
+          throw "error connecting to server"
+        } else {
+          const data = response.data;
 
-        callback(filename, token);
+          const filename_array = data.uri_array;
+          const token = data.token;
+          callback(filename_array, token);
+        }
+
       } else {
-        // We reached our target server, but it returned an error
+        // problem reaching server
         throw "error connecting to server"
       }
     };
@@ -54,60 +144,45 @@ const requestUploadToken = (roomID, callback) => {
       throw error
     };
 
-    const dataToSend = { 'room':roomID }; 
+    const dataToSend = { 'token':token }; 
 
     request.setRequestHeader("Content-Type", "application/json");
     request.send(JSON.stringify(dataToSend));
   });
+  */
 }
-
-const uploadDataString = (dataString, filename, uploadToken, callback) => {
-  const targetFileRef = storageRef.child('_incoming/' + filename);
-
-  // metadata we want to store with the file
-  const metadata = {
-    contentType: 'application/json',
-    customMetadata: {
-      'token': uploadToken
-    }
-  };
-
-  const uploadTask = targetFileRef.putString(dataString, undefined, metadata);
-
-  uploadTask.on('state_changed', function(snapshot){
-    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-
-    console.log('Upload is ' + progress + '% done');
-    // TODO: emit upload progress events
-
-  }, function(error) {
-    throw error;
-  }, function() {
-    // Handle successful uploads on complete
-    const snapshot = uploadTask.snapshot;
-    var fileURL = snapshot.downloadURL;
-    callback(fileURL)
-  });
-}
-
-
 
 const firebaseUploader = {
 
   upload: (json, roomID, callback) => {
     // request an upload token
-    requestUploadToken(roomID, function(filename, token){
-      // now that we have the token, upload to the given URL
-      uploadDataString(json, filename, token, function(fileURL){
-        const error = null;
-        const data = {
-          uri: fileURL
-        };
+    requestUploadToken(roomID).then( (data) => {
 
-        // the upload is done!
-        callback(error, data)
+      const filename_array = data.uri_array;
+      const token = data.token;
+
+      var allUploadPromises = filename_array.map(function(item) {
+        const fps = item[0]
+        const filename = item[1]
+
+        return uploadDataString(json, filename, token);
       });
-    });
+
+      // now upload all the files
+      Promise.all(allUploadPromises).then( () => {
+        console.log("done all uploads")
+
+        // now process files
+        startSubmissionProcessing(token).then( (data)=> {
+
+          // the upload is done!
+          callback(null, data.id)
+
+        }).catch( (err) => { callback(err); }); // problem with processing
+
+      }).catch( (err) => { callback(err); }) // problem with upload
+      
+    }).catch( (err) => callback(err)); // problem with token
   }
 
 };
