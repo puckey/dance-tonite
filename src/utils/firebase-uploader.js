@@ -66,6 +66,7 @@ const uploadDataString = (dataString, filename, uploadToken, callback) => {
 
   // metadata we want to store with the file
   const metadata = {
+    contentType: 'application/json',
     customMetadata: {
       'token': uploadToken
     }
