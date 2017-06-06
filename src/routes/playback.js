@@ -57,6 +57,9 @@ export default (req) => {
   const loopIndex = parseInt(req.params.loopIndex, 10);
 
   let onMouseMove;
+  let onMouseDown;
+  let onMouseUp;
+  let hoverHead;
 
   const component = {
     hud: hudSettings,
@@ -71,7 +74,12 @@ export default (req) => {
       megaOrb = new MegaOrb();
       titles = createTitles(orb);
       titles.mount();
-      outline.mount();
+
+      const moveHead = (progress) => {
+        moveCamera(progress);
+        const [roomIndex, headIndex] = hoverHead;
+        playlist.rooms[roomIndex].transformToHead(viewer.camera, headIndex);
+      };
 
       const moveCamera = (progress) => {
         const position = layout.getPosition(progress + 0.5);
@@ -94,8 +102,12 @@ export default (req) => {
         if (!feature.isMobile || !viewer.vrEffect.isPresenting) {
           progressBar.tick();
         }
-        moveCamera(audio.progress || 0);
-        outline.update( playlist, audio );
+        if (hoverHead) {
+          moveHead(audio.progress || 0);
+        } else {
+          moveCamera(audio.progress || 0);
+        }
+        outline.update();
       };
       viewer.events.on('tick', tick);
 
@@ -125,10 +137,25 @@ export default (req) => {
             playlist.rooms
           );
           if (roomIndex !== undefined) {
-            outline.set( roomIndex, performanceIndex );
+            outline.set(playlist, roomIndex, performanceIndex);
           }
         };
+
+        onMouseDown = ({ clientX, clientY }) => {
+          hoverHead = closestHead(clientX, clientY, playlist.rooms);
+          if (hoverHead) {
+            viewer.switchCamera('default');
+          }
+        };
+
+        onMouseUp = () => {
+          hoverHead = null;
+          viewer.switchCamera('orthographic');
+        };
+
         window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mouseup', onMouseUp);
       });
       if (component.destroyed) return;
 

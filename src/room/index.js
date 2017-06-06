@@ -72,6 +72,7 @@ export default class Room {
     this.costumeColor = this.isRecording
       ? recordCostumeColor
       : getCostumeColor(this.index);
+    this.instanceCount = 0;
     this.currentTime = 0;
   }
 
@@ -140,6 +141,13 @@ export default class Room {
     );
   }
 
+  transformToHead(object, layerIndex) {
+    const position = this.getHeadPosition(layerIndex, this.currentTime);
+    const orientation = this.getHeadOrientation(layerIndex, this.currentTime);
+    object.position.copy(position);
+    object.quaternion.copy(orientation);
+  }
+
   get frame() {
     return this.frameNumber === undefined
       ? null
@@ -147,10 +155,10 @@ export default class Room {
   }
 
   gotoTime(seconds, maxLayers) {
+    this.currentTime = seconds;
+
     const { frames } = this;
     if (!frames) return;
-
-    this.currentTime = seconds;
 
     const frameNumber = this.frameNumber = roomUtils.secondsToFrames(seconds);
     if (frames.length <= frameNumber) return;
@@ -162,6 +170,8 @@ export default class Room {
     if (maxLayers !== undefined) {
       count = Math.min(maxLayers, count);
     }
+
+    this.instanceCount = count;
 
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
@@ -298,3 +308,11 @@ Room.rotate180 = () => {
 };
 
 Room.group = roomsGroup;
+
+export function getHandMesh() {
+  return handMesh;
+}
+
+export function getHeadMesh() {
+  return headMesh;
+}

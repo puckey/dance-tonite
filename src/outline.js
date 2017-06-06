@@ -1,47 +1,43 @@
-import props from './props';
-import viewer from './viewer';
+import * as THREE from './lib/three';
+import { getHandMesh, getHeadMesh } from './room';
+// import { LIMB_ELEMENT_COUNT } from './utils/serializer';
 
-const head = new THREE.Mesh();
-head.geometry = props.head.geometry.clone();;
-head.geometry.rotateY( Math.PI );
-head.geometry.scale( 1.4, 1.4, 1.4 );
-head.material = new THREE.MeshBasicMaterial({
-  side: THREE.BackSide,
-  color: 0xffffff
-});
+const highlightColor = new THREE.Color(0xffffff);
 
-let roomIndex;
-let performanceIndex;
+let headInstanceIndex;
+let handInstanceIndex;
 
-function mount(){
-  viewer.scene.add( head );
+function set(playlist, roomIndex, performanceIndex) {
+  let headInstanceCount = 0;
+  let handInstanceCount = 0;
+
+  for (let i = 0; i < roomIndex; i++) {
+    if (playlist.rooms[i].hideHead === false) {
+      headInstanceCount += playlist.rooms[i].instanceCount;
+    }
+
+    //  Do we need to use LIMB_ELEMENT_COUNT here?
+    handInstanceCount += playlist.rooms[i].instanceCount * 2;
+  }
+  headInstanceIndex = headInstanceCount + performanceIndex;
+  handInstanceIndex = handInstanceCount + performanceIndex;
 }
 
-function set( roomIndexIn, performanceIndexIn ){
-  roomIndex = roomIndexIn;
-  performanceIndex = performanceIndexIn;
-}
-
-function update( playlist, audio ){
-  const room = playlist.rooms[ roomIndex ];
-  if( room === undefined ){
-    return;
+function update() {
+  const headMesh = getHeadMesh();
+  if (headMesh && headInstanceIndex !== undefined) {
+    headMesh.setColorAt(headInstanceIndex, highlightColor);
+    headMesh.needsUpdate('color');
   }
 
-  const headPosition = room.getHeadPosition(performanceIndex, room.currentTime);
-  if( isNaN( headPosition.x ) || isNaN( headPosition.y ) || isNaN( headPosition.z ) ){
-    return;
+  const handMesh = getHandMesh();
+  if (handMesh && handInstanceIndex !== undefined) {
+    handMesh.setColorAt(handInstanceIndex, highlightColor);
+    handMesh.setColorAt(handInstanceIndex + 1, highlightColor);
+    handMesh.needsUpdate('color');
   }
-
-  const headOrientation = room.getHeadOrientation(performanceIndex, room.currentTime);
-
-  head.position.copy( headPosition );
-  head.quaternion.copy( headOrientation );
-  // head.quaternion.w *= -1;
-  // console.log( headRotation );
-
 }
 
 export default {
-  mount, set, update
+  set, update,
 };
