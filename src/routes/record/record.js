@@ -140,7 +140,7 @@ export default (goto, req) => {
   });
 
   const controllersTick = () => {
-    const count = viewer.countActiveControllers();
+    const count = controllers.countActiveControllers();
     controllers.update(count === 2 ? pressToStart : null);
     instructions.setSubText(count === 2
       ? 'press right controller to start'
@@ -168,7 +168,7 @@ export default (goto, req) => {
       instructions.setMainText('');
       viewer.events.on('tick', controllersTick);
 
-      controllers.add();
+      //controllers.add();
 
       orb = new Orb();
       orb2 = new Orb();

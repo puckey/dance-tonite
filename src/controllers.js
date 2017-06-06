@@ -1,58 +1,98 @@
 import emitter from 'mitt';
-
 import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
-import feature from './utils/feature';
-import { mount } from './routes/';
-import transition from './transition';
 
-// const [leftController, rightController] = viewer.controllers;
 
-let leftController;
-let rightController;
+//  These are empty objects -- but we'll fill them soon.
+let [leftController, rightController] = viewer.controllers;
 
-const controllerViewGroup = new THREE.Group();
-window.cg = controllerViewGroup;
-
-function handleLeftPress(){
+function handleLeftPress() {
   if (leftPress) leftPress();
 }
-
-function handleRightPress(){
+function handleRightPress() {
   if (rightPress) rightPress();
 }
 
-viewer.events.on('controllerConnected', function( controller ){
-  // console.log('controller connected', controller );
 
-  //  avoid non-handedness of oculus remote
-  if( controller.gamepad.hand === '' ){
+window.addEventListener('vr controller connected', ({ detail: controller }) => {
+  //  We're only interested in Vive or Oculus controllers right now.
+  if (controller.gamepadStyle !== 'vive' && controller.gamepadStyle !== 'oculus') {
     return;
   }
 
-  let mesh;
-  if( controller.gamepad.hand === 'left' ){
-    leftController = controller;
-    controller.addEventListener('thumbpad press began', handleLeftPress );
-    mesh = lhand;
+  //  For 6DOF systems we need to add the VRControls standingMatrix
+  //  otherwise your controllers will be on the floor!
+  controller.standingMatrix = viewer.controls.getStandingMatrix();
 
+  //  This is for if we do add Daydream controller support here,
+  //  we'd need access to the camera (your head) position so we could
+  //  guess where the 3DOF controller is in relation to your head.
+  controller.head = viewer.cameras.default;
+
+  //  Which hand is this? Unfortunately I've found the reporting of handedness
+  //  from the Gamepad API is not reliably available. Just have to compensate.
+  //  This logic is convoluted but the goal its "do the best you can".
+  //  NOTE: What was the "avoid non-handedness of oculus remote" issue??
+  if (controller.gamepad.hand === 'left') {
+    if (leftController.gamepad === undefined) {
+      controller.hand = 'left';
+    } else {
+      controller.hand = 'right';
+    }
+  } else if (controller.gamepad.hand === 'right') {
+    if (rightController.gamepad === undefined) {
+      controller.hand = 'right';
+    } else {
+      controller.hand = 'left';
+    }
+
+  //  Reaching this point means gamepad.hand has no usefull value
+  //  so we'll just assign this controller to whichever hand is available.
+  } else if (leftController.gamepad === undefined) {
+    controller.hand = 'left';
+  } else {
+    controller.hand = 'right';
   }
-  else{
-    rightController = controller;
-    controller.addEventListener('thumbpad press began', handleRightPress );
+
+  //  Now that we've made a decision about handedness we can assign this controller
+  //  to either leftController or rightController and add the appropriate mesh.
+  let mesh;
+  if (controller.hand === 'left') {
+    viewer.controllers[0] = leftController = controller;
+    mesh = lhand;
+  } else {
+    viewer.controllers[1] = rightController = controller;
     mesh = rhand;
   }
-  controller.add( mesh );
+  controller.add(mesh);
 
-  controllerViewGroup.add( controller );
-
-  controller.addEventListener( 'vr controller disconnected', function(){
-    controllerViewGroup.remove( controller );
-    controller.remove( mesh );
+  controller.addEventListener('thumbpad press began', () => {
+    if (controller.hand === 'left') handleLeftPress();
+    else handleRightPress();
   });
+
+  //  On disconnect we need to remove the mesh
+  //  and destroy the controller.
+  //  The mesh (lhand or rhand) should continue to exist
+  //  which is good because we'll need it again if the controller reconnects.
+  controller.addEventListener('disconnected', () => {
+    controller.remove(mesh);
+    viewer.scene.remove(controller);
+    if (controller.hand === 'left') {
+      viewer.controllers[0] = leftController = {};
+    } else {
+      viewer.controllers[1] = rightController = {};
+    }
+  });
+
+  //  All our work here is done, let's add this controller to the scene!
+  // (Yes, Jonathan -- we will remove it on disconnect and destroy it.)
+  viewer.scene.add(controller);
 });
+window.kids = viewer.scene.children;
+
 
 const textCreator = SDFText.creator();
 
@@ -151,19 +191,14 @@ const controllers = Object.assign(
         removeRight();
       }
     },
-
-    add() {
-      viewer.scene.add( controllerViewGroup );
-    },
-
+    add() {},
     remove() {
       rightPress = leftPress = null;
-      viewer.scene.remove( controllerViewGroup );
     },
-
     setButtonVisibility,
-  }
+  },
 );
 
-export default controllers;
+controllers.countActiveControllers = () => +!!leftController.gamepad + +!!rightController.gamepad;
 
+export default controllers;

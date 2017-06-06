@@ -309,7 +309,7 @@ THREE.VRController.prototype.update = function(){
 
 //  This makes inspecting through the console a little bit saner.
 
-THREE.VRController.verbosity = 0;//0.5;
+THREE.VRController.verbosity = 1;//0.5;
 
 
 //  We need to keep a record of found controllers
@@ -338,7 +338,7 @@ THREE.VRController.onGamepadConnect = function( gamepad ){
 	//  Let’s give the controller a little rumble; some haptic feedback to
 	//  let the user know it’s connected and happy.
 
-	if( controller.gamepad.hapticActuators && controller.gamepad.hapitcActuators && controller.gamepad.hapticActuators.length > 0 ) controller.gamepad.hapticActuators[ 0 ].pulse( 0.1, 300 );
+	if( controller.gamepad.hapticActuators && controller.gamepad.hapticActuators.length > 0 ) controller.gamepad.hapticActuators[ 0 ].pulse( 0.1, 300 );
 
 
 	//  Now we’ll broadcast a global connection event.
@@ -541,7 +541,7 @@ THREE.VRController.supported = {
 	},
 	'Oculus Touch (Left)': {
 
-		style: 'rift',
+		style: 'oculus',
 		buttons: [
 
 			'thumbstick',
@@ -811,6 +811,3 @@ OrientationArmModel.prototype.quatAngle_ = function( q1, q2 ){
 
 
 }
-
-
-
