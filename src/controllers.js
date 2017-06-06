@@ -91,7 +91,11 @@ window.addEventListener('vr controller connected', ({ detail: controller }) => {
   // (Yes, Jonathan -- we will remove it on disconnect and destroy it.)
   viewer.scene.add(controller);
 });
-window.kids = viewer.scene.children;
+
+
+//  Still worried multiple VRController instances are being left in the scene
+//  after a few disconnects and reconnects? Check it for yourself!
+// window.kids = viewer.scene.children;
 
 
 const textCreator = SDFText.creator();

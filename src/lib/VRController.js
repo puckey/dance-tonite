@@ -214,26 +214,6 @@ THREE.VRController.prototype.update = function(){
 	pose = gamepad.pose;
 
 
-	//  Once connected a gamepad will have a not-undefined pose
-	//  but that pose will be null until a user action ocurrs.
-	//  Similarly if a gamepad has powered off or disconnected
-	//  the pose will contain all nulls.
-	//  We have to check this ourselves because the Gamepad API
-	//  might not report a disconnection reliably :'(
-	//  Either way, if we’re all null let’s bail by returning early.
-
-	if( pose === null || ( pose.orientation === null && pose.position === null )){
-
-		if( this.hasPosed === true ) THREE.VRController.onGamepadDisconnect( gamepad )
-		return;
-	}
-	if( this.hasPosed !== true ){
-
-		this.hasPosed = true;
-		this.visible  = true;
-	}
-
-
 	//  If we’ve gotten to here then gamepad.pose has a definition
 	//  so now we can set a convenience variable to know if we are 3DOF or 6DOF.
 
@@ -309,7 +289,7 @@ THREE.VRController.prototype.update = function(){
 
 //  This makes inspecting through the console a little bit saner.
 
-THREE.VRController.verbosity = 1;//0.5;
+THREE.VRController.verbosity = 0;//0.5;
 
 
 //  We need to keep a record of found controllers
@@ -348,7 +328,6 @@ THREE.VRController.onGamepadConnect = function( gamepad ){
 	//  if we don’t already have a reference to it?!
 
 	if( scope.verbosity >= 0.5 ) console.log( 'vr controller connected', controller );
-	controller.visible = false;
 	window.setTimeout( function(){
 
 		window.dispatchEvent( new CustomEvent( 'vr controller connected', { detail: controller }));
@@ -359,28 +338,16 @@ THREE.VRController.onGamepadDisconnect = function( gamepad ){
 
 
 	//  We need to find the controller that holds the reference to this gamepad.
+	//  Then we can broadcast the disconnection event on the controller itself
+	//  and also “delete” from our controllers object. Goodbye!
 
 	var
 	scope = THREE.VRController,
 	controller = scope.controllers[ gamepad.index ];
 
-
-	//  Now we can broadcast the disconnection event on the controller itself
-	//  and also “delete” from our controllers object. Goodbye!
-
 	if( scope.verbosity >= 0.5 ) console.log( 'vr controller disconnected', controller );
 	controller.dispatchEvent({ type: 'disconnected', controller: controller });
 	scope.controllers[ gamepad.index ] = undefined;
-
-
-	//  I’ve taken the following out of use because perhaps you want to
-	//  fade out your controllers? Or have them fall upwards into the heavens
-	//  from whence they came? You don’t want them removed or made invisible
-	//  immediately. So just listen for the 'vr controller disconnected' event
-	//  and do as you will :)
-
-	//controller.visible = false;
-	//controller.parent.remove( controller );
 }
 
 
@@ -406,21 +373,26 @@ THREE.VRController.update = function(){
 	for( i = 0; i < gamepads.length; i ++ ){
 
 		gamepad = gamepads[ i ];
-		if( gamepad !== null ){
+		if( gamepad !== null &&
+			gamepad.pose !== undefined &&
+			gamepad.pose !== null ){
 
-			if( this.controllers[ i ] === undefined ) THREE.VRController.onGamepadConnect( gamepad );
-			this.controllers[ i ].update();
-		}
+			//  We've just confirmed that a ready Gamepad instance exists in this slot.
+			//  If it's not already in our controllers list we need to initiate it!
+			//  And either way we need to call update() on it.
+
+			if( gamepad.pose.orientation !== null || gamepad.pose.position !== null ){
+
+				if( this.controllers[ i ] === undefined ) THREE.VRController.onGamepadConnect( gamepad );
+				this.controllers[ i ].update();
+			}
 
 
-		//  Note: If you power down a gamepad after startup the gamepad will NOT
-		//  be null and gamepad.connected will still equal true so this will not fire!!
-		//  Instead you’d need to check for gamepad.pose.position === null and
-		//  gamepad.pose.orientation === null yourself.
+			//  If we've lost orientation and position then we've lost this controller.
+			//  Unfortunately we cannot rely on gamepad.connected because it will ALWAYS
+			//  equal true -- even if you power down the controller!
 
-		else if( gamepad === null && this.controllers[ i ] !== undefined ){
-
-			THREE.VRController.onGamepadDisconnect( gamepad );
+			else if( this.controllers[ i ] !== undefined ) THREE.VRController.onGamepadDisconnect( gamepad );
 		}
 	}
 }
