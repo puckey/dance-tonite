@@ -1,4 +1,5 @@
 import * as THREE from '../lib/three';
+import windowSize from '../utils/windowSize';
 
 require('../lib/OBJLoader')(THREE);
 
@@ -94,6 +95,17 @@ export const loadModel = async ([objUrl, textureUrl]) => {
     object.material.map = texture;
   }
   return object;
+};
+
+export const worldToScreen = (camera, position) => {
+  // map to normalized device coordinate (NDC) space
+  VECTOR
+    .copy(position)
+    .project(camera);
+  VECTOR.x = (VECTOR.x + 1) * (windowSize.width * 0.5);
+  VECTOR.y = (-VECTOR.y + 1) * (windowSize.height * 0.5);
+
+  return VECTOR;
 };
 
 const loadObject = (url) => new Promise(
