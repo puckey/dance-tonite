@@ -145,7 +145,7 @@ export default (req) => {
 
         onMouseDown = ({ clientX, clientY }) => {
           hoverHead = closestHead(clientX, clientY, playlist.rooms);
-          if (!hoverHead[0]) hoverHead = null;
+          if (hoverHead[0] === undefined) hoverHead = null;
           if (hoverHead) {
             viewer.switchCamera('default');
             Room.group.add(viewer.camera);
