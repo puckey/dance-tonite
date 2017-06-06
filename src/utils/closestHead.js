@@ -11,6 +11,7 @@ const distanceToMouse = (worldPosition) => VECTOR2
   .copy(worldToScreen(viewer.camera, worldPosition))
   .distanceToSquared(mouse);
 
+const CLOSEST_ARRAY = [];
 export default (screenX, screenY, rooms) => {
   mouse.set(screenX, screenY);
   let roomIndex;
@@ -33,5 +34,7 @@ export default (screenX, screenY, rooms) => {
       }
     }
   }
-  return [roomIndex, headIndex];
+  CLOSEST_ARRAY[0] = roomIndex;
+  CLOSEST_ARRAY[1] = headIndex;
+  return CLOSEST_ARRAY;
 };
