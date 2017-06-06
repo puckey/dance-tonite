@@ -18,8 +18,8 @@ const convertFrame = (frames, number) => {
   return newValues;
 };
 
-const numberedArray = (length) => Array
-  .apply(null, { length }) // eslint-disable-line
+const numberedArray = (length) => Array // eslint-disable-line
+  .apply(null, { length })
   .map(Number.call, Number);
 
 export default (data, fps) => {
