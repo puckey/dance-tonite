@@ -18,7 +18,10 @@ const checkHasExternalDisplay = () => (
           );
         }
       )
-      .catch(reject);
+      .catch((error) => {
+        console.log(error);
+        resolve(false);
+      });
   })
 );
 
