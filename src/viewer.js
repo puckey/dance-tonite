@@ -71,7 +71,7 @@ const createScene = () => {
 
   scene.add(hemisphereLight);
   scene.add(light, ambientLight);
-  scene.fog = new THREE.Fog(0x000000, 0, 75);
+  scene.fog = new THREE.Fog(0x000000, 0, 120);
   return scene;
 };
 

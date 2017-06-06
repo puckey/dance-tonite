@@ -15,7 +15,6 @@
   top: 0;
   left: 0;
   display: flex;
-  flex-direction: column;
   z-index: $interface-layer;
 }
 
@@ -35,13 +34,9 @@ svg * {
   user-select: none;
 }
 
-.menu-left .menu-item {
+.menu-left .menu-item:first-of-type {
   padding-right: 0;
   padding-left: 1rem;
-}
-
-.menu-left .menu-item:first-of-type {
-  padding-top: 0.4rem;
 }
 
 .menu .menu-item + .menu-item {
@@ -190,19 +185,29 @@ svg * {
   display: inline-block;
 }
 
-.loader-overlay-text,
 .play-button {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -6rem -3.75rem;
+  padding: 3rem;
+  z-index: $popover-layer;
+}
+
+.loader-overlay-text,
+.play-button-text {
   position: fixed;
   top: 50%;
   z-index: $popover-layer;
   width: 100%;
-  transform: translateY(-1rem);
+  transform: translateY(2rem);
   text-align: center;
 }
 
 .loader-overlay-text {
   pointer-events: none;
-  transform: translateY(2rem);
 }
 
 .spinner,
@@ -316,7 +321,9 @@ svg * {
   cursor: pointer;
   z-index: $popover-layer;
   user-select: none;
+}
 
+.about .close-button {
   @media screen and (max-width: $min-width) {
     position: absolute;
   }

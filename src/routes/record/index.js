@@ -5,6 +5,7 @@ import instructions from '../../instructions';
 import router from '../../router';
 import hud from '../../hud';
 import audio from '../../audio';
+import viewer from '../../viewer';
 
 let current;
 
@@ -32,6 +33,7 @@ export default (req) => (
           router.navigate(step);
         }
       };
+
       // Start at tutorial:
       goto('tutorial');
     },
@@ -42,6 +44,10 @@ export default (req) => (
       if (current) {
         current.unmount();
         current = null;
+      }
+      if (viewer.vrEffect.isPresenting) {
+        viewer.vrEffect.exitPresent();
+        viewer.switchCamera('orthographic');
       }
     },
   }

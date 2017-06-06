@@ -15,11 +15,8 @@ const componentContext = hyperscript.context();
 
 const toggleMute = () => {
   const muted = audio.toggleMute();
-  const muteButton = elements.muteButton;
-  muteButton.querySelector('.menu-item-icon').innerHTML =
+  elements.muteButton.querySelector('.menu-item-icon').innerHTML =
     muted ? speakerMuteIconSvg : speakerIconSvg;
-  muteButton.querySelector('.menu-item-label').innerHTML =
-    muted ? 'Unmute' : 'Mute';
 };
 
 const elements = {

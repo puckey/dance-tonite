@@ -89,6 +89,7 @@ export default (req) => {
         position.z *= -1;
         viewer.camera.position.copy(position);
         orb.position.copy(position);
+        megaOrb.setProgress( audio.time / audio.duration );
       };
 
       moveCamera(0);
@@ -190,10 +191,12 @@ export default (req) => {
         }, watchTime * 1000);
       }
 
-      audio.fadeIn();
-      audio.play();
+      // Safari won't play unless we wait until next tick
+      setTimeout(() => {
+        audio.play();
+        audio.fadeIn();
+      });
 
-      positionMegaOrb(megaOrb);
     },
 
     unmount: () => {
