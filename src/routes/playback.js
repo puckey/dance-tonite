@@ -204,6 +204,8 @@ export default (req) => {
       playlist.destroy();
       progressBar.destroy();
       window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseup', onMouseUp);
     },
   };
   return component;
