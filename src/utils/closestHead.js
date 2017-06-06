@@ -11,7 +11,8 @@ const distanceToMouse = (worldPosition) => VECTOR2
   .copy(worldToScreen(viewer.camera, worldPosition))
   .distanceToSquared(mouse);
 
-const CLOSEST_ARRAY = [];
+const MIN_HEAD_DISTANCE = 100 * 100;
+
 export default (screenX, screenY, rooms) => {
   mouse.set(screenX, screenY);
   let roomIndex;
@@ -27,14 +28,16 @@ export default (screenX, screenY, rooms) => {
     for (let j = 0, l = serializer.count(frame); j < l; j++) {
       const head = room.getHeadPosition(j);
       const distance = distanceToMouse(head);
-      if (distance < closestDistance && distance) {
+      if (
+        distance < closestDistance &&
+        distance < MIN_HEAD_DISTANCE &&
+        distance
+      ) {
         roomIndex = i;
         headIndex = j;
         closestDistance = distance;
       }
     }
   }
-  CLOSEST_ARRAY[0] = roomIndex;
-  CLOSEST_ARRAY[1] = headIndex;
-  return CLOSEST_ARRAY;
+  return [roomIndex, headIndex];
 };
