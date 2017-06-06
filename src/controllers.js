@@ -1,14 +1,45 @@
 import emitter from 'mitt';
 
+import { Group } from './lib/three';
+
 import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
-import feature from './utils/feature';
-import { mount } from './routes/';
-import transition from './transition';
 
-const [leftController, rightController] = viewer.controllers;
+const controllerViewGroup = new Group();
+
+const handleLeftPress = () => {
+  if (leftPress) leftPress();
+};
+
+const handleRightPress = () => {
+  if (rightPress) rightPress();
+};
+
+viewer.events.on('controllerConnected', (controller) => {
+  // avoid non-handedness of oculus remote
+  if (controller.gamepad.hand === '') {
+    return;
+  }
+
+  let mesh;
+  if (controller.gamepad.hand === 'left') {
+    controller.addEventListener('thumbpad press began', handleLeftPress);
+    mesh = lhand;
+  } else {
+    controller.addEventListener('thumbpad press began', handleRightPress);
+    mesh = rhand;
+  }
+  controller.add(mesh);
+
+  controllerViewGroup.add(controller);
+
+  controller.addEventListener('vr controller disconnected', () => {
+    controllerViewGroup.remove(controller);
+    controller.remove(mesh);
+  });
+});
 
 const textCreator = SDFText.creator();
 
@@ -37,14 +68,6 @@ lText.position.set(-0.12, 0, -0.022);
 
 let leftPress;
 let rightPress;
-
-leftController.addEventListener('thumbpaddown', () => {
-  if (leftPress) leftPress();
-});
-
-rightController.addEventListener('thumbpaddown', () => {
-  if (rightPress) rightPress();
-});
 
 const rButton = rhand.getObjectByName('button');
 const lButton = lhand.getObjectByName('button');
@@ -116,14 +139,12 @@ const controllers = Object.assign(
     },
 
     add() {
-      leftController.add(lhand);
-      rightController.add(rhand);
+      viewer.scene.add(controllerViewGroup);
     },
 
     remove() {
       rightPress = leftPress = null;
-      leftController.remove(lhand);
-      rightController.remove(rhand);
+      viewer.scene.remove(controllerViewGroup);
     },
 
     setButtonVisibility,

@@ -12,7 +12,8 @@ export const transformMesh = (
   higher,
   ratio,
   index,
-  arrayOffset,
+  performanceIndex,
+  limbIndex,
   scale,
   color,
   offset,
@@ -23,7 +24,8 @@ export const transformMesh = (
       lower,
       higher,
       ratio,
-      arrayOffset,
+      performanceIndex,
+      limbIndex,
       offset
     )
   );
@@ -33,7 +35,8 @@ export const transformMesh = (
       lower,
       higher,
       ratio,
-      arrayOffset
+      performanceIndex,
+      limbIndex
     )
   );
   instancedMesh.setScaleAt(

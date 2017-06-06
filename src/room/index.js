@@ -22,6 +22,7 @@ import layout from './layout';
 import dummyTextureUrl from '../public/dummy.png';
 import audio from '../audio';
 import * as serializer from '../utils/serializer';
+import feature from '../utils/feature';
 
 const PROTOCOL = location.protocol;
 const PERFORMANCE_ELEMENT_COUNT = 21;
@@ -99,8 +100,12 @@ export default class Room {
   load(callback) {
     const frames = [];
     this.streamer = streamJSON(
-     // `${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${this.pathRecording ? '' : `${queryData.fps || 10}FPS/`}${this.url}`,
-      `${PROTOCOL}//storage.googleapis.com/you-move-me.appspot.com/_incoming/${this.url}`,
+     //`${PROTOCOL}//storage.googleapis.com/you-move-me.appspot.com/_incoming/${this.url}`,
+      `${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${
+        this.pathRecording
+          ? ''
+          : `${queryData.fps || (feature.has6DOF ? 45 : 15)}FPS/`
+      }${this.url}`,
       (error, json) => {
         if (error || !json) {
           if (callback) {
@@ -178,7 +183,8 @@ export default class Room {
       lowerFrame,
       higherFrame,
       ratio,
-      index * PERFORMANCE_ELEMENT_COUNT,
+      index,
+      0,
       this.position
     ).applyMatrix4(roomsGroup.matrix);
     return position;
@@ -217,7 +223,8 @@ export default class Room {
           higherFrame,
           ratio,
           headMesh.geometry.maxInstancedCount++,
-          i * PERFORMANCE_ELEMENT_COUNT,
+          i,
+          0,
           scale,
           costumeColor,
           position
@@ -229,7 +236,8 @@ export default class Room {
         higherFrame,
         ratio,
         handMesh.geometry.maxInstancedCount++,
-        i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT,
+        i,
+        1,
         scale,
         costumeColor,
         position
@@ -240,7 +248,8 @@ export default class Room {
         higherFrame,
         ratio,
         handMesh.geometry.maxInstancedCount++,
-        i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT * 2,
+        i,
+        2,
         scale,
         costumeColor,
         position
