@@ -18,7 +18,7 @@ export default class Choose extends Component {
       starred: false,
     };
 
-    this.toggleStarredStatus = this.toggleStarredStatus.bind(this);
+    this.toggleStarred = this.toggleStarred.bind(this);
   }
 
   toggleStarredStatus() {
@@ -31,10 +31,17 @@ export default class Choose extends Component {
     return (
       <Container>
         <Align type="top-left row">
-          <InboxCounter unreadCount={unreadCount} /><EnterVR /><Mute />
+          <InboxCounter unreadCount={unreadCount} />
+          <EnterVR />
+          <Mute />
         </Align>
         <Align type="bottom-right">
-          <div className="inbox-menu-item" onClick={this.toggleStarredStatus}>{ starred ? 'Unstar' : 'Star' }</div>
+          <div
+            className="inbox-menu-item"
+            onClick={this.toggleStarred}
+          >
+            { starred ? 'Unstar' : 'Star' }
+          </div>
           { starred &&
             <input autoFocus type="text" className="inbox-title-input" id="performanceTitle">
               Enter title
