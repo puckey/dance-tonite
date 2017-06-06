@@ -1,40 +1,31 @@
 import * as THREE from '../lib/three';
 import viewer from '../viewer';
-import settings from '../settings';
 import windowSize from '../utils/windowSize';
 import * as serializer from '../utils/serializer';
-import { tempVector } from '../utils/three';
-import Room from '../room';
+import { worldToScreen } from '../utils/three';
 
-const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-const camera = viewer.cameras.orthographic;
-const MIN_ROOM_DISTANCE = 50;
+const VECTOR2 = new THREE.Vector2();
+
+const distanceToMouse = (worldPosition) => VECTOR2
+  .copy(worldToScreen(viewer.camera, worldPosition))
+  .distanceToSquared(mouse);
 
 export default (screenX, screenY, rooms) => {
-  mouse.x = ((screenX / windowSize.width) * 2) - 1;
-  mouse.y = ((screenY / windowSize.height) * -2) + 1;
-  raycaster.setFromCamera(mouse, camera);
-  const { ray } = raycaster;
+  mouse.set(screenX, screenY);
   let roomIndex;
   let headIndex;
   let closestDistance = Number.MAX_VALUE;
 
+  const minRoomDistance = (windowSize.width * windowSize.width) * 0.5;
   for (let i = 0; i < rooms.length; i++) {
-    const { frame, position, index } = rooms[i];
-    if (!frame) continue;
-    const roomPos = tempVector(
-      -position.x,
-      position.y,
-      -position.z
-    );
-    // Skip rooms that are too far away:
-    if (ray.distanceSqToPoint(roomPos) > MIN_ROOM_DISTANCE) continue;
+    const room = rooms[i];
+    const { frame } = room;
+    const roomDistance = distanceToMouse(room.worldPosition);
+    if (!frame || roomDistance > minRoomDistance) continue;
     for (let j = 0, l = serializer.count(frame); j < l; j++) {
-      const head = serializer
-        .getPosition(frame, j, 0, position)
-        .applyMatrix4(Room.group.matrix);
-      const distance = ray.distanceSqToPoint(head);
+      const head = room.getHeadPosition(j);
+      const distance = distanceToMouse(head);
       if (distance < closestDistance && distance) {
         roomIndex = i;
         headIndex = j;

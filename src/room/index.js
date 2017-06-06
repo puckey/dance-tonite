@@ -45,6 +45,8 @@ debugMesh.frustumCulled = false;
 
 export default class Room {
   constructor({ url, recording, index }) {
+    this._worldPosition = new THREE.Vector3();
+
     this.placementIndex = index === undefined
       ? roomIndex
       : index;
@@ -111,6 +113,12 @@ export default class Room {
     }
   }
 
+  get worldPosition() {
+    return this._worldPosition
+      .copy(this.position)
+      .applyMatrix4(roomsGroup.matrix);
+  }
+
   changeColor(color) {
     for (const i in roomMeshes) {
       const mesh = roomMeshes[i];
@@ -123,9 +131,9 @@ export default class Room {
     }
   }
 
-  getHeadPosition(index, seconds) {
+  getHeadPosition(index) {
     return serializer.getPosition(
-      this.frames[roomUtils.secondsToFrames(seconds)],
+      this.frame,
       index,
       0,
       this.position
