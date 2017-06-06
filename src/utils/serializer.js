@@ -17,10 +17,15 @@ export const getPosition = (positions, performanceIndex, limbIndex, offset) => {
   return position;
 };
 
-export const getQuaternion = (positions, performanceIndex, limbIndex) => {
+export const getQuaternion = (
+  positions,
+  performanceIndex,
+  limbIndex,
+  _tempQuaternion = tempQuaternion
+) => {
   const arrayOffset = performanceIndex * PERFORMANCE_ELEMENT_COUNT
     + limbIndex * LIMB_ELEMENT_COUNT;
-  return tempQuaternion(
+  return _tempQuaternion(
     positions[arrayOffset + 3] * 0.0001,
     positions[arrayOffset + 4] * 0.0001,
     positions[arrayOffset + 5] * 0.0001,
@@ -40,7 +45,6 @@ export const getFrame = (frames, number) => {
 
 export const avgPosition = (lower, higher, ratio, performanceIndex, limbIndex, position) => {
   const { x: x1, y: y1, z: z1 } = getPosition(lower, performanceIndex, limbIndex);
-  const { x: x2, y: y2, z: z2 } = getPosition(higher, performanceIndex, limbIndex);
   if (!higher) {
     const vector = tempVector(x1, y1, z1);
     if (position) {
@@ -49,6 +53,7 @@ export const avgPosition = (lower, higher, ratio, performanceIndex, limbIndex, p
     }
     return vector;
   }
+  const { x: x2, y: y2, z: z2 } = getPosition(higher, performanceIndex, limbIndex);
   const vector = tempVector(
     x1 + (x2 - x1) * ratio,
     y1 + (y2 - y1) * ratio,
@@ -64,7 +69,10 @@ export const avgPosition = (lower, higher, ratio, performanceIndex, limbIndex, p
 export const avgQuaternion = (lower, higher, ratio, performanceIndex, limbIndex) => {
   const quaternion = getQuaternion(lower, performanceIndex, limbIndex);
   if (higher) {
-    quaternion.slerp(getQuaternion(higher, performanceIndex, limbIndex), ratio);
+    quaternion.slerp(
+      getQuaternion(higher, performanceIndex, limbIndex, tempQuaternion2),
+      ratio
+    );
   }
   return quaternion;
 };
