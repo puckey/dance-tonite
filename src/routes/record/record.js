@@ -8,10 +8,10 @@ import createTimeline from '../../lib/timeline';
 import controllers from '../../controllers';
 import transition from '../../transition';
 import instructions from '../../instructions';
-import dp from '../../debugplane';
+import hud from '../../hud';
+import router from '../../router';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
-import feature from '../../utils/feature';
 
 export default (goto, req) => {
   const { roomDepth, roomOffset } = settings;
@@ -53,7 +53,7 @@ export default (goto, req) => {
   const pressToFinish = {
     removeOnPress: true,
     left: {
-      text: 'press to restart',
+      text: 'press to redo',
       onPress: async () => {
         await transition.enter({
           text: 'Let’s try that again...',
@@ -99,14 +99,12 @@ export default (goto, req) => {
           controllers.update(pressToFinish);
         }
         const round = Math.floor(audio.totalProgress / 2);
-        // #googleIO2017: Display 'LAST ROUND' on 10th round:
-        const subText = (feature.isIOVive && round === 9)
+        const subText = (round === (settings.maxLayerCount - 1))
           ? 'last round'
           : `round ${numberWords[round] || round}`;
         instructions.setSubText(subText);
         instructions.beginCountdown(Math.round(audio.loopDuration - audio.time));
-        // #googleIO2017: IO users are limited to 10 layers:
-        if (feature.isIOVive && round === 10) {
+        if (round === settings.maxLayerCount) {
           performFinish();
           controllers.update();
         }
@@ -122,15 +120,16 @@ export default (goto, req) => {
   ]);
 
   const tick = () => {
+    Room.clear();
     audio.tick();
     room.gotoTime(audio.time);
     const progress = audio.progress - 1; // value between -1 and 1
     timeline.tick(audio.progress);
 
     const z = (progress - 0.5) * roomDepth + roomOffset;
-    orb.move(z);
+    orb.position.z = z;
     if (audio.totalProgress > 1) {
-      orb2.move(z + roomDepth * 2);
+      orb2.position.z = z + roomDepth * 2;
     }
     recording.tick();
   };
@@ -174,11 +173,15 @@ export default (goto, req) => {
       orb = new Orb();
       orb2 = new Orb();
 
-      viewer.scene.add(dp.outline);
+      // Create close button
+      hud.create('div.close-button',
+        {
+          onclick: () => router.navigate('/'),
+        },
+        '×'
+      );
 
-      if (transition.isInside()) {
-        await transition.exit();
-      }
+      transition.exit();
     },
 
     unmount: () => {
@@ -187,6 +190,7 @@ export default (goto, req) => {
       controllers.update();
       controllers.remove();
       viewer.events.off('tick', tick);
+      viewer.events.off('tick', controllersTick);
       audio.reset();
       audio.fadeOut();
       if (room) {
@@ -194,7 +198,6 @@ export default (goto, req) => {
         orb.destroy();
         orb2.destroy();
       }
-      viewer.scene.remove(dp.outline);
     },
   };
 

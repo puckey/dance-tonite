@@ -8,10 +8,14 @@ import settings from '../../settings';
 import hud from '../../hud';
 import createTimeline from '../../lib/timeline';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
-import { Vector3 } from '../../lib/three';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
-import controllers from '../../controllers';
+import windowSize from '../../utils/windowSize';
+import audioSrcOgg from '../../public/sound/room-1.ogg';
+import audioSrcMp3 from '../../public/sound/room-1.mp3';
+import { worldToScreen } from '../../utils/three';
+
+const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 
 // TODO: replace with better recording:
 const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
@@ -31,24 +35,14 @@ export default (goto) => {
   const elements = {};
   const objects = {};
 
-  const TEMP_VECTOR = new Vector3();
-  const worldToScreen = (position) => {
-    // map to normalized device coordinate (NDC) space
-    TEMP_VECTOR
-      .copy(position)
-      .project(viewer.camera);
-    TEMP_VECTOR.x = (TEMP_VECTOR.x + 1) * (state.windowWidth * 0.5);
-    TEMP_VECTOR.y = (-TEMP_VECTOR.y + 1) * (state.windowHeight * 0.5);
-
-    return TEMP_VECTOR;
-  };
-
   const performSkip = async () => {
     // TODO: we need to make sure the user has a vr device capable of room vr:
     if (feature.hasVR) {
       elements.skipTutorialButton.classList.add('mod-hidden');
       const removeOverlay = hud.enterVR();
-      await viewer.vrEffect.requestPresent();
+      if (!viewer.vrEffect.isPresenting) {
+        await viewer.vrEffect.requestPresent();
+      }
       // Wait for the VR overlay to cover the screen:
       await sleep(500);
       goto('record');
@@ -95,11 +89,6 @@ export default (goto) => {
     );
   };
 
-  // #googleIO2017: long press trigger button to display 'Add your performance' button:
-  if (feature.isIOVive) {
-    controllers.on('triggerlongpress', createOverlay);
-  }
-
   const textTimeline = createTimeline([
     {
       time: 0.5,
@@ -108,7 +97,7 @@ export default (goto) => {
       layers: 1,
     },
     {
-      time: 3,
+      time: 5,
       text: 'This is the camera.',
       getPosition: () => objects.orb.mesh.position,
     },
@@ -167,12 +156,13 @@ export default (goto) => {
     {
       time: 38,
       text: '',
-      callback: !feature.isIOVive ? createOverlay : null,
+      callback: createOverlay,
     },
   ]);
 
   const tick = () => {
     audio.tick();
+    Room.clear();
     room.gotoTime(
       audio.time,
       Math.max(
@@ -185,27 +175,25 @@ export default (goto) => {
     textTimeline.tick(audio.currentTime % 48);
 
     const z = (progress - 0.5) * -roomDepth - roomOffset;
-    objects.orb.move(z);
+    objects.orb.position.z = z;
     if (audio.totalProgress > 1) {
-      objects.orb2.move(z - roomDepth * 2);
+      objects.orb2.position.z = z - roomDepth * 2;
     }
 
     if (getLineTarget) {
-      const { x, y } = worldToScreen(getLineTarget());
+      const { x, y } = worldToScreen(viewer.camera, getLineTarget());
       elements.lineEl.style.transform = getLineTransform(
         state.lineOriginX,
         state.lineOriginY,
         x,
         y,
-        state.windowHeight * 0.03
+        windowSize.height * 0.04
       );
     }
   };
 
-  const updateWindowDimensions = () => {
-    state.windowWidth = window.innerWidth;
-    state.windowHeight = window.innerHeight;
-    state.lineOriginX = state.windowWidth / 2;
+  const updateWindowDimensions = ({ width }) => {
+    state.lineOriginX = width / 2;
     state.lineOriginY = elements.tutorialText.offsetHeight * 1.2;
   };
 
@@ -234,18 +222,14 @@ export default (goto) => {
         {
           onclick: createOverlay,
         },
-        // #googleIO2017: we display 'Tutorial' in the bottom right so people
-        // understand what they're watching.
-        feature.isIOVive ? 'Dance Tonite Tutorial' : 'Skip Tutorial'
+        'Skip Tutorial'
       );
-      if (!feature.isIOVive) {
-        hud.create('div.close-button',
-          {
-            onclick: () => router.navigate('/'),
-          },
-          '×'
-        );
-      }
+      hud.create('div.close-button',
+        {
+          onclick: () => router.navigate('/'),
+        },
+        '×'
+      );
       elements.lineEl = hud.create('div.line', {
         style: {
           transform: 'scaleX(0)',
@@ -257,14 +241,13 @@ export default (goto) => {
       state.originalZoom = viewer.camera.zoom;
       viewer.camera.position.y = 2;
       viewer.camera.position.z = 1.3;
-      viewer.camera.zoom = 0.7;
       viewer.camera.updateProjectionMatrix();
 
       Room.rotate180();
 
       await Promise.all([
         audio.load({
-          src: '/public/sound/room-1.ogg',
+          src: audioSrc,
           loops: 2,
           loopOffset: 0.5,
         }),
@@ -292,8 +275,8 @@ export default (goto) => {
 
       textTimeline.on('keyframe', handleKeyframe);
       viewer.events.on('tick', tick);
-      window.addEventListener('resize', updateWindowDimensions);
-      updateWindowDimensions();
+      windowSize.on('resize', updateWindowDimensions);
+      updateWindowDimensions(windowSize);
     },
     unmount: () => {
       component.destroyed = true;
@@ -302,21 +285,16 @@ export default (goto) => {
       viewer.camera.position.copy(state.originalCameraPosition);
       viewer.camera.zoom = state.originalZoom;
       viewer.camera.updateProjectionMatrix();
-      window.removeEventListener('resize', updateWindowDimensions);
+      windowSize.off('resize', updateWindowDimensions);
       audio.reset();
       audio.fadeOut();
       if (room) {
         room.destroy();
       }
       viewer.camera.position.y = 0;
-      viewer.camera.zoom = 1;
       viewer.camera.updateProjectionMatrix();
       viewer.events.off('tick', tick);
       textTimeline.off('keyframe', handleKeyframe);
-      // #googleIO2017: remove event listener which was added above:
-      if (feature.isIOVive) {
-        controllers.off('triggerlongpress', createOverlay);
-      }
     },
   };
 

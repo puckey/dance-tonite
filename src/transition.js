@@ -6,6 +6,7 @@ import * as SDFText from './sdftext';
 import * as THREE from './lib/three';
 import { offsetFrom } from './utils/three';
 import settings from './settings';
+import dummyTextureUrl from './public/dummy.png';
 
 let transitionVersion = 0;
 
@@ -27,6 +28,18 @@ textItem.position.y = 3;
 
 transitionScene.add(pivot);
 transitionScene.add(props.grid);
+
+const debugMesh = new THREE.Mesh(
+  new THREE.BoxGeometry(0, 0, 0),
+  new THREE.MeshBasicMaterial({
+    map: new THREE.TextureLoader().load(dummyTextureUrl),
+  })
+);
+debugMesh.frustumCulled = false;
+// Move an extra invisible object3d with a texture to the end of scene's children
+// array in order to solve a texture glitch as described in:
+// https://github.com/puckey/you-move-me/issues/129
+transitionScene.add(debugMesh);
 
 const floatingOrb = new Orb(transitionScene);
 
@@ -76,19 +89,16 @@ const tweenFog = (from, to, duration = 2) => {
   return tweener.promise;
 };
 
-const fadeOut = async (duration) => {
+const fadeOut = (duration) => {
   fadedOut = true;
-  fading = tweenFog(25, 0, duration);
-  await fading;
+  return tweenFog(25, 0, duration);
 };
 
-const fadeIn = async (maxFogDistance, duration) => {
+const fadeIn = (maxFogDistance, duration) => {
   fadedOut = false;
-  fading = tweenFog(0, maxFogDistance, duration);
-  await fading;
+  return tweenFog(0, maxFogDistance, duration);
 };
 
-let fading;
 const revealFar = 300;
 const transitionSpaceFar = 25;
 

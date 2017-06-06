@@ -5,7 +5,8 @@ import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
 import feature from './utils/feature';
-import router from './router';
+import { mount } from './routes/';
+import transition from './transition';
 
 const [leftController, rightController] = viewer.controllers;
 
@@ -128,35 +129,6 @@ const controllers = Object.assign(
     setButtonVisibility,
   }
 );
-
-// #googleIO2017: emit 'menulongpress' and 'triggerlongpress' events for Vive station:
-if (feature.isIOVive) {
-  const PRESS_RESET_TIME = 2000;
-  const subscribe = (controller, buttonName) => {
-    let timeOutId;
-
-    controller.addEventListener(`${buttonName}down`, () => {
-      timeOutId = setTimeout(
-        () => controllers.emit(`${buttonName}longpress`),
-        PRESS_RESET_TIME
-      );
-    });
-
-    controller.addEventListener(
-      `${buttonName}up`,
-      () => clearTimeout(timeOutId)
-    );
-  };
-
-  // Add menu and trigger long press events for both controllers:
-  [leftController, rightController].forEach(controller => {
-    ['menu', 'trigger'].forEach(event => subscribe(controller, event));
-  });
-
-  controllers.on('menulongpress', () => {
-    window.location = '/record';
-  });
-}
 
 export default controllers;
 
