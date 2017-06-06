@@ -21,7 +21,7 @@ export default class Choose extends Component {
     this.toggleStarred = this.toggleStarred.bind(this);
   }
 
-  toggleStarredStatus() {
+  toggleStarred() {
     this.setState({
       starred: !this.state.starred,
     });
