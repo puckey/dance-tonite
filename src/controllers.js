@@ -1,13 +1,13 @@
 import emitter from 'mitt';
 
-import THREE from './lib/three';
+import { Group } from './lib/three';
 
 import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
 
-const controllerViewGroup = new THREE.Group();
+const controllerViewGroup = new Group();
 
 const handleLeftPress = () => {
   if (leftPress) leftPress();
