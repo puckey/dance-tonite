@@ -5,41 +5,66 @@ import settings from '../settings';
 export const PERFORMANCE_ELEMENT_COUNT = 21;
 export const LIMB_ELEMENT_COUNT = 7;
 
-export const getPosition = (positions, arrayOffset, offset) => tempVector(
-  positions[arrayOffset] * 0.0001,
-  positions[arrayOffset + 1] * 0.0001,
-  positions[arrayOffset + 2] * 0.0001 - settings.roomOffset
-).add(offset);
-
-const getQuaternion = (
-  positions, arrayOffset, _tempQuaternion = tempQuaternion) => _tempQuaternion(
-  positions[arrayOffset + 3] * 0.0001,
-  positions[arrayOffset + 4] * 0.0001,
-  positions[arrayOffset + 5] * 0.0001,
-  positions[arrayOffset + 6] * 0.0001
-);
-
-export const avgPosition = (lower, higher, ratio, offset, position) => {
-  const x1 = lower[offset] * 0.0001;
-  const y1 = lower[offset + 1] * 0.0001;
-  const z1 = lower[offset + 2] * 0.0001;
-  if (!higher) {
-    return tempVector(x1, y1, z1 - settings.roomOffset).add(position);
-  }
-  const x2 = higher[offset] * 0.0001;
-  const y2 = higher[offset + 1] * 0.0001;
-  const z2 = higher[offset + 2] * 0.0001;
-  return tempVector(
-    x1 + (x2 - x1) * ratio,
-    y1 + (y2 - y1) * ratio,
-    z1 + (z2 - z1) * ratio - settings.roomOffset
-  ).add(position);
+export const getPosition = (positions, performanceIndex, limbIndex, offset) => {
+  const arrayOffset = performanceIndex * PERFORMANCE_ELEMENT_COUNT
+    + limbIndex * LIMB_ELEMENT_COUNT;
+  const position = tempVector(
+    positions[arrayOffset] * 0.0001,
+    positions[arrayOffset + 1] * 0.0001,
+    positions[arrayOffset + 2] * 0.0001
+  );
+  if (offset) position.add(offset);
+  return position;
 };
 
-export const avgQuaternion = (lower, higher, ratio, offset) => {
-  const quaternion = getQuaternion(lower, offset);
+export const getQuaternion = (positions, performanceIndex, limbIndex) => {
+  const arrayOffset = performanceIndex * PERFORMANCE_ELEMENT_COUNT
+    + limbIndex * LIMB_ELEMENT_COUNT;
+  return tempQuaternion(
+    positions[arrayOffset + 3] * 0.0001,
+    positions[arrayOffset + 4] * 0.0001,
+    positions[arrayOffset + 5] * 0.0001,
+    positions[arrayOffset + 6] * 0.0001
+  );
+};
+
+export const getFrame = (frames, number) => {
+  let frame = frames[number];
+  if (!frame) frame--;
+  // Check if data is still a string:
+  if (frame[0] === '[') {
+    frame = frames[number] = JSON.parse(frame);
+  }
+  return frame;
+};
+
+export const avgPosition = (lower, higher, ratio, performanceIndex, limbIndex, position) => {
+  const { x: x1, y: y1, z: z1 } = getPosition(lower, performanceIndex, limbIndex);
+  const { x: x2, y: y2, z: z2 } = getPosition(higher, performanceIndex, limbIndex);
+  if (!higher) {
+    const vector = tempVector(x1, y1, z1);
+    if (position) {
+      vector.z -= settings.roomOffset;
+      vector.add(position);
+    }
+    return vector;
+  }
+  const vector = tempVector(
+    x1 + (x2 - x1) * ratio,
+    y1 + (y2 - y1) * ratio,
+    z1 + (z2 - z1) * ratio
+  );
+  if (position) {
+    vector.z -= settings.roomOffset;
+    vector.add(position);
+  }
+  return vector;
+};
+
+export const avgQuaternion = (lower, higher, ratio, performanceIndex, limbIndex) => {
+  const quaternion = getQuaternion(lower, performanceIndex, limbIndex);
   if (higher) {
-    quaternion.slerp(getQuaternion(higher, offset, tempQuaternion2), ratio);
+    quaternion.slerp(getQuaternion(higher, performanceIndex, limbIndex), ratio);
   }
   return quaternion;
 };
@@ -62,3 +87,9 @@ export const serializeMatrix = (matrix) => {
     .concat(SERIALIZE_ROTATION.toArray())
     .map(compressNumber);
 };
+
+export const serialize = (position, rotation) => (
+  position.toArray()
+    .concat(rotation.toArray())
+    .map(compressNumber)
+);

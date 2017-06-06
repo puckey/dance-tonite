@@ -55,21 +55,6 @@ export const offsetFrom = (object, x, y, z) => tempVector(x, y, z)
     .applyQuaternion(object.quaternion)
     .add(object.position);
 
-// TODO: figure the optimal rounding of these values:
-const compressNumber = number => Math.round(number * 10000);
-
-// Serializes a matrix into an array with rounded position x, y, z
-// & quaternion x, y, z, w values:
-const SERIALIZE_POSITION = new THREE.Vector3();
-const SERIALIZE_ROTATION = new THREE.Quaternion();
-const SERIALIZE_SCALE = new THREE.Vector3();
-export const serializeMatrix = (matrix) => {
-  matrix.decompose(SERIALIZE_POSITION, SERIALIZE_ROTATION, SERIALIZE_SCALE);
-  return SERIALIZE_POSITION.toArray()
-    .concat(SERIALIZE_ROTATION.toArray())
-    .map(compressNumber);
-};
-
 const ROTATION_MATRIX = new THREE.Matrix4().makeRotationAxis(
   new THREE.Vector3(0, 1, 0).normalize(),
   Math.PI

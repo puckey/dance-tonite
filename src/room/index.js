@@ -177,7 +177,8 @@ export default class Room {
       lowerFrame,
       higherFrame,
       ratio,
-      index * PERFORMANCE_ELEMENT_COUNT,
+      index,
+      0,
       this.position
     ).applyMatrix4(roomsGroup.matrix);
     return position;
@@ -216,7 +217,8 @@ export default class Room {
           higherFrame,
           ratio,
           headMesh.geometry.maxInstancedCount++,
-          i * PERFORMANCE_ELEMENT_COUNT,
+          i,
+          0,
           scale,
           costumeColor,
           position
@@ -228,7 +230,8 @@ export default class Room {
         higherFrame,
         ratio,
         handMesh.geometry.maxInstancedCount++,
-        i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT,
+        i,
+        1,
         scale,
         costumeColor,
         position
@@ -239,7 +242,8 @@ export default class Room {
         higherFrame,
         ratio,
         handMesh.geometry.maxInstancedCount++,
-        i * PERFORMANCE_ELEMENT_COUNT + LIMB_ELEMENT_COUNT * 2,
+        i,
+        2,
         scale,
         costumeColor,
         position
