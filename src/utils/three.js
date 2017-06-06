@@ -1,4 +1,5 @@
 import * as THREE from '../lib/three';
+import windowSize from '../utils/windowSize';
 
 const VECTOR = new THREE.Vector3();
 const QUATERNION = new THREE.Quaternion();
@@ -61,4 +62,15 @@ export const set180RotationMatrix = (object) => {
 
 export const setIdentityMatrix = (object) => {
   object.matrix.copy(IDENTITY_MATRIX);
+};
+
+export const worldToScreen = (camera, position) => {
+  // map to normalized device coordinate (NDC) space
+  VECTOR
+    .copy(position)
+    .project(camera);
+  VECTOR.x = (VECTOR.x + 1) * (windowSize.width * 0.5);
+  VECTOR.y = (-VECTOR.y + 1) * (windowSize.height * 0.5);
+
+  return VECTOR;
 };
