@@ -95,7 +95,7 @@ export default (req) => {
 
       tick = () => {
         if (transition.isInside()) return;
-        if (!viewer.vrEffect.isPresenting) {
+        if (!viewer.vrEffect.isPresenting && !hoverHead) {
           Room.setHighlight(
             closestHead(
               pointerX,
@@ -145,6 +145,7 @@ export default (req) => {
 
         onMouseDown = ({ clientX, clientY }) => {
           hoverHead = closestHead(clientX, clientY, playlist.rooms);
+          if (!hoverHead[0]) hoverHead = null;
           if (hoverHead) {
             viewer.switchCamera('default');
             Room.group.add(viewer.camera);

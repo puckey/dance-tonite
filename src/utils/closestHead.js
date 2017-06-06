@@ -13,6 +13,7 @@ const distanceToMouse = (worldPosition) => VECTOR2
 
 const MIN_HEAD_DISTANCE = 100 * 100;
 
+const CLOSEST_ARRAY = [];
 export default (screenX, screenY, rooms) => {
   mouse.set(screenX, screenY);
   let roomIndex;
@@ -39,5 +40,7 @@ export default (screenX, screenY, rooms) => {
       }
     }
   }
-  return [roomIndex, headIndex];
+  CLOSEST_ARRAY[0] = roomIndex;
+  CLOSEST_ARRAY[1] = headIndex;
+  return CLOSEST_ARRAY;
 };
