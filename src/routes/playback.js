@@ -147,12 +147,14 @@ export default (req) => {
           hoverHead = closestHead(clientX, clientY, playlist.rooms);
           if (hoverHead) {
             viewer.switchCamera('default');
+            Room.group.add(viewer.camera);
           }
         };
 
         onMouseUp = () => {
           hoverHead = null;
           viewer.switchCamera('orthographic');
+          Room.group.remove(viewer.camera);
         };
 
         window.addEventListener('mousemove', onMouseMove);

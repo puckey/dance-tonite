@@ -138,28 +138,30 @@ export default class Room {
     }
   }
 
-  getHeadPosition(index) {
-    return serializer.getPosition(
+  getHeadPosition(index, applyMatrix = true) {
+    const position = serializer.getPosition(
       this.frame,
       index,
       0,
       this.position
-    ).applyMatrix4(roomsGroup.matrix);
+    );
+    if (applyMatrix) {
+      position.applyMatrix4(roomsGroup.matrix);
+    }
+    return position;
   }
 
-  getHeadOrientation(index, seconds) {
+  getHeadOrientation(index) {
     return serializer.getQuaternion(
-      this.frames[roomUtils.secondsToFrames(seconds)],
+      this.frame,
       index,
       0
     );
   }
 
   transformToHead(object, layerIndex) {
-    const position = this.getHeadPosition(layerIndex, this.currentTime);
-    const orientation = this.getHeadOrientation(layerIndex, this.currentTime);
-    object.position.copy(position);
-    object.quaternion.copy(orientation);
+    object.position.copy(this.getHeadPosition(layerIndex, false));
+    object.quaternion.copy(this.getHeadOrientation(layerIndex));
   }
 
   get frame() {
