@@ -1,56 +1,43 @@
 import emitter from 'mitt';
 
+import THREE from './lib/three';
+
 import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
-import feature from './utils/feature';
-import { mount } from './routes/';
-import transition from './transition';
-
-// const [leftController, rightController] = viewer.controllers;
-
-let leftController;
-let rightController;
 
 const controllerViewGroup = new THREE.Group();
-window.cg = controllerViewGroup;
 
-function handleLeftPress(){
+const handleLeftPress = () => {
   if (leftPress) leftPress();
-}
+};
 
-function handleRightPress(){
+const handleRightPress = () => {
   if (rightPress) rightPress();
-}
+};
 
-viewer.events.on('controllerConnected', function( controller ){
-  // console.log('controller connected', controller );
-
-  //  avoid non-handedness of oculus remote
-  if( controller.gamepad.hand === '' ){
+viewer.events.on('controllerConnected', (controller) => {
+  // avoid non-handedness of oculus remote
+  if (controller.gamepad.hand === '') {
     return;
   }
 
   let mesh;
-  if( controller.gamepad.hand === 'left' ){
-    leftController = controller;
-    controller.addEventListener('thumbpad press began', handleLeftPress );
+  if (controller.gamepad.hand === 'left') {
+    controller.addEventListener('thumbpad press began', handleLeftPress);
     mesh = lhand;
-
-  }
-  else{
-    rightController = controller;
-    controller.addEventListener('thumbpad press began', handleRightPress );
+  } else {
+    controller.addEventListener('thumbpad press began', handleRightPress);
     mesh = rhand;
   }
-  controller.add( mesh );
+  controller.add(mesh);
 
-  controllerViewGroup.add( controller );
+  controllerViewGroup.add(controller);
 
-  controller.addEventListener( 'vr controller disconnected', function(){
-    controllerViewGroup.remove( controller );
-    controller.remove( mesh );
+  controller.addEventListener('vr controller disconnected', () => {
+    controllerViewGroup.remove(controller);
+    controller.remove(mesh);
   });
 });
 
@@ -81,7 +68,6 @@ lText.position.set(-0.12, 0, -0.022);
 
 let leftPress;
 let rightPress;
-
 
 const rButton = rhand.getObjectByName('button');
 const lButton = lhand.getObjectByName('button');
@@ -153,12 +139,12 @@ const controllers = Object.assign(
     },
 
     add() {
-      viewer.scene.add( controllerViewGroup );
+      viewer.scene.add(controllerViewGroup);
     },
 
     remove() {
       rightPress = leftPress = null;
-      viewer.scene.remove( controllerViewGroup );
+      viewer.scene.remove(controllerViewGroup);
     },
 
     setButtonVisibility,
