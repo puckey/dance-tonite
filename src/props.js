@@ -7,7 +7,7 @@ import isometricRoomUrl from './public/models/obj/space-isometric.obj';
 import roomTextureUrl from './public/models/obj/bake/VR_AOMap.png';
 import isometricRoomTextureUrl from './public/models/obj/bake/ISO_AOMap.png';
 import settings from './settings';
-import { recordCostumeColor } from './theme/colors';
+import { recordCostumeColor, highlightColor } from './theme/colors';
 
 require('./lib/OBJLoader')(THREE);
 
@@ -117,7 +117,7 @@ const props = {
       segments,
     );
     const material = new MeshBasicMaterial({
-      color: settings.sphereColor.clone(),
+      color: highlightColor.clone(),
     });
     const mesh = new Mesh(geometry, material);
     return mesh;
