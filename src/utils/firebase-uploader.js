@@ -99,8 +99,13 @@ const firebaseUploader = {
     requestUploadToken(roomID, function(filename, token){
       // now that we have the token, upload to the given URL
       uploadDataString(json, filename, token, function(fileURL){
+        const error = null;
+        const data = {
+          uri: fileURL
+        };
+
         // the upload is done!
-        callback(fileURL)
+        callback(error, data)
       });
     });
   }

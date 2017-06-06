@@ -18,8 +18,9 @@ window.THREE = THREE;
 // TODO: remove this!
 const roomID = 20;
 const fakeData = "[102340,234234,34534,345345]";
-firebaseUploader.upload(fakeData, roomID, function(result) {
-  console.log("file uploaded!", result)
+firebaseUploader.upload(fakeData, roomID, (error, data) => {
+  if (error) console.log("ERROR!", error)
+  else console.log("file uploaded!", data.uri)
 });
 
 
