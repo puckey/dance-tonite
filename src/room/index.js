@@ -122,8 +122,8 @@ export default class Room {
   }
 
   isHighlighted(performance) {
-    return Room.outline.room === this.index
-      && Room.outline.performance === performance;
+    return Room.highlight.roomIndex === this.index
+      && Room.highlight.performanceIndex === performance;
   }
 
   changeColor(color) {
@@ -328,9 +328,9 @@ Room.group = roomsGroup;
 
 Room.highlight = {};
 
-Room.setHighlight = ([roomIndex, performanceIndex] = []) => {
-  Room.highlight.roomIndex = roomIndex;
-  Room.highlight.performanceIndex = performanceIndex;
+Room.setHighlight = ([room, performance] = []) => {
+  Room.highlight.roomIndex = room;
+  Room.highlight.performanceIndex = performance;
 };
 
 export function getHandMesh() {
