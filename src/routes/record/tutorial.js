@@ -37,7 +37,7 @@ export default (goto) => {
 
   const performSkip = async () => {
     // TODO: we need to make sure the user has a vr device capable of room vr:
-    if (feature.hasVR) {
+    if (feature.has6DOF) {
       elements.skipTutorialButton.classList.add('mod-hidden');
       const removeOverlay = hud.enterVR();
       if (!viewer.vrEffect.isPresenting) {
@@ -81,7 +81,7 @@ export default (goto) => {
         'div.tutorial-overlay-text',
         h(
           'span',
-          feature.hasVR
+          feature.has6DOF
             ? 'Add your performance'
             : 'A message about Vive not being found. Click here to go home.'
         ),
