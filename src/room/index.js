@@ -22,6 +22,7 @@ import layout from './layout';
 import dummyTextureUrl from '../public/dummy.png';
 import audio from '../audio';
 import * as serializer from '../utils/serializer';
+import feature from '../utils/feature';
 
 const PROTOCOL = location.protocol;
 const PERFORMANCE_ELEMENT_COUNT = 21;
