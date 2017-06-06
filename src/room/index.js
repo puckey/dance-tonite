@@ -334,11 +334,3 @@ Room.setHighlight = ([room, performance] = []) => {
   Room.highlight.roomIndex = room;
   Room.highlight.performanceIndex = performance;
 };
-
-export function getHandMesh() {
-  return handMesh;
-}
-
-export function getHeadMesh() {
-  return headMesh;
-}
