@@ -67,8 +67,10 @@ THREE.VRController = function( gamepad ){
 
 	//  These are special properties you ought to overwrite on the instance
 	//  in your own code. For example:
-	//    controller.standingMatrix = controls.getStandingMatrix()
-	//    controller.head = camera//  Only really needed if controller is 3DOF.
+	//    controller.standingMatrix = controls.getStandingMatrix()//  Necessary for 6DOF controllers.
+	//    controller.head = camera//  Necessary for 3DOF controllers.
+	//  Quick FYI: “DOF” means “Degrees of Freedom”. If you can rotate about 3 axes
+	//  and also move along 3 axes then 3 + 3 = 6 degrees of freedom.
 
 	this.standingMatrix = new THREE.Matrix4();
 	this.head = {
@@ -84,9 +86,9 @@ THREE.VRController = function( gamepad ){
 	supported = THREE.VRController.supported[ gamepad.id ];
 	if( supported !== undefined ){
 
-		style = supported.style
-		buttonNames = supported.buttons
-		primaryButtonName = supported.primary
+		style = supported.style;
+		buttonNames = supported.buttons;
+		primaryButtonName = supported.primary;
 	}
 
 
@@ -99,7 +101,7 @@ THREE.VRController = function( gamepad ){
 
 	this.gamepad      = gamepad;
 	this.gamepadStyle = style;
-	this.gamepadDOF   = null;//  Have to wait until gamepad.pose is defined to handle this.
+	this.gamepadDOF   = ( +gamepad.pose.hasOrientation + +gamepad.pose.hasPosition ) * 3;
 	this.name         = gamepad.id;
 
 
@@ -214,20 +216,20 @@ THREE.VRController.prototype.update = function(){
 	pose = gamepad.pose;
 
 
-	//  If we’ve gotten to here then gamepad.pose has a definition
-	//  so now we can set a convenience variable to know if we are 3DOF or 6DOF.
-
-	this.gamepadDOF = ( +gamepad.pose.hasOrientation + +gamepad.pose.hasPosition ) * 3;
-
-
-	//  ORIENTATION. Do we have data for this?
-	//  If so let’s use it. If not ... no fallback plan.
+	//  ORIENTATION.
+	//  Everyone should have this -- this is expected of 3DOF controllers.
+	//  If we don’t have it this could mean we’re in the process of losing tracking.
+	//  Fallback plan is just to retain the previous orientation data.
+	//  If somehow we never had orientation data it will use the default
+	//  THREE.Quaternion our controller’s Object3D was initialized with. 
 
 	if( pose.orientation !== null ) this.quaternion.fromArray( pose.orientation );
 
 
 	//  POSITION -- EXISTS!
-	//  If we’ve got it then we’ll assume we have orientation too; 6 Degrees Of Freedom (6DOF).
+	//  If we have position data then we can assume we also have orientation
+	//  because this is the expected behavior of 6DOF controllers.
+	//  If we don’t have orientation it will just use the previous orientation data.
 
 	if( pose.position !== null ){
 
@@ -237,8 +239,10 @@ THREE.VRController.prototype.update = function(){
 
 
 	//  POSITION -- NOPE ;(
-	//  But if we don’t have position data we’ll assume 3 Degrees Of Freedom (3DOF),
+	//  But if we don’t have position data we’ll assume our controller is only 3DOF
 	//  and use an arm model that takes head position and orientation into account.
+	//  So don’t forget to set controller.head to reference your VR camera so we can
+	//  do the following math.
 
 	else {
 
@@ -267,6 +271,14 @@ THREE.VRController.prototype.update = function(){
 
 
 	//  Ok, we know where the this ought to be so let’s set that.
+	//  For 6DOF controllers it’s necessary to set controller.standingMatrix
+	//  to reference your VRControls.standingMatrix, otherwise your controllers
+	//  will be on the floor instead of up in your hands!
+	//  NOTE: “VRControls” and “VRController” are similarly named but two
+	//  totally different things! VRControls is what reads your headset’s
+	//  position and orientation, then moves your camera appropriately.
+	//  Whereas this VRController instance is for the VR controllers that
+	//  you hold in your hands. 
 
 	this.matrix.multiplyMatrices( this.standingMatrix, this.matrix );
 	this.matrixWorldNeedsUpdate = true;
@@ -339,7 +351,10 @@ THREE.VRController.onGamepadDisconnect = function( gamepad ){
 
 	//  We need to find the controller that holds the reference to this gamepad.
 	//  Then we can broadcast the disconnection event on the controller itself
-	//  and also “delete” from our controllers object. Goodbye!
+	//  and also overwrite our controllers object with undefined. Goodbye!
+	//  When you receive this event don’t forget to remove your meshes and whatnot
+	//  from your scene so you can either reuse them upon reconnect -- or you 
+	//  should detroy them. You don’t want memory leaks, right?
 
 	var
 	scope = THREE.VRController,
@@ -368,16 +383,28 @@ THREE.VRController.update = function(){
 	//  and we avoid Doob’s proposed problem of a user accidentally including
 	//  VRControllers.js multiple times if we were using the 'ongamepadconnected'
 	//  and 'ongamepaddisconnected' events firing multiple times.
-	//  Also... those events are not widely supported yet anyhow.
+	//  Also... those connection events are not widely supported yet anyhow.
 
 	for( i = 0; i < gamepads.length; i ++ ){
 
+
+		//  The Gamepad API is a funny thing. I need to write more about how it works
+		//  in actual practice but for brevity here I’ll just say we won’t outright
+		//  accept what the API tells us exists. (It can create ghost controllers!)
+		//  Instead we will consider a Gamepad exists only when it is reported by the
+		//  API and it ALSO has a not-null position or not-null orientation. 
+
+		//  We could probably change this to “if( gamepad instanceof Gamepad )” but
+		//  dealing with these things across browsers and devices has made me extra
+		//  paranoid. Best to just verify the pose object is really there.
+
 		gamepad = gamepads[ i ];
-		if( gamepad !== null &&
+		if( gamepad      !== null &&
 			gamepad.pose !== undefined &&
 			gamepad.pose !== null ){
 
-			//  We've just confirmed that a ready Gamepad instance exists in this slot.
+
+			//  We've just confirmed that a “ready” Gamepad instance exists in this slot.
 			//  If it's not already in our controllers list we need to initiate it!
 			//  And either way we need to call update() on it.
 
@@ -391,6 +418,7 @@ THREE.VRController.update = function(){
 			//  If we've lost orientation and position then we've lost this controller.
 			//  Unfortunately we cannot rely on gamepad.connected because it will ALWAYS
 			//  equal true -- even if you power down the controller!
+			//  That doesn’t seem like the API’s intended behavior but it’s what I see in practice.
 
 			else if( this.controllers[ i ] !== undefined ) THREE.VRController.onGamepadDisconnect( gamepad );
 		}
@@ -470,11 +498,19 @@ THREE.VRController.supported = {
 	},
 	'Oculus Touch (Right)': {
 
-		style: 'rift',
+
+		//  NOTE: Previously I’d named the style “Rift” and referred to this as a “Rift”
+		//  in the comments because it’s so much easier to write and to say than “Oculus”.
+		//  Lazy, right? But deep down in your dark heart I know you agree with me.
+		//  But I changed it all to “oculus” now because that’s what both the headset and
+		//  the controllers report themselves as. There’s no mention of “Rift” in those
+		//  ID strings at all. I felt in the end consistency was better than ease.
+
+		style: 'oculus',
 		buttons: [
 
 
-			//  Rift’s thumbstick has axes values and is also a button,
+			//  Oculus’s thumbstick has axes values and is also a button,
 			//  similar to Vive’s thumbpad.
 			//  But unlike Vive’s thumbpad it only has a binary touch value.
 			//  The press value is never set to true.
@@ -484,7 +520,7 @@ THREE.VRController.supported = {
 			'thumbstick',
 
 
-			//  Rift’s trigger is twitchier than Vive’s.
+			//  Oculus’s trigger is twitchier than Vive’s.
 			//  Compare these threshold guesses to Vive’s trigger:
 			//  if( value > 0.1 ) pressed = true   THRESHOLD FOR TURNING ON
 			//  if( value < 0.1 ) pressed = false  THRESHOLD FOR TURNING OFF
@@ -492,19 +528,19 @@ THREE.VRController.supported = {
 			'trigger',
 
 
-			//  Rift’s grip button follows the exact same pattern as the trigger.
+			//  Oculus’s grip button follows the exact same pattern as the trigger.
 
 			'grip',
 
 
-			//  Rift has two old-school video game buttons, A and B.
+			//  Oculus has two old-school video game buttons, A and B.
 			// (For the left-hand controller these are X and Y.)
 			//  They report separate binary on/off values for both touch and press.
 
 			'A', 'B',
 
 
-			//  Rift has an inert base “button” that’s really just a resting place
+			//  Oculus has an inert base “button” that’s really just a resting place
 			//  for your thumbs and only reports a binary on/off for touch.
 
 			'thumbrest'
