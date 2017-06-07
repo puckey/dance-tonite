@@ -67,10 +67,7 @@ const contactServer = (URL, dataToSend) => {
   });
 }
 
-const requestUploadToken = (roomID) => {
-  const dataToSend = { 'room':roomID }; 
-  return contactServer(generateTokenURL, dataToSend)
-}
+const requestUploadToken = (roomID) => contactServer(generateTokenURL, { 'room':roomID });
 
 const uploadDataString = (dataString, filename, uploadToken) => {
 
