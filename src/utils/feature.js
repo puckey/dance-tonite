@@ -2,7 +2,7 @@ const userAgent = navigator.userAgent;
 const vrSupported = navigator.getVRDisplays !== undefined;
 
 const checkHasExternalDisplay = () => (
-  new Promise((resolve, reject) => {
+  new Promise((resolve) => {
     if (!vrSupported) {
       resolve(false);
       return;
@@ -114,6 +114,11 @@ const feature = {
           //  Expecting "Oculus VR HMD (HMD)" or "Oculus VR HMD (Sensor)".
           //  Note that "Rift" is NOT part of the displayName.
           feature.isOculus = /oculus/i.test(displayName);
+          //  If it’s mobile but it’s not Daydream then we can consider
+          //  it to be “Cardbaord” since we’re using the WebVR Polyfill
+          //  to make any mobile device (with accelerometers) a potential
+          //  3DOF virtual reality device.
+          feature.isCardboard = feature.isMobile && !feature.isDaydream;
         }),
     ])
   ),
