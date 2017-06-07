@@ -93,7 +93,7 @@ export default (goto) => {
     {
       time: 0.5,
       text: 'This is you.',
-      getPosition: () => room.getHeadPosition(0, audio.time),
+      getPosition: () => room.getHeadPosition(0),
       layers: 1,
     },
     {
@@ -117,18 +117,18 @@ export default (goto) => {
     },
     {
       time: 14,
-      getPosition: () => room.getHeadPosition(0, audio.time),
+      getPosition: () => room.getHeadPosition(0),
       text: 'This is you...',
     },
     {
       time: 16,
-      getPosition: () => room.getHeadPosition(1, audio.time),
+      getPosition: () => room.getHeadPosition(1),
       text: 'This is you...',
     },
     {
       time: 17,
       text: 'This is your previous recording.',
-      getPosition: () => room.getHeadPosition(0, audio.time),
+      getPosition: () => room.getHeadPosition(0),
     },
     {
       time: 24,

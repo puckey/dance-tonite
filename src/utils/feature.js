@@ -2,7 +2,7 @@ const userAgent = navigator.userAgent;
 const vrSupported = navigator.getVRDisplays !== undefined;
 
 const checkHasExternalDisplay = () => (
-  new Promise((resolve, reject) => {
+  new Promise((resolve) => {
     if (!vrSupported) {
       resolve(false);
       return;
@@ -66,6 +66,24 @@ const checkHas6DOF = () => (
   })
 );
 
+const getVRDisplayName = () => (
+  new Promise((resolve) => {
+    if (!vrSupported) {
+      resolve(false);
+      return;
+    }
+    navigator
+      .getVRDisplays()
+      .then((displays) => {
+        resolve(displays[0].displayName);
+      })
+      .catch((error) => {
+        console.log(error);
+        resolve(false);
+      });
+  })
+);
+
 const feature = {
   isMobile: /android|ipad|iphone|iemobile/i.test(userAgent),
   isAndroid: /android/i.test(userAgent),
@@ -84,6 +102,23 @@ const feature = {
       checkHas6DOF()
         .then((has6DOF) => {
           feature.has6DOF = has6DOF;
+        }),
+      getVRDisplayName()
+        .then((displayName) => {
+          //  Expecting "Google, Inc. Daydream View".
+          //  Unclear if stand-alone Daydream just announced at I/O 2017
+          //  will eventually require its own displayName check.
+          feature.isDaydream = /daydream/i.test(displayName);
+          //  Expecting "HTC Vive DVT".
+          feature.isVive = /vive/i.test(displayName);
+          //  Expecting "Oculus VR HMD (HMD)" or "Oculus VR HMD (Sensor)".
+          //  Note that "Rift" is NOT part of the displayName.
+          feature.isOculus = /oculus/i.test(displayName);
+          //  If it’s mobile but it’s not Daydream then we can consider
+          //  it to be “Cardbaord” since we’re using the WebVR Polyfill
+          //  to make any mobile device (with accelerometers) a potential
+          //  3DOF virtual reality device.
+          feature.isCardboard = feature.isMobile && !feature.isDaydream;
         }),
     ])
   ),

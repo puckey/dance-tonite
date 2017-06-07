@@ -14,12 +14,14 @@ import { sleep } from '../utils/async';
 import Room from '../room';
 import progressBar from '../progress-bar';
 import layout from '../room/layout';
+import closestHead from '../utils/closestHead';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 const { holeHeight } = settings;
-
+let pointerX;
+let pointerY;
 let titles;
 
 export default (req) => {
@@ -54,6 +56,11 @@ export default (req) => {
   let tick;
   const roomIndex = parseInt(req.params.roomIndex, 10);
 
+  let onMouseMove;
+  let onMouseDown;
+  let onMouseUp;
+  let hoverHead;
+
   const component = {
     hud: hudSettings,
     mount: async () => {
@@ -67,6 +74,14 @@ export default (req) => {
       megaOrb = new MegaOrb();
       titles = createTitles(orb);
       titles.mount();
+
+      const moveHead = (progress) => {
+        moveCamera(progress);
+        const [roomIndex, headIndex] = hoverHead;
+        playlist.rooms[roomIndex].transformToHead(viewer.camera, headIndex);
+        viewer.camera.fov = 90;
+        viewer.camera.updateProjectionMatrix();
+      };
 
       const moveCamera = (progress) => {
         const position = layout.getPosition(progress + 0.5);
@@ -83,6 +98,15 @@ export default (req) => {
 
       tick = () => {
         if (transition.isInside()) return;
+        if (!viewer.vrEffect.isPresenting && !hoverHead) {
+          Room.setHighlight(
+            closestHead(
+              pointerX,
+              pointerY,
+              playlist.rooms
+            )
+          );
+        }
         audio.tick();
         Room.clear();
         playlist.tick();
@@ -90,7 +114,11 @@ export default (req) => {
         if (!feature.isMobile || !viewer.vrEffect.isPresenting) {
           progressBar.tick();
         }
-        moveCamera(audio.progress);
+        if (hoverHead) {
+          moveHead(audio.progress || 0);
+        } else {
+          moveCamera(audio.progress || 0);
+        }
       };
       viewer.events.on('tick', tick);
 
@@ -111,6 +139,34 @@ export default (req) => {
         url: 'curated.json',
         pathRecording: req.params.id,
         pathRoomIndex: roomIndex,
+      }).then(() => {
+        if (component.destroyed) return;
+        onMouseMove = ({ clientX, clientY }) => {
+          if (viewer.vrEffect.isPresenting) return;
+          pointerX = clientX;
+          pointerY = clientY;
+        };
+
+        onMouseDown = ({ clientX, clientY }) => {
+          if (viewer.vrEffect.isPresenting) return;
+          hoverHead = closestHead(clientX, clientY, playlist.rooms);
+          if (hoverHead[0] === undefined) hoverHead = null;
+          if (hoverHead) {
+            viewer.switchCamera('default');
+            Room.group.add(viewer.camera);
+          }
+        };
+
+        onMouseUp = () => {
+          if (viewer.vrEffect.isPresenting) return;
+          hoverHead = null;
+          viewer.switchCamera('orthographic');
+          Room.group.remove(viewer.camera);
+        };
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mouseup', onMouseUp);
       });
       if (component.destroyed) return;
 
@@ -157,7 +213,11 @@ export default (req) => {
       titles.destroy();
       playlist.destroy();
       progressBar.destroy();
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseup', onMouseUp);
     },
   };
   return component;
 };
+

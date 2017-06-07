@@ -42,3 +42,4 @@ const pairColor = (color) => pairs.filter(
 export const recordRoomColor = namedColors[window.localStorage.getItem('color')] || namedColors.green;
 export const recordCostumeColor = window.localStorage.getItem('color') ? pairColor(recordRoomColor) : namedColors.red;
 export const waitRoomColor = new Color(0x838181);
+export const highlightColor = new Color(1, 1, 0);

@@ -4,6 +4,7 @@ import props from './props';
 import viewer from './viewer';
 import settings from './settings';
 import { Color } from './lib/three';
+import { highlightColor } from './theme/colors';
 
 const BLACK = new Color(0, 0, 0);
 
@@ -36,11 +37,11 @@ export default class Orb {
   }
 
   fadeOut() {
-    this._fade(settings.sphereColor, BLACK);
+    this._fade(highlightColor, BLACK);
   }
 
   fadeIn() {
-    this._fade(BLACK, settings.sphereColor);
+    this._fade(BLACK, highlightColor);
   }
 
   destroy() {

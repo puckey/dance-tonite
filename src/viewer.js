@@ -15,7 +15,6 @@ import windowSize from './utils/windowSize';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
-require('./lib/ViveController')(THREE);
 require('./lib/VRController')(THREE);
 
 const events = emitter();
@@ -55,27 +54,6 @@ const vrEffect = new THREE.VREffect(renderer);
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
 
-const controllers = [];
-
-window.addEventListener('vr controller connected', function( {detail:controller} ){
-
-  if( controller.gamepadStyle === 'daydream' ){
-    return;
-  }
-
-  controller.standingMatrix = controls.getStandingMatrix();
-  controller.head = cameras.default;
-
-  // controllers.push( controller );
-  if( controller.gamepad.hand === 'left' ){
-    controllers[ 0 ] = controller;
-  }
-  else{
-    controllers[ 1 ] = controller;
-  }
-
-  events.emit( 'controllerConnected', controller );
-});
 
 const createScene = () => {
   const scene = new THREE.Scene();
@@ -121,17 +99,11 @@ const viewer = {
   cameras,
   scene,
   renderScene: scene,
-  controllers,
+  controllers: [{}, {}],
   controls,
   createScene,
   events,
   renderer,
-  countActiveControllers: () => {
-    let count = 0;
-    if (controllers[0] !==undefined && controllers[0].visible) count += 1;
-    if (controllers[1] !==undefined && controllers[1].visible) count += 1;
-    return count;
-  },
   switchCamera: (name) => {
     Room.switchModel(
       name === 'orthographic'
