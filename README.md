@@ -1,13 +1,18 @@
 # You MOVE Me
 
-## Installing & developing
+## Installing
 
     npm install
-    npm start
+
+## Developing
+
+    Start website: npm start
+    Start cms: npm run start-cms
 
 ## Building
 
-    npm run build
+    Build website: npm run build
+    Build cms: npm run build-cms
 
 ## Deployments
 

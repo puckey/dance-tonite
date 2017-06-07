@@ -109,7 +109,7 @@ export default (goto) => {
       layers: 1,
     },
     {
-      time: 3,
+      time: 5,
       text: 'This is the camera.',
       getPosition: () => objects.orb.mesh.position,
     },
@@ -199,12 +199,12 @@ export default (goto) => {
         state.lineOriginY,
         x,
         y,
-        windowSize.height * 0.03
+        windowSize.height * 0.04
       );
     }
   };
 
-  const updateWindowDimensions = ({ width, height }) => {
+  const updateWindowDimensions = ({ width }) => {
     state.lineOriginX = width / 2;
     state.lineOriginY = elements.tutorialText.offsetHeight * 1.2;
   };
@@ -253,7 +253,6 @@ export default (goto) => {
       state.originalZoom = viewer.camera.zoom;
       viewer.camera.position.y = 2;
       viewer.camera.position.z = 1.3;
-      viewer.camera.zoom = 0.7;
       viewer.camera.updateProjectionMatrix();
 
       Room.rotate180();
@@ -305,7 +304,6 @@ export default (goto) => {
         room.destroy();
       }
       viewer.camera.position.y = 0;
-      viewer.camera.zoom = 1;
       viewer.camera.updateProjectionMatrix();
       viewer.events.off('tick', tick);
       textTimeline.off('keyframe', handleKeyframe);

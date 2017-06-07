@@ -1,6 +1,4 @@
 import router from '../router';
-import playback from './playback';
-import record from './record';
 import notFound from './not-found';
 import transition from '../transition';
 import hud from '../hud';
@@ -8,12 +6,11 @@ import audio from '../audio';
 
 let current;
 
-const components = { record, playback };
-const routes = {
-  '/record/:loopIndex?/:hideHead?': record,
-  '/:loopIndex?/:id?': playback,
-  '/*': notFound,
-};
+const { components, routes } = require(`./routes-${
+  process.env.FLAVOR === 'cms' ? 'cms' : 'website'
+}`).default;
+
+routes['/*'] = notFound;
 
 export const mount = async (id, req = { params: {} }, event) => {
   const route = routes[id] || components[id];
