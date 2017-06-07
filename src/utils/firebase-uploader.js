@@ -1,5 +1,6 @@
 import * as firebase from "firebase";
 import emitter from 'mitt';
+import convertFPS from './convertFPS';
 
 const config = {
   apiKey: "AIzaSyCvrZWf22Z4QGRDpL-qI3YlLGkP9-BIsrY",
@@ -123,9 +124,18 @@ const firebaseUploader = {
         const fps = item[0];
         const filename = item[1];
 
-        // TODO: create different fps versions here
+        console.log("create FPS " + fps)
 
-        return uploadDataString(json, filename, token);
+        // TODO: create different fps versions here
+        var json_at_fps;
+        if (fps == 90) {
+          json_at_fps = json;
+        } else {
+          json_at_fps = convertFPS(json, fps);
+          //json_at_fps = json;
+        }
+
+        return uploadDataString(json_at_fps, filename, token);
       });
 
       // now upload all the files
