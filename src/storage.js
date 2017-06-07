@@ -1,5 +1,5 @@
 import fetch from 'unfetch';
-import firebaseUploader from './utils/firebase-uploader';
+import firebaseUploader from './utils/firebase/uploader';
 
 const persist = (data, roomID) => new Promise((resolve, reject) => {
   firebaseUploader.upload(data, roomID, (error, recordingID) => {

@@ -1,67 +1,14 @@
-import * as firebase from 'firebase';
-import convertFPS from './convertFPS';
-
-const config = {
-  apiKey: 'AIzaSyCvrZWf22Z4QGRDpL-qI3YlLGkP9-BIsrY',
-  authDomain: 'you-move-me.firebaseapp.com',
-  databaseURL: 'https://you-move-me.firebaseio.com',
-  storageBucket: 'you-move-me.appspot.com',
-};
-firebase.initializeApp(config);
+import firebaseConnection from './connection';
+import convertFPS from '../convertFPS';
 
 const generateTokenURL = 'https://us-central1-you-move-me.cloudfunctions.net/getUploadToken';
 const processSubmissionURL = 'https://us-central1-you-move-me.cloudfunctions.net/processSubmission';
 
-const auth = firebase.auth();
-const storageRef = firebase.storage().ref();
+const storageRef = firebaseConnection.firebase.storage().ref();
 
-const login = (callback) => { // this will return immediately if the user is already logged in
-  auth.signInAnonymously()
-    .then(() => {
-      callback(null);
-    })
-    .catch((error) => {
-      callback(error);
-    });
-};
 
-const contactServer = (URL, dataToSend) => {
-  const promise = new Promise((resolve, reject) => {
-    login((error) => {
-      if (error) throw error;
-
-      const request = new XMLHttpRequest();
-      request.open('PUT', URL, true);
-
-      request.onload = () => {
-        if (request.status >= 200 && request.status < 400) {
-          const response = JSON.parse(request.responseText);
-
-          if (!response.success) {
-            reject('error connecting to server');
-          } else {
-            const data = response.data;
-            resolve(data);
-          }
-        } else {
-          // problem reaching server
-          reject('error connecting to server');
-        }
-      };
-
-      request.onerror = (err) => {
-        reject(err);
-      };
-
-      request.setRequestHeader('Content-Type', 'application/json');
-      request.send(JSON.stringify(dataToSend));
-    });
-  });
-
-  return promise;
-};
-
-const requestUploadToken = (roomID) => contactServer(generateTokenURL, { room: roomID });
+const requestUploadToken = (roomID) =>
+      firebaseConnection.contactServer(generateTokenURL, { room: roomID });
 
 const uploadDataString = (dataString, filename, uploadToken) => {
   const promise = new Promise((resolve, reject) => {
@@ -92,7 +39,8 @@ const uploadDataString = (dataString, filename, uploadToken) => {
   return promise;
 };
 
-const startSubmissionProcessing = (token) => contactServer(processSubmissionURL, { token });
+const startSubmissionProcessing = (token) =>
+      firebaseConnection.contactServer(processSubmissionURL, { token });
 
 const firebaseUploader = {
   upload: async (roomData, roomID, callback) => {

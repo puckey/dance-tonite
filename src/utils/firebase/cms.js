@@ -1,0 +1,1 @@
+import firebaseConnection from './connection';

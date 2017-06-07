@@ -28,7 +28,7 @@ const playlistToMigrate = [
 migrate.migratePlaylistArray(playlistToMigrate)
 
 */
-import firebaseUploader from './firebase-uploader';
+import firebaseUploader from './firebase/uploader';
 
 
 function loadPlaylistAndMigrate(filename) {
