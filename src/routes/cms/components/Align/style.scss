@@ -1,0 +1,42 @@
+@import '../../../../theme/theme';
+
+.cms-aligner {
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  position: absolute;
+
+  &.mod-center {
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &.mod-top-left { }
+
+  &.mod-bottom-left {
+    bottom: 1rem;
+  }
+
+  &.mod-top-right {
+    align-items: flex-end;
+    right: 1rem;
+  }
+
+  &.mod-bottom-right {
+    align-items: flex-end;
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  &.row {
+    flex-direction: row;
+  }
+
+  & * {
+    pointer-events: all;
+    user-select: none;
+  }
+
+}

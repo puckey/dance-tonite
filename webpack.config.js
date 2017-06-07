@@ -8,6 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
+const FLAVOR = process.env.FLAVOR || 'website';
 
 const config = {
   devtool: process.env.NODE_ENV === 'production' ? null : 'source-map',
@@ -67,13 +68,13 @@ const config = {
         ],
       },
       {
-          test: /\.md$/,
-          loaders: [
-            'file-loader',
-            `markdown-loader?${JSON.stringify({
-              smartypants: true,
-            })}`,
-          ],
+        test: /\.md$/,
+        loaders: [
+          'file-loader',
+          `markdown-loader?${JSON.stringify({
+            smartypants: true,
+          })}`,
+        ],
       },
     ],
   },
@@ -95,6 +96,7 @@ const config = {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(NODE_ENV),
+        FLAVOR: JSON.stringify(FLAVOR),
       },
     }),
     new HtmlWebpackPlugin({

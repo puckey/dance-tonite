@@ -45,10 +45,6 @@ export default (req) => (
         current.unmount();
         current = null;
       }
-      if (viewer.vrEffect.isPresenting) {
-        viewer.vrEffect.exitPresent();
-        viewer.switchCamera('orthographic');
-      }
     },
   }
 );

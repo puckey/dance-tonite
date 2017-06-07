@@ -27,7 +27,7 @@ const pairCount = pairs.length;
 
 const pairByRoomIndex = (roomIndex) => {
   const [x, y, z] = layout.getRoom(roomIndex);
-  return pairs[(x * 2 - y + z) % pairCount];
+  return pairs[(x * 2 + Math.ceil(Math.abs(y)) + z) % pairCount];
 };
 
 export const getRoomColor = roomIndex => pairByRoomIndex(roomIndex)[0];
@@ -42,3 +42,4 @@ const pairColor = (color) => pairs.filter(
 export const recordRoomColor = namedColors[window.localStorage.getItem('color')] || namedColors.green;
 export const recordCostumeColor = window.localStorage.getItem('color') ? pairColor(recordRoomColor) : namedColors.red;
 export const waitRoomColor = new Color(0x838181);
+export const highlightColor = new Color(1, 1, 0);

@@ -1,4 +1,4 @@
-import { serializeMatrix } from './utils/three';
+import { serializeMatrix } from './utils/serializer';
 
 import audio from './audio';
 import viewer from './viewer';

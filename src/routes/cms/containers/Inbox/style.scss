@@ -1,0 +1,17 @@
+@import '../../../../theme/theme';
+@import '../../../../theme/hud';
+
+.inbox-menu-item {
+  @extends .menu-item;
+  cursor: pointer;
+
+  & + & {
+    margin-top: 1rem;
+  }
+}
+
+.inbox-title-input {
+  width: 8rem;
+  height: 1rem;
+  margin: 1rem 0;
+}
