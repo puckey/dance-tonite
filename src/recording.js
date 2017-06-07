@@ -7,7 +7,17 @@ let stopped = false;
 let frames;
 let frameNumber;
 
-const addFrame = (head, left, right) => {
+//  If the hand controllers lose tracking then they become empty objects
+//  which means they have no matrices! So we need to hold on to “last good”
+//  versions of their matrices for recording purposes. Easiest way to do
+//  was to bring left and right into this outer-scope and only update them
+//  if we’re receiving good data. Side effect is we no longer need to pass
+//  them into functions below because they are already accessible.
+//  We’re initializing them with pre-serialized position + orientation:
+let left = [0, 0, 0, 0, 0, 0, 1];
+let right = [0, 0, 0, 0, 0, 0, 1];
+
+const addFrame = (head) => {
   if (frames.length <= frameNumber) {
     frames.push([...head, ...left, ...right]);
   } else {
@@ -24,13 +34,13 @@ const addFrame = (head, left, right) => {
   }
 };
 
-const fillMissingFrames = (time, head, left, right) => {
+const fillMissingFrames = (time, head) => {
   const totalFrames = Math.round(time * 90);
   const diff = totalFrames - frameNumber;
   if (diff > 1) {
     for (let i = 0; i < (diff - 1); i++) {
       frameNumber++;
-      addFrame(head, left, right);
+      addFrame(head);// left and right no longer need to be passed because of new scope.
     }
   }
 };
@@ -49,10 +59,14 @@ const recording = {
   tick() {
     if (stopped) return;
     const head = serializeMatrix(viewer.camera.matrixWorld);
-    const left = serializeMatrix(viewer.controllers[0].matrixWorld);
-    const right = serializeMatrix(viewer.controllers[1].matrixWorld);
+    if (viewer.controllers[0].matrixWorld !== undefined) {
+      left = serializeMatrix(viewer.controllers[0].matrixWorld);
+    }
+    if (viewer.controllers[1].matrixWorld !== undefined) {
+      right = serializeMatrix(viewer.controllers[1].matrixWorld);
+    }
     if (!frames || audio.looped) {
-      if (frames) fillMissingFrames(audio.duration, head, left, right);
+      if (frames) fillMissingFrames(audio.duration, head);// left and right now global.
       frameNumber = 0;
       if (frames) {
         for (let i = 0; i < frames.length; i++) {
@@ -66,8 +80,8 @@ const recording = {
     } else {
       frameNumber++;
     }
-    addFrame(head, left, right);
-    fillMissingFrames(audio.time, head, left, right);
+    addFrame(head);// left and right no longer need to be passed because of new scope.
+    fillMissingFrames(audio.time, head);// left and right now global.
   },
 
   stop() {
