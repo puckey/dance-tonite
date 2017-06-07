@@ -77,7 +77,7 @@ export default class Room {
     roomIndex += 1;
 
     this.isRecording = !!recording;
-    this.url = url;
+    this.url = (url.indexOf('?') == -1) ?  url : url.substring(0, url.indexOf('?')); // remove everything after '?'
     this.pathRecording = pathRecording;
     this.fps = 90;
     if (recording) {
