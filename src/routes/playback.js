@@ -142,11 +142,13 @@ export default (req) => {
       }).then(() => {
         if (component.destroyed) return;
         onMouseMove = ({ clientX, clientY }) => {
+          if (viewer.vrEffect.isPresenting) return;
           pointerX = clientX;
           pointerY = clientY;
         };
 
         onMouseDown = ({ clientX, clientY }) => {
+          if (viewer.vrEffect.isPresenting) return;
           hoverHead = closestHead(clientX, clientY, playlist.rooms);
           if (hoverHead[0] === undefined) hoverHead = null;
           if (hoverHead) {
@@ -156,6 +158,7 @@ export default (req) => {
         };
 
         onMouseUp = () => {
+          if (viewer.vrEffect.isPresenting) return;
           hoverHead = null;
           viewer.switchCamera('orthographic');
           Room.group.remove(viewer.camera);
