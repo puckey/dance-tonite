@@ -15,6 +15,7 @@ import {
   getRoomColor,
   recordCostumeColor,
   recordRoomColor,
+  highlightColor,
 } from '../theme/colors';
 import streamJSON from '../lib/stream-json';
 import * as roomUtils from './utils';
@@ -25,8 +26,6 @@ import * as serializer from '../utils/serializer';
 import feature from '../utils/feature';
 
 const PROTOCOL = location.protocol;
-const PERFORMANCE_ELEMENT_COUNT = 21;
-const LIMB_ELEMENT_COUNT = 7;
 
 let roomIndex = 0;
 let wallMesh;
@@ -70,6 +69,7 @@ const getFrame = (frames, number) => {
 
 export default class Room {
   constructor({ url, recording, index, pathRecording }) {
+    this._worldPosition = new THREE.Vector3();
     const placementIndex = this.placementIndex = index === undefined
       ? roomIndex
       : index;
@@ -95,6 +95,11 @@ export default class Room {
       !!recording
     );
     this.updatePosition();
+    this.costumeColor = this.isRecording
+      ? recordCostumeColor
+      : getCostumeColor(this.index);
+    this.instanceCount = 0;
+    this.currentTime = 0;
   }
 
   load(callback) {
@@ -152,6 +157,17 @@ export default class Room {
     }
   }
 
+  get worldPosition() {
+    return this._worldPosition
+      .copy(this.position)
+      .applyMatrix4(roomsGroup.matrix);
+  }
+
+  isHighlighted(performance) {
+    return Room.highlight.roomIndex === this.index
+      && Room.highlight.performanceIndex === performance;
+  }
+
   changeColor(color) {
     for (const i in roomMeshes) {
       const mesh = roomMeshes[i];
@@ -164,20 +180,13 @@ export default class Room {
     }
   }
 
-  secondsToFrame(seconds) {
-    return (seconds % (audio.loopDuration * 2)) * this.fps;
-  }
-
-  getHeadPosition(index, seconds) {
-    const { frames } = this;
-    const frameNumber = this.secondsToFrame(seconds);
+  getHeadPosition(index, applyMatrix = true) {
+    const { frameNumber, frames } = this;
     const lower = Math.floor(frameNumber);
     const higher = Math.ceil(frameNumber);
-    const ratio = frameNumber % 1;
     const lowerFrame = getFrame(frames, lower);
-    const higherFrame = (higher >= frames.length)
-      ? null
-      : getFrame(frames, higher);
+    const higherFrame = getFrame(frames, higher);
+    const ratio = frameNumber % 1;
     const position = serializer.avgPosition(
       lowerFrame,
       higherFrame,
@@ -185,36 +194,76 @@ export default class Room {
       index,
       0,
       this.position
-    ).applyMatrix4(roomsGroup.matrix);
+    );
+    if (applyMatrix) {
+      position.applyMatrix4(roomsGroup.matrix);
+    }
     return position;
   }
 
+  getHeadOrientation(index) {
+    const { frameNumber, frames } = this;
+    const lower = Math.floor(frameNumber);
+    const higher = Math.ceil(frameNumber);
+    const lowerFrame = getFrame(frames, lower);
+    const higherFrame = getFrame(frames, higher);
+    const ratio = frameNumber % 1;
+    return serializer.avgQuaternion(
+      lowerFrame,
+      higherFrame,
+      ratio,
+      index,
+      0
+    );
+  }
+
+  countPerformances() {
+    return this.frames
+      ? serializer.count(this.frames[Math.floor(this.frameNumber)])
+      : 0;
+  }
+
+  transformToHead(object, layerIndex) {
+    object.position.copy(this.getHeadPosition(layerIndex, false));
+    object.quaternion.copy(this.getHeadOrientation(layerIndex));
+  }
+
+  get frame() {
+    return this.frameNumber === undefined
+      ? null
+      : this.frames[Math.floor(this.frameNumber)];
+  }
+
+  secondsToFrame(seconds) {
+    return (seconds % (audio.loopDuration * 2)) * this.fps;
+  }
+
   gotoTime(seconds, maxLayers) {
-    const { frames, position, costumeColor } = this;
+    this.currentTime = seconds;
+
+    const { frames } = this;
     if (!frames) return;
-    const frameNumber = this.secondsToFrame(seconds);
+    const frameNumber = this.frameNumber = this.secondsToFrame(seconds);
     const lower = Math.floor(frameNumber);
     let higher = Math.ceil(frameNumber);
     if (higher >= frames.length) higher = null;
-
     if (frames.length <= lower) return;
-    const frame = getFrame(frames, lower);
-    // TODO: figure out why we can't use just 'positions.length / PERFORMANCE_ELEMENT_COUNT' here:
-    let count = this.layerCount || (
-      frame.length / PERFORMANCE_ELEMENT_COUNT
-    );
+    const lowerFrame = getFrame(frames, lower);
+    let count = this.layerCount || serializer.count(lowerFrame);
     if (maxLayers !== undefined) {
       count = Math.min(maxLayers, count);
     }
+
+    this.instanceCount = count;
 
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
 
     const ratio = frameNumber % 1;
-    const lowerFrame = getFrame(frames, lower);
     const higherFrame = higher && getFrame(frames, higher);
-
+    const { position } = this;
     for (let i = 0; i < count; i++) {
+      const color = this.isHighlighted(i) ? highlightColor : this.costumeColor;
       if (!this.hideHead) {
         roomUtils.transformMesh(
           headMesh,
@@ -223,9 +272,9 @@ export default class Room {
           ratio,
           headMesh.geometry.maxInstancedCount++,
           i,
-          0,
+          0, // head
           scale,
-          costumeColor,
+          color,
           position
         );
       }
@@ -236,9 +285,9 @@ export default class Room {
         ratio,
         handMesh.geometry.maxInstancedCount++,
         i,
-        1,
+        1, // first hand
         scale,
-        costumeColor,
+        color,
         position
       );
       roomUtils.transformMesh(
@@ -248,9 +297,9 @@ export default class Room {
         ratio,
         handMesh.geometry.maxInstancedCount++,
         i,
-        2,
+        2, // second hand
         scale,
-        costumeColor,
+        color,
         position
       );
     }
@@ -291,6 +340,7 @@ Room.switchModel = (model) => {
 };
 
 Room.reset = ({ showAllWalls } = {}) => {
+  Room.setHighlight();
   setIdentityMatrix(roomsGroup);
   if (roomMesh) roomsGroup.remove(roomMesh);
   if (wallMesh) roomsGroup.remove(wallMesh);
@@ -436,4 +486,13 @@ Room.reset = ({ showAllWalls } = {}) => {
 
 Room.rotate180 = () => {
   set180RotationMatrix(roomsGroup);
+};
+
+Room.group = roomsGroup;
+
+Room.highlight = {};
+
+Room.setHighlight = ([room, performance] = []) => {
+  Room.highlight.roomIndex = room;
+  Room.highlight.performanceIndex = performance;
 };
