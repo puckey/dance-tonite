@@ -108,48 +108,6 @@ const uploadDataString = (dataString, filename, uploadToken) => {
 const startSubmissionProcessing = (token) => {
   const dataToSend = { 'token':token }; 
   return contactServer(processSubmissionURL, dataToSend)
-
-
-  /*
-  login((error) => {
-    if (error) throw error;
-
-    const request = new XMLHttpRequest();
-    request.open('PUT', processSubmissionURL, true);
-
-    request.onload = function() {
-      if (request.status >= 200 && request.status < 400) {
-        // Success!
-        const response = JSON.parse(request.responseText);
-
-        console.log(response);
-
-        if (!response.success) {
-          throw "error connecting to server"
-        } else {
-          const data = response.data;
-
-          const filename_array = data.uri_array;
-          const token = data.token;
-          callback(filename_array, token);
-        }
-
-      } else {
-        // problem reaching server
-        throw "error connecting to server"
-      }
-    };
-
-    request.onerror = function(error) {
-      throw error
-    };
-
-    const dataToSend = { 'token':token }; 
-
-    request.setRequestHeader("Content-Type", "application/json");
-    request.send(JSON.stringify(dataToSend));
-  });
-  */
 }
 
 const firebaseUploader = {
@@ -177,7 +135,7 @@ const firebaseUploader = {
         // now process files
         startSubmissionProcessing(token).then( (data)=> {
 
-          // the upload is done!
+          // file processing is done, the recording is saved!
           callback(null, data.id)
 
         }).catch( (err) => { callback(err); }); // problem with processing
