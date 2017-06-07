@@ -28,10 +28,14 @@ function migrateJSON(filename){
       //console.log("got it!");
 
       const roomID = 20;
-      firebaseUploader.upload(jsonString, roomID, (error, data) => {
-        if (error) console.log("ERROR!", error)
-        else console.log("file uploaded!", data)
-      });
+      firebaseUploader.upload(
+        jsonString.split('\n').map(JSON.parse),
+        roomID,
+        (error, data) => {
+          if (error) console.log('ERROR!', error)
+          else console.log('file uploaded!', data)
+        }
+      );
 
     } 
   };

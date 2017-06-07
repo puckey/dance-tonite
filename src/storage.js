@@ -2,7 +2,7 @@
 import firebaseUploader from './utils/firebase-uploader';
 import fetch from 'unfetch';
 
-const persist = (json) => new Promise((resolve, reject) => {
+const persist = (data) => new Promise((resolve, reject) => {
   /*
   new UniqueS3Uploader('https://ymm-recorder.puckey.studio/new/')
     .upload(json, (error, data) => {
@@ -11,7 +11,7 @@ const persist = (json) => new Promise((resolve, reject) => {
     });
     */
     const roomID = 1;
-    firebaseUploader.upload(json, roomID, (error, data) => {
+    firebaseUploader.upload(data, roomID, (error, data) => {
       if (error) return reject(error);
       resolve(data);
     });

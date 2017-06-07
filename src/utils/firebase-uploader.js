@@ -106,55 +106,37 @@ const uploadDataString = (dataString, filename, uploadToken) => {
   });
 }
 
-const startSubmissionProcessing = (token) => {
-  const dataToSend = { 'token':token }; 
-  return contactServer(processSubmissionURL, dataToSend)
-}
+const startSubmissionProcessing = (token) => contactServer(processSubmissionURL, { token });
 
 const firebaseUploader = {
+  upload: async (roomData, roomID, callback) => {
+    try {
+      // Request an upload token
+      const { uri_array, token } = await requestUploadToken(roomID);
+      // Wait for all uploads to complete
+      await Promise.all(
+        uri_array.map(([fps, filename]) => (
+          uploadDataString(
+            (
+              fps === 90
+                ? roomData
+                : convertFPS(roomData, fps)
+            ).map(JSON.stringify).join('\n'),
+            filename,
+            token
+          )
+        ))
+      );
+      console.log('done all uploads');
 
-  upload: (json, roomID, callback) => {
-    // request an upload token
-    requestUploadToken(roomID).then( (data) => {
-
-      const filename_array = data.uri_array;
-      const token = data.token;
-
-      var allUploadPromises = filename_array.map(function(item) {
-        const fps = item[0];
-        const filename = item[1];
-
-        console.log("create FPS " + fps)
-
-        // TODO: create different fps versions here
-        var json_at_fps;
-        if (fps == 90) {
-          json_at_fps = json;
-        } else {
-          json_at_fps = convertFPS(json, fps);
-          //json_at_fps = json;
-        }
-
-        return uploadDataString(json_at_fps, filename, token);
-      });
-
-      // now upload all the files
-      Promise.all(allUploadPromises).then( () => {
-        console.log("done all uploads")
-
-        // now process files
-        startSubmissionProcessing(token).then( (data)=> {
-
-          // file processing is done, the recording is saved!
-          callback(null, data.id)
-
-        }).catch( (err) => { callback(err); }); // problem with processing
-
-      }).catch( (err) => { callback(err); }) // problem with upload
-      
-    }).catch( (err) => callback(err)); // problem with token
-  }
-
+      // now process files
+      const { id } = await startSubmissionProcessing(token);
+      // file processing is done, the recording is saved!
+      callback(null, id);
+    } catch (error) {
+      callback(error);
+    }
+  },
 };
 
 export default firebaseUploader;
