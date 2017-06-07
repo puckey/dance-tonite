@@ -100,12 +100,9 @@ export default class Room {
   load(callback) {
     const frames = [];
     this.streamer = streamJSON(
-     //`${PROTOCOL}//storage.googleapis.com/you-move-me.appspot.com/_incoming/${this.url}`,
-      `${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${
-        this.pathRecording
-          ? ''
-          : `${queryData.fps || (feature.has6DOF ? 45 : 15)}FPS/`
-      }${this.url}`,
+      `${PROTOCOL}//storage.googleapis.com/you-move-me.appspot.com/recordings/${this.url}/${
+        `${queryData.fps || (feature.has6DOF ? 45 : 15)}FPS.json`
+      }`,
       (error, json) => {
         if (error || !json) {
           if (callback) {

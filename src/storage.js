@@ -13,7 +13,7 @@ const persist = (json) => new Promise((resolve, reject) => {
     const roomID = 1;
     firebaseUploader.upload(json, roomID, (error, data) => {
       if (error) return reject(error);
-      resolve(data.uri);
+      resolve(data);
     });
 
 });
