@@ -27,7 +27,7 @@ export default (screenX, screenY, rooms) => {
     const room = rooms[i];
     const roomDistance = distanceToMouse(room.worldPosition);
     if (roomDistance > minRoomDistance) continue;
-    for (let j = 0, l = room.countPerformances(); j < l; j++) {
+    for (let j = 0, l = room.performanceCount; j < l; j++) {
       const head = room.getHeadPosition(j);
       const distance = distanceToMouse(head);
       if (

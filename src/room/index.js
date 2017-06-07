@@ -98,8 +98,6 @@ export default class Room {
     this.costumeColor = this.isRecording
       ? recordCostumeColor
       : getCostumeColor(this.index);
-    this.instanceCount = 0;
-    this.currentTime = 0;
   }
 
   load(callback) {
@@ -121,7 +119,7 @@ export default class Room {
           const meta = JSON.parse(json);
           this.frames = frames;
           this.hideHead = meta.hideHead;
-          this.layerCount = meta.count;
+          this.performanceCount = meta.count;
           if (meta.fps) {
             this.fps = meta.fps;
           }
@@ -181,16 +179,10 @@ export default class Room {
   }
 
   getHeadPosition(index, applyMatrix = true) {
-    const { frameNumber, frames } = this;
-    const lower = Math.floor(frameNumber);
-    const higher = Math.ceil(frameNumber);
-    const lowerFrame = getFrame(frames, lower);
-    const higherFrame = getFrame(frames, higher);
-    const ratio = frameNumber % 1;
     const position = serializer.avgPosition(
-      lowerFrame,
-      higherFrame,
-      ratio,
+      this.lowerFrame,
+      this.higherFrame,
+      this.frameRatio,
       index,
       0,
       this.position
@@ -202,25 +194,13 @@ export default class Room {
   }
 
   getHeadOrientation(index) {
-    const { frameNumber, frames } = this;
-    const lower = Math.floor(frameNumber);
-    const higher = Math.ceil(frameNumber);
-    const lowerFrame = getFrame(frames, lower);
-    const higherFrame = getFrame(frames, higher);
-    const ratio = frameNumber % 1;
     return serializer.avgQuaternion(
-      lowerFrame,
-      higherFrame,
-      ratio,
+      this.lowerFrame,
+      this.higherFrame,
+      this.frameRatio,
       index,
       0
     );
-  }
-
-  countPerformances() {
-    return this.frames
-      ? serializer.count(this.frames[Math.floor(this.frameNumber)])
-      : 0;
   }
 
   transformToHead(object, layerIndex) {
@@ -239,30 +219,26 @@ export default class Room {
   }
 
   gotoTime(seconds, maxLayers) {
-    this.currentTime = seconds;
-
     const { frames } = this;
     if (!frames) return;
     const frameNumber = this.frameNumber = this.secondsToFrame(seconds);
     const lower = Math.floor(frameNumber);
-    let higher = Math.ceil(frameNumber);
-    if (higher >= frames.length) higher = null;
+    const higher = Math.ceil(frameNumber);
     if (frames.length <= lower) return;
-    const lowerFrame = getFrame(frames, lower);
-    let count = this.layerCount || serializer.count(lowerFrame);
+    const lowerFrame = this.lowerFrame = getFrame(frames, lower);
+    const higherFrame = this.higherFrame = getFrame(frames, higher);
+    const ratio = this.frameRatio = frameNumber % 1;
     if (maxLayers !== undefined) {
-      count = Math.min(maxLayers, count);
+      this.performanceCount = Math.min(maxLayers, serializer.count(lowerFrame));
+    } else if (!this.performanceCount) {
+      this.performanceCount = serializer.count(lowerFrame);
     }
-
-    this.instanceCount = count;
 
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
 
-    const ratio = frameNumber % 1;
-    const higherFrame = higher && getFrame(frames, higher);
     const { position } = this;
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < this.performanceCount; i++) {
       const color = this.isHighlighted(i) ? highlightColor : this.costumeColor;
       if (!this.hideHead) {
         roomUtils.transformMesh(
