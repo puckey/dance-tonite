@@ -43,13 +43,16 @@ export const getFrame = (frames, number) => {
   return frame;
 };
 
-export const avgPosition = (lower, higher, ratio, performanceIndex, limbIndex, position) => {
+export const avgPosition = (lower, higher, ratio, performanceIndex, limbIndex, position, hidden) => {
   const { x: x1, y: y1, z: z1 } = getPosition(lower, performanceIndex, limbIndex);
   if (!higher) {
     const vector = tempVector(x1, y1, z1);
     if (position) {
       vector.z -= settings.roomOffset;
       vector.add(position);
+    }
+    if (hidden) {
+      vector.y = 0;
     }
     return vector;
   }
@@ -62,6 +65,9 @@ export const avgPosition = (lower, higher, ratio, performanceIndex, limbIndex, p
   if (position) {
     vector.z -= settings.roomOffset;
     vector.add(position);
+  }
+  if (hidden) {
+    vector.y = 0;
   }
   return vector;
 };

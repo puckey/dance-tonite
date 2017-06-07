@@ -17,6 +17,7 @@ export const transformMesh = (
   scale,
   color,
   offset,
+  hidden,
 ) => {
   instancedMesh.setPositionAt(
     index,
@@ -26,7 +27,8 @@ export const transformMesh = (
       ratio,
       performanceIndex,
       limbIndex,
-      offset
+      offset,
+      hidden
     )
   );
   instancedMesh.setQuaternionAt(
@@ -36,7 +38,8 @@ export const transformMesh = (
       higher,
       ratio,
       performanceIndex,
-      limbIndex
+      limbIndex,
+      hidden
     )
   );
   instancedMesh.setScaleAt(

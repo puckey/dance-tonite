@@ -27,10 +27,12 @@ const pairCount = pairs.length;
 
 const pairByRoomIndex = (roomIndex) => {
   const [x, y, z] = layout.getRoom(roomIndex);
-  return pairs[(x * 2 + Math.ceil(Math.abs(y)) + z) % pairCount];
+  return pairs[(x + Math.ceil(Math.abs(y)) + z) % pairCount];
 };
 
 export const getRoomColor = roomIndex => pairByRoomIndex(roomIndex)[0];
+export const getRoomColorByIndex = index => pairs[index % pairs.length][0];
+
 export const getCostumeColor = roomIndex => pairByRoomIndex(roomIndex)[1];
 export const namedColors = { green, red, orange, purple, blue, pink };
 export const roomColors = { green, red, orange, blue, pink };

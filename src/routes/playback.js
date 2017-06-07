@@ -51,7 +51,7 @@ export default (req) => {
   };
 
   let orb;
-  let megaOrb;
+  // let megaOrb;
   let playlist;
   let tick;
   const roomIndex = parseInt(req.params.roomIndex, 10);
@@ -71,7 +71,7 @@ export default (req) => {
       }
 
       orb = new Orb();
-      megaOrb = new MegaOrb();
+      // megaOrb = new MegaOrb();
       titles = createTitles(orb);
       titles.mount();
 
@@ -89,7 +89,7 @@ export default (req) => {
         position.z *= -1;
         viewer.camera.position.copy(position);
         orb.position.copy(position);
-        megaOrb.setProgress(audio.time / audio.duration);
+        // megaOrb.setProgress(audio.time / audio.duration);
       };
 
       moveCamera(0);

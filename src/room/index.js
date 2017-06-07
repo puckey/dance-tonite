@@ -136,6 +136,7 @@ export default class Room {
       .add(roomOffset);
     position.y -= 1;
     const type = layout.getType(this.placementIndex);
+    if (type === 'PLANE') return;
     const meshes = meshesByType[type] || meshesByType.HORIZONTAL;
     const color = getRoomColor(this.placementIndex);
     for (const i in meshes) {
@@ -221,13 +222,14 @@ export default class Room {
   gotoTime(seconds, maxLayers) {
     const { frames } = this;
     if (!frames) return;
+    const hidden = !layout.isMainTimeline(this.index) && audio.progress < 23;
     const frameNumber = this.frameNumber = this.secondsToFrame(seconds);
-    const lower = Math.floor(frameNumber);
-    const higher = Math.ceil(frameNumber);
+    const lower = hidden ? 0 : Math.floor(frameNumber);
+    const higher = hidden ? 0 : Math.ceil(frameNumber);
     if (frames.length <= lower) return;
     const lowerFrame = this.lowerFrame = getFrame(frames, lower);
     const higherFrame = this.higherFrame = getFrame(frames, higher);
-    const ratio = this.frameRatio = frameNumber % 1;
+    const ratio = hidden ? 0 : this.frameRatio = frameNumber % 1;
     if (maxLayers !== undefined) {
       this.performanceCount = Math.min(maxLayers, serializer.count(lowerFrame));
     } else if (!this.performanceCount) {
@@ -236,6 +238,7 @@ export default class Room {
 
     // In orthographic mode, scale up the meshes:
     const scale = roomMesh === roomMeshes.orthographic ? 1.3 : 1;
+    // if (hidden && audio.progress < 23) return;
 
     const { position } = this;
     for (let i = 0; i < this.performanceCount; i++) {
@@ -251,7 +254,8 @@ export default class Room {
           0, // head
           scale,
           color,
-          position
+          position,
+          hidden
         );
       }
       roomUtils.transformMesh(
@@ -264,7 +268,8 @@ export default class Room {
         1, // first hand
         scale,
         color,
-        position
+        position,
+        hidden
       );
       roomUtils.transformMesh(
         handMesh,
@@ -276,7 +281,8 @@ export default class Room {
         2, // second hand
         scale,
         color,
-        position
+        position,
+        hidden
       );
     }
   }

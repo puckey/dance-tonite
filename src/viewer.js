@@ -12,6 +12,8 @@ import settings from './settings';
 import Room from './room';
 import feature from './utils/feature';
 import windowSize from './utils/windowSize';
+import audio from './audio';
+import { getRoomColorByIndex } from './theme/colors';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
@@ -40,6 +42,21 @@ const cameras = (function () {
 
   return { default: perspective, orthographic };
 }());
+
+let lastZoom = 4;
+const zoomCamera = (zoom) => {
+  const newZoom = sineInOut(zoom);
+  if (newZoom === lastZoom) return;
+  const { aspectRatio } = windowSize;
+  const distance = orthographicDistance + newZoom * 3;
+  const camera = cameras.orthographic;
+  camera.left = -distance * aspectRatio;
+  camera.right = distance * aspectRatio;
+  camera.top = distance;
+  camera.bottom = -distance;
+  camera.updateProjectionMatrix();
+  lastZoom = newZoom;
+};
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setClearColor(0x000000);
@@ -114,6 +131,8 @@ windowSize.on('resize', ({ width, height, aspectRatio }) => {
     });
 }, false);
 
+const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
+
 const scene = createScene();
 
 const viewer = {
@@ -146,6 +165,7 @@ const viewer = {
 const clock = new THREE.Clock();
 clock.start();
 
+const COLOR = new THREE.Color();
 const animate = () => {
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
@@ -158,6 +178,29 @@ const animate = () => {
 
   controls.update();
   events.emit('tick', dt);
+  const colorOffset = 4;
+  const lowColor = getRoomColorByIndex(
+    audio.progress
+      ? Math.floor(audio.progress + colorOffset)
+      : 0
+    );
+  const highColor = getRoomColorByIndex(
+    audio.progress
+      ? Math.ceil(audio.progress + colorOffset)
+      : 0
+  );
+  const zoom = audio.progress > 21
+    ? Math.min(2, audio.progress - 21) * 0.5
+    : 0;
+  zoomCamera(zoom);
+
+  COLOR.set(0x000000);
+  if (audio.progress > 23) {
+    COLOR
+      .lerp(lowColor, Math.ceil(Math.min(1, audio.progress - 23)))
+      .lerp(highColor, (audio.progress || 0) % 1);
+  }
+  renderer.setClearColor(COLOR);
 
   vrEffect.render(viewer.renderScene, viewer.camera);
   if (vrEffect.isPresenting && feature.hasExternalDisplay) {
