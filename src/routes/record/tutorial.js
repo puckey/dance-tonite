@@ -18,7 +18,7 @@ import { worldToScreen } from '../../utils/three';
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 
 // TODO: replace with better recording:
-const TUTORIAL_RECORDING_URL = 'vhPiTw';
+const TUTORIAL_RECORDING_URL = 'hIR_Tw';
 
 const { roomDepth, roomOffset } = settings;
 
