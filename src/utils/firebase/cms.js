@@ -1,5 +1,4 @@
-// import cms from './utils/firebase/cms';
-//
+// USAGE:
 // cms.getUnmoderatedRecordings().then( (data) => { console.log("data!", data)});
 
 import firebaseConnection from './connection';
