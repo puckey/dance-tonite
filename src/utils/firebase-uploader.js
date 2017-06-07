@@ -162,8 +162,10 @@ const firebaseUploader = {
       const token = data.token;
 
       var allUploadPromises = filename_array.map(function(item) {
-        const fps = item[0]
-        const filename = item[1]
+        const fps = item[0];
+        const filename = item[1];
+
+        // TODO: create different fps versions here
 
         return uploadDataString(json, filename, token);
       });
