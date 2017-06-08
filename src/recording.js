@@ -2,20 +2,14 @@ import { serializeMatrix } from './utils/serializer';
 
 import audio from './audio';
 import viewer from './viewer';
+import { Matrix4 } from './lib/three';
 
 let stopped = false;
 let frames;
 let frameNumber;
 
-//  If the hand controllers lose tracking then they become empty objects
-//  which means they have no matrices! So we need to hold on to “last good”
-//  versions of their matrices for recording purposes. Easiest way to do
-//  was to bring left and right into this outer-scope and only update them
-//  if we’re receiving good data. Side effect is we no longer need to pass
-//  them into functions below because they are already accessible.
-//  We’re initializing them with pre-serialized position + orientation:
-let left = [0, 0, 0, 0, 0, 0, 1];
-let right = [0, 0, 0, 0, 0, 0, 1];
+let left = serializeMatrix(new Matrix4());
+let right = serializeMatrix(new Matrix4());
 
 const addFrame = (head) => {
   if (frames.length <= frameNumber) {
