@@ -55,9 +55,9 @@ export default class Inbox extends Component {
     return (
       <Container>
         <Align type="top-left row">
-          <InboxCounter unreadCount={unreadCount} />
           <EnterVR />
           <Mute />
+          <InboxCounter unreadCount={unreadCount} />
         </Align>
         <Align type="bottom-right">
           <div
