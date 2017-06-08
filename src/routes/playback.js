@@ -79,8 +79,6 @@ export default (req) => {
         moveCamera(progress);
         const [roomIndex, headIndex] = hoverHead;
         playlist.rooms[roomIndex].transformToHead(viewer.camera, headIndex);
-        viewer.camera.fov = 90;
-        viewer.camera.updateProjectionMatrix();
       };
 
       const moveCamera = (progress) => {

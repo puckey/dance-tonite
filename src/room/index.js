@@ -178,12 +178,24 @@ export default class Room {
   }
 
   getHeadPosition(index, applyMatrix = true) {
+    return this.getPositionImpl(index, 0, applyMatrix);
+  }
+
+  getRHandPosition(index, applyMatrix = true) {
+    return this.getPositionImpl(index, 1, applyMatrix);
+  }
+
+  getLHandPosition(index, applyMatrix = true) {
+    return this.getPositionImpl(index, 2, applyMatrix);
+  }
+
+  getPositionImpl(index, limbIndex, applyMatrix = true) {
     const position = serializer.avgPosition(
       this.lowerFrame,
       this.higherFrame,
       this.frameRatio,
       index,
-      0,
+      limbIndex,
       this.position
     );
     if (applyMatrix) {
@@ -191,6 +203,7 @@ export default class Room {
     }
     return position;
   }
+
 
   getHeadOrientation(index) {
     return serializer.avgQuaternion(

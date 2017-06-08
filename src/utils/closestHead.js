@@ -1,7 +1,6 @@
 import * as THREE from '../lib/three';
 import viewer from '../viewer';
 import windowSize from '../utils/windowSize';
-import * as serializer from '../utils/serializer';
 import { worldToScreen } from '../utils/three';
 
 const mouse = new THREE.Vector2();
@@ -14,13 +13,15 @@ const distanceToMouse = (worldPosition) => VECTOR2
 const MIN_HEAD_DISTANCE = 100 * 100;
 
 const CLOSEST_ARRAY = [];
+
 export default (screenX, screenY, rooms) => {
   if (screenX === undefined) return;
 
   mouse.set(screenX, screenY);
+
+  let closestDistance = Number.MAX_VALUE;
   let roomIndex;
   let headIndex;
-  let closestDistance = Number.MAX_VALUE;
 
   const minRoomDistance = (windowSize.width * windowSize.width) * 0.5;
   for (let i = 0; i < rooms.length; i++) {
@@ -28,16 +29,30 @@ export default (screenX, screenY, rooms) => {
     const roomDistance = distanceToMouse(room.worldPosition);
     if (roomDistance > minRoomDistance) continue;
     for (let j = 0, l = room.performanceCount; j < l; j++) {
-      const head = room.getHeadPosition(j);
-      const distance = distanceToMouse(head);
-      if (
-        distance < closestDistance &&
-        distance < MIN_HEAD_DISTANCE &&
-        distance
-      ) {
-        roomIndex = i;
-        headIndex = j;
-        closestDistance = distance;
+      if (room.hideHead === false) {
+        const head = room.getHeadPosition(j);
+        const distance = distanceToMouse(head);
+        if (distanceCheck(distance, closestDistance)) {
+          roomIndex = i;
+          headIndex = j;
+          closestDistance = distance;
+        }
+      } else {
+        const rhand = room.getRHandPosition(j);
+        const rdistance = distanceToMouse(rhand);
+        if (distanceCheck(rdistance, closestDistance)) {
+          roomIndex = i;
+          headIndex = j;
+          closestDistance = rdistance;
+          continue;
+        }
+        const lhand = room.getLHandPosition(j);
+        const ldistance = distanceToMouse(lhand);
+        if (distanceCheck(ldistance, closestDistance)) {
+          roomIndex = i;
+          headIndex = j;
+          closestDistance = ldistance;
+        }
       }
     }
   }
@@ -45,3 +60,9 @@ export default (screenX, screenY, rooms) => {
   CLOSEST_ARRAY[1] = headIndex;
   return CLOSEST_ARRAY;
 };
+
+function distanceCheck(distance, closestDistance) {
+  return (distance < closestDistance &&
+          distance < MIN_HEAD_DISTANCE &&
+          distance);
+}

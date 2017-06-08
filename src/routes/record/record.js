@@ -136,7 +136,7 @@ export default (goto, req) => {
   recording.setup({
     loopIndex: req.params.loopIndex
       || (Math.floor(Math.random() * settings.loopCount) + 1),
-    hideHead: req.params.hideHead === '1',
+    hideHead: /no/.test(req.params.hideHead),
   });
 
   const controllersTick = () => {

@@ -22,9 +22,10 @@ const orthographicDistance = 4;
 
 const cameras = (function () {
   const { aspectRatio } = windowSize;
-  const perspective = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
+  const perspective = new THREE.PerspectiveCamera(90, aspectRatio, 0.01, 200);
   perspective.lookAt(tempVector(0, 0, 1));
   perspective.position.y = settings.holeHeight;
+
 
   const orthographic = new THREE.OrthographicCamera(
     -orthographicDistance * aspectRatio,
