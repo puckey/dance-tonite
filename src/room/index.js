@@ -222,7 +222,13 @@ export default class Room {
   gotoTime(seconds, maxLayers) {
     const { frames } = this;
     if (!frames) return;
-    const hidden = !layout.isMainTimeline(this.index) && audio.progress < 23;
+    const hidden = !layout.isMainTimeline(this.index) && (
+      audio.currentTime < 186.734288 ||
+      audio.currentTime > 216.824266
+    );
+    const hiddenRatio = !layout.isMainTimeline(this.index)
+      ? Math.max(0, Math.min(2, audio.currentTime - 184.734288) / 2)
+      : undefined;
     const frameNumber = this.frameNumber = this.secondsToFrame(seconds);
     const lower = hidden ? 0 : Math.floor(frameNumber);
     const higher = hidden ? 0 : Math.ceil(frameNumber);
@@ -255,7 +261,8 @@ export default class Room {
           scale,
           color,
           position,
-          hidden
+          hidden,
+          hiddenRatio
         );
       }
       roomUtils.transformMesh(
@@ -269,7 +276,8 @@ export default class Room {
         scale,
         color,
         position,
-        hidden
+        hidden,
+        hiddenRatio
       );
       roomUtils.transformMesh(
         handMesh,
@@ -282,7 +290,8 @@ export default class Room {
         scale,
         color,
         position,
-        hidden
+        hidden,
+        hiddenRatio
       );
     }
   }
