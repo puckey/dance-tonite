@@ -46,7 +46,7 @@ export default (screenX, screenY, rooms) => {
           closestDistance = rdistance;
           continue;
         }
-        const lhand = room.getRHandPosition(j);
+        const lhand = room.getLHandPosition(j);
         const ldistance = distanceToMouse(lhand);
         if (distanceCheck(ldistance, closestDistance)) {
           roomIndex = i;
