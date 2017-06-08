@@ -23,6 +23,17 @@ require('./lib/VRController')(THREE);
 const events = emitter();
 const orthographicDistance = 4;
 
+// TODO: remove me:
+// const times = [0];
+// document.addEventListener('keydown', (event) => {
+//   if (event.shiftKey) {
+//     times.push(audio.currentTime);
+//   }
+//   if (event.metaKey) {
+//     console.log(times);
+//   }
+// });
+
 const cameras = (function () {
   const { aspectRatio } = windowSize;
   const perspective = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
