@@ -34,7 +34,7 @@ const fillMissingFrames = (time, head) => {
   if (diff > 1) {
     for (let i = 0; i < (diff - 1); i++) {
       frameNumber++;
-      addFrame(head);// left and right no longer need to be passed because of new scope.
+      addFrame(head);
     }
   }
 };
@@ -53,14 +53,15 @@ const recording = {
   tick() {
     if (stopped) return;
     const head = serializeMatrix(viewer.camera.matrixWorld);
-    if (viewer.controllers[0].matrixWorld !== undefined) {
-      left = serializeMatrix(viewer.controllers[0].matrixWorld);
+    const [leftController, rightController] = viewer.controllers;
+    if (leftController.matrixWorld) {
+      left = serializeMatrix(leftController.matrixWorld);
     }
-    if (viewer.controllers[1].matrixWorld !== undefined) {
-      right = serializeMatrix(viewer.controllers[1].matrixWorld);
+    if (rightController.matrixWorld) {
+      right = serializeMatrix(rightController.matrixWorld);
     }
     if (!frames || audio.looped) {
-      if (frames) fillMissingFrames(audio.duration, head);// left and right now global.
+      if (frames) fillMissingFrames(audio.duration, head);
       frameNumber = 0;
       if (frames) {
         for (let i = 0; i < frames.length; i++) {
@@ -74,8 +75,8 @@ const recording = {
     } else {
       frameNumber++;
     }
-    addFrame(head);// left and right no longer need to be passed because of new scope.
-    fillMissingFrames(audio.time, head);// left and right now global.
+    addFrame(head);
+    fillMissingFrames(audio.time, head);
   },
 
   stop() {
