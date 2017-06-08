@@ -10,6 +10,7 @@ import aboutIconSvg from './icons/about.svg';
 import speakerIconSvg from './icons/speaker.svg';
 import speakerMuteIconSvg from './icons/mute_speaker.svg';
 import viewer from '../viewer';
+import settings from '../settings';
 
 const componentContext = hyperscript.context();
 
@@ -61,7 +62,7 @@ const hud = {
     });
 
     elements.menuAdd.addEventListener('click', () => {
-      router.navigate('/record');
+      router.navigate(`/record/${Math.floor(Math.random() * settings.loopCount)}/head=yes/`);
     });
 
     // Add .mod-mobile identifier to body on mobile to disable hover effects

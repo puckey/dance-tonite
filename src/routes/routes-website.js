@@ -6,5 +6,5 @@ export default {
     '/record/:roomIndex?/:hideHead?': record,
     '/:roomIndex?/:id?': playback,
   },
-  components: { record, playback }
+  components: { record, playback },
 };
