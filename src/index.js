@@ -10,11 +10,8 @@ import hud from './hud';
 import viewer from './viewer';
 import audioPool from './utils/audio-pool';
 import playIconSvg from './hud/icons/play.svg';
-import cms from './utils/firebase/cms';
 
 window.THREE = THREE;
-
-cms.getUnmoderatedRecordings().then((data) => { console.log('data!', data); });
 
 (async () => {
   await Promise.all([
