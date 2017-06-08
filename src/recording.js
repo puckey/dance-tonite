@@ -80,9 +80,7 @@ const recording = {
       loopIndex: this.loopIndex,
       hideHead: this.hideHead,
     }]
-      .concat(this.frames)
-      .map(JSON.stringify)
-      .join('\n');
+      .concat(this.frames);
   },
 };
 

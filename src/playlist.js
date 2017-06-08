@@ -28,7 +28,7 @@ export default class Playlist {
           const isPathRecording = index === pathRoomIndex - 1;
           return new Room({
             url: isPathRecording
-              ? `${pathRecording}.json`
+              ? `${pathRecording}`
               : recordingUrl,
             index,
             pathRecording: isPathRecording,

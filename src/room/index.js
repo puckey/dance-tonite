@@ -78,6 +78,7 @@ export default class Room {
 
     this.isRecording = !!recording;
     this.url = url;
+    if (url) this.url = (url.indexOf('?') === -1) ? url : url.split('?')[0]; // remove everything after '?'
     this.pathRecording = pathRecording;
     this.fps = 90;
     if (recording) {
@@ -103,11 +104,9 @@ export default class Room {
   load(callback) {
     const frames = [];
     this.streamer = streamJSON(
-      `${PROTOCOL}//d1nylz9ljdxzkb.cloudfront.net/${
-        this.pathRecording
-          ? ''
-          : `${queryData.fps || (feature.has6DOF ? 45 : 15)}FPS/`
-      }${this.url}`,
+      `${PROTOCOL}//storage.googleapis.com/you-move-me.appspot.com/recordings/${this.url}/${
+        `${queryData.fps || (feature.has6DOF ? 45 : 15)}FPS.json`
+      }`,
       (error, json) => {
         if (error || !json) {
           if (callback) {
