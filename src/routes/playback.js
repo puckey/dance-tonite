@@ -15,6 +15,7 @@ import Room from '../room';
 import progressBar from '../progress-bar';
 import layout from '../room/layout';
 import closestHead from '../utils/closestHead';
+import background from '../background';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
@@ -111,6 +112,7 @@ export default (req) => {
         Room.clear();
         playlist.tick();
         titles.tick();
+        background.tick();
         if (!feature.isMobile || !viewer.vrEffect.isPresenting) {
           progressBar.tick();
         }
@@ -213,6 +215,7 @@ export default (req) => {
       titles.destroy();
       playlist.destroy();
       progressBar.destroy();
+      background.destroy();
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mouseup', onMouseUp);

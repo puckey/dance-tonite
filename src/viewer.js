@@ -194,14 +194,6 @@ const animate = () => {
     : 0;
   zoomCamera(zoom);
 
-  COLOR.set(0x000000);
-  if (audio.progress > 23) {
-    COLOR
-      .lerp(lowColor, Math.ceil(Math.min(1, audio.progress - 23)))
-      .lerp(highColor, (audio.progress || 0) % 1);
-  }
-  renderer.setClearColor(COLOR);
-
   vrEffect.render(viewer.renderScene, viewer.camera);
   if (vrEffect.isPresenting && feature.hasExternalDisplay) {
     renderer.render(viewer.renderScene, viewer.camera);
