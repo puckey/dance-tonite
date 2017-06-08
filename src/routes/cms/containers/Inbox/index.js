@@ -83,7 +83,7 @@ export default class Inbox extends Component {
           />
         </Align>
         {
-          roomId === undefined
+          roomId == null
             ? (
               <Align type="center">
                 <Error>Loading inbox</Error>
