@@ -36,7 +36,7 @@ const contactServer = (URL, dataToSend) => {
           const response = JSON.parse(request.responseText);
 
           if (!response.success) {
-            reject('error connecting to server');
+            reject(response.error);
           } else {
             const data = response.data;
             resolve(data);
