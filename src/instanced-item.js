@@ -25,7 +25,7 @@ const changeInstance = (mesh, index, [position, rotation], color, scale) => {
 
 const changeInstanceColor = (mesh, index, color) => {
   mesh.setColorAt(index, color);
-  mesh.needsUpdate();
+  mesh.needsUpdate('color');
 };
 
 const addInstance = mesh => mesh.geometry.maxInstancedCount++;

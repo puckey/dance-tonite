@@ -7,10 +7,10 @@ const PROTOCOL = location.protocol;
 
 export default class Frames {
   constructor(url, recording) {
+    this.fps = 90;
     if (recording) {
       this.frames = recording.frames;
       this.hideHead = recording.hideHead;
-      this.fps = 90;
     }
     if (url) {
       this.url = (url.indexOf('?') === -1) ? url : url.split('?')[0];

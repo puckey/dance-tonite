@@ -47,7 +47,7 @@ export default class Frame {
     if (this.needsUpdate) {
       this.update();
     }
-    return this._count;
+    return this._count || 0;
   }
 
   update() {
@@ -58,7 +58,7 @@ export default class Frame {
     const higherNumber = Math.ceil(frameNumber);
     if (
       !frames ||
-      frames.length <= lowerNumber ||
+      frames.length <= higherNumber ||
       frameNumber === this.frameNumber
     ) return;
     this.frameNumber = frameNumber;
