@@ -57,9 +57,12 @@ export default class Room {
       .add(this.position)
       .add(roomOffset);
     position.y -= 1;
-    const type = layout.getType(this.index);
+    const type = layout.getType(index);
     if (type === 'PLANE') return;
     items.room.add([position, null], getRoomColor(index));
+    if (layout.hasWall(index)) {
+      items.wall.add([position, null], getRoomColor(index));
+    }
   }
 
   load(callback) {
