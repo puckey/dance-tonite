@@ -1,9 +1,12 @@
 const userAgent = navigator.userAgent;
-const vrSupported = navigator.getVRDisplays !== undefined;
+
+const vrSupported = () => {
+  return navigator.getVRDisplays !== undefined;
+};
 
 const checkHasExternalDisplay = () => (
   new Promise((resolve) => {
-    if (!vrSupported) {
+    if (!vrSupported()) {
       resolve(false);
       return;
     }
@@ -27,7 +30,7 @@ const checkHasExternalDisplay = () => (
 
 const checkHasVR = () => (
   new Promise((resolve) => {
-    if (!vrSupported) {
+    if (!vrSupported()) {
       resolve(false);
       return;
     }
@@ -45,7 +48,7 @@ const checkHasVR = () => (
 
 const checkHas6DOF = () => (
   new Promise((resolve) => {
-    if (!vrSupported) {
+    if (!vrSupported()) {
       resolve(false);
       return;
     }
@@ -68,7 +71,7 @@ const checkHas6DOF = () => (
 
 const getVRDisplayName = () => (
   new Promise((resolve) => {
-    if (!vrSupported) {
+    if (!vrSupported()) {
       resolve(false);
       return;
     }
