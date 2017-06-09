@@ -170,10 +170,9 @@ export default (req) => {
     audio.tick();
     Room.clear();
 
-    if (audio.totalProgress >= 0) {
-      gifFrame++;
-    }
+
     gifProgress = gifFrame / (duration * fps);
+    // console.log(gifFrame, gifProgress);
     const gifRoomProgress = gifProgress * 2;
     window.gifFrame = gifFrame;
     window.gifProgress = gifProgress;
@@ -217,9 +216,12 @@ export default (req) => {
     // gifferTimeline.tick(audio.totalProgress);
     gifferTimeline.tick(gifProgress);
     // if (audio.totalProgress >= 0 && audio.totalProgress <= 2) {
-    if (gifFrame > 0 && gifFrame <= duration * fps) {
+    if (gifFrame >= 0 && gifFrame <= duration * fps) {
       renderer.render(viewer.scene, viewer.camera);
       capturer.capture(renderer.domElement);
+    }
+    if (audio.totalProgress >= 0) {
+      gifFrame++;
     }
   };
 
