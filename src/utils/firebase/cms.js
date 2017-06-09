@@ -1,7 +1,7 @@
 import firebaseConnection from './connection';
 
 const serverURL = 'https://us-central1-you-move-me.cloudfunctions.net/';
-//const serverURL = 'http://localhost:5002/you-move-me/us-central1/';
+// const serverURL = 'http://localhost:5002/you-move-me/us-central1/';
 
 // getDraftPlaylist:
 // cms.getDraftPlaylist().then((data) => { console.log('getDraftPlaylist!', data); });
@@ -9,9 +9,10 @@ const getDraftPlaylist = () =>
       firebaseConnection.contactServer(`${serverURL}getDraftPlaylist`, {});
 
 // updateDraftPlaylist:
-// cms.updateDraftPlaylist(3, 'adsf').then((data) => { console.log('update', data); });
-const updateDraftPlaylist = (roomID, recordingID) =>
-      firebaseConnection.contactServer(`${serverURL}updateDraftPlaylist`, { room: roomID, id: recordingID });
+// cms.updateDraftPlaylist({ room: 3, id: 'adsf' })
+//   .then((data) => { console.log('update', data); });
+const updateDraftPlaylist = ({ room, id }) =>
+      firebaseConnection.contactServer(`${serverURL}updateDraftPlaylist`, { room, id });
 
 // publishDraftPlaylist:
 // cms.publishDraftPlaylist().then((data) => { console.log('publishDraftPlaylist!', data); });
@@ -26,27 +27,28 @@ const getUnmoderatedRecordings = () =>
 // getRecording:
 // cms.getRecording('EamZtQ').then((data) => { console.log('getRecording!', data); });
 const getRecording = (id) =>
-      firebaseConnection.contactServer(`${serverURL}getRecording`, { id: id });
+      firebaseConnection.contactServer(`${serverURL}getRecording`, { id });
 
 // updateRecording:
-// cms.updateRecording('EamZtQ','hello there',1,false).then((data) => { console.log(data); });
+// cms.updateRecording({ id: 'EamZtQ', title: 'hello there', rating: 1, is_universal: false})
+//   .then((data) => { console.log(data); });
 //    if title, rating, or isUniversal are left null, they're value will not be changed
-//    isUniversal is a boolean
+//    is_universal is a boolean
 //    rating:
 //       0 = unrated
 //       1 = good (star)
 //      -1 = not good
-const updateRecording = (id, title, rating, isUniversal) =>
-      firebaseConnection.contactServer(`${serverURL}updateRecording`,
-         { id: id, title: title, rating: rating, is_universal: isUniversal });
+const updateRecording = ({ id, title, rating, is_universal }) =>
+      firebaseConnection.contactServer(
+        `${serverURL}updateRecording`,
+         { id, title, rating, is_universal }
+       );
 
-const firebaseCMS = {
-  getDraftPlaylist: getDraftPlaylist,
-  updateDraftPlaylist: updateDraftPlaylist,
-  publishDraftPlaylist: publishDraftPlaylist,
-  getUnmoderatedRecordings: getUnmoderatedRecordings,
-  getRecording: getRecording,
-  updateRecording: updateRecording,
+export default {
+  getDraftPlaylist,
+  updateDraftPlaylist,
+  publishDraftPlaylist,
+  getUnmoderatedRecordings,
+  getRecording,
+  updateRecording,
 };
-
-export default firebaseCMS;
