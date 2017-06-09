@@ -20,13 +20,15 @@ window.THREE = THREE;
   if (feature.isMobile && (navigator.getVRDisplays === undefined)) {
     window.WebVRConfig.BUFFER_SCALE = 0.75;
     window.polyfill = new window.WebVRPolyfill();
-    console.log('WebVR polyfill');
+    console.log('WebVR polyfill', navigator.getVRDisplays);
   }
 
   await Promise.all([
     props.prepare(),
     feature.prepare().then(hud.prepare),
   ]);
+
+  console.log(feature);
 
   // If we are on a mobile device, we need a touch event in order
   // to play the audio:
