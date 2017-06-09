@@ -13,7 +13,7 @@ let current;
 const components = { record, playback, giffer };
 const routes = {
   '/record/:loopIndex?/:hideHead?': record,
-  '/giffer/:loopIndex?/:id?': giffer,
+  '/giffer/:id?': giffer,
   '/:loopIndex?/:id?': playback,
   '/*': notFound,
 };

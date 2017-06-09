@@ -103,7 +103,9 @@ export default (req) => {
   //
   //  GIF STUF!! ================================================================
   console.log('giffing...');
-  let id = parseInt(req.params.id, 10);
+  // let id = parseInt(req.params.id, 10);
+  let id = req.params.id;
+  window.req = req;
   if (!id) id = '1030266141029-b5ba6ff6'; // TUTORIAL_RECORDING_URL;
   console.log('exporting this dance:', id);
   window.danceId = id; //  temp for debugging!!
