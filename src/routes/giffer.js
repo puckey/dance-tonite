@@ -42,6 +42,19 @@ renderer.setPixelRatio(1); // window.devicePixelRatio
 renderer.setSize(width, height);
 renderer.sortObjects = false;
 
+const orthographicDistance = 4;
+const aspectRatio = width / height;
+const camera = new THREE.OrthographicCamera(
+  -orthographicDistance * aspectRatio,
+  orthographicDistance * aspectRatio,
+  orthographicDistance,
+  -orthographicDistance,
+  -100,
+  1000,
+);
+camera.position.set(0.06, 0.08, 0.08);
+camera.lookAt(new THREE.Vector3());
+
 
 //  BUG: Right now CCapture needs GIF to be a global variable.
 //  This is terrible. Need to patch that!!
@@ -217,7 +230,7 @@ export default (req) => {
     gifferTimeline.tick(gifProgress);
     // if (audio.totalProgress >= 0 && audio.totalProgress <= 2) {
     if (gifFrame >= 0 && gifFrame <= duration * fps) {
-      renderer.render(viewer.scene, viewer.camera);
+      renderer.render(viewer.scene, camera);
       capturer.capture(renderer.domElement);
     }
     if (audio.totalProgress >= 0) {
@@ -262,13 +275,23 @@ export default (req) => {
         },
       });
 
+
+      //  we'll keep these here so what you see matches what is being exported:
       viewer.switchCamera('orthographic');
-      state.originalCameraPosition = viewer.camera.position.clone();
-      state.originalZoom = viewer.camera.zoom;
+      // state.originalCameraPosition = viewer.camera.position.clone();
+      // state.originalZoom = viewer.camera.zoom;
       viewer.camera.position.y = 2;
       viewer.camera.position.z = 1.3;
       viewer.camera.zoom = 0.7;
       viewer.camera.updateProjectionMatrix();
+
+      state.originalCameraPosition = camera.position.clone();
+      state.originalZoom = camera.zoom;
+      camera.position.y = 2;
+      camera.position.z = 1.3;
+      camera.zoom = 0.7;
+      camera.updateProjectionMatrix();
+
 
       Room.rotate180();
 
