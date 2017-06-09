@@ -12,7 +12,6 @@ import { Vector3 } from '../../lib/three';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
 import windowSize from '../../utils/windowSize';
-import capture from '../../lib/ccaptureWrapper';
 
 // TODO: replace with better recording:
 const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
@@ -199,7 +198,6 @@ export default (goto) => {
         state.windowHeight * 0.03
       );
     }
-    capture(viewer.scene, viewer.camera); // ***************************
   };
 
   const updateWindowDimensions = ({ width, height }) => {

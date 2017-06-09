@@ -58,7 +58,7 @@ setTimeout(() => {
     framerate: fps,
     // motionBlurFrames: (960 / fps),
     quality: 100,
-    format: 'gif', // 'gif', WTF GIF NO WORK?!
+    format: 'webm',
     workersPath: '../lib/',
     // timeLimit: 10000 * duration,
     // frameLimit: 10000 * duration * fps,
