@@ -9,7 +9,7 @@ import * as THREE from './lib/three';
 import stats from './lib/stats';
 import { tempVector } from './utils/three';
 import settings from './settings';
-import Room from './room';
+import InstancedItem from './instanced-item';
 import feature from './utils/feature';
 import windowSize from './utils/windowSize';
 import audio from './audio';
@@ -113,8 +113,7 @@ const createScene = () => {
   const ambientLight = new THREE.AmbientLight(0x444444, 0.7);
   const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
 
-  scene.add(hemisphereLight);
-  scene.add(light, ambientLight);
+  scene.add(hemisphereLight, light, ambientLight);
   scene.fog = new THREE.Fog(0x000000, 0, 120);
   return scene;
 };
@@ -163,10 +162,10 @@ const viewer = {
     return count;
   },
   switchCamera: (name) => {
-    Room.switchModel(
+    InstancedItem.switch(
       name === 'orthographic'
         ? 'orthographic'
-        : 'default',
+        : 'perspective',
     );
     viewer.camera = cameras[name];
   },

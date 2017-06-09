@@ -20,7 +20,6 @@ export const tempColor = (r = 0, g = 0, b = 0) => COLOR.set(r, g, b);
 export const createInstancedMesh = ({
   count,
   geometry,
-  color,
   material = LAMBERT_MATERIAL,
 }) => {
   const instancedMesh = new THREE.InstancedMesh(
@@ -30,18 +29,9 @@ export const createInstancedMesh = ({
     true,
     true,
   );
-  const colorIsFunction = typeof color === 'function';
-
   for (let i = 0; i < count; i++) {
     instancedMesh.setScaleAt(i, tempVector(1, 1, 1));
-    instancedMesh.setPositionAt(i, tempVector(-1000, 0, 0));
-    if (color) {
-      instancedMesh.setColorAt(i,
-        colorIsFunction
-          ? color(i)
-          : color,
-      );
-    }
+    instancedMesh.setPositionAt(i, tempVector(0, 0, 0));
   }
 
   instancedMesh.visible = true;

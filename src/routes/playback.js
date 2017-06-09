@@ -16,6 +16,7 @@ import progressBar from '../progress-bar';
 import layout from '../room/layout';
 import closestHead from '../utils/closestHead';
 import background from '../background';
+import InstancedItem from '../instanced-item';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
@@ -78,10 +79,8 @@ export default (req) => {
 
       const moveHead = (progress) => {
         moveCamera(progress);
-        const [roomIndex, headIndex] = hoverHead;
-        playlist.rooms[roomIndex].transformToHead(viewer.camera, headIndex);
-        viewer.camera.fov = 90;
-        viewer.camera.updateProjectionMatrix();
+        const [index, headIndex] = hoverHead;
+        playlist.rooms[index].transformToHead(viewer.camera, headIndex);
       };
 
       const moveCamera = (progress) => {
@@ -155,7 +154,7 @@ export default (req) => {
           if (hoverHead[0] === undefined) hoverHead = null;
           if (hoverHead) {
             viewer.switchCamera('default');
-            Room.group.add(viewer.camera);
+            InstancedItem.group.add(viewer.camera);
           }
         };
 
@@ -163,7 +162,7 @@ export default (req) => {
           if (viewer.vrEffect.isPresenting) return;
           hoverHead = null;
           viewer.switchCamera('orthographic');
-          Room.group.remove(viewer.camera);
+          InstancedItem.group.remove(viewer.camera);
         };
 
         window.addEventListener('mousemove', onMouseMove);

@@ -5,18 +5,9 @@ import { recordCostumeColor, highlightColor } from './theme/colors';
 
 import wallUrl from './public/models/obj/new-rooms/vr/first-wall.obj';
 import roomUrl from './public/models/obj/new-rooms/vr/horizontal-room.obj';
-import verticalRoomUrl from './public/models/obj/new-rooms/vr/vertical-room.obj';
-import horizontalVerticalCornerUrl from './public/models/obj/new-rooms/vr/horizontal-vertical-corner.obj';
-import verticalHorizontalCornerUrl from './public/models/obj/new-rooms/vr/vertical-horizontal-corner.obj';
-import floorUrl from './public/models/obj/new-rooms/floor.obj';
 
 import isometricWallUrl from './public/models/obj/new-rooms/first-wall.obj';
-import isometricHorizontalRoomUrl from './public/models/obj/new-rooms/horizontal-room.obj';
-import isometricVerticalRoomUrl from './public/models/obj/new-rooms/vertical-room.obj';
-import isometricHorizontalVerticalCornerUrl from './public/models/obj/new-rooms/horizontal-vertical-corner.obj';
-import isometricVerticalHorizontalCornerUrl from './public/models/obj/new-rooms/vertical-horizontal-corner.obj';
-import roomTextureUrl from './public/models/obj/bake/VR_AOMap.png';
-import isometricRoomTextureUrl from './public/models/obj/bake/ISO_AOMap.png';
+import isometricRoomUrl from './public/models/obj/new-rooms/horizontal-room.obj';
 
 const {
   Mesh,
@@ -32,21 +23,10 @@ const {
 const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor });
 
 const props = {
-  room: [roomUrl, roomTextureUrl],
-  verticalRoom: [verticalRoomUrl],
-  floor: [floorUrl],
-  horizontalVerticalCorner: [horizontalVerticalCornerUrl],
-  verticalHorizontalCorner: [verticalHorizontalCornerUrl],
-  wall: [wallUrl],
+  perspectiveWall: [wallUrl],
+  perspectiveRoom: [roomUrl],
   orthographicWall: [isometricWallUrl],
-  orthographicRoom: [
-    isometricHorizontalRoomUrl,
-    // Commented out isometric texture, because it doesn't work with new model:
-    // isometricRoomTextureUrl
-  ],
-  orthographicVerticalRoom: [isometricVerticalRoomUrl],
-  orthographicHorizontalVerticalCorner: [isometricHorizontalVerticalCornerUrl],
-  orthographicVerticalHorizontalCorner: [isometricVerticalHorizontalCornerUrl],
+  orthographicRoom: [isometricRoomUrl],
   hand: (function createHand() {
     const radius = 0.02;
     const height = 0.2;
