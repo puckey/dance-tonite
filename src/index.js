@@ -1,4 +1,5 @@
 import 'babel-polyfill';
+import 'webvr-polyfill';
 
 import './theme/index.scss';
 import * as THREE from './lib/three';
@@ -15,6 +16,13 @@ window.THREE = THREE;
 
 
 (async () => {
+  // if we're on a mobile device that doesn't support WebVR, use polyfill
+  if (feature.isMobile && (navigator.getVRDisplays === undefined)) {
+    window.WebVRConfig.BUFFER_SCALE = 0.75;
+    window.polyfill = new window.WebVRPolyfill();
+    console.log('WebVR polyfill');
+  }
+
   await Promise.all([
     props.prepare(),
     feature.prepare().then(hud.prepare),
