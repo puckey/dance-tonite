@@ -2,6 +2,8 @@
  * @author mflux / http://minmax.design
  * Based on @mattdesl three-orbit-viewer
  */
+import 'webvr-polyfill';
+
 import h from 'hyperscript';
 import emitter from 'mitt';
 
@@ -13,6 +15,12 @@ import Room from './room';
 import feature from './utils/feature';
 import windowSize from './utils/windowSize';
 
+// if we're on a mobile device that doesn't support WebVR, use polyfill
+if (feature.isMobile && (navigator.getVRDisplays === undefined)) {
+  window.WebVRConfig.BUFFER_SCALE = 0.75;
+  window.polyfill = new window.WebVRPolyfill();
+  console.log('WebVR polyfill', navigator.getVRDisplays);
+}
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
