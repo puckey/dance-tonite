@@ -36,13 +36,11 @@ class InstancedItem {
     this.perspectiveMesh = createInstancedMesh({
       count,
       geometry: perspectiveMesh.geometry,
-      material: perspectiveMesh.material,
     });
     if (orthographicMesh) {
       this.orthographicMesh = createInstancedMesh({
         count,
         geometry: orthographicMesh.geometry,
-        material: orthographicMesh.material,
       });
     }
     this.mesh = (InstancedItem.perspectiveMode || !orthographicMesh)
