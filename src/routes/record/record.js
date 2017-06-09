@@ -136,11 +136,11 @@ export default (goto, req) => {
   recording.setup({
     loopIndex: req.params.loopIndex
       || (Math.floor(Math.random() * settings.loopCount) + 1),
-    hideHead: req.params.hideHead === '1',
+    hideHead: /no/.test(req.params.hideHead),
   });
 
   const controllersTick = () => {
-    const count = viewer.countActiveControllers();
+    const count = controllers.countActiveControllers();
     controllers.update(count === 2 ? pressToStart : null);
     instructions.setSubText(count === 2
       ? 'press right controller to start'
@@ -168,7 +168,7 @@ export default (goto, req) => {
       instructions.setMainText('');
       viewer.events.on('tick', controllersTick);
 
-      controllers.add();
+      //controllers.add();
 
       orb = new Orb();
       orb2 = new Orb();

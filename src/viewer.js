@@ -17,7 +17,7 @@ import 'webvr-polyfill';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
-require('./lib/ViveController')(THREE);
+require('./lib/VRController')(THREE);
 
 
 //if (feature.isMobile) {
@@ -30,9 +30,10 @@ const orthographicDistance = 4;
 
 const cameras = (function () {
   const { aspectRatio } = windowSize;
-  const perspective = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
+  const perspective = new THREE.PerspectiveCamera(90, aspectRatio, 0.01, 200);
   perspective.lookAt(tempVector(0, 0, 1));
   perspective.position.y = settings.holeHeight;
+
 
   const orthographic = new THREE.OrthographicCamera(
     -orthographicDistance * aspectRatio,
@@ -62,12 +63,6 @@ const vrEffect = new THREE.VREffect(renderer);
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
 
-const controller1 = new THREE.ViveController(0);
-const controller2 = new THREE.ViveController(1);
-
-// Use controllers:
-controller1.standingMatrix = controls.getStandingMatrix();
-controller2.standingMatrix = controls.getStandingMatrix();
 
 const createScene = () => {
   const scene = new THREE.Scene();
@@ -107,24 +102,17 @@ windowSize.on('resize', ({ width, height, aspectRatio }) => {
 }, false);
 
 const scene = createScene();
-scene.add(controller1, controller2);
 
 const viewer = {
   camera: cameras.default,
   cameras,
   scene,
   renderScene: scene,
-  controllers: [controller1, controller2],
+  controllers: [{}, {}],
   controls,
   createScene,
   events,
   renderer,
-  countActiveControllers: () => {
-    let count = 0;
-    if (controller1.visible) count += 1;
-    if (controller2.visible) count += 1;
-    return count;
-  },
   switchCamera: (name) => {
     Room.switchModel(
       name === 'orthographic'
@@ -142,8 +130,13 @@ clock.start();
 const animate = () => {
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
-  controller1.update();
-  controller2.update();
+
+  THREE.VRController.update();
+
+  if (feature.isIODaydream) {
+    viewer.daydreamController.update();
+  }
+
   controls.update();
   events.emit('tick', dt);
 

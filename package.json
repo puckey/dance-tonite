@@ -15,6 +15,7 @@
     "babel-polyfill": "^6.23.0",
     "classnames": "^2.2.5",
     "eases": "^1.0.8",
+    "firebase": "^4.1.1",
     "grapnel": "^0.6.4",
     "hyperscript": "^2.0.2",
     "mitt": "^1.1.0",

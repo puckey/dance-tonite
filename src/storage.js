@@ -1,12 +1,11 @@
-import UniqueS3Uploader from 'unique-s3-uploader';
 import fetch from 'unfetch';
+import firebaseUploader from './utils/firebase/uploader';
 
-const persist = (json) => new Promise((resolve, reject) => {
-  new UniqueS3Uploader('https://ymm-recorder.puckey.studio/new/')
-    .upload(json, (error, data) => {
-      if (error) return reject(error);
-      resolve(data.uri);
-    });
+const persist = (data, roomID) => new Promise((resolve, reject) => {
+  firebaseUploader.upload(data, roomID, (error, recordingID) => {
+    if (error) return reject(error);
+    resolve(recordingID);
+  });
 });
 
 const loadPlaylist = async (filename) => {

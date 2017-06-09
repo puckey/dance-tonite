@@ -10,35 +10,70 @@ import Close from '../../components/Close';
 import Mute from '../../components/Mute';
 import EnterVR from '../../components/EnterVR';
 import InboxCounter from '../../components/InboxCounter';
+import cms from '../../../../utils/firebase/cms';
+import router from '../../../../router';
 
-export default class Choose extends Component {
+export default class Inbox extends Component {
   constructor() {
     super();
     this.state = {
       starred: false,
     };
 
-    this.toggleStarredStatus = this.toggleStarredStatus.bind(this);
+    this.toggleStarred = this.toggleStarred.bind(this);
   }
 
-  toggleStarredStatus() {
+  async asyncMount() {
+    const unread = await cms.getUnmoderatedRecordings();
+    if (!this.mounted) return;
+    if ((!this.props.recordingId || !this.props.roomId) && unread.length) {
+      router.navigate(`/inbox/2/${unread[0].id}`);
+      return;
+    }
+
+    this.setState({
+      unreadCount: unread.length,
+    });
+  }
+
+  componentDidMount() {
+    this.mounted = true;
+    this.asyncMount();
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  toggleStarred() {
     this.setState({
       starred: !this.state.starred,
     });
   }
 
-  render({ roomId, recordingId, goHome, unreadCount }, { starred }) {
+  render({ roomId, recordingId, goHome }, { starred, unreadCount }) {
     return (
       <Container>
         <Align type="top-left row">
-          <InboxCounter unreadCount={unreadCount} /><EnterVR /><Mute />
+          <EnterVR />
+          <Mute />
+          <InboxCounter unreadCount={unreadCount} />
         </Align>
         <Align type="bottom-right">
-          <div className="inbox-menu-item" onClick={this.toggleStarredStatus}>{ starred ? 'Unstar' : 'Star' }</div>
+          <div
+            className="inbox-menu-item"
+            onClick={this.toggleStarred}
+          >
+            { starred ? 'Unstar' : 'Star' }
+          </div>
           { starred &&
-            <input autoFocus type="text" className="inbox-title-input" id="performanceTitle">
-              Enter title
-            </input>
+            <input
+              autoFocus
+              placeHolder="Performance Title"
+              type="text"
+              className="inbox-title-input"
+              id="performanceTitle"
+            />
           }
           <div className="inbox-menu-item">Next &rarr;</div>
         </Align>
@@ -48,13 +83,13 @@ export default class Choose extends Component {
           />
         </Align>
         {
-          roomId === undefined
+          roomId == null
             ? (
               <Align type="center">
-                <Error>Room not defined</Error>
+                <Error>Loading inbox</Error>
               </Align>
             )
-            : <Room loopIndex={roomId} recordingId={recordingId} />
+            : <Room roomIndex={roomId} recordingId={recordingId} />
         }
       </Container>
     );

@@ -8,17 +8,17 @@ import settings from '../../settings';
 import hud from '../../hud';
 import createTimeline from '../../lib/timeline';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
-import { Vector3 } from '../../lib/three';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
 import windowSize from '../../utils/windowSize';
 import audioSrcOgg from '../../public/sound/room-1.ogg';
 import audioSrcMp3 from '../../public/sound/room-1.mp3';
+import { worldToScreen } from '../../utils/three';
 
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 
 // TODO: replace with better recording:
-const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
+const TUTORIAL_RECORDING_URL = 'hIR_Tw';
 
 const { roomDepth, roomOffset } = settings;
 
@@ -35,21 +35,9 @@ export default (goto) => {
   const elements = {};
   const objects = {};
 
-  const TEMP_VECTOR = new Vector3();
-  const worldToScreen = (position) => {
-    // map to normalized device coordinate (NDC) space
-    TEMP_VECTOR
-      .copy(position)
-      .project(viewer.camera);
-    TEMP_VECTOR.x = (TEMP_VECTOR.x + 1) * (windowSize.width * 0.5);
-    TEMP_VECTOR.y = (-TEMP_VECTOR.y + 1) * (windowSize.height * 0.5);
-
-    return TEMP_VECTOR;
-  };
-
   const performSkip = async () => {
     // TODO: we need to make sure the user has a vr device capable of room vr:
-    if (feature.hasVR) {
+    if (feature.has6DOF) {
       elements.skipTutorialButton.classList.add('mod-hidden');
       const removeOverlay = hud.enterVR();
       if (!viewer.vrEffect.isPresenting) {
@@ -93,7 +81,7 @@ export default (goto) => {
         'div.tutorial-overlay-text',
         h(
           'span',
-          feature.hasVR
+          feature.has6DOF
             ? 'Add your performance'
             : 'A message about Vive not being found. Click here to go home.'
         ),
@@ -105,7 +93,7 @@ export default (goto) => {
     {
       time: 0.5,
       text: 'This is you.',
-      getPosition: () => room.getHeadPosition(0, audio.time),
+      getPosition: () => room.getHeadPosition(0),
       layers: 1,
     },
     {
@@ -129,18 +117,18 @@ export default (goto) => {
     },
     {
       time: 14,
-      getPosition: () => room.getHeadPosition(0, audio.time),
+      getPosition: () => room.getHeadPosition(0),
       text: 'This is you...',
     },
     {
       time: 16,
-      getPosition: () => room.getHeadPosition(1, audio.time),
+      getPosition: () => room.getHeadPosition(1),
       text: 'This is you...',
     },
     {
       time: 17,
       text: 'This is your previous recording.',
-      getPosition: () => room.getHeadPosition(0, audio.time),
+      getPosition: () => room.getHeadPosition(0),
     },
     {
       time: 24,
@@ -193,7 +181,7 @@ export default (goto) => {
     }
 
     if (getLineTarget) {
-      const { x, y } = worldToScreen(getLineTarget());
+      const { x, y } = worldToScreen(viewer.camera, getLineTarget());
       elements.lineEl.style.transform = getLineTransform(
         state.lineOriginX,
         state.lineOriginY,
