@@ -4,7 +4,7 @@ const playback = require('./playback').default;
 
 export default {
   routes: {
-    '/inbox/:roomId?/:recordingId?': inbox,
+    '/inbox/:recordingId?': inbox,
     '/choose/:roomId': choose,
     '/:loopIndex?/:id?': playback,
   },
