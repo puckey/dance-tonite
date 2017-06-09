@@ -176,10 +176,11 @@ export default (req) => {
     window.gifFrame = gifFrame;
     window.gifProgress = gifProgress;
 
+    window.audio = audio;
     window.audioTime = audio.time;
     room.gotoTime(
       // audio.time,
-      gifProgress * 2 * 8.25, //  THIS LAST NUMBER NEEDS TO BE THE EXACT # OF SECONDS PER ROOM!!!!
+      gifProgress * 2 * audio.loopDuration,
       Math.max(
         state.minLayers,
         // Math.ceil((audio.totalProgress / 2) % 3)
