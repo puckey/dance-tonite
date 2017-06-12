@@ -6,6 +6,8 @@ import audio from './audio';
 import { recordRoomColor } from './theme/colors';
 import layout from './room/layout';
 
+const easeOut = t => -t * (t - 2.0);
+
 export default class Playlist {
   constructor({ recording } = {}) {
     const rooms = this.rooms = [];
@@ -62,6 +64,17 @@ export default class Playlist {
       let time = audio.time;
       if (layout.isOdd(room.index)) {
         time += audio.loopDuration;
+      }
+      // Slow down recordings to a stop after music stops:
+      const slowdownDuration = 0.4;
+      const maxTime = 216.824266 - (slowdownDuration * 0.5);
+      if (audio.currentTime > maxTime) {
+        time = maxTime + easeOut(
+          Math.min(
+            slowdownDuration,
+            audio.currentTime - maxTime
+          ) / slowdownDuration
+        ) * slowdownDuration;
       }
       room.gotoTime(time % (audio.loopDuration * 2));
     }

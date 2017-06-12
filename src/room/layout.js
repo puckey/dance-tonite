@@ -2,17 +2,11 @@ import settings from '../settings';
 import { tempVector } from '../utils/three';
 
 const { roomWidth, roomHeight, roomDepth, roomOffset } = settings;
-const ph = { type: 'PLANE', timeline: false, hidden: true };
-const pl = { type: 'PLANE' };
-const plh = { type: 'PLANE', hidden: true };
+const ph = { type: 'PLANE', timeline: false, megagrid: true };
+const plh = { type: 'PLANE', megagrid: true };
 const em = { type: 'EMPTY' };
-const ve = { type: 'VERTICAL' };
 const ho = { type: 'HORIZONTAL' };
 const hw = { type: 'HORIZONTAL', wall: true };
-const vc = { type: 'VERTICAL_CORNER' };
-const hc = { type: 'HORIZONTAL_CORNER' };
-
-const s = 1 / 6;
 
 const rooms = [
   [0, 0, -3, em],
@@ -95,8 +89,8 @@ export default {
     return layout[index][3].type;
   },
 
-  isMainTimeline(index) {
-    return !layout[index][3].hidden;
+  insideMegaGrid(index) {
+    return !layout[index][3].megagrid;
   },
 
   getRoom(index) {

@@ -20,6 +20,8 @@ import layout from './layout';
 import dummyTextureUrl from '../public/dummy.png';
 import InstancedItem from '../instanced-item';
 import Frames from '../frames';
+import { createPose } from '../utils/serializer';
+import audio from '../audio';
 
 let items;
 
@@ -33,10 +35,19 @@ const debugMesh = new THREE.Mesh(
 );
 debugMesh.frustumCulled = false;
 
+const POSE = createPose();
+const FIRST_POSE = createPose();
+
+const lerpPose = ([positionA, quaternionA], [positionB, quaternionB], ratio) => {
+  positionA.lerp(positionB, ratio);
+  quaternionA.slerp(quaternionB, ratio);
+};
+
 export default class Room {
   constructor({ url, recording, index, single }) {
     this._worldPosition = new THREE.Vector3();
     this.index = index;
+    this.insideMegaGrid = layout.insideMegaGrid(this.index);
     const frames = this.frames = new Frames(url, recording);
     this.firstFrame = frames.getFrame(0);
     this.frame = frames.getFrame();
@@ -104,6 +115,7 @@ export default class Room {
   }
 
   gotoTime(seconds, maxLayers) {
+    this.currentTime = seconds;
     // In orthographic mode, scale up the meshes:
     const scale = InstancedItem.perspectiveMode ? 1 : 1.3;
 
@@ -113,12 +125,23 @@ export default class Room {
     for (let i = 0; i < frame.count; i++) {
       const color = this.isHighlighted(i) ? highlightColor : costumeColor;
       if (!hideHead) {
-        const pose = frame.getPose(i, 0, position);
+        const pose = this.getPose(i, 0, position);
         items.head.add(pose, color, scale);
       }
-      items.hand.add(frame.getPose(i, 1, position), color, scale);
-      items.hand.add(frame.getPose(i, 2, position), color, scale);
+      items.hand.add(this.getPose(i, 1, position), color, scale);
+      items.hand.add(this.getPose(i, 2, position), color, scale);
     }
+  }
+
+  getPose(performanceIndex, limbIndex, offset) {
+    this.frame.getPose(performanceIndex, limbIndex, offset, false, POSE);
+    if (this.insideMegaGrid) {
+      const ratio = Math.max(0, Math.min(2, audio.currentTime - 184.734288)) * 0.5;
+      this.firstFrame.getPose(performanceIndex, limbIndex, offset, false, FIRST_POSE);
+      FIRST_POSE[0].y *= ratio;
+      lerpPose(POSE, FIRST_POSE, 1 - ratio);
+    }
+    return POSE;
   }
 
   destroy() {

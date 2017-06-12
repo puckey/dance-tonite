@@ -13,6 +13,8 @@ const getFrame = (frames, number) => {
   return frame;
 };
 
+const POSE = serializer.createPose();
+
 export default class Frame {
   constructor(frames, seconds) {
     this.frames = frames;
@@ -71,28 +73,30 @@ export default class Frame {
     this.needsUpdate = false;
   }
 
-  getPose(performanceIndex, limbIndex, offset, applyMatrix) {
+  getPose(performanceIndex, limbIndex, offset, applyMatrix, pose = POSE) {
     if (this.needsUpdate) this.update();
+    const [position, quaternion] = pose;
     const { lower, higher, ratio } = this;
-    const position = POSITION_ROTATION[0] = serializer.avgPosition(
+    serializer.avgPosition(
       lower,
       higher,
       ratio,
       performanceIndex,
       limbIndex,
-      offset
+      offset,
+      position
     );
     if (applyMatrix) {
       position.applyMatrix4(InstancedItem.group.matrix);
     }
-    POSITION_ROTATION[1] = serializer.avgQuaternion(
+    serializer.avgQuaternion(
       lower,
       higher,
       ratio,
       performanceIndex,
-      limbIndex
+      limbIndex,
+      quaternion
     );
-
-    return POSITION_ROTATION;
+    return pose;
   }
 }
