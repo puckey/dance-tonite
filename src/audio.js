@@ -26,7 +26,9 @@ let scheduledTime;
 const audio = Object.assign(emitter(), {
   tick() {
     if ((!audioElement && !context) || !startTime) return;
-    this.currentTime = (pauseTime || (Date.now() - startTime)) / 1000;
+    this.currentTime = audioElement
+      ? (pauseTime || (Date.now() - startTime)) / 1000
+      : context.currentTime - startTime;
     const time = this.time = this.currentTime % duration;
 
     const { loopDuration } = this;
@@ -111,6 +113,7 @@ const audio = Object.assign(emitter(), {
               duration = source.buffer.duration;
               source.loop = param.loop === undefined ? true : param.loop;
               source.start(0);
+              startTime = context.currentTime;
               canPlay();
             },
             reject
