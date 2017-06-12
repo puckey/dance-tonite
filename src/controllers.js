@@ -18,7 +18,8 @@ function handleRightPress() {
 
 window.addEventListener('vr controller connected', ({ detail: controller }) => {
   //  We're only interested in Vive or Oculus controllers right now.
-  if (controller.gamepadStyle !== 'vive' && controller.gamepadStyle !== 'oculus') {
+  const isVive = controller.gamepadStyle !== 'vive';
+  if (isVive && controller.gamepadStyle !== 'oculus') {
     return;
   }
 
@@ -68,10 +69,17 @@ window.addEventListener('vr controller connected', ({ detail: controller }) => {
   }
   controller.add(mesh);
 
-  controller.addEventListener('thumbpad press began', () => {
+  const handlePress = () => {
     if (controller.hand === 'left') handleLeftPress();
     else handleRightPress();
-  });
+  };
+  controller.addEventListener('thumbpad press began', handlePress);
+
+  // On vive also listen for menu presses, since the menu button is also on the
+  // front of the controller:
+  if (isVive) {
+    controller.addEventListener('menu press began', handlePress);
+  }
 
   //  On disconnect we need to remove the mesh
   //  and destroy the controller.
