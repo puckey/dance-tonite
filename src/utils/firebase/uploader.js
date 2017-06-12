@@ -44,31 +44,30 @@ const startSubmissionProcessing = (token) =>
 
 const firebaseUploader = {
   upload: async (roomData, roomID, callback) => {
-    try {
-      // Request an upload token
-      const { uri_array, token } = await requestUploadToken(roomID);
-      // Wait for all uploads to complete
-      await Promise.all(
-        uri_array.map(([fps, filename]) => (
-          uploadDataString(
-            (
-              fps === 90
-                ? roomData
-                : convertFPS(roomData, fps)
-            ).map(JSON.stringify).join('\n'),
-            filename,
-            token
-          )
-        ))
-      );
+    // Request an upload token
+    const { data: uploadToken, error: requestError } = await requestUploadToken(roomID);
+    if (requestError) return callback(requestError);
+    const { uri_array, token } = uploadToken;
+    // Wait for all uploads to complete
+    await Promise.all(
+      uri_array.map(([fps, filename]) => (
+        uploadDataString(
+          (
+            fps === 90
+              ? roomData
+              : convertFPS(roomData, fps)
+          ).map(JSON.stringify).join('\n'),
+          filename,
+          token
+        )
+      ))
+    );
 
-      // now process files
-      const { id } = await startSubmissionProcessing(token);
-      // file processing is done, the recording is saved!
-      callback(null, id);
-    } catch (error) {
-      callback(error);
-    }
+    // now process files
+    const { data: submission, error: processingError } = await startSubmissionProcessing(token);
+    if (processingError) return callback(processingError);
+    // file processing is done, the recording is saved!
+    callback(null, submission.id);
   },
 };
 
