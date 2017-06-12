@@ -4,19 +4,35 @@ import settings from './settings';
 import { recordCostumeColor, highlightColor } from './theme/colors';
 
 import wallUrl from './public/models/obj/new-rooms/vr/first-wall.obj';
+
 import roomUrl from './public/models/obj/new-rooms/vr/horizontal-room.obj';
+import roomTextureUrl from './public/models/obj/new-rooms/vr/bake/horizontal-room-AOMap.jpg';
+
 import verticalRoomUrl from './public/models/obj/new-rooms/vr/vertical-room.obj';
+import verticalRoomTextureUrl from './public/models/obj/new-rooms/vr/bake/vertical-room-AOMap.jpg';
+
 import horizontalVerticalCornerUrl from './public/models/obj/new-rooms/vr/horizontal-vertical-corner.obj';
+import horizontalVerticalCornerTextureUrl from './public/models/obj/new-rooms/vr/bake/horizontal-vertical-corner-AOMap.jpg';
+
 import verticalHorizontalCornerUrl from './public/models/obj/new-rooms/vr/vertical-horizontal-corner.obj';
+import verticalHorizontalCornerTextureUrl from './public/models/obj/new-rooms/vr/bake/vertical-horizontal-corner-AOMap.jpg';
+
 import floorUrl from './public/models/obj/new-rooms/floor.obj';
 
-import isometricWallUrl from './public/models/obj/new-rooms/first-wall.obj';
-import isometricHorizontalRoomUrl from './public/models/obj/new-rooms/horizontal-room.obj';
-import isometricVerticalRoomUrl from './public/models/obj/new-rooms/vertical-room.obj';
-import isometricHorizontalVerticalCornerUrl from './public/models/obj/new-rooms/horizontal-vertical-corner.obj';
-import isometricVerticalHorizontalCornerUrl from './public/models/obj/new-rooms/vertical-horizontal-corner.obj';
-import roomTextureUrl from './public/models/obj/bake/VR_AOMap.png';
-import isometricRoomTextureUrl from './public/models/obj/bake/ISO_AOMap.png';
+
+import isoWallUrl from './public/models/obj/new-rooms/first-wall.obj';
+
+import isoHorizontalRoomUrl from './public/models/obj/new-rooms/horizontal-room.obj';
+import isoHorizontalRoomTextureUrl from './public/models/obj/new-rooms/bake/horizontal-room-AOMap.jpg';
+
+import isoVerticalRoomUrl from './public/models/obj/new-rooms/vertical-room.obj';
+import isoVerticalRoomTextureUrl from './public/models/obj/new-rooms/bake/vertical-room-AOMap.jpg';
+
+import isoHorizontalVerticalCornerUrl from './public/models/obj/new-rooms/horizontal-vertical-corner.obj';
+import isoHorizontalVerticalCornerTextureUrl from './public/models/obj/new-rooms/bake/horizontal-vertical-corner-AOMap.jpg';
+
+import isoVerticalHorizontalCornerUrl from './public/models/obj/new-rooms/vertical-horizontal-corner.obj';
+import isoVerticalHorizontalCornerTextureUrl from './public/models/obj/new-rooms/bake/vertical-horizontal-corner-AOMap.jpg';
 
 const {
   Mesh,
@@ -32,21 +48,41 @@ const {
 const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor });
 
 const props = {
-  room: [roomUrl, roomTextureUrl],
-  verticalRoom: [verticalRoomUrl],
-  floor: [floorUrl],
-  horizontalVerticalCorner: [horizontalVerticalCornerUrl],
-  verticalHorizontalCorner: [verticalHorizontalCornerUrl],
-  wall: [wallUrl],
-  orthographicWall: [isometricWallUrl],
-  orthographicRoom: [
-    isometricHorizontalRoomUrl,
-    // Commented out isometric texture, because it doesn't work with new model:
-    // isometricRoomTextureUrl
+  room: [
+    roomUrl,
+    roomTextureUrl,
   ],
-  orthographicVerticalRoom: [isometricVerticalRoomUrl],
-  orthographicHorizontalVerticalCorner: [isometricHorizontalVerticalCornerUrl],
-  orthographicVerticalHorizontalCorner: [isometricVerticalHorizontalCornerUrl],
+  verticalRoom: [
+    verticalRoomUrl,
+    verticalRoomTextureUrl,
+  ],
+  floor: [floorUrl],
+  horizontalVerticalCorner: [
+    horizontalVerticalCornerUrl,
+    horizontalVerticalCornerTextureUrl,
+  ],
+  verticalHorizontalCorner: [
+    verticalHorizontalCornerUrl,
+    verticalHorizontalCornerTextureUrl,
+  ],
+  wall: [wallUrl],
+  orthographicWall: [isoWallUrl],
+  orthographicRoom: [
+    isoHorizontalRoomUrl,
+    isoHorizontalRoomTextureUrl,
+  ],
+  orthographicVerticalRoom: [
+    isoVerticalRoomUrl,
+    isoVerticalRoomTextureUrl,
+  ],
+  orthographicHorizontalVerticalCorner: [
+    isoHorizontalVerticalCornerUrl,
+    isoHorizontalVerticalCornerTextureUrl,
+  ],
+  orthographicVerticalHorizontalCorner: [
+    isoVerticalHorizontalCornerUrl,
+    isoVerticalHorizontalCornerTextureUrl,
+  ],
   hand: (function createHand() {
     const radius = 0.02;
     const height = 0.2;
