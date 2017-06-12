@@ -13,5 +13,21 @@
 .inbox-title-input {
   width: 8rem;
   height: 1rem;
-  margin: 1rem 0;
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  border-bottom: 1px solid #ff0;
+  padding-bottom: 10px;
+  color: #ff0;
+  font-size: 1rem;
+}
+
+.inbox-submit {
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+input[type="checkbox"] {
+  margin-left: .75rem;
+  transform: scale(2);
 }

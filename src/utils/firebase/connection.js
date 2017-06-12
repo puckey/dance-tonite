@@ -33,17 +33,11 @@ const contactServer = (URL, dataToSend) => {
 
       request.onload = () => {
         if (request.status >= 200 && request.status < 400) {
-          const response = JSON.parse(request.responseText);
-
-          if (!response.success) {
-            reject('error connecting to server');
-          } else {
-            const data = response.data;
-            resolve(data);
-          }
+          resolve(JSON.parse(request.responseText));
         } else {
+          console.log(request.responseText);
           // problem reaching server
-          reject('error connecting to server');
+          resolve({ success: false, error: 'error connecting to server' });
         }
       };
 

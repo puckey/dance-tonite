@@ -1,7 +1,7 @@
 import * as THREE from '../lib/three';
 import viewer from '../viewer';
-import windowSize from '../utils/windowSize';
-import { worldToScreen } from '../utils/three';
+import windowSize from './windowSize';
+import { worldToScreen } from './three';
 
 const mouse = new THREE.Vector2();
 const VECTOR2 = new THREE.Vector2();

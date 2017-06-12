@@ -14,7 +14,6 @@ import {
   getCostumeColor,
   getRoomColor,
   recordCostumeColor,
-  recordRoomColor,
   highlightColor,
 } from '../theme/colors';
 import streamJSON from '../lib/stream-json';
@@ -68,7 +67,7 @@ const getFrame = (frames, number) => {
 };
 
 export default class Room {
-  constructor({ url, recording, index, pathRecording }) {
+  constructor({ url, recording, index, pathRecording, single }) {
     this._worldPosition = new THREE.Vector3();
     const placementIndex = this.placementIndex = index === undefined
       ? roomIndex
@@ -84,7 +83,6 @@ export default class Room {
     if (recording) {
       this.hideHead = recording.hideHead;
       this.frames = recording.frames;
-      this.changeColor(recordRoomColor);
     }
 
     this.costumeColor = this.isRecording
@@ -93,7 +91,7 @@ export default class Room {
     this.position = layout.getPosition(
       placementIndex,
       new THREE.Vector3(),
-      !!recording
+      !!recording || !!single
     );
     this.updatePosition();
     this.costumeColor = this.isRecording

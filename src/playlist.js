@@ -1,10 +1,16 @@
 import asyncEach from 'async/eachLimit';
+import h from 'hyperscript';
 
-import storage from './storage';
 import Room from './room';
 import audio from './audio';
-import { recordRoomColor } from './theme/colors';
+import viewer from './viewer';
+import storage from './storage';
 import layout from './room/layout';
+import size from './utils/windowSize';
+import { worldToScreen } from './utils/three';
+import { recordRoomColor } from './theme/colors';
+import cms from './utils/firebase/cms';
+import router from './router';
 
 export default class Playlist {
   constructor({ recording } = {}) {
@@ -13,7 +19,6 @@ export default class Playlist {
     if (recording) {
       for (let index = 1; index < 20; index += 2) {
         const room = new Room({ recording, index });
-        room.changeColor(recordRoomColor);
         rooms.push(room);
       }
     }
@@ -25,6 +30,19 @@ export default class Playlist {
     await new Promise((resolve, reject) => {
       this.rooms = urls.map(
         (recordingUrl, index) => {
+          if (process.env.FLAVOR === 'cms') {
+            cms.getRecording(recordingUrl).then(({ data }) => {
+              document.body.appendChild(
+                h(
+                  `div.room-label#room-label-${index}`, { onclick: () => router.navigate(`/choose/${index}`) },
+                  h('span', `Room ${index}`),
+                  h('span.wrap', data.title),
+                  h('span.newline', `Featured: ${data.days_featured} day${data.days_featured > 1 ? 's' : ''}`),
+                )
+              );
+            });
+          }
+
           const isPathRecording = index === pathRoomIndex - 1;
           return new Room({
             url: isPathRecording
@@ -66,11 +84,25 @@ export default class Playlist {
         time += audio.loopDuration;
       }
       room.gotoTime(time % (audio.loopDuration * 2));
+
+      if (process.env.FLAVOR === 'cms') {
+        const coords = worldToScreen(viewer.camera, room.worldPosition);
+        const label = document.getElementById(`room-label-${i}`);
+        if (coords.x > 0 && coords.x < size.width && label) {
+          label.classList.remove('mod-display-none');
+          label.style.transform = `translate(${coords.x}px, ${coords.y}px)`;
+        } else if (label) {
+          label.classList.add('mod-display-none');
+        }
+      }
     }
   }
 
   destroy() {
-    this.rooms.forEach(room => room.destroy());
+    this.rooms.forEach((room, index) => {
+      room.destroy();
+      document.body.removeChild(document.getElementById(`room-label-${index}`));
+    });
     this.destroyed = true;
   }
 }

@@ -15,29 +15,35 @@ let startTime;
 let audioElement;
 let request;
 let onCanPlayThrough;
+let onPause;
+let onPlay;
+let onSeeked;
+let pauseTime;
 let muted = false;
 
 const FADE_OUT_SECONDS = 2;
 const ALMOST_ZERO = 1e-4;
 
 let scheduledTime;
-
 const audio = Object.assign(emitter(), {
   tick() {
-    if (!audioElement && !context) return;
-    const currentTime = this.currentTime = audioElement
-      ? audioElement.currentTime
+    if ((!audioElement && !context) || !startTime) {
+      this.progress = 0;
+      this.currentTime = 0;
+      this.loopProgress = 0;
+      this.totalProgress = 0;
+      this.looped = false;
+      return;
+    }
+    this.currentTime = audioElement
+      ? (pauseTime || (Date.now() - startTime)) / 1000
       : context.currentTime - startTime;
-    const time = this.time = duration > 0
-      ? currentTime % duration
-      : currentTime;
-
+    const time = this.time = this.currentTime % duration;
     const { loopDuration } = this;
     // The position within the track as a multiple of loopDuration:
     this.progress = time > 0
       ? time / loopDuration
       : 0;
-
     // The position within the individual loop as a value between 0 - 1:
     this.loopProgress = (time % loopDuration) / loopDuration;
 
@@ -68,7 +74,6 @@ const audio = Object.assign(emitter(), {
       const canPlay = () => {
         this.duration = duration;
         this.loopDuration = duration / loopCount;
-        startTime = context.currentTime;
         context.suspend();
         resolve(param.src);
       };
@@ -85,12 +90,30 @@ const audio = Object.assign(emitter(), {
         audioElement.autoplay = true;
         audioElement.src = param.src;
         audioElement.loop = param.loop === undefined ? true : param.loop;
+        const getAudioTime = () => audioElement.currentTime * 1000;
         onCanPlayThrough = () => {
           duration = audioElement.duration;
           canPlay();
           audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
         };
+        onPause = () => {
+          this.paused = true;
+          pauseTime = getAudioTime();
+        };
+        onPlay = () => {
+          startTime = Date.now() - getAudioTime();
+          this.paused = false;
+          pauseTime = null;
+        };
+        onSeeked = () => {
+          if (pauseTime) {
+            pauseTime = getAudioTime();
+          }
+        };
         audioElement.addEventListener('canplaythrough', onCanPlayThrough);
+        audioElement.addEventListener('pause', onPause);
+        audioElement.addEventListener('play', onPlay);
+        audioElement.addEventListener('seeked', onSeeked);
         source = context.createMediaElementSource(audioElement);
       } else {
         source = context.createBufferSource();
@@ -106,6 +129,7 @@ const audio = Object.assign(emitter(), {
               duration = source.buffer.duration;
               source.loop = param.loop === undefined ? true : param.loop;
               source.start(0);
+              startTime = context.currentTime;
               canPlay();
             },
             reject
@@ -120,17 +144,32 @@ const audio = Object.assign(emitter(), {
   },
 
   play() {
+    this.paused = false;
     if (context) context.resume();
     if (audioElement) audioElement.play();
   },
 
   pause() {
+    this.paused = true;
     if (context) context.suspend();
     if (audioElement) audioElement.pause();
   },
 
+  toggle() {
+    this[this.paused ? 'play' : 'pause']();
+  },
+
   gotoTime(time) {
     audioElement.currentTime = time;
+    startTime = Date.now() - time * 1000;
+  },
+
+  prevLoop() {
+    this.gotoTime(this.time - (1 + this.loopProgress) * this.loopDuration);
+  },
+
+  nextLoop() {
+    this.gotoTime(this.time + this.loopDuration - this.loopProgress * this.loopDuration);
   },
 
   reset() {
@@ -138,6 +177,9 @@ const audio = Object.assign(emitter(), {
     // Cancel loading of audioElement:
     if (audioElement) {
       audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
+      audioElement.removeEventListener('pause', onPause);
+      audioElement.removeEventListener('play', onPlay);
+      audioElement.removeEventListener('seeked', onSeeked);
       if (feature.isMobile) {
         audioPool.release(audioElement);
       }
@@ -149,6 +191,7 @@ const audio = Object.assign(emitter(), {
       request.onload = null;
       request = null;
     }
+    startTime = null;
   },
 
   rewind() {

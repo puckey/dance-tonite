@@ -49,12 +49,12 @@ const layout = rooms.filter(([,,, { type }]) => type !== 'EMPTY');
 const timelineLayout = rooms.filter(([,,, { timeline }]) => timeline !== false);
 
 export default {
-  getPosition(position, roomPosition, reviewMode) {
+  getPosition(position, roomPosition, single) {
     let x = 0;
     let y = 0;
     let z = 0;
-    if (reviewMode) {
-      z = position * roomDepth + roomOffset;
+    if (single) {
+      z = roomOffset;
     } else {
       const lower = Math.floor(position);
       const higher = Math.ceil(position);

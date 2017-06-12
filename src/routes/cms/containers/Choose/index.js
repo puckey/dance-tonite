@@ -79,7 +79,7 @@ export default class Choose extends Component {
   render({ roomIndex, goHome }, { items, item }) {
     return (
       <Container>
-        <Align type="top-left row">
+        <Align type="top-left" row>
           <EnterVR /><Mute />
         </Align>
         <Align type="bottom-right">
