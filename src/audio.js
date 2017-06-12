@@ -191,7 +191,7 @@ const audio = Object.assign(emitter(), {
       request.onload = null;
       request = null;
     }
-    startTime = null;
+    pauseTime = startTime = null;
   },
 
   rewind() {
