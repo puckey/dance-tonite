@@ -17,8 +17,9 @@ const loadPlaylist = async () => {
     const data = await response.json();
     return data;
   }
-  const data = await cms.getDraftPlaylist();
-  return data.playlist;
+
+  const response = await cms.getDraftPlaylist();
+  return response.data.playlist;
 };
 
 export default {
