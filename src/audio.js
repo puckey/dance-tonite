@@ -120,17 +120,31 @@ const audio = Object.assign(emitter(), {
   },
 
   play() {
+    this.paused = false;
     if (context) context.resume();
     if (audioElement) audioElement.play();
   },
 
   pause() {
+    this.paused = true;
     if (context) context.suspend();
     if (audioElement) audioElement.pause();
   },
 
+  toggle() {
+    this[this.paused ? 'play' : 'pause']();
+  },
+
   gotoTime(time) {
     audioElement.currentTime = time;
+  },
+
+  prevLoop() {
+    this.gotoTime(this.time - (1 + this.loopProgress) * this.loopDuration);
+  },
+
+  nextLoop() {
+    this.gotoTime(this.time + this.loopDuration - this.loopProgress * this.loopDuration);
   },
 
   reset() {

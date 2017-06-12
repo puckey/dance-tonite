@@ -9,6 +9,10 @@ import enterIconDisabledSvg from './icons/x_entervr.svg';
 import aboutIconSvg from './icons/about.svg';
 import speakerIconSvg from './icons/speaker.svg';
 import speakerMuteIconSvg from './icons/mute_speaker.svg';
+import playIconSvg from './icons/play.svg';
+import pauseIconSvg from './icons/pause.svg';
+import prevIconSvg from './icons/prev.svg';
+import nextIconSvg from './icons/next.svg';
 import viewer from '../viewer';
 import settings from '../settings';
 
@@ -37,6 +41,9 @@ const defaultState = {
   aboutButton: about.toggle,
   muteButton: toggleMute,
   colophon: false,
+  nextRoom: false,
+  prevRoom: false,
+  playPauseButton: false,
 };
 
 let state = { };
@@ -51,6 +58,25 @@ const hud = {
       elements[i] = hudEl.querySelector(elements[i]);
     }
     elements.hud = hudEl;
+
+    // In the CMS, add play/pause button and prev/next buttons
+    if (process.env.FLAVOR === 'cms') {
+      document.querySelector('.menu-left').appendChild(
+        componentContext('div.cms-playback-controls',
+          componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-prev-button',
+            { onclick: () => audio.prevLoop(), innerHTML: prevIconSvg }),
+          componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-play-pause-button', {
+            onclick: e => {
+              audio.toggle();
+              e.target.innerHTML = audio.paused ? playIconSvg : pauseIconSvg;
+            },
+            innerHTML: pauseIconSvg,
+          }),
+          componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-next-button',
+            { onclick: () => audio.nextLoop(), innerHTML: nextIconSvg })
+        )
+      );
+    }
 
     elements.menuEnter.addEventListener('mouseenter', function () {
       this.querySelector('.menu-item-label')
@@ -140,8 +166,8 @@ const hud = {
     return () => {};
   },
 
-  create(/* tag, attrs, [text?, Elements?,...] */) {
-    return hud.add(componentContext.apply(componentContext, arguments));
+  create(/* tag, attrs, [text?, Elements?,...] */...args) {
+    return hud.add(componentContext.apply(componentContext, args));
   },
 
   add(el, componentElement = true) {
