@@ -120,7 +120,7 @@ const viewer = {
 const clock = new THREE.Clock();
 clock.start();
 
-const renderPostProcessed = postprocessing({ renderer, cameras: cameras.default, scene });
+const renderPostProcessed = postprocessing({ renderer, camera: cameras.default, scene });
 
 const animate = () => {
   const dt = clock.getDelta();
@@ -135,13 +135,14 @@ const animate = () => {
   controls.update();
   events.emit('tick', dt);
 
-  vrEffect.render(viewer.renderScene, viewer.camera);
+  if (viewer.camera === cameras.default) {
+    renderPostProcessed();
+  } else {
+    vrEffect.render(viewer.renderScene, viewer.camera);
+  }
+
   if (vrEffect.isPresenting && feature.hasExternalDisplay) {
-    if (viewer.camera === cameras.default) {
-      renderPostProcessed();
-    } else {
-      renderer.render(viewer.renderScene, viewer.camera);
-    }
+    renderer.render(viewer.renderScene, viewer.camera);
   }
 
   events.emit('render', dt);
