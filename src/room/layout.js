@@ -90,7 +90,7 @@ export default {
   },
 
   insideMegaGrid(index) {
-    return !layout[index][3].megagrid;
+    return !!layout[index][3].megagrid;
   },
 
   getRoom(index) {
