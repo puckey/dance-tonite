@@ -9,6 +9,7 @@ import { waitRoomColor, recordRoomColor } from '../theme/colors';
 import { Vector3, WebGLRenderer, OrthographicCamera } from '../lib/three';
 import audio from '../audio';//  Would love to get rid of this!!
 
+// import renderFrame from './../lib/gif-main-thread';
 
 export default (req) => {
   //
@@ -17,8 +18,9 @@ export default (req) => {
 
   const width = 512;
   const height = 512;
-  const duration = 16; // Unit is Seconds.
-  const fps = 10;
+  const duration = 16; //  Unit is Seconds.
+  const fps = 20;
+  const workers = 64;
   // const audioLoopDuration = 8.0043537414966;
 
 
@@ -83,8 +85,9 @@ export default (req) => {
     display: true,
     framerate: fps,
     // motionBlurFrames: (960 / fps),
-    quality: 100,
-    format: 'webm', //  webm gif
+    quality: 95,
+    format: 'gif', //  webm gif
+    workers: workers,
     workersPath: '../lib/',
     // timeLimit: 10000 * duration,
     // frameLimit: 10000 * duration * fps,
@@ -95,6 +98,7 @@ export default (req) => {
     //  Can take it out for production.
 
     onProgress: function (p) {
+      window.progress = p;
       console.log('Render is:', p * 100, '% complete.');
       if (p === 0) {
         timeBegan = new Date();
@@ -132,9 +136,6 @@ export default (req) => {
 
 
   const tick = () => {
-    Room.clear();
-
-
     //  What percentage of our GIF have we rendered?
     //  Because our GIF timeline covers TWO rooms
     //  worth of time we’re multiplying by 2.
@@ -143,36 +144,38 @@ export default (req) => {
     const gifRoomProgress = gifProgress * 2;
 
 
-    //  Play this room’s dance for this specific moment.
-
-    room.gotoTime(
-      // gifRoomProgress * audioLoopDuration,
-      gifRoomProgress * audio.loopDuration,
-      Math.max(
-        state.minLayers,
-        Math.ceil((gifProgress / 2) % 3)
-      )
-    );
-
-
-    //  What color should the room be? (Active vs Inactive.)
-
-    const progress = gifRoomProgress - 1; // value between -1 and 1
-    colorTimeline.tick(gifProgress);
+    if (gifFrame > 0 && gifFrame <= duration * fps) {
+      //  Play this room’s dance for this specific moment.
+      Room.clear();
+      room.gotoTime(
+        // gifRoomProgress * audioLoopDuration,
+        gifRoomProgress * audio.loopDuration,
+        Math.max(
+          state.minLayers,
+          Math.ceil((gifProgress / 2) % 3)
+        )
+      );
 
 
-    //  Move that orb!
+      //  What color should the room be? (Active vs Inactive.)
 
-    const z = (progress - 0.5) * -roomDepth - roomOffset;
-    objects.orb.move(z);
-    if (gifProgress > 1) {
-      objects.orb2.move(z - roomDepth * 2);
+      const progress = gifRoomProgress - 1; // value between -1 and 1
+      colorTimeline.tick(gifProgress);
+
+
+      //  Move that orb!
+
+      const z = (progress - 0.5) * -roomDepth - roomOffset;
+      objects.orb.move(z);
+      if (gifProgress > 1) {
+        objects.orb2.move(z - roomDepth * 2);
+      }
     }
-
 
     //  Export some frames.
 
-    if (gifFrame <= duration * fps) gifFrame++;
+    // if (gifFrame <= duration * fps) gifFrame++;
+    gifFrame++;
     if (gifFrame > 0 && gifFrame <= duration * fps) {
       if (gifFrame === 1) {
         console.log('Render GIF frames BEGIN');
