@@ -1,23 +1,27 @@
 import Orb from '../orb';
+import MegaOrb from '../megaorb';
 import audio from '../audio';
 import audioSrcOgg from '../public/sound/tonite.ogg';
 import audioSrcMp3 from '../public/sound/tonite.mp3';
 import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
-import about from '../about';
 import createTitles from '../titles';
 import transition from '../transition';
 import hud from '../hud';
 import feature from '../utils/feature';
 import { sleep } from '../utils/async';
 import Room from '../room';
+import progressBar from '../progress-bar';
+import layout from '../room/layout';
+import closestHead from '../utils/closestHead';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
-const { roomDepth, roomOffset, holeHeight } = settings;
-
+const { holeHeight } = settings;
+let pointerX;
+let pointerY;
 let titles;
 
 export default (req) => {
@@ -43,37 +47,47 @@ export default (req) => {
   const hudSettings = {
     menuAdd: true,
     menuEnter: toggleVR,
-    aboutButton: about.toggle,
     colophon: true,
-    chromeExperiment: true,
   };
 
   let orb;
+  let megaOrb;
   let playlist;
   let tick;
-  let progressBar;
-  const loopIndex = parseInt(req.params.loopIndex, 10);
+  const roomIndex = parseInt(req.params.roomIndex, 10);
+
+  let onMouseMove;
+  let onMouseDown;
+  let onMouseUp;
+  let hoverHead;
 
   const component = {
     hud: hudSettings,
     mount: async () => {
+      progressBar.create();
       Room.reset();
-
-      progressBar = hud.create('div.audio-progress-bar');
-
       if (!viewer.vrEffect.isPresenting) {
         viewer.switchCamera('orthographic');
       }
 
       orb = new Orb();
+      megaOrb = new MegaOrb();
       titles = createTitles(orb);
       titles.mount();
 
+      const moveHead = (progress) => {
+        moveCamera(progress);
+        const [roomIndex, headIndex] = hoverHead;
+        playlist.rooms[roomIndex].transformToHead(viewer.camera, headIndex);
+      };
+
       const moveCamera = (progress) => {
-        const emptySpace = 2.5;
-        const z = ((progress - emptySpace) * roomDepth) + roomOffset;
-        viewer.camera.position.set(0, holeHeight, -z);
-        orb.move(-z);
+        const position = layout.getPosition(progress + 0.5);
+        position.y += holeHeight;
+        position.z *= -1;
+        viewer.camera.position.copy(position);
+        orb.position.copy(position);
+        megaOrb.setProgress(audio.time / audio.duration);
       };
 
       moveCamera(0);
@@ -82,12 +96,27 @@ export default (req) => {
 
       tick = () => {
         if (transition.isInside()) return;
+        if (!viewer.vrEffect.isPresenting && !hoverHead) {
+          Room.setHighlight(
+            closestHead(
+              pointerX,
+              pointerY,
+              playlist.rooms
+            )
+          );
+        }
         audio.tick();
         Room.clear();
         playlist.tick();
         titles.tick();
-        progressBar.style.transform = `scaleX(${audio.progress / settings.totalLoopCount})`;
-        moveCamera(audio.progress);
+        if (!feature.isMobile || !viewer.vrEffect.isPresenting) {
+          progressBar.tick();
+        }
+        if (hoverHead) {
+          moveHead(audio.progress || 0);
+        } else {
+          moveCamera(audio.progress || 0);
+        }
       };
       viewer.events.on('tick', tick);
 
@@ -104,10 +133,38 @@ export default (req) => {
 
       hud.showLoader('Gathering user performances');
 
-      await playlist.load({
+      playlist.load({
         url: 'curated.json',
         pathRecording: req.params.id,
-        loopIndex,
+        pathRoomIndex: roomIndex,
+      }).then(() => {
+        if (component.destroyed) return;
+        onMouseMove = ({ clientX, clientY }) => {
+          if (viewer.vrEffect.isPresenting) return;
+          pointerX = clientX;
+          pointerY = clientY;
+        };
+
+        onMouseDown = ({ clientX, clientY }) => {
+          if (viewer.vrEffect.isPresenting) return;
+          hoverHead = closestHead(clientX, clientY, playlist.rooms);
+          if (hoverHead[0] === undefined) hoverHead = null;
+          if (hoverHead) {
+            viewer.switchCamera('default');
+            Room.group.add(viewer.camera);
+          }
+        };
+
+        onMouseUp = () => {
+          if (viewer.vrEffect.isPresenting) return;
+          hoverHead = null;
+          viewer.switchCamera('orthographic');
+          Room.group.remove(viewer.camera);
+        };
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mouseup', onMouseUp);
       });
       if (component.destroyed) return;
 
@@ -115,8 +172,33 @@ export default (req) => {
       if (transition.isInside()) {
         transition.exit();
       }
-      audio.fadeIn();
-      audio.play();
+
+      if (roomIndex) {
+        // Start at 3 rooms before the recording, or 60 seconds before
+        // the end of the track – whichever comes first.
+        const watchTime = 30;
+        const startTime = Math.min(
+          (roomIndex - 2) * audio.loopDuration,
+          audio.duration - watchTime
+        );
+        audio.gotoTime(startTime);
+        if (viewer.vrEffect.isPresenting) {
+          setTimeout(() => {
+            if (component.destroyed) return;
+            audio.fadeOut();
+            transition.enter({
+              text: 'Please take off your headset',
+            });
+            // TODO add share screen
+          }, watchTime * 1000);
+        }
+      }
+
+      // Safari won't play unless we wait until next tick
+      setTimeout(() => {
+        audio.play();
+        audio.fadeIn();
+      });
     },
 
     unmount: () => {
@@ -128,7 +210,12 @@ export default (req) => {
       orb.destroy();
       titles.destroy();
       playlist.destroy();
+      progressBar.destroy();
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseup', onMouseUp);
     },
   };
   return component;
 };
+

@@ -1,0 +1,16 @@
+{
+  "name": "Dance Tonite",
+  "short_name": "Dance Tonite",
+  "start_url": ".",
+  "display": "fullscreen",
+  "background_color": "#ff0",
+  "description": "An interactive VR experience by LCD Soundsystem and their fans",
+  "icons": [{
+    "src": "favico.png",
+    "sizes": "128x128",
+    "type": "image/png"
+  }],
+  "related_applications": [{
+    "platform": "web"
+  }]
+}

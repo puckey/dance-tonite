@@ -1,19 +1,40 @@
 import * as THREE from './lib/three';
-
-import wallUrl from './public/models/obj/first-wall.obj';
-import roomUrl from './public/models/obj/space-bigger-holes.obj';
-import isometricWallUrl from './public/models/obj/first-wall-isometric.obj';
-import isometricRoomUrl from './public/models/obj/space-isometric.obj';
-import roomTextureUrl from './public/models/obj/bake/VR_AOMap.png';
-import isometricRoomTextureUrl from './public/models/obj/bake/ISO_AOMap.png';
+import { loadModel } from './utils/three';
 import settings from './settings';
-import { recordCostumeColor } from './theme/colors';
+import { recordCostumeColor, highlightColor } from './theme/colors';
 
-require('./lib/OBJLoader')(THREE);
+import wallUrl from './public/models/obj/new-rooms/vr/first-wall.obj';
+
+import roomUrl from './public/models/obj/new-rooms/vr/horizontal-room.obj';
+import roomTextureUrl from './public/models/obj/new-rooms/vr/bake/horizontal-room-AOMap.jpg';
+
+import verticalRoomUrl from './public/models/obj/new-rooms/vr/vertical-room.obj';
+import verticalRoomTextureUrl from './public/models/obj/new-rooms/vr/bake/vertical-room-AOMap.jpg';
+
+import horizontalVerticalCornerUrl from './public/models/obj/new-rooms/vr/horizontal-vertical-corner.obj';
+import horizontalVerticalCornerTextureUrl from './public/models/obj/new-rooms/vr/bake/horizontal-vertical-corner-AOMap.jpg';
+
+import verticalHorizontalCornerUrl from './public/models/obj/new-rooms/vr/vertical-horizontal-corner.obj';
+import verticalHorizontalCornerTextureUrl from './public/models/obj/new-rooms/vr/bake/vertical-horizontal-corner-AOMap.jpg';
+
+import floorUrl from './public/models/obj/new-rooms/floor.obj';
+
+
+import isoWallUrl from './public/models/obj/new-rooms/first-wall.obj';
+
+import isoHorizontalRoomUrl from './public/models/obj/new-rooms/horizontal-room.obj';
+import isoHorizontalRoomTextureUrl from './public/models/obj/new-rooms/bake/horizontal-room-AOMap.jpg';
+
+import isoVerticalRoomUrl from './public/models/obj/new-rooms/vertical-room.obj';
+import isoVerticalRoomTextureUrl from './public/models/obj/new-rooms/bake/vertical-room-AOMap.jpg';
+
+import isoHorizontalVerticalCornerUrl from './public/models/obj/new-rooms/horizontal-vertical-corner.obj';
+import isoHorizontalVerticalCornerTextureUrl from './public/models/obj/new-rooms/bake/horizontal-vertical-corner-AOMap.jpg';
+
+import isoVerticalHorizontalCornerUrl from './public/models/obj/new-rooms/vertical-horizontal-corner.obj';
+import isoVerticalHorizontalCornerTextureUrl from './public/models/obj/new-rooms/bake/vertical-horizontal-corner-AOMap.jpg';
 
 const {
-  OBJLoader,
-  TextureLoader,
   Mesh,
   MeshLambertMaterial,
   MeshBasicMaterial,
@@ -24,30 +45,44 @@ const {
   Group,
 } = THREE;
 
-const loadObject = (url) => new Promise(
-  (resolve, reject) => {
-    new OBJLoader().load(url,
-      object => resolve(object.children[0]),
-      () => {},
-      reject,
-    );
-  }
-);
-
-const preloadTexture = (url) => new Promise(
-  (resolve, reject) => {
-    new TextureLoader().load(
-      url,
-      resolve,
-      () => {},
-      reject
-    );
-  }
-);
-
 const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor });
 
 const props = {
+  room: [
+    roomUrl,
+    roomTextureUrl,
+  ],
+  verticalRoom: [
+    verticalRoomUrl,
+    verticalRoomTextureUrl,
+  ],
+  floor: [floorUrl],
+  horizontalVerticalCorner: [
+    horizontalVerticalCornerUrl,
+    horizontalVerticalCornerTextureUrl,
+  ],
+  verticalHorizontalCorner: [
+    verticalHorizontalCornerUrl,
+    verticalHorizontalCornerTextureUrl,
+  ],
+  wall: [wallUrl],
+  orthographicWall: [isoWallUrl],
+  orthographicRoom: [
+    isoHorizontalRoomUrl,
+    isoHorizontalRoomTextureUrl,
+  ],
+  orthographicVerticalRoom: [
+    isoVerticalRoomUrl,
+    isoVerticalRoomTextureUrl,
+  ],
+  orthographicHorizontalVerticalCorner: [
+    isoHorizontalVerticalCornerUrl,
+    isoHorizontalVerticalCornerTextureUrl,
+  ],
+  orthographicVerticalHorizontalCorner: [
+    isoVerticalHorizontalCornerUrl,
+    isoVerticalHorizontalCornerTextureUrl,
+  ],
   hand: (function createHand() {
     const radius = 0.02;
     const height = 0.2;
@@ -117,7 +152,7 @@ const props = {
       segments,
     );
     const material = new MeshBasicMaterial({
-      color: settings.sphereColor.clone(),
+      color: highlightColor.clone(),
     });
     const mesh = new Mesh(geometry, material);
     return mesh;
@@ -127,35 +162,15 @@ const props = {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
   }()),
 
-  longGrid: (function createGrid() {
-    const longGrid = new GridHelper(400, 800, 0xaaaa00, 0xaaaa00);
-    longGrid.position.y = -0.01;
-    longGrid.position.z = 0.25;
-    return longGrid;
-  }()),
-
-  prepare: () => (
-    Promise.all([
-      loadObject(wallUrl),
-      loadObject(roomUrl),
-      loadObject(isometricWallUrl),
-      loadObject(isometricRoomUrl),
-      preloadTexture(roomTextureUrl),
-      preloadTexture(isometricRoomTextureUrl),
-    ]).then(([wall, room, isometricWall, isometricRoom, texture, isometricTexture]) => {
-      wall.material = new THREE.MeshLambertMaterial();
-      room.material = new THREE.MeshLambertMaterial();
-      room.material.map = texture;
-
-      isometricWall.material = new THREE.MeshLambertMaterial();
-      isometricRoom.material = new THREE.MeshLambertMaterial();
-      isometricRoom.material.map = isometricTexture;
-
-      props.wall = wall;
-      props.room = room;
-      props.orthographicWall = isometricWall;
-      props.orthographicRoom = isometricRoom;
-    })
+  prepare: () => Promise.all(
+    Object.keys(props)
+      .filter(id => Array.isArray(props[id]))
+      .map(
+        (id) => loadModel(props[id])
+          .then((model) => {
+            props[id] = model;
+          })
+      )
   ),
 };
 

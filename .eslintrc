@@ -22,6 +22,7 @@
     "no-restricted-syntax": 0,
     "guard-for-in": 0,
     "no-mixed-operators": 0,
+    "no-continue": 0,
     "comma-dangle": ["error", {
       "arrays": "always-multiline",
       "objects": "always-multiline",
@@ -29,6 +30,9 @@
       "exports": "always-multiline",
       "functions": "ignore",
     }],
-    "arrow-parens": 0
+    "arrow-parens": 0,
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/prop-types": 0,
+    "jsx-a11y/no-static-element-interactions": 0
   }
 }

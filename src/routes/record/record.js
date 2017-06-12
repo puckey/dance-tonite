@@ -8,6 +8,8 @@ import createTimeline from '../../lib/timeline';
 import controllers from '../../controllers';
 import transition from '../../transition';
 import instructions from '../../instructions';
+import hud from '../../hud';
+import router from '../../router';
 import { waitRoomColor, recordRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
 
@@ -125,20 +127,20 @@ export default (goto, req) => {
     timeline.tick(audio.progress);
 
     const z = (progress - 0.5) * roomDepth + roomOffset;
-    orb.move(z);
+    orb.position.z = z;
     if (audio.totalProgress > 1) {
-      orb2.move(z + roomDepth * 2);
+      orb2.position.z = z + roomDepth * 2;
     }
     recording.tick();
   };
   recording.setup({
     loopIndex: req.params.loopIndex
       || (Math.floor(Math.random() * settings.loopCount) + 1),
-    hideHead: req.params.hideHead === '1',
+    hideHead: /no/.test(req.params.hideHead),
   });
 
   const controllersTick = () => {
-    const count = viewer.countActiveControllers();
+    const count = controllers.countActiveControllers();
     controllers.update(count === 2 ? pressToStart : null);
     instructions.setSubText(count === 2
       ? 'press right controller to start'
@@ -166,10 +168,18 @@ export default (goto, req) => {
       instructions.setMainText('');
       viewer.events.on('tick', controllersTick);
 
-      controllers.add();
+      //controllers.add();
 
       orb = new Orb();
       orb2 = new Orb();
+
+      // Create close button
+      hud.create('div.close-button',
+        {
+          onclick: () => router.navigate('/'),
+        },
+        '×'
+      );
 
       transition.exit();
     },
