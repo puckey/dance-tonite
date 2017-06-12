@@ -61,7 +61,6 @@ export default class RoomComponent extends Component {
       room.destroy();
     }
     viewer.camera.position.y = 0;
-    viewer.camera.zoom = 1;
     viewer.camera.updateProjectionMatrix();
     viewer.events.off('tick', tick);
     // Room.reset();
@@ -77,7 +76,6 @@ export default class RoomComponent extends Component {
     viewer.camera.position.y = 2;
     viewer.camera.position.z = 1.3;
 
-    viewer.camera.zoom = 0.7;
     viewer.camera.updateProjectionMatrix();
     Room.rotate180();
     await audio.load({

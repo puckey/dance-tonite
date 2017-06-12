@@ -24,7 +24,7 @@ const toggleMute = () => {
     muted ? speakerMuteIconSvg : speakerIconSvg;
 };
 
-const elements = {
+let elements = {
   menuAdd: '.menu-item-add',
   menuEnter: '.menu-item-enter',
   aboutButton: '.menu-item-about',
@@ -35,7 +35,7 @@ const elements = {
   colophon: '.colophon',
 };
 
-const defaultState = {
+let defaultState = {
   menuAdd: false,
   menuEnter: false,
   aboutButton: about.toggle,
@@ -45,6 +45,39 @@ const defaultState = {
   prevRoom: false,
   playPauseButton: false,
 };
+
+// In the CMS, add play/pause button and prev/next buttons
+if (process.env.FLAVOR === 'cms') {
+  document.querySelector('.menu-left').appendChild(
+    componentContext('div.cms-playback-controls',
+      componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-prev-button',
+        { onclick: () => audio.prevLoop(), innerHTML: prevIconSvg }),
+      componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-play-pause-button', {
+        onclick: e => {
+          audio.toggle();
+          e.target.innerHTML = audio.paused ? playIconSvg : pauseIconSvg;
+        },
+        innerHTML: pauseIconSvg,
+      }),
+      componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-next-button',
+        { onclick: () => audio.nextLoop(), innerHTML: nextIconSvg })
+    )
+  );
+
+  elements = {
+    ...elements,
+    playPauseButton: '.cms-play-pause-button',
+    prevButton: '.cms-prev-button',
+    nextButton: '.cms-next-button',
+  };
+
+  defaultState = {
+    ...defaultState,
+    playPauseButton: false,
+    prevButton: false,
+    nextButton: false,
+  };
+}
 
 let state = { };
 
@@ -58,25 +91,6 @@ const hud = {
       elements[i] = hudEl.querySelector(elements[i]);
     }
     elements.hud = hudEl;
-
-    // In the CMS, add play/pause button and prev/next buttons
-    if (process.env.FLAVOR === 'cms') {
-      document.querySelector('.menu-left').appendChild(
-        componentContext('div.cms-playback-controls',
-          componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-prev-button',
-            { onclick: () => audio.prevLoop(), innerHTML: prevIconSvg }),
-          componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-play-pause-button', {
-            onclick: e => {
-              audio.toggle();
-              e.target.innerHTML = audio.paused ? playIconSvg : pauseIconSvg;
-            },
-            innerHTML: pauseIconSvg,
-          }),
-          componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-next-button',
-            { onclick: () => audio.nextLoop(), innerHTML: nextIconSvg })
-        )
-      );
-    }
 
     elements.menuEnter.addEventListener('mouseenter', function () {
       this.querySelector('.menu-item-label')

@@ -44,10 +44,21 @@ export default (req) => {
     }
   };
 
+  let CMSPlaybackControls;
+
+  if (process.env.FLAVOR === 'cms') {
+    CMSPlaybackControls = {
+      playPauseButton: true,
+      nextButton: true,
+      prevButton: true,
+    };
+  }
+
   const hudSettings = {
     menuAdd: true,
     menuEnter: toggleVR,
     colophon: true,
+    ...CMSPlaybackControls,
   };
 
   let orb;
@@ -218,4 +229,3 @@ export default (req) => {
   };
   return component;
 };
-
