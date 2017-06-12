@@ -26,7 +26,14 @@ const ALMOST_ZERO = 1e-4;
 let scheduledTime;
 const audio = Object.assign(emitter(), {
   tick() {
-    if ((!audioElement && !context) || !startTime) return;
+    if ((!audioElement && !context) || !startTime) {
+      this.progress = 0;
+      this.currentTime = 0;
+      this.loopProgress = 0;
+      this.totalProgress = 0;
+      this.looped = false;
+      return;
+    };
     this.currentTime = audioElement
       ? (pauseTime || (Date.now() - startTime)) / 1000
       : context.currentTime - startTime;
@@ -37,7 +44,6 @@ const audio = Object.assign(emitter(), {
     this.progress = time > 0
       ? time / loopDuration
       : 0;
-
     // The position within the individual loop as a value between 0 - 1:
     this.loopProgress = (time % loopDuration) / loopDuration;
 
