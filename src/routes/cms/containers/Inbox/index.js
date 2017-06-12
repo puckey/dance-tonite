@@ -12,6 +12,7 @@ import Mute from '../../components/Mute';
 import EnterVR from '../../components/EnterVR';
 import InboxCounter from '../../components/InboxCounter';
 import Spinner from '../../components/Spinner';
+import Error from '../../components/Error';
 
 import cms from '../../../../utils/firebase/cms';
 import router from '../../../../router';
@@ -59,10 +60,16 @@ export default class Inbox extends Component {
   }
 
   async asyncMount() {
-    let unmoderated = await cms.getUnmoderatedRecordings();
+    let { data: unmoderated, error } = await cms.getUnmoderatedRecordings();
+    if (!this.mounted) return;
+
+    if (error) {
+      this.setState({ error });
+      return;
+    }
+
     // Filter out faulty room with -1:
     unmoderated = unmoderated.filter(recording => recording.room >= 0);
-    if (!this.mounted) return;
     const { recordingId } = this.props;
     if ((!recordingId) && unmoderated.length) {
       const recording = unmoderated[0];
@@ -80,7 +87,15 @@ export default class Inbox extends Component {
     this.setState({
       loadingRecording: true,
     });
-    const recording = await cms.getRecording(id);
+    const { data: recording, error } = await cms.getRecording(id);
+    if (!this.mounted) return;
+    if (error) {
+      this.setState({
+        error,
+        loadingRecording: false,
+      });
+      return;
+    }
     if (recording.rating === 0) {
       // Unstarred by default:
       recording.rating = -1;
@@ -124,17 +139,21 @@ export default class Inbox extends Component {
     this.setState({
       submitting: true,
     });
-    const reply = await cms.updateRecording(this.state.recording);
+    const { error } = await cms.updateRecording(this.state.recording);
     if (!this.mounted) return;
     this.setState({
       submitting: false,
     });
-    this.navigateToNextUnmoderated();
+    if (error) {
+      this.setState({ error });
+    } else {
+      this.navigateToNextUnmoderated();
+    }
   }
 
   render(
     { recordingId, goHome },
-    { unmoderatedCount, recording, submitting }
+    { unmoderatedCount, recording, submitting, error }
   ) {
     const starred = !!recording && (recording.rating === 1);
     return (
@@ -175,20 +194,23 @@ export default class Inbox extends Component {
           />
         </Align>
         {
-          !recording || submitting
+          (!recording || submitting || error)
             ? (
               <Align type="center">
-                <Spinner
-                  text={
-                    submitting
-                      ? 'Submitting changes'
-                      : unmoderatedCount === 0
-                        ? 'Inbox empty'
-                        : !recordingId
-                          ? 'Loading inbox'
-                          : ''
-                  }
-                />
+                { error
+                  ? <Error>{error}</Error>
+                  : <Spinner
+                    text={
+                      submitting
+                        ? 'Submitting changes'
+                        : unmoderatedCount === 0
+                          ? 'Inbox empty'
+                          : !recordingId
+                            ? 'Loading inbox'
+                            : ''
+                    }
+                  />
+                }
               </Align>
             )
             : <Room key={recording.id} recording={recording} />
