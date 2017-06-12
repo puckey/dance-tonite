@@ -11,11 +11,9 @@ const persist = (data, roomID) => new Promise((resolve, reject) => {
 
 const loadPlaylist = async () => {
   if (process.env.FLAVOR !== 'cms') {
-    const response = await fetch('https://storage.googleapis.com/you-move-me.appspot.com/playlists/playlist.json', {
-      credentials: 'include',
-    });
+    const response = await fetch('https://storage.googleapis.com/you-move-me.appspot.com/playlists/playlist.json');
     const data = await response.json();
-    return data;
+    return data.playlist;
   }
 
   const response = await cms.getDraftPlaylist();
