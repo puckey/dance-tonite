@@ -83,10 +83,12 @@ const getVRDisplayName = () => (
       });
   })
 );
-
+const isAndroid = /android/i.test(userAgent);
 const feature = {
   isMobile: /android|ipad|iphone|iemobile/i.test(userAgent),
-  isAndroid: /android/i.test(userAgent),
+  isTablet: (isAndroid && !/mobile/i.test(userAgent)) // https://stackoverflow.com/questions/5341637/how-do-detect-android-tablets-in-general-useragent
+    || /ipad/i.test(userAgent),
+  isAndroid,
   isChrome: /chrome/i.test(userAgent),
   stats: /fps/.test(window.location.hash),
   prepare: () => (
@@ -97,7 +99,7 @@ const feature = {
         }),
       checkHasVR()
         .then((hasVR) => {
-          feature.hasVR = hasVR;
+          feature.hasVR = !feature.isTablet && hasVR;
         }),
       checkHas6DOF()
         .then((has6DOF) => {
