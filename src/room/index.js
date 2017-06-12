@@ -14,7 +14,6 @@ import {
   getCostumeColor,
   getRoomColor,
   recordCostumeColor,
-  recordRoomColor,
   highlightColor,
 } from '../theme/colors';
 import streamJSON from '../lib/stream-json';
@@ -84,7 +83,6 @@ export default class Room {
     if (recording) {
       this.hideHead = recording.hideHead;
       this.frames = recording.frames;
-      this.changeColor(recordRoomColor);
     }
 
     this.costumeColor = this.isRecording

@@ -7,7 +7,7 @@ import viewer from '../../viewer';
 import settings from '../../settings';
 import hud from '../../hud';
 import createTimeline from '../../lib/timeline';
-import { waitRoomColor, recordRoomColor } from '../../theme/colors';
+import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
 import windowSize from '../../utils/windowSize';
@@ -28,9 +28,10 @@ const getLineTransform = (x1, y1, x2, y2, margin) => {
   return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
 };
 
-export default (goto) => {
+export default (goto, req) => {
   let getLineTarget;
   let room;
+  const roomColor = getRoomColor(parseInt(req.params.roomIndex, 10));
   const state = { minLayers: 0 };
   const elements = {};
   const objects = {};
@@ -65,7 +66,7 @@ export default (goto) => {
     {
       time: 1,
       callback: () => {
-        room.changeColor(recordRoomColor);
+        room.changeColor(roomColor);
       },
     },
   ]);
