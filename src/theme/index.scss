@@ -30,6 +30,11 @@ html {
 
 a {
   color: $text-color;
+  cursor: pointer;
+
+  &:hover {
+    color: $white-color;
+  }
 }
 
 .viewer {
