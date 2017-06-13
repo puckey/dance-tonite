@@ -97,11 +97,11 @@ export default class Playlist {
       // Slow down recordings to a stop after music stops:
       const slowdownDuration = 0.4;
       const maxTime = 216.824266 - (slowdownDuration * 0.5);
-      if (audio.currentTime > maxTime) {
+      if (audio.time > maxTime) {
         time = maxTime + easeOut(
           Math.min(
             slowdownDuration,
-            audio.currentTime - maxTime
+            audio.time - maxTime
           ) / slowdownDuration
         ) * slowdownDuration;
       }

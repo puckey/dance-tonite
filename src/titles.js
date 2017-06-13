@@ -122,7 +122,7 @@ export default (orb) => {
       }
     },
     tick: () => {
-      timeline.tick(audio.currentTime);
+      timeline.tick(audio.time);
     },
   };
 };

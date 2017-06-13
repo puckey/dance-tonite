@@ -35,7 +35,7 @@ const orthographicDistance = 4;
 // const times = [0];
 // document.addEventListener('keydown', (event) => {
 //   if (event.shiftKey) {
-//     times.push(audio.currentTime);
+//     times.push(audio.time);
 //   }
 //   if (event.metaKey) {
 //     console.log(times);

@@ -29,16 +29,15 @@ const audio = Object.assign(emitter(), {
   tick() {
     if ((!audioElement && !context) || !startTime) {
       this.progress = 0;
-      this.currentTime = 0;
+      this.time = 0;
       this.loopProgress = 0;
       this.totalProgress = 0;
       this.looped = false;
       return;
     }
-    this.currentTime = audioElement
+    const time = this.time = (audioElement
       ? (pauseTime || (Date.now() - startTime)) / 1000
-      : context.currentTime - startTime;
-    const time = this.time = this.currentTime % duration;
+      : context.currentTime - startTime) % duration;
     const { loopDuration } = this;
     // The position within the track as a multiple of loopDuration:
     this.progress = time > 0

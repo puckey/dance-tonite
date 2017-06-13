@@ -31,7 +31,7 @@ timeline.on('change-color', ({ color }) => {
 
 export default {
   tick: () => {
-    timeline.tick(audio.currentTime);
+    timeline.tick(audio.time);
   },
   destroy: () => {
     viewer.renderer.setClearColor(BLACK);

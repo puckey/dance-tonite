@@ -171,7 +171,7 @@ export default (goto, req) => {
     );
     const progress = audio.progress - 1; // value between -1 and 1
     colorTimeline.tick(audio.progress);
-    textTimeline.tick(audio.currentTime % 48);
+    textTimeline.tick(audio.time % 48);
 
     const z = (progress - 0.5) * -roomDepth - roomOffset;
     objects.orb.position.z = z;
