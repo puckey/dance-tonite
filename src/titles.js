@@ -3,6 +3,19 @@ import audio from './audio';
 import createTimeline from './lib/timeline';
 
 export default (orb) => {
+  if (process.env.FLAVOR === 'cms') {
+    return {
+      hide: () => {},
+      mount: () => {
+        const c = document.querySelector('.colophon');
+        if (!c) return;
+        c.parentNode.removeChild(c);
+      },
+      destroy: () => {},
+      tick: () => {},
+    };
+  }
+
   const hudEl = document.querySelector('.hud');
 
   const splashTitle = h(
