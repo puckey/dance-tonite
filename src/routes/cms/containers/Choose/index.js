@@ -13,6 +13,8 @@ import Mute from '../../components/Mute';
 import EnterVR from '../../components/EnterVR';
 import PaginatedList from '../../components/PaginatedList';
 import Spinner from '../../components/Spinner';
+import router from '../../../../router';
+import hud from '../../../../hud';
 
 export default class Choose extends Component {
   constructor() {
@@ -21,6 +23,7 @@ export default class Choose extends Component {
       loading: 'room choices',
     };
     this.changeItem = this.changeItem.bind(this);
+    this.saveAndClose = this.saveAndClose.bind(this);
   }
 
   componentDidMount() {
@@ -92,6 +95,12 @@ export default class Choose extends Component {
     this.setState({ item });
   }
 
+  async saveAndClose() {
+    hud.showLoader('Saving room...');
+    await cms.updateDraftPlaylist(this.state.item);
+    router.navigate(`/${this.state.item.room}`);
+  }
+
   render({ room, goHome }, { items, item, error, loading }) {
     return (
       <Container>
@@ -104,6 +113,7 @@ export default class Choose extends Component {
             items={items}
             performChange={this.changeItem}
           />
+          <a className="mod-pointer" onClick={this.saveAndClose}>Save &amp; Close</a>
         </Align>
         <Align type="top-right">
           <Close

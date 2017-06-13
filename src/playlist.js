@@ -38,11 +38,11 @@ export default class Playlist {
                 `div.room-label#room-label-${index}`,
                 {
                   onmousedown: (event) => {
-                    router.navigate(`/choose/${entry.room}`);
+                    router.navigate(`/choose/${index + 1}`);
                     event.stopPropagation();
                   },
                 },
-                h('span', `Room ${entry.room}`),
+                h('span', `Room ${index}`),
                 h('span.wrap', entry.title),
                 h(
                   'span.newline',

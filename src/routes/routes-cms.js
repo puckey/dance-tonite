@@ -10,7 +10,7 @@ export default {
   routes: {
     '/inbox/:recordingId?': inbox,
     '/choose/:roomId': choose,
-    '/:loopIndex?/:id?': playback,
+    '/:roomIndex?/:id?': playback,
   },
   components: { playback, choose, inbox },
 };
