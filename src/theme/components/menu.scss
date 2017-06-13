@@ -43,7 +43,7 @@ svg {
   padding-right: 1rem;
   user-select: none;
 
-  .menu-item + .menu-item {
+  + .menu-item {
     padding-bottom: 1.5rem;
   }
 
