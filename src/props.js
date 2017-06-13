@@ -6,11 +6,11 @@ import { recordCostumeColor, highlightColor } from './theme/colors';
 import wallUrl from './public/models/obj/new-rooms/vr/first-wall.obj';
 
 import roomUrl from './public/models/obj/new-rooms/vr/horizontal-room.obj';
-// import roomTextureUrl from './public/models/obj/new-rooms/vr/bake/horizontal-room-AOMap.jpg';
+import roomTextureUrl from './public/models/obj/new-rooms/vr/bake/horizontal-room-AOMap.jpg';
 
 import isometricWallUrl from './public/models/obj/new-rooms/first-wall.obj';
 import isometricRoomUrl from './public/models/obj/new-rooms/horizontal-room.obj';
-// import isometricRoomTextureUrl from './public/models/obj/new-rooms/bake/horizontal-room-AOMap.jpg';
+import isometricRoomTextureUrl from './public/models/obj/new-rooms/bake/horizontal-room-AOMap.jpg';
 
 const {
   Mesh,
@@ -27,9 +27,9 @@ const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor }
 
 const props = {
   perspectiveWall: [wallUrl],
-  perspectiveRoom: [roomUrl], // roomTextureUrl],
+  perspectiveRoom: [roomUrl, roomTextureUrl],
   orthographicWall: [isometricWallUrl],
-  orthographicRoom: [isometricRoomUrl], // isometricRoomTextureUrl],
+  orthographicRoom: [isometricRoomUrl, isometricRoomTextureUrl],
   hand: (function createHand() {
     const radius = 0.02;
     const height = 0.2;
