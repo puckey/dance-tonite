@@ -108,7 +108,7 @@ export default (goto, req) => {
     },
     {
       time: 10.5,
-      text: '(Don’t bump into the camera)',
+      text: '(Try to avoid bumping into the camera)',
       getPosition: null,
     },
     {
@@ -134,10 +134,6 @@ export default (goto, req) => {
     {
       time: 24,
       text: 'Dance together!',
-    },
-    {
-      time: 26.5,
-      text: '(Don’t bump into each other)',
     },
     {
       time: 32,
