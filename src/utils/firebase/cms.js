@@ -29,6 +29,12 @@ const getUnmoderatedRecordings = () =>
 const getRecording = (id) =>
       firebaseConnection.contactServer(`${serverURL}getRecording`, { id });
 
+// getAvailableRecordings:
+// cms.getAvailableRecordings(1).then((data) => { console.log('getAvailableRecordings', data); });
+const getAvailableRecordings = (room) =>
+      firebaseConnection.contactServer(`${serverURL}getAvailableRecordings`, { room });
+
+
 // updateRecording:
 // cms.updateRecording({ id: 'EamZtQ', title: 'hello there', rating: 1, is_universal: false})
 //   .then((data) => { console.log(data); });
@@ -50,5 +56,6 @@ export default {
   publishDraftPlaylist,
   getUnmoderatedRecordings,
   getRecording,
+  getAvailableRecordings,
   updateRecording,
 };
