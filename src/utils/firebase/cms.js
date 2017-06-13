@@ -38,7 +38,7 @@ const getAvailableRecordings = (room) =>
 // updateRecording:
 // cms.updateRecording({ id: 'EamZtQ', title: 'hello there', rating: 1, is_universal: false})
 //   .then((data) => { console.log(data); });
-//    if title, rating, or isUniversal are left null, they're value will not be changed
+//    if title, rating, or isUniversal are left null, their value will not be changed
 //    is_universal is a boolean
 //    rating:
 //       0 = unrated
