@@ -37,7 +37,6 @@ export default (goto, req) => {
   const objects = {};
 
   const performSkip = async () => {
-    // TODO: we need to make sure the user has a vr device capable of room vr:
     if (feature.has6DOF) {
       elements.skipTutorialButton.classList.add('mod-hidden');
       const removeOverlay = hud.enterVR();
@@ -73,20 +72,23 @@ export default (goto, req) => {
 
   const createOverlay = () => {
     if (elements.overlayEl) return;
-    elements.overlayEl = hud.create(
+    elements.overlayEl = feature.has6DOF ? hud.create(
       'div.tutorial-overlay',
-      {
-        onclick: performSkip,
-      },
+      h('div.tutorial-overlay-text', h('a', { onclick: performSkip }, 'Add your performance')),
+    ) :
+    hud.create(
+      'div.tutorial-overlay',
       h(
         'div.tutorial-overlay-text',
         h(
           'span',
-          feature.has6DOF
-            ? 'Add your performance'
-            : 'A message about Vive not being found. Click here to go home.'
-        ),
-      )
+          h('h3', 'Shucks, room-scale VR not found.'),
+          h('p', 'This requires room-scale VR and a WebVR-enabled browser.'),
+          h('a', { href: 'https://webvr.info', target: '_blank' }, 'Get set up'),
+          ' or ',
+          h('a', { onclick: performSkip }, 'return home.')
+        )
+      ),
     );
   };
 
@@ -213,7 +215,7 @@ export default (goto, req) => {
       objects.orb = new Orb();
       objects.orb2 = new Orb();
 
-      elements.tutorialText = hud.create('div.tutorial-text');
+      elements.tutorialText = hud.create('div.tutorial-text.mod-removed');
       elements.skipTutorialButton = hud.create(
         'div.skip-button',
         {
