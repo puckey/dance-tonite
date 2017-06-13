@@ -328,7 +328,7 @@ Room.switchModel = (model) => {
   roomsGroup.add(floorMesh);
 };
 
-Room.reset = ({ showAllWalls } = {}) => {
+Room.reset = () => {
   Room.setHighlight();
   setIdentityMatrix(roomsGroup);
   if (roomMesh) roomsGroup.remove(roomMesh);
