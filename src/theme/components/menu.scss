@@ -43,13 +43,17 @@ svg {
   padding-right: 1rem;
   user-select: none;
 
+  .menu-item + .menu-item {
+    padding-bottom: 1.5rem;
+  }
+
   .mod-disabled {
     cursor: not-allowed;
   }
-}
 
-.menu .menu-item + .menu-item {
-  padding-bottom: 1.5rem;
+  &:hover .menu-item-label {
+    display: inline;
+  }
 }
 
 .menu-item-label {
@@ -60,14 +64,6 @@ svg {
   line-height: 1rem;
 }
 
-.menu-item:hover .menu-item-label {
-  display: inline;
-}
-
-.mod-mobile .menu-item:hover .menu-item-label {
-  display: none;
-}
-
 .menu-item-icon {
   display: inline-block;
   position: relative;
@@ -75,4 +71,8 @@ svg {
   top: .5rem;
   width: 2rem;
   height: 2rem;
+}
+
+.mod-mobile .menu-item:hover .menu-item-label {
+  display: none;
 }

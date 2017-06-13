@@ -49,7 +49,6 @@ export default class RoomComponent extends Component {
 
   componentWillUnmount() {
     this.mounted = false;
-    console.log('unmounted');
     objects.orb.destroy();
     objects.orb2.destroy();
     viewer.camera.position.copy(state.originalCameraPosition);
