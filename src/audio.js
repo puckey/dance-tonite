@@ -157,6 +157,7 @@ const audio = Object.assign(emitter(), {
 
   toggle() {
     this[this.paused ? 'play' : 'pause']();
+    audio.emit(this.paused ? 'play' : 'pause');
   },
 
   gotoTime(time) {

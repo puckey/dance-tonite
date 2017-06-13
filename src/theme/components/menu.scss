@@ -64,6 +64,14 @@ svg {
   line-height: 1rem;
 }
 
+@media (max-width: $min-width) {
+  .mod-mobile .menu-item-label {
+    display: inline-block;
+    opacity: 0;
+    animation: fadeOut 5s forwards;  
+  }
+}
+
 .menu-item-icon {
   display: inline-block;
   position: relative;
@@ -75,4 +83,10 @@ svg {
 
 .mod-mobile .menu-item:hover .menu-item-label {
   display: none;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  50% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
 }

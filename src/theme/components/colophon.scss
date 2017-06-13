@@ -17,6 +17,12 @@
   }
 }
 
+@media (max-width: $min-width) {
+  .mod-mobile .colophon {
+    display: none;
+  }
+}
+
 .colophon-divider {
   border-left: 1px solid $text-color;
   margin: 0 .25rem 0 .75rem;
