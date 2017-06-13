@@ -1,5 +1,4 @@
 import Orb from '../orb';
-import MegaOrb from '../megaorb';
 import audio from '../audio';
 import audioSrcOgg from '../public/sound/tonite.ogg';
 import audioSrcMp3 from '../public/sound/tonite.mp3';
@@ -15,6 +14,8 @@ import Room from '../room';
 import progressBar from '../progress-bar';
 import layout from '../room/layout';
 import closestHead from '../utils/closestHead';
+import background from '../background';
+import InstancedItem from '../instanced-item';
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
@@ -60,7 +61,6 @@ export default (req) => {
   }
 
   let orb;
-  let megaOrb;
   let playlist;
   let tick;
   const roomIndex = parseInt(req.params.roomIndex, 10);
@@ -80,14 +80,13 @@ export default (req) => {
       }
 
       orb = new Orb();
-      megaOrb = new MegaOrb();
       titles = createTitles(orb);
       titles.mount();
 
       const moveHead = (progress) => {
         moveCamera(progress);
-        const [roomIndex, headIndex] = hoverHead;
-        playlist.rooms[roomIndex].transformToHead(viewer.camera, headIndex);
+        const [index, headIndex] = hoverHead;
+        playlist.rooms[index].transformToHead(viewer.camera, headIndex);
       };
 
       const moveCamera = (progress) => {
@@ -96,7 +95,6 @@ export default (req) => {
         position.z *= -1;
         viewer.camera.position.copy(position);
         orb.position.copy(position);
-        megaOrb.setProgress(audio.time / audio.duration);
       };
 
       moveCamera(0);
@@ -118,6 +116,7 @@ export default (req) => {
         Room.clear();
         playlist.tick();
         titles.tick();
+        background.tick();
         if (!feature.isMobile || !viewer.vrEffect.isPresenting) {
           progressBar.tick();
         }
@@ -166,8 +165,11 @@ export default (req) => {
           if (hoverHead[0] === undefined) hoverHead = null;
           if (hoverHead) {
             viewer.switchCamera('default');
-            Room.group.add(viewer.camera);
-            [...document.querySelectorAll('.room-label')].map(room => room.classList.add('mod-hidden'));
+            if (process.env.FLAVOR === 'cms') {
+              document.querySelectorAll('.room-label')
+                .forEach(room => room.classList.add('mod-hidden'));
+            }
+            InstancedItem.group.add(viewer.camera);
           }
         };
 
@@ -175,8 +177,10 @@ export default (req) => {
           if (viewer.vrEffect.isPresenting) return;
           hoverHead = null;
           viewer.switchCamera('orthographic');
-          Room.group.remove(viewer.camera);
-          [...document.querySelectorAll('.room-label')].map(room => room.classList.remove('mod-hidden'));
+          if (process.env.FLAVOR === 'cms') {
+            document.querySelectorAll('.room-label')
+              .forEach(room => room.classList.remove('mod-hidden'));
+          }
         };
 
         window.addEventListener('mousemove', onMouseMove);
@@ -230,6 +234,7 @@ export default (req) => {
       titles.destroy();
       playlist.destroy();
       progressBar.destroy();
+      background.destroy();
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mouseup', onMouseUp);
