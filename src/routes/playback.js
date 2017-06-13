@@ -51,6 +51,7 @@ export default (req) => {
       playPauseButton: true,
       nextButton: true,
       prevButton: true,
+      menuAdd: false,
     };
   }
 
