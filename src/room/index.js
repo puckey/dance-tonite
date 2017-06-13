@@ -37,7 +37,11 @@ debugMesh.frustumCulled = false;
 const POSE = createPose();
 const FIRST_POSE = createPose();
 
-const lerpPose = ([positionA, quaternionA], [positionB, quaternionB], ratio) => {
+const lerpPose = (
+  [positionA, quaternionA],
+  [positionB, quaternionB],
+  ratio
+) => {
   positionA.lerp(positionB, ratio);
   quaternionA.slerp(quaternionB, ratio);
 };
@@ -105,7 +109,11 @@ export default class Room {
   }
 
   transformToHead(object, layerIndex) {
-    const [position, rotation] = this.frame.getHeadPose(layerIndex, this.position, false);
+    const [position, rotation] = this.frame.getHeadPose(
+      layerIndex,
+      this.position,
+      false
+    );
     object.position.copy(position);
     object.quaternion.copy(rotation);
   }
@@ -132,8 +140,15 @@ export default class Room {
   getPose(performanceIndex, limbIndex, offset) {
     this.frame.getPose(performanceIndex, limbIndex, offset, false, POSE);
     if (this.insideMegaGrid && !this.single) {
-      const ratio = Math.max(0, Math.min(2, audio.currentTime - 184.734288)) * 0.5;
-      this.firstFrame.getPose(performanceIndex, limbIndex, offset, false, FIRST_POSE);
+      const RISE_TIME = 184.734288;
+      const ratio = Math.max(0, Math.min(2, audio.currentTime - RISE_TIME)) * 0.5;
+      this.firstFrame.getPose(
+        performanceIndex,
+        limbIndex,
+        offset,
+        false,
+        FIRST_POSE
+      );
       FIRST_POSE[0].y *= ratio;
       lerpPose(POSE, FIRST_POSE, 1 - ratio);
     }
@@ -181,8 +196,8 @@ Room.reset = () => {
     };
   }
 
-  // Move an extra invisible object3d with a texture to the end of scene's children
-  // array in order to solve a texture glitch as described in:
+  // Move an extra invisible object3d with a texture to the end of scene's
+  // children array in order to solve a texture glitch as described in:
   // https://github.com/puckey/you-move-me/issues/129
   viewer.scene.add(debugMesh);
 };
