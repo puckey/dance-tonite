@@ -12,6 +12,7 @@ import settings from './settings';
 import Room from './room';
 import feature from './utils/feature';
 import windowSize from './utils/windowSize';
+import postprocessing from './postprocessing';
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
@@ -119,6 +120,8 @@ const viewer = {
 const clock = new THREE.Clock();
 clock.start();
 
+const renderPostProcessed = postprocessing({ renderer, camera: cameras.default, scene });
+
 const animate = () => {
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
@@ -132,7 +135,12 @@ const animate = () => {
   controls.update();
   events.emit('tick', dt);
 
-  vrEffect.render(viewer.renderScene, viewer.camera);
+  if (viewer.camera === cameras.default) {
+    renderPostProcessed();
+  } else {
+    vrEffect.render(viewer.renderScene, viewer.camera);
+  }
+
   if (vrEffect.isPresenting && feature.hasExternalDisplay) {
     renderer.render(viewer.renderScene, viewer.camera);
   }
