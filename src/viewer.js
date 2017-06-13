@@ -15,7 +15,6 @@ import InstancedItem from './instanced-item';
 import feature from './utils/feature';
 import windowSize from './utils/windowSize';
 import audio from './audio';
-// import { getRoomColorByIndex } from './theme/colors';
 import postprocessing from './postprocessing';
 
 // if we're on a mobile device that doesn't support WebVR, use polyfill
@@ -158,7 +157,6 @@ const viewer = {
 const clock = new THREE.Clock();
 clock.start();
 
-const COLOR = new THREE.Color();
 const renderPostProcessed = postprocessing({ renderer, camera: cameras.default, scene });
 const animate = () => {
   const dt = clock.getDelta();
@@ -172,21 +170,11 @@ const animate = () => {
 
   controls.update();
   events.emit('tick', dt);
-  // const colorOffset = 4;
-  // const lowColor = getRoomColorByIndex(
-  //   audio.progress
-  //     ? Math.floor(audio.progress + colorOffset)
-  //     : 0
-  //   );
-  // const highColor = getRoomColorByIndex(
-  //   audio.progress
-  //     ? Math.ceil(audio.progress + colorOffset)
-  //     : 0
-  // );
-  const zoom = audio.progress > 21
-    ? Math.min(2, audio.progress - 21) * 0.5
-    : 0;
-  zoomCamera(zoom);
+  zoomCamera(
+    audio.progress > 21
+      ? Math.min(2, audio.progress - 21) * 0.5
+      : 0
+  );
 
   if (viewer.camera === cameras.default) {
     renderPostProcessed();
