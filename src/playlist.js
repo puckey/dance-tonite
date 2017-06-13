@@ -8,7 +8,6 @@ import storage from './storage';
 import layout from './room/layout';
 import size from './utils/windowSize';
 import { worldToScreen } from './utils/three';
-import { recordRoomColor } from './theme/colors';
 import cms from './utils/firebase/cms';
 import router from './router';
 
