@@ -27,13 +27,23 @@ window.THREE = THREE;
     Room.reset();
     viewer.switchCamera('orthographic');
     await new Promise((resolve) => {
-      const play = hud.create('div.loader-overlay', hud.create('div.play-button.mod-fill', {
-        onclick: function () {
-          play.classList.add('mod-hidden');
-          audioPool.fill();
-          resolve();
-        },
-      }), hud.create('div.play-button-text', 'Press play to Dance Tonite'));
+      const onPressPlay = function () {
+        play.classList.add('mod-hidden');
+        audioPool.fill();
+        resolve();
+      };
+      const play = hud.create(
+        'div.loader-overlay',
+        hud.create(
+          'div.play-button.mod-fill',
+          { onclick: onPressPlay }
+        ),
+        hud.create(
+          'div.play-button-text',
+          { onclick: onPressPlay },
+          'Press play to Dance Tonite'
+        )
+      );
       document.querySelector('.play-button').innerHTML = playIconSvg;
     });
   }
