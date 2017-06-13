@@ -55,9 +55,22 @@ export default class Choose extends Component {
       return;
     }
     const activeId = playlistData.playlist[room - 1].id;
-    // TODO: filter out duplicates?
-    const items = [].concat(forRoom).concat(universal);
+
+    const items = []
+      .concat(forRoom)
+      .concat(
+        // Filter out duplicates:
+        universal.filter(
+          universalRoom => !forRoom.find(
+            recording => recording.id === universalRoom.id
+          )
+        )
+      );
     let item = items.find(recording => recording.id === activeId);
+
+    // If the active item was not to be found in the available recordings,
+    // retrieve it from the cms using getRecording and add it to the items array
+    // manually:
     if (!item) {
       const { data: recordingData, error: recordingError } = await cms.getRecording(activeId);
       if (!this.mounted) return;
