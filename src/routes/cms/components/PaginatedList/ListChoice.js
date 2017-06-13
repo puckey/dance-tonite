@@ -13,7 +13,7 @@ export default class ListChoice extends Component {
   }
 
   render() {
-    const { name, active, className } = this.props;
+    const { title, active, className } = this.props;
     return (
       <a
         className={classNames('paginated-list-item-link')}
@@ -27,7 +27,7 @@ export default class ListChoice extends Component {
           )}
         >
           <div className="paginated-list-item-name-container">
-            <div className="paginated-list-item-name">{name}</div>
+            <div className="paginated-list-item-name">{title}</div>
           </div>
         </div>
       </a>

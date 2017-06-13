@@ -75,7 +75,7 @@ export default class PaginatedList extends Component {
               onClick={performChange}
               item={listItem}
               active={item === listItem}
-              name={listItem.name}
+              title={listItem.title === '' ? 'Unnamed' : listItem.title}
               className={(!hasPagination && ((i + 1) === count)) ? 'mod-last' : null}
               key={listItem.id}
             />,
