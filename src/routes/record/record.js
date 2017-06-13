@@ -10,7 +10,7 @@ import transition from '../../transition';
 import instructions from '../../instructions';
 import hud from '../../hud';
 import router from '../../router';
-import { waitRoomColor, recordRoomColor } from '../../theme/colors';
+import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
 
 export default (goto, req) => {
@@ -19,6 +19,7 @@ export default (goto, req) => {
   let room;
   let orb;
   let orb2;
+  const roomColor = getRoomColor(parseInt(req.params.roomIndex, 10));
 
   let performedFinish = false;
   const performFinish = async () => {
@@ -113,7 +114,7 @@ export default (goto, req) => {
     {
       time: 1,
       callback: () => {
-        room.changeColor(recordRoomColor);
+        room.changeColor(roomColor);
         controllers.update();
       },
     },
@@ -136,11 +137,11 @@ export default (goto, req) => {
   recording.setup({
     loopIndex: req.params.loopIndex
       || (Math.floor(Math.random() * settings.loopCount) + 1),
-    hideHead: req.params.hideHead === '1',
+    hideHead: /no/.test(req.params.hideHead),
   });
 
   const controllersTick = () => {
-    const count = viewer.countActiveControllers();
+    const count = controllers.countActiveControllers();
     controllers.update(count === 2 ? pressToStart : null);
     instructions.setSubText(count === 2
       ? 'press right controller to start'
@@ -167,8 +168,6 @@ export default (goto, req) => {
       instructions.add();
       instructions.setMainText('');
       viewer.events.on('tick', controllersTick);
-
-      controllers.add();
 
       orb = new Orb();
       orb2 = new Orb();

@@ -12,7 +12,6 @@ import {
   getCostumeColor,
   getRoomColor,
   recordCostumeColor,
-  recordRoomColor,
   highlightColor,
 } from '../theme/colors';
 
@@ -51,17 +50,13 @@ export default class Room {
     const frames = this.frames = new Frames(url, recording);
     this.firstFrame = frames.getFrame(0);
     this.frame = frames.getFrame();
-    if (recording) {
-      this.changeColor(recordRoomColor);
-    }
-
     this.costumeColor = recording
       ? recordCostumeColor
       : getCostumeColor(index);
     this.position = layout.getPosition(
       index,
       new THREE.Vector3(),
-      (!!recording || !!single)
+      !!recording || !!single
     );
 
     const position = tempVector()
@@ -71,7 +66,7 @@ export default class Room {
     const type = layout.getType(index);
     if (type === 'PLANE') return;
     items.room.add([position, null], getRoomColor(index));
-    if (layout.hasWall(index)) {
+    if (!!single || layout.hasWall(index)) {
       items.wall.add([position, null], getRoomColor(index));
     }
   }
@@ -93,7 +88,7 @@ export default class Room {
 
   changeColor(color) {
     items.room.changeColor(this.index, color);
-    // items.wall.change(this.index, color);
+    items.wall.changeColor(this.index, color);
   }
 
   getHeadPosition(index, applyMatrix = true) {

@@ -74,7 +74,7 @@
   }
 
   a {
-    color: $color-inactive;
+    color: $inactive-color;
     pointer-events: all;
 
     &:hover {
@@ -97,7 +97,7 @@
   cursor: pointer;
 
   &.mod-disabled {
-    color: $color-inactive;
+    color: $inactive-color;
   }
 }
 

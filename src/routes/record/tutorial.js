@@ -7,7 +7,7 @@ import viewer from '../../viewer';
 import settings from '../../settings';
 import hud from '../../hud';
 import createTimeline from '../../lib/timeline';
-import { waitRoomColor, recordRoomColor } from '../../theme/colors';
+import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
 import windowSize from '../../utils/windowSize';
@@ -18,7 +18,7 @@ import { worldToScreen } from '../../utils/three';
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 
 // TODO: replace with better recording:
-const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
+const TUTORIAL_RECORDING_URL = 'hIR_Tw';
 
 const { roomDepth, roomOffset } = settings;
 
@@ -28,9 +28,10 @@ const getLineTransform = (x1, y1, x2, y2, margin) => {
   return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
 };
 
-export default (goto) => {
+export default (goto, req) => {
   let getLineTarget;
   let room;
+  const roomColor = getRoomColor(parseInt(req.params.roomIndex, 10));
   const state = { minLayers: 0 };
   const elements = {};
   const objects = {};
@@ -65,7 +66,7 @@ export default (goto) => {
     {
       time: 1,
       callback: () => {
-        room.changeColor(recordRoomColor);
+        room.changeColor(roomColor);
       },
     },
   ]);
@@ -107,7 +108,7 @@ export default (goto) => {
     },
     {
       time: 10.5,
-      text: '(Don’t bump into the camera)',
+      text: '(Try to avoid bumping into the camera)',
       getPosition: null,
     },
     {
@@ -133,10 +134,6 @@ export default (goto) => {
     {
       time: 24,
       text: 'Dance together!',
-    },
-    {
-      time: 26.5,
-      text: '(Don’t bump into each other)',
     },
     {
       time: 32,
@@ -218,7 +215,7 @@ export default (goto) => {
 
       elements.tutorialText = hud.create('div.tutorial-text');
       elements.skipTutorialButton = hud.create(
-        'div.skip-tutorial-button',
+        'div.skip-button',
         {
           onclick: createOverlay,
         },
@@ -230,7 +227,7 @@ export default (goto) => {
         },
         '×'
       );
-      elements.lineEl = hud.create('div.line', {
+      elements.lineEl = hud.create('div.tutorial-line', {
         style: {
           transform: 'scaleX(0)',
         },

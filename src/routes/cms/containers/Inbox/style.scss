@@ -1,5 +1,5 @@
 @import '../../../../theme/theme';
-@import '../../../../theme/hud';
+@import '../../../../theme/components/menu';
 
 .inbox-menu-item {
   @extends .menu-item;
@@ -13,5 +13,21 @@
 .inbox-title-input {
   width: 8rem;
   height: 1rem;
-  margin: 1rem 0;
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  border-bottom: 1px solid $text-color;
+  padding-bottom: 10px;
+  color: $text-color;
+  font-size: 1rem;
+}
+
+.inbox-submit {
+  cursor: pointer;
+  margin-top: .5rem;
+}
+
+input[type="checkbox"] {
+  margin-left: .75rem;
+  transform: scale(2);
 }

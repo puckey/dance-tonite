@@ -6,37 +6,76 @@
   pointer-events: none;
   position: absolute;
 
-  &.mod-center {
-    height: 100%;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
+  * {
+    pointer-events: all;
   }
 
-  &.mod-top-left { }
+  &.mod-center {
+    align-items: center;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+
+    &:not(.mod-rows) > * {
+      margin-bottom: 1rem;
+    }
+
+    &.mod-rows > * {
+      margin-right: .5rem;
+    }
+  }
+
+  &.mod-top-left {
+    &:not(.mod-rows) > * {
+      margin-bottom: 1rem;
+    }
+
+    &.mod-rows > * {
+      margin-right: .5rem;
+    }
+  }
 
   &.mod-bottom-left {
-    bottom: 1rem;
+    bottom: .5rem;
+
+    &:not(.mod-rows) > * {
+      margin-top: 1rem;
+    }
+
+    &.mod-rows > * {
+      margin-right: .5rem;
+    }
   }
 
   &.mod-top-right {
     align-items: flex-end;
-    right: 1rem;
+    right: .5rem;
+
+    &:not(.mod-rows) > * {
+      margin-bottom: 1rem;
+    }
+
+    &.mod-rows > * {
+      margin-left: .5rem;
+    }
   }
 
   &.mod-bottom-right {
     align-items: flex-end;
-    bottom: 1rem;
-    right: 1rem;
+    bottom: .5rem;
+    right: .5rem;
+
+    &:not(.mod-rows) > * {
+      margin-top: 1rem;
+    }
+
+    &.mod-rows > * {
+      margin-left: .5rem;
+      margin-top: 0;
+    }
   }
 
-  &.row {
+  &.mod-rows {
     flex-direction: row;
   }
-
-  & * {
-    pointer-events: all;
-    user-select: none;
-  }
-
 }

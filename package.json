@@ -15,6 +15,7 @@
     "babel-polyfill": "^6.23.0",
     "classnames": "^2.2.5",
     "eases": "^1.0.8",
+    "firebase": "^4.1.1",
     "grapnel": "^0.6.4",
     "hyperscript": "^2.0.2",
     "mitt": "^1.1.0",
@@ -22,9 +23,12 @@
     "parse-bmfont-ascii": "^1.0.6",
     "preact": "^8.1.0",
     "three-bmfont-text": "^2.2.1",
+    "three-effectcomposer-es6": "0.0.4",
+    "throttle-debounce": "^1.0.1",
     "tween-ticker": "^3.3.2",
     "unfetch": "^2.1.2",
-    "unique-s3-uploader": "0.0.2"
+    "unique-s3-uploader": "0.0.2",
+    "webvr-polyfill": "^0.9.34"
   },
   "devDependencies": {
     "autoprefixer-loader": "^3.2.0",

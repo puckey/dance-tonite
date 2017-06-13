@@ -1,8 +1,21 @@
 .mod-hidden {
-  opacity: 0!important;
+  opacity: 0 !important;
   pointer-events: none;
 }
 
-.mod-display-none {
-  display: none;
+.mod-removed {
+  display: none !important;
+}
+
+.mod-fill {
+  fill: $text-color;
+}
+
+.mod-no-stroke {
+  stroke-width: 0;
+}
+
+.mod-overflow-hidden {
+  position: fixed;
+  overflow: hidden;
 }

@@ -4,6 +4,7 @@ import settings from './settings';
 import { recordCostumeColor, highlightColor } from './theme/colors';
 
 import wallUrl from './public/models/obj/new-rooms/vr/first-wall.obj';
+
 import roomUrl from './public/models/obj/new-rooms/vr/horizontal-room.obj';
 // import roomTextureUrl from './public/models/obj/new-rooms/vr/bake/horizontal-room-AOMap.jpg';
 

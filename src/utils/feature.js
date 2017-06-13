@@ -1,9 +1,12 @@
 const userAgent = navigator.userAgent;
-const vrSupported = navigator.getVRDisplays !== undefined;
+
+const vrSupported = () => {
+  return navigator.getVRDisplays !== undefined;
+};
 
 const checkHasExternalDisplay = () => (
-  new Promise((resolve, reject) => {
-    if (!vrSupported) {
+  new Promise((resolve) => {
+    if (!vrSupported()) {
       resolve(false);
       return;
     }
@@ -27,7 +30,7 @@ const checkHasExternalDisplay = () => (
 
 const checkHasVR = () => (
   new Promise((resolve) => {
-    if (!vrSupported) {
+    if (!vrSupported()) {
       resolve(false);
       return;
     }
@@ -45,7 +48,7 @@ const checkHasVR = () => (
 
 const checkHas6DOF = () => (
   new Promise((resolve) => {
-    if (!vrSupported) {
+    if (!vrSupported()) {
       resolve(false);
       return;
     }
@@ -68,7 +71,7 @@ const checkHas6DOF = () => (
 
 const getVRDisplayName = () => (
   new Promise((resolve) => {
-    if (!vrSupported) {
+    if (!vrSupported()) {
       resolve(false);
       return;
     }
@@ -83,10 +86,12 @@ const getVRDisplayName = () => (
       });
   })
 );
-
+const isAndroid = /android/i.test(userAgent);
 const feature = {
   isMobile: /android|ipad|iphone|iemobile/i.test(userAgent),
-  isAndroid: /android/i.test(userAgent),
+  isTablet: (isAndroid && !/mobile/i.test(userAgent)) // https://stackoverflow.com/questions/5341637/how-do-detect-android-tablets-in-general-useragent
+    || /ipad/i.test(userAgent),
+  isAndroid,
   isChrome: /chrome/i.test(userAgent),
   stats: /fps/.test(window.location.hash),
   prepare: () => (
@@ -97,7 +102,7 @@ const feature = {
         }),
       checkHasVR()
         .then((hasVR) => {
-          feature.hasVR = hasVR;
+          feature.hasVR = !feature.isTablet && hasVR;
         }),
       checkHas6DOF()
         .then((has6DOF) => {
@@ -114,6 +119,11 @@ const feature = {
           //  Expecting "Oculus VR HMD (HMD)" or "Oculus VR HMD (Sensor)".
           //  Note that "Rift" is NOT part of the displayName.
           feature.isOculus = /oculus/i.test(displayName);
+          //  If it’s mobile but it’s not Daydream then we can consider
+          //  it to be “Cardbaord” since we’re using the WebVR Polyfill
+          //  to make any mobile device (with accelerometers) a potential
+          //  3DOF virtual reality device.
+          feature.isCardboard = feature.isMobile && !feature.isDaydream;
         }),
     ])
   ),

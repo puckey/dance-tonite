@@ -2,6 +2,8 @@
  * @author mflux / http://minmax.design
  * Based on @mattdesl three-orbit-viewer
  */
+import 'webvr-polyfill';
+
 import h from 'hyperscript';
 import emitter from 'mitt';
 
@@ -13,11 +15,18 @@ import InstancedItem from './instanced-item';
 import feature from './utils/feature';
 import windowSize from './utils/windowSize';
 import audio from './audio';
-import { getRoomColorByIndex } from './theme/colors';
+// import { getRoomColorByIndex } from './theme/colors';
+import postprocessing from './postprocessing';
+
+// if we're on a mobile device that doesn't support WebVR, use polyfill
+if (feature.isMobile && (navigator.getVRDisplays === undefined)) {
+  window.WebVRConfig.BUFFER_SCALE = 0.75;
+  window.polyfill = new window.WebVRPolyfill();
+  console.log('WebVR polyfill', navigator.getVRDisplays);
+}
 
 require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
-require('./lib/ViveController')(THREE);
 require('./lib/VRController')(THREE);
 
 const events = emitter();
@@ -36,9 +45,10 @@ const orthographicDistance = 4;
 
 const cameras = (function () {
   const { aspectRatio } = windowSize;
-  const perspective = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
+  const perspective = new THREE.PerspectiveCamera(90, aspectRatio, 0.01, 200);
   perspective.lookAt(tempVector(0, 0, 1));
   perspective.position.y = settings.holeHeight;
+
 
   const orthographic = new THREE.OrthographicCamera(
     -orthographicDistance * aspectRatio,
@@ -83,27 +93,6 @@ const vrEffect = new THREE.VREffect(renderer);
 const controls = new THREE.VRControls(cameras.default);
 controls.standing = true;
 
-const controllers = [];
-
-window.addEventListener('vr controller connected', function( {detail:controller} ){
-
-  if( controller.gamepadStyle === 'daydream' ){
-    return;
-  }
-
-  controller.standingMatrix = controls.getStandingMatrix();
-  controller.head = cameras.default;
-
-  // controllers.push( controller );
-  if( controller.gamepad.hand === 'left' ){
-    controllers[ 0 ] = controller;
-  }
-  else{
-    controllers[ 1 ] = controller;
-  }
-
-  events.emit( 'controllerConnected', controller );
-});
 
 const createScene = () => {
   const scene = new THREE.Scene();
@@ -150,17 +139,11 @@ const viewer = {
   cameras,
   scene,
   renderScene: scene,
-  controllers,
+  controllers: [{}, {}],
   controls,
   createScene,
   events,
   renderer,
-  countActiveControllers: () => {
-    let count = 0;
-    if (controllers[0] !==undefined && controllers[0].visible) count += 1;
-    if (controllers[1] !==undefined && controllers[1].visible) count += 1;
-    return count;
-  },
   switchCamera: (name) => {
     InstancedItem.switch(
       name === 'orthographic'
@@ -176,6 +159,7 @@ const clock = new THREE.Clock();
 clock.start();
 
 const COLOR = new THREE.Color();
+const renderPostProcessed = postprocessing({ renderer, camera: cameras.default, scene });
 const animate = () => {
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
@@ -188,23 +172,28 @@ const animate = () => {
 
   controls.update();
   events.emit('tick', dt);
-  const colorOffset = 4;
-  const lowColor = getRoomColorByIndex(
-    audio.progress
-      ? Math.floor(audio.progress + colorOffset)
-      : 0
-    );
-  const highColor = getRoomColorByIndex(
-    audio.progress
-      ? Math.ceil(audio.progress + colorOffset)
-      : 0
-  );
+  // const colorOffset = 4;
+  // const lowColor = getRoomColorByIndex(
+  //   audio.progress
+  //     ? Math.floor(audio.progress + colorOffset)
+  //     : 0
+  //   );
+  // const highColor = getRoomColorByIndex(
+  //   audio.progress
+  //     ? Math.ceil(audio.progress + colorOffset)
+  //     : 0
+  // );
   const zoom = audio.progress > 21
     ? Math.min(2, audio.progress - 21) * 0.5
     : 0;
   zoomCamera(zoom);
 
-  vrEffect.render(viewer.renderScene, viewer.camera);
+  if (viewer.camera === cameras.default) {
+    renderPostProcessed();
+  } else {
+    vrEffect.render(viewer.renderScene, viewer.camera);
+  }
+
   if (vrEffect.isPresenting && feature.hasExternalDisplay) {
     renderer.render(viewer.renderScene, viewer.camera);
   }

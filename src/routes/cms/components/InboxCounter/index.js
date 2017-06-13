@@ -16,7 +16,7 @@ export default class InboxCounter extends MenuItem {
   render({ unreadCount }) {
     return (
       <div className="cms-menu-item cms-menu-item--wide" onClick={() => router.navigate('/inbox')}>
-        Inbox ({ unreadCount })
+        Inbox { unreadCount && `(${unreadCount})` }
       </div>
     );
   }
