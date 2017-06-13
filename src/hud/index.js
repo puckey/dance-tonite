@@ -24,6 +24,23 @@ const toggleMute = () => {
     muted ? speakerMuteIconSvg : speakerIconSvg;
 };
 
+const showVRError = () => {
+  const overlay = hud.create(
+    'div.tutorial-overlay',
+    componentContext(
+      'div.tutorial-overlay-text',
+      componentContext(
+        'span',
+        componentContext('h3', 'VR not found.'),
+        componentContext('p', 'This experience requires room-scale VR and a WebVR-enabled browser.'),
+        componentContext('a', { href: 'https://webvr.info', target: '_blank' }, 'Get set up'),
+        ' or ',
+        componentContext('a', { onclick: () => hud.remove(overlay) }, 'return home.')
+      )
+    ),
+  );
+};
+
 let elements = {
   menuAdd: '.menu-item-add',
   menuEnter: '.menu-item-enter',
@@ -117,10 +134,6 @@ const hud = {
       document.body.classList.add('mod-mobile');
     }
 
-    if (feature.hasVR) {
-      elements.menuEnter.classList.remove('mod-disabled');
-    }
-
     elements.menuEnter.querySelector('.menu-item-label').innerHTML = feature.hasVR
       ? 'Enter VR'
       : 'VR not found';
@@ -128,6 +141,10 @@ const hud = {
     elements.menuEnter.querySelector('.menu-item-icon').innerHTML = feature.hasVR
       ? enterIconSvg
       : enterIconDisabledSvg;
+
+    if (!feature.hasVR) {
+      elements.menuEnter.addEventListener('click', showVRError);
+    }
 
     // Add icons
     elements.menuAdd.querySelector('.menu-item-icon').innerHTML = addIconSvg;
