@@ -365,8 +365,9 @@ svg {
   z-index: $cms-layer;
   font-size: 2.2vh;
   white-space: pre;
-  line-height: 1rem;
+  line-height: 1.4em;
   text-align: center;
+  user-select: none;
   cursor: pointer;
 
   .wrap {
