@@ -11,7 +11,6 @@ import settings from '../settings';
 import {
   getCostumeColor,
   getRoomColor,
-  recordCostumeColor,
   highlightColor,
 } from '../theme/colors';
 
@@ -55,9 +54,7 @@ export default class Room {
     const frames = this.frames = new Frames(url, recording);
     this.firstFrame = frames.getFrame(0);
     this.frame = frames.getFrame();
-    this.costumeColor = recording
-      ? recordCostumeColor
-      : getCostumeColor(index);
+    this.costumeColor = getCostumeColor(index);
     this.position = layout.getPosition(
       index,
       new THREE.Vector3(),
