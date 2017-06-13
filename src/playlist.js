@@ -35,10 +35,19 @@ export default class Playlist {
             const hours = Math.floor(entry.days_featured % 1 * 24);
             document.body.appendChild(
               h(
-                `div.room-label#room-label-${index}`, { onclick: () => router.navigate(`/choose/${index}`) },
-                h('span', `Room ${index}`),
+                `div.room-label#room-label-${index}`,
+                {
+                  onmousedown: (event) => {
+                    router.navigate(`/choose/${entry.room}`);
+                    event.stopPropagation();
+                  },
+                },
+                h('span', `Room ${entry.room}`),
                 h('span.wrap', entry.title),
-                h('span.newline', `Featured ${days} day${days > 1 ? 's' : ''}, ${hours} hour${hours > 0 ? 's' : ''}`),
+                h(
+                  'span.newline',
+                  `Featured ${days} day${days > 1 ? 's' : ''}, ${hours} hour${hours > 0 ? 's' : ''}`
+                ),
               )
             );
           }
