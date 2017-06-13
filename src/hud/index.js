@@ -29,8 +29,8 @@ let elements = {
   menuEnter: '.menu-item-enter',
   aboutButton: '.menu-item-about',
   muteButton: '.menu-item-mute',
-  loaderOverlay: '.loader-overlay',
-  loaderOverlayText: '.loader-overlay-text',
+  loaderOverlay: '.spinner-overlay',
+  loaderOverlayText: '.spinner-overlay-text',
   playButton: '.play-button',
   colophon: '.colophon',
 };

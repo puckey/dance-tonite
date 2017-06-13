@@ -1,8 +1,15 @@
 @import './theme';
-@import './lars';
 @import './util';
-@import './about';
-@import './hud';
+
+@import './components/about';@import './components/close-button';@import './components/colophon';@import './components/menu';@import './components/play-button';@import './components/room';@import './components/skip-button';@import './components/spinner';@import './components/splash';@import './components/tutorial';@import './components/vr-info';
+@font-face {
+  font-family: 'Lars';
+  src: url('../public/type/LarsVRC-Light.otf') format('otf'),
+       url('../public/type/LarsVRC-Light.woff2') format('woff2'),
+       url('../public/type/LarsVRC-Light.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
 
 html {
   font-size: $base-factor;
@@ -30,6 +37,15 @@ a {
   top: 0;
 }
 
+svg {
+  width: 100%;
+  height: 100%;
+
+  * {
+    stroke: $text-color;
+  }
+}
+
 @media (min-width: $max-width) {
   html {
     font-size: $max-base-factor;
@@ -42,7 +58,3 @@ a {
   }
 }
 
-.mod-overflow-hidden {
-  position: fixed;
-  overflow: hidden;
-}

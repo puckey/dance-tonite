@@ -215,7 +215,7 @@ export default (goto, req) => {
 
       elements.tutorialText = hud.create('div.tutorial-text');
       elements.skipTutorialButton = hud.create(
-        'div.skip-tutorial-button',
+        'div.skip-button',
         {
           onclick: createOverlay,
         },
@@ -227,7 +227,7 @@ export default (goto, req) => {
         },
         '×'
       );
-      elements.lineEl = hud.create('div.line', {
+      elements.lineEl = hud.create('div.tutorial-line', {
         style: {
           transform: 'scaleX(0)',
         },

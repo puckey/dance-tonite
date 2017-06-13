@@ -6,3 +6,16 @@
 .mod-removed {
   display: none !important;
 }
+
+.mod-fill {
+  fill: $text-color;
+}
+
+.mod-no-stroke {
+  stroke-width: 0;
+}
+
+.mod-overflow-hidden {
+  position: fixed;
+  overflow: hidden;
+}

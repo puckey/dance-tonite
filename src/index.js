@@ -33,7 +33,7 @@ window.THREE = THREE;
         resolve();
       };
       const play = hud.create(
-        'div.loader-overlay',
+        'div.spinner-overlay',
         hud.create(
           'div.play-button.mod-fill',
           { onclick: onPressPlay }

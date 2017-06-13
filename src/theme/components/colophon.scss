@@ -1,0 +1,25 @@
+.colophon {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  padding: 1rem;
+  z-index: $interface-layer;
+  transition: opacity 1s ease-out;
+  user-select: none;
+
+  svg {
+    width: 5rem;
+    height: 2.5rem;
+  }
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.colophon-divider {
+  border-left: 1px solid $text-color;
+  margin: 0 .25rem 0 .75rem;
+  height: 2.5rem;
+  display: inline-block;
+}
