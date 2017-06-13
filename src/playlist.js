@@ -24,29 +24,32 @@ export default class Playlist {
   }
 
   async load({ url, pathRecording, pathRoomIndex }) {
-    const urls = await storage.loadPlaylist(url);
+    const entries = await storage.loadPlaylist(url);
     if (this.destroyed) return;
+
     await new Promise((resolve, reject) => {
-      this.rooms = urls.map(
-        (recordingUrl, index) => {
+      this.rooms = entries.map(
+        (entry, index) => {
           if (process.env.FLAVOR === 'cms') {
-            cms.getRecording(recordingUrl).then(({ data }) => {
-              document.body.appendChild(
-                h(
-                  `div.room-label#room-label-${index}`, { onclick: () => router.navigate(`/choose/${index}`) },
-                  h('span', `Room ${index}`),
-                  h('span.wrap', data.title),
-                  h('span.newline', `Featured: ${data.days_featured} day${data.days_featured > 1 ? 's' : ''}`),
-                )
-              );
-            });
+            const days = Math.floor(entry.days_featured);
+            const hours = Math.floor(entry.days_featured % 1 * 24);
+            document.body.appendChild(
+              h(
+                `div.room-label#room-label-${index}`, { onclick: () => router.navigate(`/choose/${index}`) },
+                h('span', `Room ${index}`),
+                h('span.wrap', entry.title),
+                h('span.newline', `Featured ${days} day${days > 1 ? 's' : ''}, ${hours} hour${hours > 0 ? 's' : ''}`),
+              )
+            );
           }
 
           const isPathRecording = index === pathRoomIndex - 1;
           return new Room({
             url: isPathRecording
               ? `${pathRecording}`
-              : recordingUrl,
+              : process.env.FLAVOR === 'cms'
+                ? entry.id
+                : entry,
             index,
             pathRecording: isPathRecording,
           });
