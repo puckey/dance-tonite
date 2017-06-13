@@ -53,9 +53,8 @@ if (process.env.FLAVOR === 'cms') {
       componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-prev-button',
         { onclick: () => audio.prevLoop(), innerHTML: prevIconSvg }),
       componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-play-pause-button', {
-        onclick: e => {
+        onclick: () => {
           audio.toggle();
-          e.target.innerHTML = audio.paused ? playIconSvg : pauseIconSvg;
         },
         innerHTML: pauseIconSvg,
       }),
@@ -63,6 +62,14 @@ if (process.env.FLAVOR === 'cms') {
         { onclick: () => audio.nextLoop(), innerHTML: nextIconSvg })
     )
   );
+
+  audio.on('play', () => {
+    document.querySelector('.cms-play-pause-button').innerHTML = playIconSvg;
+  });
+
+  audio.on('pause', () => {
+    document.querySelector('.cms-play-pause-button').innerHTML = pauseIconSvg;
+  });
 
   elements = {
     ...elements,
