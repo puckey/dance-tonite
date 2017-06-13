@@ -84,9 +84,7 @@ export default (goto) => {
 
   const component = {
     mount: async () => {
-      Room.reset({
-        showAllWalls: true,
-      });
+      Room.reset();
       Room.rotate180();
       playlist = new Playlist({ recording });
 
