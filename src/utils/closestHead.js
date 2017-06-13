@@ -28,31 +28,26 @@ export default (screenX, screenY, rooms) => {
     const room = rooms[i];
     const roomDistance = distanceToMouse(room.worldPosition);
     if (roomDistance > minRoomDistance) continue;
-    for (let j = 0, l = room.performanceCount; j < l; j++) {
-      if (room.hideHead === false) {
-        const head = room.getHeadPosition(j);
-        const distance = distanceToMouse(head);
-        if (distanceCheck(distance, closestDistance)) {
+    for (let j = 0, l = room.frame.count; j < l; j++) {
+      if (room.frames.hideHead === false) {
+        const distance = distanceToMouse(room.getHeadPosition(j));
+        if (distance < closestDistance && distance < MIN_HEAD_DISTANCE) {
           roomIndex = i;
           headIndex = j;
           closestDistance = distance;
         }
-      } else {
-        const rhand = room.getRHandPosition(j);
-        const rdistance = distanceToMouse(rhand);
-        if (distanceCheck(rdistance, closestDistance)) {
-          roomIndex = i;
-          headIndex = j;
-          closestDistance = rdistance;
-          continue;
-        }
-        const lhand = room.getLHandPosition(j);
-        const ldistance = distanceToMouse(lhand);
-        if (distanceCheck(ldistance, closestDistance)) {
-          roomIndex = i;
-          headIndex = j;
-          closestDistance = ldistance;
-        }
+      }
+      const rdistance = distanceToMouse(room.getRHandPosition(j));
+      if (rdistance < closestDistance && rdistance < MIN_HEAD_DISTANCE) {
+        roomIndex = i;
+        headIndex = j;
+        closestDistance = rdistance;
+      }
+      const ldistance = distanceToMouse(room.getLHandPosition(j));
+      if (ldistance < closestDistance && ldistance < MIN_HEAD_DISTANCE) {
+        roomIndex = i;
+        headIndex = j;
+        closestDistance = ldistance;
       }
     }
   }
@@ -61,8 +56,3 @@ export default (screenX, screenY, rooms) => {
   return CLOSEST_ARRAY;
 };
 
-function distanceCheck(distance, closestDistance) {
-  return (distance < closestDistance &&
-          distance < MIN_HEAD_DISTANCE &&
-          distance);
-}

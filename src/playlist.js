@@ -8,12 +8,12 @@ import storage from './storage';
 import layout from './room/layout';
 import size from './utils/windowSize';
 import { worldToScreen } from './utils/three';
-import cms from './utils/firebase/cms';
 import router from './router';
+
+const easeOut = t => -t * (t - 2.0);
 
 export default class Playlist {
   constructor({ recording } = {}) {
-    this.isRecording = !!recording;
     const rooms = this.rooms = [];
     if (recording) {
       for (let index = 1; index < 20; index += 2) {
@@ -42,8 +42,8 @@ export default class Playlist {
                     event.stopPropagation();
                   },
                 },
-                h('span', `Room ${index}`),
-                h('span.wrap', entry.title),
+                h('span', `Room ${index + 1}`),
+                h('span.wrap', entry.title === '' ? 'Unnamed' : entry.title),
                 h(
                   'span.newline',
                   `Featured ${days} day${days > 1 ? 's' : ''}, ${hours} hour${hours > 0 ? 's' : ''}`
@@ -91,8 +91,19 @@ export default class Playlist {
     for (let i = 0; i < this.rooms.length; i++) {
       const room = this.rooms[i];
       let time = audio.time;
-      if (layout.isOdd(room.placementIndex)) {
+      if (layout.isOdd(room.index)) {
         time += audio.loopDuration;
+      }
+      // Slow down recordings to a stop after music stops:
+      const slowdownDuration = 0.4;
+      const maxTime = 216.824266 - (slowdownDuration * 0.5);
+      if (audio.currentTime > maxTime) {
+        time = maxTime + easeOut(
+          Math.min(
+            slowdownDuration,
+            audio.currentTime - maxTime
+          ) / slowdownDuration
+        ) * slowdownDuration;
       }
       room.gotoTime(time % (audio.loopDuration * 2));
 

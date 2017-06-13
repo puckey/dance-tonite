@@ -21,11 +21,11 @@ export const getQuaternion = (
   positions,
   performanceIndex,
   limbIndex,
-  _tempQuaternion = tempQuaternion
+  dest
 ) => {
   const arrayOffset = performanceIndex * PERFORMANCE_ELEMENT_COUNT
     + limbIndex * LIMB_ELEMENT_COUNT;
-  return _tempQuaternion(
+  return dest.set(
     positions[arrayOffset + 3] * 0.0001,
     positions[arrayOffset + 4] * 0.0001,
     positions[arrayOffset + 5] * 0.0001,
@@ -43,34 +43,37 @@ export const getFrame = (frames, number) => {
   return frame;
 };
 
-export const avgPosition = (lower, higher, ratio, performanceIndex, limbIndex, position) => {
+const AVG_POSITION_VECTOR = new THREE.Vector3();
+export const avgPosition = (
+  lower,
+  higher,
+  ratio,
+  performanceIndex,
+  limbIndex,
+  position,
+  dest = AVG_POSITION_VECTOR,
+) => {
   const { x: x1, y: y1, z: z1 } = getPosition(lower, performanceIndex, limbIndex);
-  if (!higher) {
-    const vector = tempVector(x1, y1, z1);
-    if (position) {
-      vector.z -= settings.roomOffset;
-      vector.add(position);
-    }
-    return vector;
-  }
   const { x: x2, y: y2, z: z2 } = getPosition(higher, performanceIndex, limbIndex);
-  const vector = tempVector(
+  dest.set(
     x1 + (x2 - x1) * ratio,
     y1 + (y2 - y1) * ratio,
     z1 + (z2 - z1) * ratio
   );
   if (position) {
-    vector.z -= settings.roomOffset;
-    vector.add(position);
+    dest.z -= settings.roomOffset;
+    dest.add(position);
   }
-  return vector;
+  return dest;
 };
 
-export const avgQuaternion = (lower, higher, ratio, performanceIndex, limbIndex) => {
-  const quaternion = getQuaternion(lower, performanceIndex, limbIndex);
+const AVG_QUATERNION = new THREE.Quaternion();
+const AVG_QUATERNION_2 = new THREE.Quaternion();
+export const avgQuaternion = (lower, higher, ratio, performanceIndex, limbIndex, dest = AVG_QUATERNION) => {
+  const quaternion = getQuaternion(lower, performanceIndex, limbIndex, dest);
   if (higher) {
     quaternion.slerp(
-      getQuaternion(higher, performanceIndex, limbIndex, tempQuaternion2),
+      getQuaternion(higher, performanceIndex, limbIndex, AVG_QUATERNION_2),
       ratio
     );
   }
@@ -101,3 +104,5 @@ export const serialize = (position, rotation) => (
     .concat(rotation.toArray())
     .map(compressNumber)
 );
+
+export const createPose = () => [new THREE.Vector3(), new THREE.Quaternion()];
