@@ -156,9 +156,15 @@ export default (req) => {
           pointerY = clientY;
         };
 
-        onMouseDown = ({ clientX, clientY }) => {
+        onMouseDown = ({ clientX, clientY, touches }) => {
+          let x = clientX;
+          let y = clientY;
+          if (touches && touches.length > 0) {
+            x = touches[0].pageX;
+            y = touches[0].pageY;
+          }
           if (viewer.vrEffect.isPresenting) return;
-          hoverHead = closestHead(clientX, clientY, playlist.rooms);
+          hoverHead = closestHead(x, y, playlist.rooms);
           if (hoverHead[0] === undefined) hoverHead = null;
           if (hoverHead) {
             viewer.switchCamera('default');
@@ -176,6 +182,8 @@ export default (req) => {
         window.addEventListener('mousemove', onMouseMove);
         window.addEventListener('mousedown', onMouseDown);
         window.addEventListener('mouseup', onMouseUp);
+        window.addEventListener('touchstart', onMouseDown, false);
+        window.addEventListener('touchend', onMouseUp, false);
       });
       if (component.destroyed) return;
 

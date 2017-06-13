@@ -221,7 +221,7 @@ THREE.VRController.prototype.update = function(){
 	//  If we don’t have it this could mean we’re in the process of losing tracking.
 	//  Fallback plan is just to retain the previous orientation data.
 	//  If somehow we never had orientation data it will use the default
-	//  THREE.Quaternion our controller’s Object3D was initialized with. 
+	//  THREE.Quaternion our controller’s Object3D was initialized with.
 
 	if( pose.orientation !== null ) this.quaternion.fromArray( pose.orientation );
 
@@ -278,7 +278,7 @@ THREE.VRController.prototype.update = function(){
 	//  totally different things! VRControls is what reads your headset’s
 	//  position and orientation, then moves your camera appropriately.
 	//  Whereas this VRController instance is for the VR controllers that
-	//  you hold in your hands. 
+	//  you hold in your hands.
 
 	this.matrix.multiplyMatrices( this.standingMatrix, this.matrix );
 	this.matrixWorldNeedsUpdate = true;
@@ -353,7 +353,7 @@ THREE.VRController.onGamepadDisconnect = function( gamepad ){
 	//  Then we can broadcast the disconnection event on the controller itself
 	//  and also overwrite our controllers object with undefined. Goodbye!
 	//  When you receive this event don’t forget to remove your meshes and whatnot
-	//  from your scene so you can either reuse them upon reconnect -- or you 
+	//  from your scene so you can either reuse them upon reconnect -- or you
 	//  should detroy them. You don’t want memory leaks, right?
 
 	var
@@ -372,6 +372,10 @@ THREE.VRController.onGamepadDisconnect = function( gamepad ){
 //  orientations, and button states.
 
 THREE.VRController.update = function(){
+
+	if( navigator.getGamepads === undefined ){
+		return;
+	}
 
 	var
 	gamepads = navigator.getGamepads(),
@@ -392,7 +396,7 @@ THREE.VRController.update = function(){
 		//  in actual practice but for brevity here I’ll just say we won’t outright
 		//  accept what the API tells us exists. (It can create ghost controllers!)
 		//  Instead we will consider a Gamepad exists only when it is reported by the
-		//  API and it ALSO has a not-null position or not-null orientation. 
+		//  API and it ALSO has a not-null position or not-null orientation.
 
 		//  We could probably change this to “if( gamepad instanceof Gamepad )” but
 		//  dealing with these things across browsers and devices has made me extra
