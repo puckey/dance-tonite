@@ -1,8 +1,8 @@
 import firebaseConnection from './connection';
 import convertFPS from '../convertFPS';
 
-const generateTokenURL = 'https://us-central1-you-move-me.cloudfunctions.net/getUploadToken';
-const processSubmissionURL = 'https://us-central1-you-move-me.cloudfunctions.net/processSubmission';
+const generateTokenURL = `${firebaseConnection.serverURL}getUploadToken`;
+const processSubmissionURL = `${firebaseConnection.serverURL}processSubmission`;
 
 const storageRef = firebaseConnection.firebase.storage().ref();
 

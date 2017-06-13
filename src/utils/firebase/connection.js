@@ -1,5 +1,8 @@
 import * as firebase from 'firebase';
 
+const serverURL = 'https://us-central1-you-move-me.cloudfunctions.net/';
+//const serverURL = 'http://localhost:5002/you-move-me/us-central1/';
+
 const config = {
   apiKey: 'AIzaSyCvrZWf22Z4QGRDpL-qI3YlLGkP9-BIsrY',
   authDomain: 'you-move-me.firebaseapp.com',
@@ -56,6 +59,7 @@ const contactServer = (URL, dataToSend) => {
 const firebaseConnection = {
   firebase,
   contactServer,
+  serverURL, 
 };
 
 export default firebaseConnection;

@@ -1,7 +1,6 @@
 import firebaseConnection from './connection';
 
-const serverURL = 'https://us-central1-you-move-me.cloudfunctions.net/';
-// const serverURL = 'http://localhost:5002/you-move-me/us-central1/';
+const serverURL = firebaseConnection.serverURL;
 
 // getDraftPlaylist:
 // cms.getDraftPlaylist().then((data) => { console.log('getDraftPlaylist!', data); });
