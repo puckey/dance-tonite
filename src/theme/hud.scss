@@ -7,7 +7,7 @@
   flex-direction: column;
   align-items: flex-end;
   z-index: $interface-layer;
-  transition: opacity 0.3s;
+  transition: opacity .3s;
 }
 
 .menu-left {
@@ -16,15 +16,26 @@
   left: 0;
   display: flex;
   z-index: $interface-layer;
+
+  .menu-item:first-of-type {
+    padding-right: 0;
+    padding-left: 1rem;
+  }
+
+  .menu-item-icon {
+    top: .6rem;
+    margin-left: 0;
+    margin-right: .3rem;
+  }
 }
 
 svg {
   width: 100%;
   height: 100%;
-}
 
-svg * {
-  stroke: $text-color;
+  * {
+    stroke: $text-color;
+  }
 }
 
 .menu-item {
@@ -32,11 +43,10 @@ svg * {
   cursor: pointer;
   padding-right: 1rem;
   user-select: none;
-}
 
-.menu-left .menu-item:first-of-type {
-  padding-right: 0;
-  padding-left: 1rem;
+  .mod-disabled {
+    cursor: not-allowed;
+  }
 }
 
 .menu .menu-item + .menu-item {
@@ -62,20 +72,10 @@ svg * {
 .menu-item-icon {
   display: inline-block;
   position: relative;
-  margin-left: 0.5rem;
-  top: 0.5rem;
+  margin-left: .5rem;
+  top: .5rem;
   width: 2rem;
   height: 2rem;
-}
-
-.menu-left .menu-item-icon {
-  top: 0.6rem;
-  margin-left: 0;
-  margin-right: 0.3rem;
-}
-
-.menu-item.mod-disabled {
-  cursor: not-allowed;
 }
 
 .skip-tutorial-button {
@@ -101,6 +101,7 @@ svg * {
   font-feature-settings: 'ss01';
   pointer-events: none;
   box-sizing: border-box;
+  user-select: none;
 }
 
 .splash {
@@ -130,16 +131,12 @@ svg * {
   display: none;
 }
 
-.mod-in-vr .splash {
-  display: none;
-}
-
 .tutorial-text {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 0.5rem;
+  height: .5rem;
   padding: 1rem 0;
   font-size: 1.5rem;
   text-align: center;
@@ -174,20 +171,20 @@ svg * {
   z-index: $interface-layer;
   transition: opacity 1s ease-out;
   user-select: none;
-}
 
-.colophon svg {
-  width: 5rem;
-  height: 2.5rem;
-}
+  svg {
+    width: 5rem;
+    height: 2.5rem;
+  }
 
-.colophon a {
-  text-decoration: none;
+  a {
+    text-decoration: none;
+  }
 }
 
 .colophon-divider {
   border-left: 1px solid $text-color;
-  margin: 0 0.25rem 0 0.75rem;
+  margin: 0 .25rem 0 .75rem;
   height: 2.5rem;
   display: inline-block;
 }
@@ -201,10 +198,10 @@ svg * {
   margin: -3.75rem;
   padding: 3rem;
   z-index: $popover-layer;
-}
 
-.play-button svg {
-  height: 1.5rem;
+  svg {
+    height: 1.5rem;
+  }
 }
 
 .loader-overlay-text,
@@ -228,7 +225,7 @@ svg * {
   left: 50%;
   width: 1.5rem;
   height: 1.5rem;
-  margin: -0.75rem;
+  margin: -.75rem;
   border-radius: 100%;
   box-sizing: border-box;
   z-index: $popover-layer;
@@ -243,14 +240,14 @@ svg * {
   background: $text-color;
   width: 1.5rem;
   height: 1.5rem;
-  margin: -0.75rem;
+  margin: -.75rem;
   animation: grow1 2s infinite;
 }
 
 .spinner-inner-negative {
   width: 1.4rem;
   height: 1.4rem;
-  margin: -0.70rem;
+  margin: -.70rem;
   background: $background-color;
   animation: grow2 2s infinite;
 }
@@ -261,7 +258,7 @@ svg * {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: $overlay-background-color;
   opacity: 1;
   transition: 1s opacity ease-in-out;
   text-align: center;
@@ -289,6 +286,10 @@ svg * {
   margin: -75vw;
   transform: scale(0);
 
+  &.mod-entering-vr {
+    animation: splash 7s ease-in;
+  }
+
   @media screen and (max-aspect-ratio: 1/1) {
     width: 150vh;
     height: 150vh;
@@ -309,10 +310,6 @@ svg * {
   color: $background-color;
   opacity: 0;
   user-select: none;
-}
-
-.vr-info-overlay.mod-entering-vr {
-  animation: splash 7s ease-in;
 }
 
 .mod-entering-vr .vr-info-overlay-text {
@@ -341,8 +338,8 @@ svg * {
 }
 
 .choose-version {
-  color: white;
-  position:absolute;
+  color: $white-color;
+  position: absolute;
   z-index: 20;
   width: 100vw;
   margin: 1rem;
@@ -363,7 +360,7 @@ svg * {
   position: fixed;
   top: 0;
   left: 0;
-  padding: 0rem;
+  padding: 0;
   margin: -50vh -22.5vh;
   z-index: $cms-layer;
   font-size: 2.2vh;
@@ -372,7 +369,7 @@ svg * {
   text-align: center;
   cursor: pointer;
 
-  span.wrap {
+  .wrap {
     width: 41vh;
     white-space: nowrap;
     overflow: hidden;
@@ -381,12 +378,12 @@ svg * {
     font-size: 3vh;
   }
 
-  span.newline {
+  .newline {
     font-size: 1.5vh;
     display: block;
   }
 
-  &:hover span.wrap {
+  &:hover .wrap {
     text-decoration: underline;
   }
 }

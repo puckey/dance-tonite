@@ -89,10 +89,10 @@ export default class Playlist {
         const coords = worldToScreen(viewer.camera, room.worldPosition);
         const label = document.getElementById(`room-label-${i}`);
         if (coords.x > 0 && coords.x < size.width && label) {
-          label.classList.remove('mod-display-none');
+          label.classList.remove('mod-removed');
           label.style.transform = `translate(${coords.x}px, ${coords.y}px)`;
         } else if (label) {
-          label.classList.add('mod-display-none');
+          label.classList.add('mod-removed');
         }
       }
     }

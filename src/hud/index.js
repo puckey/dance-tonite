@@ -148,7 +148,7 @@ const hud = {
         const visible = !!handler;
         const el = elements[key];
         if (el && visible !== state[key]) {
-          el.classList[visible ? 'remove' : 'add']('mod-display-none');
+          el.classList[visible ? 'remove' : 'add']('mod-removed');
         }
         if (typeof handler === 'function') {
           el.addEventListener('click', handler);
