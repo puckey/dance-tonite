@@ -167,6 +167,7 @@ export default (req) => {
           if (hoverHead) {
             viewer.switchCamera('default');
             Room.group.add(viewer.camera);
+            [...document.querySelectorAll('.room-label')].map(room => room.classList.add('mod-hidden'));
           }
         };
 
@@ -175,6 +176,7 @@ export default (req) => {
           hoverHead = null;
           viewer.switchCamera('orthographic');
           Room.group.remove(viewer.camera);
+          [...document.querySelectorAll('.room-label')].map(room => room.classList.remove('mod-hidden'));
         };
 
         window.addEventListener('mousemove', onMouseMove);

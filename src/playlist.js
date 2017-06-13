@@ -99,7 +99,7 @@ export default class Playlist {
       if (process.env.FLAVOR === 'cms') {
         const coords = worldToScreen(viewer.camera, room.worldPosition);
         const label = document.getElementById(`room-label-${i}`);
-        if (coords.x > 0 && coords.x < size.width && label) {
+        if (coords.x > 0 && coords.x < size.width && label && !label.classList.contains('mod-hidden')) {
           label.classList.remove('mod-removed');
           label.style.transform = `translate(${coords.x}px, ${coords.y}px)`;
         } else if (label) {
