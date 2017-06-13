@@ -47,6 +47,7 @@ export default class Room {
     this._worldPosition = new THREE.Vector3();
     this.index = index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
+    this.single = !!single;
     const frames = this.frames = new Frames(url, recording);
     this.firstFrame = frames.getFrame(0);
     this.frame = frames.getFrame();
@@ -130,7 +131,7 @@ export default class Room {
 
   getPose(performanceIndex, limbIndex, offset) {
     this.frame.getPose(performanceIndex, limbIndex, offset, false, POSE);
-    if (this.insideMegaGrid) {
+    if (this.insideMegaGrid && !this.single) {
       const ratio = Math.max(0, Math.min(2, audio.currentTime - 184.734288)) * 0.5;
       this.firstFrame.getPose(performanceIndex, limbIndex, offset, false, FIRST_POSE);
       FIRST_POSE[0].y *= ratio;
