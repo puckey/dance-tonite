@@ -78,7 +78,6 @@ export default {
   },
 
   hasWall(index) {
-    console.log(index);
     return !!layout[index][3].wall;
   },
 

@@ -167,11 +167,13 @@ const audio = Object.assign(emitter(), {
   },
 
   prevLoop() {
-    this.gotoTime(this.time - (1 + this.loopProgress) * this.loopDuration);
+    const time = (Math.round(this.progress) - 1.1) * this.loopDuration;
+    this.gotoTime(Math.max(0, Math.min(this.duration, time)));
   },
 
   nextLoop() {
-    this.gotoTime(this.time + this.loopDuration - this.loopProgress * this.loopDuration);
+    const time = (Math.round(this.progress) + 0.9) * this.loopDuration;
+    this.gotoTime(Math.max(0, Math.min(this.duration, time)));
   },
 
   reset() {
