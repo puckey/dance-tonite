@@ -101,7 +101,9 @@ export default class Playlist {
   destroy() {
     this.rooms.forEach((room, index) => {
       room.destroy();
-      document.body.removeChild(document.getElementById(`room-label-${index}`));
+      if (process.env.FLAVOR === 'cms') {
+        document.body.removeChild(document.getElementById(`room-label-${index}`));
+      }
     });
     this.destroyed = true;
   }
