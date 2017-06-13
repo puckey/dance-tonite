@@ -14,6 +14,7 @@ import Room from '../room';
 import progressBar from '../progress-bar';
 import layout from '../room/layout';
 import closestHead from '../utils/closestHead';
+import intersectCenter from '../utils/intersectcenter';
 import background from '../background';
 import InstancedItem from '../instanced-item';
 
@@ -103,15 +104,7 @@ export default (req) => {
 
       tick = () => {
         if (transition.isInside()) return;
-        if (!viewer.vrEffect.isPresenting && !hoverHead) {
-          Room.setHighlight(
-            closestHead(
-              pointerX,
-              pointerY,
-              playlist.rooms
-            )
-          );
-        }
+
         audio.tick();
         Room.clear();
         playlist.tick();
@@ -124,6 +117,24 @@ export default (req) => {
           moveHead(audio.progress || 0);
         } else {
           moveCamera(audio.progress || 0);
+        }
+
+        if (!viewer.vrEffect.isPresenting) {
+          if (intersectCenter(pointerX, pointerY)) {
+            orb.highlight();
+            Room.setHighlight();
+          } else {
+            orb.unhighlight();
+            if (!hoverHead) {
+              Room.setHighlight(
+                closestHead(
+                  pointerX,
+                  pointerY,
+                  playlist.rooms
+                )
+              );
+            }
+          }
         }
       };
       viewer.events.on('tick', tick);
@@ -161,8 +172,16 @@ export default (req) => {
             y = touches[0].pageY;
           }
           if (viewer.vrEffect.isPresenting) return;
-          hoverHead = closestHead(x, y, playlist.rooms);
-          if (hoverHead[0] === undefined) hoverHead = null;
+
+          if (intersectCenter(x, y)) {
+            viewer.switchCamera('default');
+            hoverHead = null;
+            // viewer.camera.rotation.set(0, Math.PI, 0);
+          } else {
+            hoverHead = closestHead(x, y, playlist.rooms);
+            if (hoverHead[0] === undefined) hoverHead = null;
+          }
+
           if (hoverHead) {
             viewer.switchCamera('default');
             if (process.env.FLAVOR === 'cms') {
