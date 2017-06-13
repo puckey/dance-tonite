@@ -68,7 +68,7 @@ svg {
   .mod-mobile .menu-item-label {
     display: inline-block;
     opacity: 0;
-    animation: fadeOut 5s forwards;  
+    animation: fadeOut 5s forwards;
   }
 }
 
@@ -79,6 +79,15 @@ svg {
   top: .5rem;
   width: 2rem;
   height: 2rem;
+}
+
+.cms-playback-controls .menu-item-icon {
+  cursor: pointer;
+  width: 1rem;
+}
+
+.cms-playback-controls {
+  margin-left: -1rem;
 }
 
 .mod-mobile .menu-item:hover .menu-item-label {

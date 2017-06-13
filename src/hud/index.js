@@ -68,7 +68,14 @@ if (process.env.FLAVOR === 'cms') {
   document.querySelector('.menu-left').appendChild(
     componentContext('div.cms-playback-controls',
       componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-prev-button',
-        { onclick: () => audio.prevLoop(), innerHTML: prevIconSvg }),
+        {
+          onclick: e => {
+            e.preventDefault();
+            audio.prevLoop();
+          },
+          innerHTML: prevIconSvg,
+        },
+      ),
       componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-play-pause-button', {
         onclick: () => {
           audio.toggle();
@@ -76,7 +83,14 @@ if (process.env.FLAVOR === 'cms') {
         innerHTML: pauseIconSvg,
       }),
       componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-next-button',
-        { onclick: () => audio.nextLoop(), innerHTML: nextIconSvg })
+        {
+          onclick: e => {
+            e.preventDefault();
+            audio.nextLoop();
+          },
+          innerHTML: nextIconSvg,
+        },
+      )
     )
   );
 
