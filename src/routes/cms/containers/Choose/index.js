@@ -22,8 +22,8 @@ export default class Choose extends Component {
     this.state = {
       loading: 'room choices',
     };
-    this.changeItem = this.changeItem.bind(this);
-    this.saveAndClose = this.saveAndClose.bind(this);
+    this.performChangeItem = this.performChangeItem.bind(this);
+    this.performSave = this.performSave.bind(this);
   }
 
   componentDidMount() {
@@ -91,29 +91,36 @@ export default class Choose extends Component {
     });
   }
 
-  changeItem(item) {
+  performChangeItem(item) {
     this.setState({ item });
   }
 
-  async saveAndClose() {
+  async performSave() {
     hud.showLoader('Saving room...');
-    await cms.updateDraftPlaylist(this.state.item);
-    router.navigate(`/${this.state.item.room}`);
+    const { item } = this.state;
+    const { error } = await cms.updateDraftPlaylist(item);
+    if (error) {
+      this.setState({ error });
+      return;
+    }
+    router.navigate(`/${item.room}`);
   }
 
   render({ room, goHome }, { items, item, error, loading }) {
     return (
       <Container>
-        <Align type="top-left" row>
+        <Align type="top-left" rows>
           <EnterVR /><Mute />
         </Align>
         <Align type="bottom-right">
           <PaginatedList
             item={item}
             items={items}
-            performChange={this.changeItem}
+            performChange={this.performChangeItem}
           />
-          <a className="mod-pointer" onClick={this.saveAndClose}>Save &amp; Close</a>
+          <a
+            onClick={this.performSave}
+          >Save & Close</a>
         </Align>
         <Align type="top-right">
           <Close

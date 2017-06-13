@@ -44,23 +44,20 @@ export default (req) => {
     }
   };
 
-  let CMSPlaybackControls;
-
-  if (process.env.FLAVOR === 'cms') {
-    CMSPlaybackControls = {
-      playPauseButton: true,
-      nextButton: true,
-      prevButton: true,
-      menuAdd: false,
-    };
-  }
-
   const hudSettings = {
     menuAdd: true,
     menuEnter: toggleVR,
     colophon: true,
-    ...CMSPlaybackControls,
   };
+
+  if (process.env.FLAVOR === 'cms') {
+    Object.assign(hudSettings, {
+      playPauseButton: true,
+      nextButton: true,
+      prevButton: true,
+      menuAdd: false,
+    });
+  }
 
   let orb;
   let megaOrb;
