@@ -75,6 +75,7 @@ export default class Room {
     this.index = roomIndex;
     roomIndex += 1;
 
+    this.hasWall = !!single || layout.hasWall(this.placementIndex);
     this.isRecording = !!recording;
     if (url) {
        // remove everything after '?':
@@ -145,7 +146,7 @@ export default class Room {
       mesh.needsUpdate();
 
       mesh = wallMeshes[i];
-      if (layout.hasWall(this.placementIndex)) {
+      if (this.hasWall) {
         index = mesh.geometry.maxInstancedCount++;
         mesh.setPositionAt(index, position);
         mesh.setColorAt(index, color);
