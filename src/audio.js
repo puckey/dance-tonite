@@ -147,17 +147,18 @@ const audio = Object.assign(emitter(), {
     this.paused = false;
     if (context) context.resume();
     if (audioElement) audioElement.play();
+    audio.emit('play');
   },
 
   pause() {
     this.paused = true;
     if (context) context.suspend();
     if (audioElement) audioElement.pause();
+    audio.emit('pause');
   },
 
   toggle() {
     this[this.paused ? 'play' : 'pause']();
-    audio.emit(this.paused ? 'play' : 'pause');
   },
 
   gotoTime(time) {
