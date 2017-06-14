@@ -119,7 +119,7 @@ const rText = textCreator.create('', {
   color: settings.textColor,
 });
 const lText = textCreator.create('', {
-  wrapWidth: 1600,
+  wrapWidth: 1980, // 1600
   scale: 0.25,
   align: 'right',
   color: settings.textColor,
