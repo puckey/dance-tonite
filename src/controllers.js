@@ -3,10 +3,12 @@ import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
+import Group from './lib/three';
 
 
 //  These are empty objects -- but we'll fill them soon.
 let [leftController, rightController] = viewer.controllers;
+const controllerGroup = new Group();
 
 function handleLeftPress() {
   if (leftPress) leftPress();
@@ -79,7 +81,7 @@ window.addEventListener('vr controller connected', ({ detail: controller }) => {
   //  which is good because we'll need it again if the controller reconnects.
   controller.addEventListener('disconnected', () => {
     controller.remove(mesh);
-    viewer.scene.remove(controller);
+    controllerGroup.remove(controller);
     if (controller.hand === 'left') {
       viewer.controllers[0] = leftController = {};
     } else {
@@ -88,8 +90,11 @@ window.addEventListener('vr controller connected', ({ detail: controller }) => {
   });
 
   //  All our work here is done, let's add this controller to the scene!
-  // (Yes, Jonathan -- we will remove it on disconnect and destroy it.)
-  viewer.scene.add(controller);
+  //  Well sort off... We’ll add it to our controllerGroup which has already
+  //  been added to viewer.scene. This was we can more cleanly show and hide
+  //  whatever’s connected.
+  // (And yes, Jonathan -- we will remove it on disconnect and destroy it.)
+  controllerGroup.add(controller);
 });
 
 
@@ -195,9 +200,12 @@ const controllers = Object.assign(
         removeRight();
       }
     },
-    add() {},
+    add() {
+      viewer.scene.add(controllerGroup);
+    },
     remove() {
       rightPress = leftPress = null;
+      viewer.scene.remove(controllerGroup);
     },
     setButtonVisibility,
   },
