@@ -106,12 +106,12 @@ export default (goto) => {
       viewer.events.on('tick', tick);
       controllers.update({
         left: {
-          text: 'press to redo',
+          text: 'press\nto\nredo',
           onPress: performRedo,
           removeOnPress: true,
         },
         right: {
-          text: 'press to submit',
+          text: 'press\nto\nsubmit',
           onPress: performSubmit,
           removeOnPress: true,
         },
