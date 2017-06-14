@@ -3,6 +3,7 @@ import { serializeMatrix } from './utils/serializer';
 import audio from './audio';
 import viewer from './viewer';
 import { Matrix4 } from './lib/three';
+import layout from './room/layout';
 
 let stopped = false;
 let frames;
@@ -40,9 +41,9 @@ const fillMissingFrames = (time, head) => {
 };
 
 const recording = {
-  setup({ loopIndex, hideHead }) {
+  setup({ roomIndex, hideHead }) {
     this.frames = [];
-    this.loopIndex = loopIndex;
+    this.roomIndex = roomIndex;
     frames = null;
     frameNumber = null;
     stopped = false;
@@ -86,7 +87,7 @@ const recording = {
   serialize() {
     return [{
       count: this.frames[0] ? (this.frames[0].length / 21) : 0,
-      loopIndex: this.loopIndex,
+      loopIndex: layout.loopIndex(this.roomIndex),
       hideHead: this.hideHead,
     }]
       .concat(this.frames);

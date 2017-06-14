@@ -46,19 +46,19 @@ const lerpPose = (
 };
 
 export default class Room {
-  constructor({ id, recording, index, single }) {
+  constructor({ id, recording, index, single = false, wall = false }) {
     this._worldPosition = new THREE.Vector3();
-    this.index = index;
+    this.index = recording ? recording.roomIndex : index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
-    this.single = !!single;
+    this.single = single;
     const frames = this.frames = new Frames(id, recording);
     this.firstFrame = frames.getFrame(0);
     this.frame = frames.getFrame();
-    this.costumeColor = getCostumeColor(index);
+    this.costumeColor = getCostumeColor(this.index);
     this.position = layout.getPosition(
       index,
       new THREE.Vector3(),
-      !!recording || !!single
+      single
     );
 
     const position = tempVector()
@@ -67,9 +67,9 @@ export default class Room {
     position.y -= 1;
     const type = layout.getType(index);
     if (type === 'PLANE') return;
-    items.room.add([position, null], getRoomColor(index));
-    if (!!single || layout.hasWall(index)) {
-      items.wall.add([position, null], getRoomColor(index));
+    items.room.add([position, null], getRoomColor(this.index));
+    if (single || wall || layout.hasWall(index)) {
+      items.wall.add([position, null], getRoomColor(this.index));
     }
   }
 

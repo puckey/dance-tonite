@@ -17,7 +17,7 @@ export default class Playlist {
     const rooms = this.rooms = [];
     if (recording) {
       for (let index = 1; index < 20; index += 2) {
-        const room = new Room({ recording, index });
+        const room = new Room({ recording, index, wall: true });
         rooms.push(room);
       }
     }

@@ -257,10 +257,9 @@ export default (goto, req) => {
       hud.hideLoader();
 
       room = new Room({
-        showHead: true,
         id: TUTORIAL_RECORDING_ID,
         index: 0,
-        recording: true,
+        single: true,
       });
       room.changeColor(waitRoomColor);
 
