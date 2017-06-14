@@ -215,7 +215,7 @@ export default (goto, req) => {
       objects.orb = new Orb();
       objects.orb2 = new Orb();
 
-      elements.tutorialText = hud.create('div.tutorial-text.mod-removed');
+      elements.tutorialText = hud.create('div.tutorial-text');
       elements.skipTutorialButton = hud.create(
         'div.skip-button',
         {
