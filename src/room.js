@@ -84,7 +84,7 @@ const transformMesh = (
 };
 
 export default class Room {
-  constructor({ url, recording, index }) {
+  constructor({ url, recording, index, isGiffing }) {
     this.placementIndex = index === undefined
       ? roomIndex
       : index;
@@ -112,6 +112,8 @@ export default class Room {
     this.costumeColor = this.isRecording
       ? recordCostumeColor
       : getCostumeColor(this.index);
+
+    Room.isGiffing = isGiffing;
   }
 
   load(callback) {
@@ -304,14 +306,16 @@ Room.reset = ({ showAllWalls } = {}) => {
   roomsGroup.add(handMesh);
   roomsGroup.add(wallMesh);
   roomsGroup.add(roomMesh);
-  viewer.scene.add(roomsGroup);
+  if (!Room.isGiffing) viewer.scene.add(roomsGroup);
 
   // Move an extra invisible object3d with a texture to the end of scene's children
   // array in order to solve a texture glitch as described in:
   // https://github.com/puckey/you-move-me/issues/129
-  viewer.scene.add(debugMesh);
+  if (!Room.isGiffing) viewer.scene.add(debugMesh);
 };
 
 Room.rotate180 = () => {
   roomsGroup.matrix.copy(ROTATION_MATRIX);
 };
+
+Room.getGroup = () => roomsGroup;

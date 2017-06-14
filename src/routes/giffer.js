@@ -2,11 +2,10 @@ import GIF from 'gif.js';
 import CCapture from 'ccapture.js';
 import Room from '../room';
 import Orb from '../orb';
-import viewer from '../viewer';
 import settings from '../settings';
 import createTimeline from '../lib/timeline';
 import { waitRoomColor, recordRoomColor } from '../theme/colors';
-import { Vector3, WebGLRenderer, OrthographicCamera } from '../lib/three';
+import * as THREE from '../lib/three';
 import audio from '../audio';//  Would love to get rid of this!!
 
 // import renderFrame from './../lib/gif-main-thread';
@@ -35,7 +34,7 @@ export default (req) => {
   //  We need our own renderer with dimensions
   //  equal to our target output GIF dimensions.
 
-  const renderer = new WebGLRenderer({ antialias: true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setClearColor(0x000000);
   renderer.setPixelRatio(1); // window.devicePixelRatio
   renderer.setSize(width, height);
@@ -49,7 +48,7 @@ export default (req) => {
 
   const orthographicDistance = 4;
   const aspectRatio = width / height;
-  const camera = new OrthographicCamera(
+  const camera = new THREE.OrthographicCamera(
     -orthographicDistance * aspectRatio,
     orthographicDistance * aspectRatio,
     orthographicDistance,
@@ -58,7 +57,19 @@ export default (req) => {
     1000,
   );
   camera.position.set(0.06, 0.08, 0.08);
-  camera.lookAt(new Vector3());
+  camera.lookAt(new THREE.Vector3());
+
+
+  const scene = new THREE.Scene();
+  const light = new THREE.DirectionalLight(0xffffff);
+  light.position.set(-1.42, 1.86, 0.74).normalize();
+
+  const ambientLight = new THREE.AmbientLight(0x444444, 0.7);
+  const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
+
+  scene.add(hemisphereLight);
+  scene.add(light, ambientLight);
+  scene.fog = new THREE.Fog(0x000000, 0, 75);
 
 
   //  BAD: Right now CCapture needs GIF to be a global variable.
@@ -174,14 +185,13 @@ export default (req) => {
 
     //  Export some frames.
 
-    // if (gifFrame <= duration * fps) gifFrame++;
     gifFrame++;
     if (gifFrame > 0 && gifFrame <= duration * fps) {
       if (gifFrame === 1) {
         console.log('Render GIF frames BEGIN');
         capturer.start();
       }
-      renderer.render(viewer.scene, camera);
+      renderer.render(scene, camera);
       capturer.capture(renderer.domElement);
       if (gifFrame === duration * fps) {
         console.log('Render GIF frames END');
@@ -189,6 +199,7 @@ export default (req) => {
         capturer.save();
       }
     }
+    window.requestAnimationFrame(tick);
   };
 
 
@@ -201,23 +212,27 @@ export default (req) => {
         showHead: true,
         index: 0,
         recording: false,
+        isGiffing: true,
       });
       room.changeColor(waitRoomColor);
       room.load();
-      window.scene = viewer.scene;
+      scene.add(Room.getGroup());
+      window.scene = scene;
 
 
       //  FIX: Even though we aren’t actually using the audio,
       //  we have to load the audio file so audio.js can report
       //  loopDuration to room.js....
 
-      await Promise.all([
-        audio.load({
-          src: '/public/sound/room-1.ogg',
-          loops: 2,
-          loopOffset: 0.5,
-        }),
-      ]);
+      if (!audio.loopDuration) {
+        await Promise.all([
+          audio.load({
+            src: '/public/sound/room-1.ogg',
+            loops: 2,
+            loopOffset: 0.5,
+          }),
+        ]);
+      }
 
 
       //  Get your orb on.
@@ -227,13 +242,13 @@ export default (req) => {
 
 
       //  we'll keep these here so what you see matches what is being exported:
-      viewer.switchCamera('orthographic');
-      // state.originalCameraPosition = viewer.camera.position.clone();
-      // state.originalZoom = viewer.camera.zoom;
-      viewer.camera.position.y = 2;
-      viewer.camera.position.z = 1.3;
-      viewer.camera.zoom = 0.7;
-      viewer.camera.updateProjectionMatrix();
+      // viewer.switchCamera('orthographic');
+      //   state.originalCameraPosition = viewer.camera.position.clone();
+      //   state.originalZoom = viewer.camera.zoom;
+      // viewer.camera.position.y = 2;
+      // viewer.camera.position.z = 1.3;
+      // viewer.camera.zoom = 0.7;
+      // viewer.camera.updateProjectionMatrix();
 
       state.originalCameraPosition = camera.position.clone();
       state.originalZoom = camera.zoom;
@@ -242,22 +257,23 @@ export default (req) => {
       camera.zoom = 0.7;
       camera.updateProjectionMatrix();
 
-      viewer.events.on('tick', tick);
+      // viewer.events.on('tick', tick);
+      tick();
     },
     unmount: () => {
       component.destroyed = true;
       objects.orb.destroy();
       objects.orb2.destroy();
-      viewer.camera.position.copy(state.originalCameraPosition);
-      viewer.camera.zoom = state.originalZoom;
-      viewer.camera.updateProjectionMatrix();
+      // viewer.camera.position.copy(state.originalCameraPosition);
+      // viewer.camera.zoom = state.originalZoom;
+      // viewer.camera.updateProjectionMatrix();
       if (room) {
         room.destroy();
       }
-      viewer.camera.position.y = 0;
-      viewer.camera.zoom = 1;
-      viewer.camera.updateProjectionMatrix();
-      viewer.events.off('tick', tick);
+      // viewer.camera.position.y = 0;
+      // viewer.camera.zoom = 1;
+      // viewer.camera.updateProjectionMatrix();
+      // viewer.events.off('tick', tick);
     },
   };
 
