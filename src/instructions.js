@@ -79,7 +79,7 @@ const instructions = {
         instructions.setMainText(remaining.toString());
       } else {
         instructions.setMainText('');
-        instructions.setSubText('DANCE');
+        instructions.setSubText('DANCE!');
       }
       remaining--;
       await sleep(1000);
