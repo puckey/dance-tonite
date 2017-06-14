@@ -3,7 +3,7 @@ import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
-import Group from './lib/three';
+import { Group } from './lib/three';
 
 
 //  These are empty objects -- but we'll fill them soon.
