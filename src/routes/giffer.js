@@ -6,20 +6,24 @@ import settings from '../settings';
 import createTimeline from '../lib/timeline';
 import { waitRoomColor, recordRoomColor } from '../theme/colors';
 import * as THREE from '../lib/three';
-import audio from '../audio';//  Would love to get rid of this!!
+import audio from '../audio';
 
 // import renderFrame from './../lib/gif-main-thread';
+
 
 export default (req) => {
   //
 
+
   //  Our capture settings:
 
+  const verbose = true; //  <---------- SO HELPFUL FOR TWEAKING!
   const width = 512;
   const height = 512;
   const duration = 16; //  Unit is Seconds.
   const fps = 20;
-  const workers = 64;
+  const quality = 97;
+  const workers = 16;
   // const audioLoopDuration = 8.0043537414966;
 
 
@@ -28,7 +32,7 @@ export default (req) => {
   //  http://localhost:3000/giffer/1030266141029-b5ba6ff6
 
   const id = req.params.id ? req.params.id : '1030266141029-b5ba6ff6';
-  console.log('Using this dance Id:', id);
+  if (verbose) console.log('Export GIF of this dance ID#', id);
 
 
   //  We need our own renderer with dimensions
@@ -60,13 +64,13 @@ export default (req) => {
   camera.lookAt(new THREE.Vector3());
 
 
-  const scene = new THREE.Scene();
-  const light = new THREE.DirectionalLight(0xffffff);
-  light.position.set(-1.42, 1.86, 0.74).normalize();
+  //  The last bit we need to clone from viewer is viewr.scene:
 
+  const scene = new THREE.Scene();
+  const light = new THREE.DirectionalLight(0XFFFFFF);
+  light.position.set(-1.42, 1.86, 0.74).normalize();
   const ambientLight = new THREE.AmbientLight(0x444444, 0.7);
   const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
-
   scene.add(hemisphereLight);
   scene.add(light, ambientLight);
   scene.fog = new THREE.Fog(0x000000, 0, 75);
@@ -82,9 +86,10 @@ export default (req) => {
   //  Can take them out for production.
 
   const filename = `${width.toString().padStart(4, '0')}x${height.toString().padStart(4, '0')}-${duration.toString().padStart(2, '0')}sec@${fps}fps-`;
-  console.log(filename);
+  if (verbose) console.log(filename);
   let timeBegan;
   let timeEnded;
+  let timeDuration;
 
 
   //  Now we can setup our CCapture instance.
@@ -92,11 +97,11 @@ export default (req) => {
   let gifFrame = 0;
   let gifProgress = 0;
   const capturer = new CCapture({
-    verbose: false,
-    display: true,
+    verbose: false, //  because annoying.
+    display: verbose,
     framerate: fps,
     // motionBlurFrames: (960 / fps),
-    quality: 95,
+    quality: quality,
     format: 'gif', //  webm gif
     workers: workers,
     workersPath: '../lib/',
@@ -109,15 +114,25 @@ export default (req) => {
     //  Can take it out for production.
 
     onProgress: function (p) {
-      window.progress = p;
-      console.log('Render is:', p * 100, '% complete.');
       if (p === 0) {
         timeBegan = new Date();
-        console.log('Render started at', timeBegan);
-      } else if (p === 1) {
+        if (verbose) console.log('> GIF render started at', timeBegan);
+      }
+      if (verbose) {
+        timeDuration = new Date(Date.now() - timeBegan);
+        const timeDurationString = `${timeDuration.getMinutes()}m ${timeDuration.getSeconds().toString().padStart(2, '0')}s`;
+        const whole = Math.floor(p * 100);
+        const fraction = ((Math.round(p * 100 * 100)) - whole * 100).toString().padStart(2, '0');
+        console.log(`> At ${timeDurationString} elapsed GIF render is ${whole.toString()}.${fraction}% complete`);
+      }
+      if (p === 1) {
         timeEnded = new Date();
-        const timeDuration = new Date(timeEnded - timeBegan);
-        console.log(`${filename + timeDuration.getMinutes()}m${timeDuration.getSeconds().toString().padStart(2, '0')}s.gif`);
+        timeDuration = new Date(timeEnded - timeBegan);
+        if (verbose) {
+          console.log('> GIF render ended at', timeEnded);
+          console.log(`> GIF render took ${timeDuration.getMinutes()} minutes and ${timeDuration.getSeconds()} seconds.`);
+          console.log(`${filename + timeDuration.getMinutes()}m${timeDuration.getSeconds().toString().padStart(2, '0')}s.gif`);
+        }
       }
     },
   });
@@ -188,15 +203,20 @@ export default (req) => {
     gifFrame++;
     if (gifFrame > 0 && gifFrame <= duration * fps) {
       if (gifFrame === 1) {
-        console.log('Render GIF frames BEGIN');
+        if (verbose) console.log('> START saving canvas frame grabs for GIF.');
         capturer.start();
       }
       renderer.render(scene, camera);
       capturer.capture(renderer.domElement);
       if (gifFrame === duration * fps) {
-        console.log('Render GIF frames END');
+        if (verbose) console.log('> STOP saving canvas frame grabs for GIF.');
         capturer.stop();
         capturer.save();
+      }
+      if (verbose) {
+        const whole = Math.floor(gifProgress * 100);
+        const fraction = ((Math.round(gifProgress * 100 * 100)) - whole * 100).toString().padStart(2, '0');
+        console.log(`> GIF frames ${whole.toString()}.${fraction}% collected: ${gifFrame} of ${duration * fps}`);
       }
     }
     window.requestAnimationFrame(tick);
@@ -235,45 +255,29 @@ export default (req) => {
       }
 
 
-      //  Get your orb on.
+      //  Get your Orb on.
 
-      objects.orb = new Orb();
-      objects.orb2 = new Orb();
+      objects.orb = new Orb(scene);
+      objects.orb2 = new Orb(scene);
 
 
-      //  we'll keep these here so what you see matches what is being exported:
-      // viewer.switchCamera('orthographic');
-      //   state.originalCameraPosition = viewer.camera.position.clone();
-      //   state.originalZoom = viewer.camera.zoom;
-      // viewer.camera.position.y = 2;
-      // viewer.camera.position.z = 1.3;
-      // viewer.camera.zoom = 0.7;
-      // viewer.camera.updateProjectionMatrix();
+      //  Dude, where's my camera?
 
-      state.originalCameraPosition = camera.position.clone();
-      state.originalZoom = camera.zoom;
       camera.position.y = 2;
       camera.position.z = 1.3;
       camera.zoom = 0.7;
       camera.updateProjectionMatrix();
 
-      // viewer.events.on('tick', tick);
+
       tick();
     },
     unmount: () => {
       component.destroyed = true;
       objects.orb.destroy();
       objects.orb2.destroy();
-      // viewer.camera.position.copy(state.originalCameraPosition);
-      // viewer.camera.zoom = state.originalZoom;
-      // viewer.camera.updateProjectionMatrix();
       if (room) {
         room.destroy();
       }
-      // viewer.camera.position.y = 0;
-      // viewer.camera.zoom = 1;
-      // viewer.camera.updateProjectionMatrix();
-      // viewer.events.off('tick', tick);
     },
   };
 
