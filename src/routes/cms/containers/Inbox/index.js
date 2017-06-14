@@ -1,6 +1,7 @@
 /** @jsx h */
 import { h, Component } from 'preact';
 import { debounce } from 'throttle-debounce';
+
 import './style.scss';
 
 import Container from '../../components/Container';
@@ -71,11 +72,13 @@ export default class Inbox extends Component {
     // Filter out faulty room with -1:
     unmoderated = unmoderated.filter(recording => recording.room >= 0);
     const { recordingId } = this.props;
-    if ((!recordingId) && unmoderated.length) {
+    if (!recordingId && unmoderated.length) {
       const recording = unmoderated[0];
       router.navigate(`/inbox/${recording.id}`);
     } else {
-      this.asyncLoadRecording(recordingId);
+      if (recordingId) {
+        this.asyncLoadRecording(recordingId);
+      }
       this.setState({
         unmoderatedCount: unmoderated.length,
         unmoderated,
@@ -199,17 +202,17 @@ export default class Inbox extends Component {
               <Align type="center">
                 { error
                   ? <Error>{error}</Error>
-                  : <Spinner
-                    text={
-                      submitting
-                        ? 'Submitting changes'
-                        : unmoderatedCount === 0
-                          ? 'Inbox empty'
+                  : unmoderatedCount === 0
+                    ? <div>Inbox empty ✌️</div>
+                    : <Spinner
+                      text={
+                        submitting
+                          ? 'Submitting changes'
                           : !recordingId
-                            ? 'Loading inbox'
-                            : ''
-                    }
-                  />
+                              ? 'Loading inbox'
+                              : ''
+                      }
+                    />
                 }
               </Align>
             )

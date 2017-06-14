@@ -1,5 +1,6 @@
 const choose = require('./cms/choose').default;
 const inbox = require('./cms/inbox').default;
+const submissions = require('./cms/submissions').default;
 const playback = require('./playback').default;
 
 if (process.env.NODE_ENV === 'development') {
@@ -10,6 +11,7 @@ export default {
   routes: {
     '/inbox/:recordingId?': inbox,
     '/choose/:roomId': choose,
+    '/submissions/': submissions,
     '/:roomIndex?/:id?': playback,
   },
   components: { playback, choose, inbox },
