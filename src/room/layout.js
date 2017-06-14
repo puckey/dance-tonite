@@ -2,17 +2,11 @@ import settings from '../settings';
 import { tempVector } from '../utils/three';
 
 const { roomWidth, roomHeight, roomDepth, roomOffset } = settings;
-const ph = { type: 'PLANE', timeline: false };
-const pl = { type: 'PLANE' };
+const ph = { type: 'PLANE', timeline: false, megagrid: true };
+const plh = { type: 'PLANE', megagrid: true };
 const em = { type: 'EMPTY' };
-const ve = { type: 'VERTICAL' };
 const ho = { type: 'HORIZONTAL' };
 const hw = { type: 'HORIZONTAL', wall: true };
-const vc = { type: 'VERTICAL_CORNER' };
-const hc = { type: 'HORIZONTAL_CORNER' };
-
-const s = 1 / 6;
-const py = -4 + s * 2;
 
 const rooms = [
   [0, 0, -3, em],
@@ -27,21 +21,28 @@ const rooms = [
   [0, 0, 6, ho],
   [0, 0, 7, ho],
   [0, 0, 8, ho],
-  [0, 0, 9, hc],
-  [0, -1 + s, 9, ve],
-  [0, -2 + s, 9, ve],
-  [0, -3 + s, 9, ve],
-  [0, py, 9, vc],
-                                      [0, py, 10, pl],
-                    [-1, py, 11, ph], [0, py, 11, pl], [1, py, 11, ph],
-  [-2, py, 12, ph], [-1, py, 12, ph], [0, py, 12, pl], [1, py, 12, ph], [2, py, 12, ph],
-  [-2, py, 13, ph], [-1, py, 13, ph], [0, py, 13, pl], [1, py, 13, ph], [2, py, 13, ph],
-                    [-1, py, 14, ph], [0, py, 14, pl], [1, py, 14, ph],
-  [0, py, 15, hw],
-  [0, py, 16, ho],
-  [0, py, 17, ho],
-  [0, py, 18, ho],
-  [0, py, 19, ho],
+  [0, 0, 9, hw],
+  [0, 0, 10, ho],
+  [0, 0, 11, ho],
+  [0, 0, 12, ho],
+  [0, 0, 13, ho],
+  [0, 0, 14, ho],
+  [0, 0, 15, ho],
+  [0, 0, 16, ho],
+  [-1, 0, 17, ph], [0, 0, 17, ho], [1, 0, 17, ph],
+  [-2, 0, 18, ph], [-1, 0, 18, ph], [0, 0, 18, ho], [1, 0, 18, ph], [2, 0, 18, ph],
+  [-3, 0, 19, ph], [-2, 0, 19, ph], [-1, 0, 19, ph], [0, 0, 19, plh], [1, 0, 19, ph], [2, 0, 19, ph], [3, 0, 19, ph],
+  [-3, 0, 20, ph], [-2, 0, 20, ph], [-1, 0, 20, ph], [0, 0, 20, plh], [1, 0, 20, ph], [2, 0, 20, ph], [3, 0, 20, ph],
+  [-3, 0, 21, ph], [-2, 0, 21, ph], [-1, 0, 21, ph], [0, 0, 21, plh], [1, 0, 21, ph], [2, 0, 21, ph], [3, 0, 21, ph],
+  [-3, 0, 22, ph], [-2, 0, 22, ph], [-1, 0, 22, ph], [0, 0, 22, plh], [1, 0, 22, ph], [2, 0, 22, ph], [3, 0, 22, ph],
+  [-3, 0, 23, ph], [-2, 0, 23, ph], [-1, 0, 23, ph], [0, 0, 23, plh], [1, 0, 23, ph], [2, 0, 23, ph], [3, 0, 23, ph],
+  [-3, 0, 24, ph], [-2, 0, 24, ph], [-1, 0, 24, ph], [0, 0, 24, plh], [1, 0, 24, ph], [2, 0, 24, ph], [3, 0, 24, ph],
+  [-3, 0, 25, ph], [-2, 0, 25, ph], [-1, 0, 25, ph], [0, 0, 25, plh], [1, 0, 25, ph], [2, 0, 25, ph], [3, 0, 25, ph],
+  [-2, 0, 26, ph], [-1, 0, 26, ph], [0, 0, 26, plh], [1, 0, 26, ph], [2, 0, 26, ph],
+  [-1, 0, 27, ph], [0, 0, 27, plh], [1, 0, 27, ph],
+  [0, 0, 28, em],
+  [0, 0, 29, em],
+  [0, 0, 30, em],
 ];
 
 const layout = rooms.filter(([,,, { type }]) => type !== 'EMPTY');
@@ -49,12 +50,12 @@ const layout = rooms.filter(([,,, { type }]) => type !== 'EMPTY');
 const timelineLayout = rooms.filter(([,,, { timeline }]) => timeline !== false);
 
 export default {
-  getPosition(position, roomPosition, reviewMode) {
+  getPosition(position, roomPosition, single) {
     let x = 0;
     let y = 0;
     let z = 0;
-    if (reviewMode) {
-      z = position * roomDepth + roomOffset;
+    if (single) {
+      z = roomOffset;
     } else {
       const lower = Math.floor(position);
       const higher = Math.ceil(position);
@@ -86,6 +87,10 @@ export default {
 
   getType(index) {
     return layout[index][3].type;
+  },
+
+  insideMegaGrid(index) {
+    return !!layout[index][3].megagrid;
   },
 
   getRoom(index) {

@@ -114,6 +114,10 @@ const config = {
     new webpack.ProvidePlugin({
       THREE: 'THREE',
     }),
+    new webpack.NormalModuleReplacementPlugin(
+      (/^three$/),
+      require.resolve('./src/lib/three')
+    ),
   ],
   devServer: {
     contentBase: './src',

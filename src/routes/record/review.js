@@ -45,7 +45,7 @@ export default (goto) => {
 
   const performSubmit = async () => {
     controllers.update();
-    const persisting = storage.persist(recording.serialize());
+    const persisting = storage.persist(recording.serialize(), recording.roomIndex);
     audio.fadeOut();
 
     await transition.fadeOut();
@@ -62,7 +62,7 @@ export default (goto) => {
 
     if (component.destroyed) return;
 
-    goto(`/${recording.loopIndex}/${recordingSrc.replace('.json', '')}`);
+    goto(`/${recording.roomIndex}/${recordingSrc.replace('.json', '')}`);
   };
 
   const performRedo = async () => {
@@ -84,9 +84,7 @@ export default (goto) => {
 
   const component = {
     mount: async () => {
-      Room.reset({
-        showAllWalls: true,
-      });
+      Room.reset();
       Room.rotate180();
       playlist = new Playlist({ recording });
 

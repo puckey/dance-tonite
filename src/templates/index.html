@@ -14,15 +14,21 @@
     <link rel="apple-touch-icon" href="/public/favico.png">
     <link rel="manifest" href="/public/manifest.json">
     <link href="/style.css" rel="stylesheet" />
+
+    <script>
+    window.WebVRConfig = {
+      DEFER_INITIALIZATION: true,
+    };
+    </script>
   </head>
   <body class="mod-overflow-hidden">
     <div class="hud">
-      <div class="loader-overlay">
+      <div class="spinner-overlay">
         <div class="spinner">
           <div class="spinner-inner spinner-inner-negative"></div>
           <div class="spinner-inner"></div>
         </div>
-        <div class="loader-overlay-text"></div>
+        <div class="spinner-overlay-text"></div>
       </div>
 
       <div class="menu-left">
@@ -36,11 +42,11 @@
       </div>
 
       <div class="menu">
-        <div class="menu-item menu-item-enter mod-display-none mod-disabled" id="enterVR">
+        <div class="menu-item menu-item-enter mod-removed mod-disabled" id="enterVR">
           <span class="menu-item-label"></span>
           <span class="menu-item-icon mod-fill mod-no-stroke"></span>
         </div>
-        <div class="menu-item menu-item-add mod-display-none">
+        <div class="menu-item menu-item-add mod-removed">
           <span class="menu-item-label">
             Add performance
           </span>

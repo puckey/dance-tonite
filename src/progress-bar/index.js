@@ -18,6 +18,7 @@ export default {
       {
         onmousemove: (event) => {
           moveRatio = getRatio(event);
+          event.stopPropagation();
         },
 
         onmouseleave: () => {
@@ -26,6 +27,11 @@ export default {
 
         onclick: (event) => {
           audio.gotoTime(audio.duration * getRatio(event));
+          event.stopPropagation();
+        },
+
+        onmousedown: (event) => {
+          event.stopPropagation();
         },
       },
       progressEl

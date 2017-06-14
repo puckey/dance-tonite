@@ -1,0 +1,66 @@
+.tutorial-text {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: .5rem;
+  padding: 1rem 0;
+  font-size: 1.5rem;
+  text-align: center;
+  z-index: $interface-layer;
+  user-select: none;
+  pointer-events: none;
+
+  @media (max-width: 540px) {
+    top: 1rem;
+    padding-top: 3rem;
+    font-size: 1rem;
+  }
+}
+
+.tutorial-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: $line-width * 1.5;
+  background: $text-color;
+  z-index: $interface-layer;
+  transform-origin: 0 100%;
+  will-change: transform;
+}
+
+.tutorial-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: $overlay-background-color;
+  opacity: 1;
+  transition: 1s opacity ease-in-out;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $interface-layer;
+}
+
+.tutorial-overlay-text {
+  position: relative;
+  top: -1rem;
+  padding: 0 1rem;
+  font-size: 2rem;
+  user-select: none;
+  max-width: 70vw;
+
+  a {
+    border-bottom: solid $line-width * 2 $text-color;
+    text-decoration: none;
+  }
+
+  @media (max-width: $min-width) {
+    font-size: 1.3rem;
+    max-width: 90vw;
+  }
+}

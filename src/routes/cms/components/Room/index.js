@@ -60,12 +60,12 @@ export default class RoomComponent extends Component {
       room.destroy();
     }
     viewer.camera.position.y = 0;
-    viewer.camera.zoom = 1;
     viewer.camera.updateProjectionMatrix();
     viewer.events.off('tick', tick);
+    // Room.reset();
   }
 
-  async asyncMount({ recordingId, roomIndex }) {
+  async asyncMount({ recording }) {
     Room.reset();
     objects.orb = new Orb();
     objects.orb2 = new Orb();
@@ -75,21 +75,19 @@ export default class RoomComponent extends Component {
     viewer.camera.position.y = 2;
     viewer.camera.position.z = 1.3;
 
-    viewer.camera.zoom = 0.7;
     viewer.camera.updateProjectionMatrix();
     Room.rotate180();
     await audio.load({
-      src: `/public/sound/room-${layout.loopIndex(roomIndex)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
+      src: `/public/sound/room-${layout.loopIndex(recording.room)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
       loops: 2,
       loopOffset: 0.5,
     });
     if (!this.mounted) return;
     audio.play();
     room = new Room({
-      url: `${recordingId}.json`,
-      showHead: true,
-      index: 0,
-      recording: true,
+      id: recording.id,
+      index: recording.room - 1,
+      single: true,
     });
     room.load();
     viewer.events.on('tick', tick);

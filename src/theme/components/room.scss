@@ -1,0 +1,32 @@
+.room-label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 0;
+  margin: -50vh -22.5vh;
+  z-index: $cms-layer;
+  font-size: 2.2vh;
+  white-space: pre;
+  line-height: 1.4em;
+  text-align: center;
+  user-select: none;
+  cursor: pointer;
+
+  .wrap {
+    width: 41vh;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    font-size: 3vh;
+  }
+
+  .newline {
+    font-size: 1.5vh;
+    display: block;
+  }
+
+  &:hover .wrap {
+    text-decoration: underline;
+  }
+}

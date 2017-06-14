@@ -70,12 +70,17 @@ const instructions = {
     const version = countdownVersion;
     instructions.add();
     let remaining = seconds;
-    while (remaining > 0) {
+    while (remaining > -2) {
       if (version !== countdownVersion) {
-        remaining = 0;
+        remaining = -2;
         continue;
       }
-      instructions.setMainText(remaining.toString());
+      if (remaining > 0) {
+        instructions.setMainText(remaining.toString());
+      } else {
+        instructions.setMainText('');
+        instructions.setSubText('DANCE!');
+      }
       remaining--;
       await sleep(1000);
     }

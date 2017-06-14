@@ -7,7 +7,7 @@ import viewer from '../../viewer';
 import settings from '../../settings';
 import hud from '../../hud';
 import createTimeline from '../../lib/timeline';
-import { waitRoomColor, recordRoomColor } from '../../theme/colors';
+import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
 import windowSize from '../../utils/windowSize';
@@ -18,7 +18,7 @@ import { worldToScreen } from '../../utils/three';
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 
 // TODO: replace with better recording:
-const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
+const TUTORIAL_RECORDING_ID = 'hIR_Tw';
 
 const { roomDepth, roomOffset } = settings;
 
@@ -28,15 +28,15 @@ const getLineTransform = (x1, y1, x2, y2, margin) => {
   return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
 };
 
-export default (goto) => {
+export default (goto, req) => {
   let getLineTarget;
   let room;
+  const roomColor = getRoomColor(parseInt(req.params.roomIndex, 10));
   const state = { minLayers: 0 };
   const elements = {};
   const objects = {};
 
   const performSkip = async () => {
-    // TODO: we need to make sure the user has a vr device capable of room vr:
     if (feature.has6DOF) {
       elements.skipTutorialButton.classList.add('mod-hidden');
       const removeOverlay = hud.enterVR();
@@ -65,27 +65,30 @@ export default (goto) => {
     {
       time: 1,
       callback: () => {
-        room.changeColor(recordRoomColor);
+        room.changeColor(roomColor);
       },
     },
   ]);
 
   const createOverlay = () => {
     if (elements.overlayEl) return;
-    elements.overlayEl = hud.create(
+    elements.overlayEl = feature.has6DOF ? hud.create(
       'div.tutorial-overlay',
-      {
-        onclick: performSkip,
-      },
+      h('div.tutorial-overlay-text', h('a', { onclick: performSkip }, 'Add your performance')),
+    ) :
+    hud.create(
+      'div.tutorial-overlay',
       h(
         'div.tutorial-overlay-text',
         h(
           'span',
-          feature.has6DOF
-            ? 'Add your performance'
-            : 'A message about Vive not being found. Click here to go home.'
-        ),
-      )
+          h('h3', 'Shucks, room-scale VR not found.'),
+          h('p', 'This requires room-scale VR and a WebVR-enabled browser.'),
+          h('a', { href: 'https://webvr.info', target: '_blank' }, 'Get set up'),
+          ' or ',
+          h('a', { onclick: performSkip }, 'return home.')
+        )
+      ),
     );
   };
 
@@ -107,7 +110,7 @@ export default (goto) => {
     },
     {
       time: 10.5,
-      text: '(Don’t bump into the camera)',
+      text: '(Try to avoid bumping into the camera)',
       getPosition: null,
     },
     {
@@ -133,10 +136,6 @@ export default (goto) => {
     {
       time: 24,
       text: 'Dance together!',
-    },
-    {
-      time: 26.5,
-      text: '(Don’t bump into each other)',
     },
     {
       time: 32,
@@ -172,7 +171,7 @@ export default (goto) => {
     );
     const progress = audio.progress - 1; // value between -1 and 1
     colorTimeline.tick(audio.progress);
-    textTimeline.tick(audio.currentTime % 48);
+    textTimeline.tick(audio.time % 48);
 
     const z = (progress - 0.5) * -roomDepth - roomOffset;
     objects.orb.position.z = z;
@@ -218,7 +217,7 @@ export default (goto) => {
 
       elements.tutorialText = hud.create('div.tutorial-text');
       elements.skipTutorialButton = hud.create(
-        'div.skip-tutorial-button',
+        'div.skip-button',
         {
           onclick: createOverlay,
         },
@@ -230,7 +229,7 @@ export default (goto) => {
         },
         '×'
       );
-      elements.lineEl = hud.create('div.line', {
+      elements.lineEl = hud.create('div.tutorial-line', {
         style: {
           transform: 'scaleX(0)',
         },
@@ -258,10 +257,9 @@ export default (goto) => {
       hud.hideLoader();
 
       room = new Room({
-        url: TUTORIAL_RECORDING_URL,
-        showHead: true,
+        id: TUTORIAL_RECORDING_ID,
         index: 0,
-        recording: true,
+        single: true,
       });
       room.changeColor(waitRoomColor);
 

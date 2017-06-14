@@ -2,6 +2,8 @@
 import { h, Component } from 'preact';
 import './style.scss';
 
+import cms from '../../../../utils/firebase/cms';
+
 import Room from '../../components/Room';
 import Container from '../../components/Container';
 import Error from '../../components/Error';
@@ -10,84 +12,115 @@ import Close from '../../components/Close';
 import Mute from '../../components/Mute';
 import EnterVR from '../../components/EnterVR';
 import PaginatedList from '../../components/PaginatedList';
-
-const choices = [
-  {
-    id: '1030619202368-bd491815',
-    name: 'First',
-  },
-  {
-    id: '1030183816095-9085ceb6',
-    name: 'Explosion',
-  },
-  {
-    id: '1030261510603-8bad2f3c',
-    name: 'Drummer',
-  },
-  {
-    id: '1030262646806-72cfa2a3',
-    name: 'Standing up',
-  },
-  {
-    id: '1030280695249-75f03b49',
-    name: 'Marching',
-  },
-  {
-    id: '1030279610994-2050ebff',
-    name: 'flies',
-  },
-  {
-    id: '1030184941183-3d4bb76a',
-    name: 'campfire',
-  },
-  {
-    id: '1030187137836-f4c0f1c7',
-    name: 'flying hands',
-  },
-  {
-    id: '1030276578477-8a79e35e',
-    name: 'tunnel',
-  },
-  {
-    id: '1030233234037-23f0590f',
-    name: 'jeff squares',
-  },
-  {
-    id: '1030231817998-689babac',
-    name: 'jeff walk away',
-  },
-  {
-    id: '1030273435171-f4249b52',
-    name: 'lonely guy',
-  },
-];
+import Spinner from '../../components/Spinner';
+import router from '../../../../router';
+import hud from '../../../../hud';
 
 export default class Choose extends Component {
   constructor() {
     super();
     this.state = {
-      items: choices,
-      item: choices[1],
+      loading: 'room choices',
     };
-    this.changeItem = this.changeItem.bind(this);
+    this.performChangeItem = this.performChangeItem.bind(this);
+    this.performSave = this.performSave.bind(this);
   }
 
-  changeItem(item) {
+  componentDidMount() {
+    this.mounted = true;
+    this.asyncMount();
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  async asyncMount() {
+    const { room } = this.props;
+    const { data, error } = await cms.getAvailableRecordings(room);
+    if (!this.mounted) return;
+    if (error) {
+      this.setState({ error });
+      return;
+    }
+    const { universal, forRoom } = data;
+    universal.forEach(recording => {
+      recording.room = room;
+      recording.title = `${recording.title} - U`;
+    });
+    this.setState({
+      loading: 'draft playlist',
+    });
+    const { data: playlistData, error: playlistError } = await cms.getDraftPlaylist(room);
+    if (!this.mounted) return;
+    if (playlistError) {
+      this.setState({ error: playlistError });
+      return;
+    }
+    const activeId = playlistData.playlist[room - 1].id;
+
+    const items = []
+      .concat(forRoom)
+      .concat(
+        // Filter out duplicates:
+        universal.filter(
+          universalRoom => !forRoom.find(
+            recording => recording.id === universalRoom.id
+          )
+        )
+      );
+    let item = items.find(recording => recording.id === activeId);
+
+    // If the active item was not to be found in the available recordings,
+    // retrieve it from the cms using getRecording and add it to the items array
+    // manually:
+    if (!item) {
+      const { data: recordingData, error: recordingError } = await cms.getRecording(activeId);
+      if (!this.mounted) return;
+      if (recordingError) {
+        this.setState({ error: recordingError });
+        return;
+      }
+      item = recordingData;
+      items.unshift(recordingData);
+    }
+    this.setState({
+      item,
+      items,
+      loading: null,
+    });
+  }
+
+  performChangeItem(item) {
     this.setState({ item });
   }
 
-  render({ roomIndex, goHome }, { items, item }) {
+  async performSave() {
+    hud.showLoader('Saving room...');
+    const { item } = this.state;
+    const { error } = await cms.updateDraftPlaylist(item);
+    if (error) {
+      this.setState({ error });
+      return;
+    }
+    router.navigate(`/${item.room}`);
+  }
+
+  render({ room, goHome }, { items, item, error, loading }) {
     return (
       <Container>
-        <Align type="top-left row">
+        <Align type="top-left" rows>
           <EnterVR /><Mute />
         </Align>
         <Align type="bottom-right">
           <PaginatedList
             item={item}
             items={items}
-            performChange={this.changeItem}
+            performChange={this.performChangeItem}
           />
+          <a
+            onClick={this.performSave}
+          >Save & Close</a>
         </Align>
         <Align type="top-right">
           <Close
@@ -95,13 +128,23 @@ export default class Choose extends Component {
           />
         </Align>
         {
-          roomIndex === undefined
+          (item)
             ? (
+              <Room
+                recording={item}
+                key={item && item.id}
+              />
+            )
+            : (
               <Align type="center">
-                <Error>Room not found</Error>
+                { error
+                  ? <Error>{error}</Error>
+                  : <Spinner
+                    text={`Loading ${loading || 'something'}`}
+                  />
+                }
               </Align>
             )
-            : <Room roomIndex={roomIndex} recordingId={item.id} key={item.id} />
         }
       </Container>
     );

@@ -1,0 +1,43 @@
+.vr-info-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  border-radius: 100%;
+  box-sizing: border-box;
+  z-index: $popover-layer;
+  background: $text-color;
+
+  width: 150vw;
+  height: 150vw;
+  margin: -75vw;
+  transform: scale(0);
+
+  &.mod-entering-vr {
+    animation: splash 7s ease-in;
+  }
+
+  @media screen and (max-aspect-ratio: 1/1) {
+    width: 150vh;
+    height: 150vh;
+    margin: -75vh;
+  }
+}
+
+.vr-info-overlay-text {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  margin-top: -2rem;
+  font-size: 2rem;
+  text-align: center;
+  text-transform: uppercase;
+  font-feature-settings: 'ss01';
+  color: $background-color;
+  opacity: 0;
+  user-select: none;
+}
+
+.mod-entering-vr .vr-info-overlay-text {
+  animation: textFade 6s 1s;
+}
