@@ -12,9 +12,6 @@ export default class Frames {
       this.frames = recording.frames;
       this.hideHead = recording.hideHead;
     }
-    if (url) {
-      this.url = (url.indexOf('?') === -1) ? url : url.split('?')[0];
-    }
     this.id = id;
   }
 
