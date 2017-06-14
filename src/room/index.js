@@ -46,12 +46,12 @@ const lerpPose = (
 };
 
 export default class Room {
-  constructor({ url, recording, index, single }) {
+  constructor({ id, recording, index, single }) {
     this._worldPosition = new THREE.Vector3();
     this.index = index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
     this.single = !!single;
-    const frames = this.frames = new Frames(url, recording);
+    const frames = this.frames = new Frames(id, recording);
     this.firstFrame = frames.getFrame(0);
     this.frame = frames.getFrame();
     this.costumeColor = getCostumeColor(index);

@@ -85,7 +85,7 @@ export default class RoomComponent extends Component {
     if (!this.mounted) return;
     audio.play();
     room = new Room({
-      url: recording.id,
+      id: recording.id,
       index: recording.room - 1,
       single: true,
     });

@@ -23,8 +23,8 @@ export default class Playlist {
     }
   }
 
-  async load({ url, pathRecording, pathRoomIndex }) {
-    const entries = await storage.loadPlaylist(url);
+  async load({ pathRecording, pathRoomIndex }) {
+    const entries = await storage.loadPlaylist();
     if (this.destroyed) return;
 
     await new Promise((resolve, reject) => {
@@ -54,7 +54,7 @@ export default class Playlist {
 
           const isPathRecording = index === pathRoomIndex - 1;
           return new Room({
-            url: isPathRecording
+            id: isPathRecording
               ? `${pathRecording}`
               : process.env.FLAVOR === 'cms'
                 ? entry.id
