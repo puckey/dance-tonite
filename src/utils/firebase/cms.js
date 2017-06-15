@@ -39,18 +39,19 @@ const getAllRecordings = () =>
       firebaseConnection.contactServer(`${serverURL}getAllRecordings`, {});
 
 // updateRecording:
-// cms.updateRecording({ id: 'EamZtQ', title: 'hello there', rating: 1, is_universal: false})
+// cms.updateRecording({ id: 'EamZtQ', title: 'hello there', rating: 1, is_universal: false, is_megagrid_worthy:true})
 //   .then((data) => { console.log(data); });
 //    if title, rating, or isUniversal are left null, their value will not be changed
 //    is_universal is a boolean
+//    is_megagrid_worthy is a boolean
 //    rating:
 //       0 = unrated
 //       1 = good (star)
 //      -1 = not good
-const updateRecording = ({ id, title, rating, is_universal }) =>
+const updateRecording = ({ id, title, rating, is_universal, is_megagrid_worthy }) =>
       firebaseConnection.contactServer(
         `${serverURL}updateRecording`,
-         { id, title, rating, is_universal }
+         { id, title, rating, is_universal, is_megagrid_worthy }
        );
 
 export default {
