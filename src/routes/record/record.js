@@ -55,7 +55,7 @@ export default (goto, req) => {
   const pressToFinish = {
     removeOnPress: true,
     left: {
-      text: 'press to redo',
+      text: 'press\nto\nrestart',
       onPress: async () => {
         await transition.enter({
           text: 'Let’s try that again...',
@@ -64,7 +64,7 @@ export default (goto, req) => {
       },
     },
     right: {
-      text: 'press to finish',
+      text: 'press\nto\nfinish',
       onPress: performFinish,
     },
   };
@@ -72,7 +72,7 @@ export default (goto, req) => {
   const pressToStart = {
     removeOnPress: true,
     right: {
-      text: 'press to start',
+      text: 'press\nto\nstart',
       onPress: performStart,
     },
   };
@@ -147,7 +147,7 @@ export default (goto, req) => {
       ? 'press right controller to start'
       : count === 1
         ? 'turn on both of your controllers'
-        : 'turn on your controllers'
+        : 'turn on your controllers\nthen press any button to begin'
     );
   };
 

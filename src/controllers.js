@@ -119,7 +119,7 @@ const rText = textCreator.create('', {
   color: settings.textColor,
 });
 const lText = textCreator.create('', {
-  wrapWidth: 1600,
+  wrapWidth: 1980, // was originally 1600.
   scale: 0.25,
   align: 'right',
   color: settings.textColor,
@@ -129,7 +129,10 @@ lhand.add(lText);
 
 rText.rotation.x = lText.rotation.x = -Math.PI * 0.5;
 rText.position.set(0.03, 0, -0.022);
-lText.position.set(-0.12, 0, -0.022);
+//  Original left text position was:
+// lText.position.set(-0.12, 0, -0.022);
+//  So... x = 1980/1600*-0.12 roughly anyhow...
+lText.position.set(-0.1485, 0, -0.022);
 
 let leftPress;
 let rightPress;
