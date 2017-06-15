@@ -12,6 +12,8 @@ export default class Orb {
   constructor(scene) {
     this.mesh = props.sphere.clone();
     this.mesh.material = this.mesh.material.clone();
+    this.defaultColor = this.mesh.material.color.getHex();
+
     const position = this.position = this.mesh.position;
     position.y = settings.holeHeight;
     position.z = 1000;
@@ -46,5 +48,13 @@ export default class Orb {
 
   destroy() {
     viewer.scene.remove(this.mesh);
+  }
+
+  highlight() {
+    this.mesh.material.color.setHex(0xffffff);
+  }
+
+  unhighlight() {
+    this.mesh.material.color.setHex(this.defaultColor);
   }
 }
