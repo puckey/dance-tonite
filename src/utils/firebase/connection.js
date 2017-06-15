@@ -31,8 +31,10 @@ const contactServer = (URL, dataToSend) => {
     loginAnonymously((error) => {
       if (error) throw error;
 
+      const secret = localStorage ? localStorage.getItem('secret') : '';
       const request = new XMLHttpRequest();
       request.open('PUT', URL, true);
+      request.setRequestHeader('Authorization', `Bearer ${secret}`);
 
       request.onload = () => {
         if (request.status >= 200 && request.status < 400) {

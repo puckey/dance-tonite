@@ -45,7 +45,7 @@ export default (goto) => {
 
   const performSubmit = async () => {
     controllers.update();
-    const persisting = storage.persist(recording.serialize(), recording.loopIndex);
+    const persisting = storage.persist(recording.serialize(), recording.roomIndex);
     audio.fadeOut();
 
     await transition.fadeOut();
@@ -62,7 +62,7 @@ export default (goto) => {
 
     if (component.destroyed) return;
 
-    goto(`/${recording.loopIndex}/${recordingSrc.replace('.json', '')}`);
+    goto(`/${recording.roomIndex}/${recordingSrc.replace('.json', '')}`);
   };
 
   const performRedo = async () => {

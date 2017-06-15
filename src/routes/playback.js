@@ -153,7 +153,6 @@ export default (req) => {
       hud.showLoader('Gathering user performances');
 
       playlist.load({
-        url: 'curated.json',
         pathRecording: req.params.id,
         pathRoomIndex: roomIndex,
       }).then(() => {

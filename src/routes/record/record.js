@@ -12,6 +12,7 @@ import hud from '../../hud';
 import router from '../../router';
 import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
+import layout from '../../room/layout';
 
 export default (goto, req) => {
   const { roomDepth, roomOffset } = settings;
@@ -135,8 +136,7 @@ export default (goto, req) => {
     recording.tick();
   };
   recording.setup({
-    loopIndex: req.params.loopIndex
-      || (Math.floor(Math.random() * settings.loopCount) + 1),
+    roomIndex: parseInt(req.params.roomIndex, 10),
     hideHead: /no/.test(req.params.hideHead),
   });
 
@@ -155,14 +155,14 @@ export default (goto, req) => {
     mount: async () => {
       Room.reset();
       await audio.load({
-        src: `/public/sound/room-${recording.loopIndex}.ogg`,
+        src: `/public/sound/room-${layout.loopIndex(recording.roomIndex)}.ogg`,
         loops: 2,
         loopOffset: 0.5,
       });
       if (component.destroyed) return;
 
       viewer.switchCamera('default');
-      room = new Room({ recording });
+      room = new Room({ recording, index: recording.roomIndex, single: true });
       room.changeColor(waitRoomColor);
 
       instructions.add();
