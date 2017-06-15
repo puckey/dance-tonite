@@ -96,7 +96,8 @@ export default class Choose extends Component {
     const { room } = this.props;
     let { data: recordings, error } = await cms.getAllRecordings(room);
     recordings = recordings
-      .filter(recording => recording.room !== -1);
+      .filter(recording => recording.room !== -1)
+      .sort((a, b) => b.timestamp - a.timestamp);
     const items = recordings
       .map((recording, index) => Object.assign({
         index,
