@@ -1,4 +1,5 @@
 import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effectcomposer-es6';
+
 import BadTVShader from './lib/BadTVShader';
 import StaticShader from './lib/StaticShader';
 

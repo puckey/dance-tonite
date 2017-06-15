@@ -32,13 +32,19 @@
   width: 4.8vw;
 }
 
-.item-list-navigation {
-  text-align: right;
-}
-
 .item-list-navigation-pages {
   user-select: none;
   cursor: default;
+}
+
+.cms-aligner.mod-bottom-right {
+  .paginated-list-item {
+    text-align: right;
+  }
+
+  .item-list-navigation {
+    text-align: right;
+  }
 }
 
 .paginated-list-item {
@@ -46,14 +52,11 @@
   color: $text-color;
   margin: 0;
   padding-bottom: 0.25rem;
-  // padding-right: 1rem;
-  // padding-left: 1rem;
   pointer-events: all;
-  text-align: right;
   white-space: nowrap;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  // align-items: flex-end;
 
   &.mod-active {
     color: white;

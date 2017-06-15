@@ -17,14 +17,14 @@ export default class Playlist {
     const rooms = this.rooms = [];
     if (recording) {
       for (let index = 1; index < 20; index += 2) {
-        const room = new Room({ recording, index });
+        const room = new Room({ recording, index, wall: true });
         rooms.push(room);
       }
     }
   }
 
-  async load({ url, pathRecording, pathRoomIndex }) {
-    const entries = await storage.loadPlaylist(url);
+  async load({ pathRecording, pathRoomIndex }) {
+    const entries = await storage.loadPlaylist();
     if (this.destroyed) return;
 
     await new Promise((resolve, reject) => {
@@ -54,7 +54,7 @@ export default class Playlist {
 
           const isPathRecording = index === pathRoomIndex - 1;
           return new Room({
-            url: isPathRecording
+            id: isPathRecording
               ? `${pathRecording}`
               : process.env.FLAVOR === 'cms'
                 ? entry.id

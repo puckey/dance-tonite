@@ -3,10 +3,12 @@ import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
+import { Group } from './lib/three';
 
 
 //  These are empty objects -- but we'll fill them soon.
 let [leftController, rightController] = viewer.controllers;
+const controllerGroup = new Group();
 
 function handleLeftPress() {
   if (leftPress) leftPress();
@@ -87,7 +89,7 @@ window.addEventListener('vr controller connected', ({ detail: controller }) => {
   //  which is good because we'll need it again if the controller reconnects.
   controller.addEventListener('disconnected', () => {
     controller.remove(mesh);
-    viewer.scene.remove(controller);
+    controllerGroup.remove(controller);
     if (controller.hand === 'left') {
       viewer.controllers[0] = leftController = {};
     } else {
@@ -96,8 +98,11 @@ window.addEventListener('vr controller connected', ({ detail: controller }) => {
   });
 
   //  All our work here is done, let's add this controller to the scene!
-  // (Yes, Jonathan -- we will remove it on disconnect and destroy it.)
-  viewer.scene.add(controller);
+  //  Well sort off... We’ll add it to our controllerGroup which has already
+  //  been added to viewer.scene. This was we can more cleanly show and hide
+  //  whatever’s connected.
+  // (And yes, Jonathan -- we will remove it on disconnect and destroy it.)
+  controllerGroup.add(controller);
 });
 
 
@@ -119,7 +124,7 @@ const rText = textCreator.create('', {
   color: settings.textColor,
 });
 const lText = textCreator.create('', {
-  wrapWidth: 1600,
+  wrapWidth: 1980, // was originally 1600.
   scale: 0.25,
   align: 'right',
   color: settings.textColor,
@@ -129,7 +134,10 @@ lhand.add(lText);
 
 rText.rotation.x = lText.rotation.x = -Math.PI * 0.5;
 rText.position.set(0.03, 0, -0.022);
-lText.position.set(-0.12, 0, -0.022);
+//  Original left text position was:
+// lText.position.set(-0.12, 0, -0.022);
+//  So... x = 1980/1600*-0.12 roughly anyhow...
+lText.position.set(-0.1485, 0, -0.022);
 
 let leftPress;
 let rightPress;
@@ -203,9 +211,12 @@ const controllers = Object.assign(
         removeRight();
       }
     },
-    add() {},
+    add() {
+      viewer.scene.add(controllerGroup);
+    },
     remove() {
       rightPress = leftPress = null;
+      viewer.scene.remove(controllerGroup);
     },
     setButtonVisibility,
   },

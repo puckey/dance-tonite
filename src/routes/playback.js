@@ -12,17 +12,17 @@ import feature from '../utils/feature';
 import { sleep } from '../utils/async';
 import Room from '../room';
 import progressBar from '../progress-bar';
-import layout from '../room/layout';
-import closestHead from '../utils/closestHead';
 import background from '../background';
-import InstancedItem from '../instanced-item';
+import setupPOV from '../pov';
+import layout from '../room/layout';
+
+const { holeHeight } = settings;
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
-const { holeHeight } = settings;
-let pointerX;
-let pointerY;
+
+
 let titles;
 
 export default (req) => {
@@ -64,11 +64,16 @@ export default (req) => {
   let playlist;
   let tick;
   const roomIndex = parseInt(req.params.roomIndex, 10);
+  let pov;
 
-  let onMouseMove;
-  let onMouseDown;
-  let onMouseUp;
-  let hoverHead;
+
+  function move(progress) {
+    const position = layout.getPosition(progress + 0.5);
+    position.y += holeHeight;
+    position.z *= -1;
+    orb.position.copy(position);
+    return position;
+  }
 
   const component = {
     hud: hudSettings,
@@ -83,35 +88,15 @@ export default (req) => {
       titles = createTitles(orb);
       titles.mount();
 
-      const moveHead = (progress) => {
-        moveCamera(progress);
-        const [index, headIndex] = hoverHead;
-        playlist.rooms[index].transformToHead(viewer.camera, headIndex);
-      };
-
-      const moveCamera = (progress) => {
-        const position = layout.getPosition(progress + 0.5);
-        position.y += holeHeight;
-        position.z *= -1;
-        viewer.camera.position.copy(position);
-        orb.position.copy(position);
-      };
-
-      moveCamera(0);
+      move(0);
       Room.rotate180();
       playlist = new Playlist();
 
+      pov = setupPOV(orb, playlist);
+
       tick = () => {
         if (transition.isInside()) return;
-        if (!viewer.vrEffect.isPresenting && !hoverHead) {
-          Room.setHighlight(
-            closestHead(
-              pointerX,
-              pointerY,
-              playlist.rooms
-            )
-          );
-        }
+
         audio.tick();
         Room.clear();
         playlist.tick();
@@ -120,11 +105,9 @@ export default (req) => {
         if (!feature.isMobile || !viewer.vrEffect.isPresenting) {
           progressBar.tick();
         }
-        if (hoverHead) {
-          moveHead(audio.progress || 0);
-        } else {
-          moveCamera(audio.progress || 0);
-        }
+
+        move(audio.progress || 0);
+        pov.update(audio.progress);
       };
       viewer.events.on('tick', tick);
 
@@ -142,52 +125,11 @@ export default (req) => {
       hud.showLoader('Gathering user performances');
 
       playlist.load({
-        url: 'curated.json',
         pathRecording: req.params.id,
         pathRoomIndex: roomIndex,
       }).then(() => {
         if (component.destroyed) return;
-        onMouseMove = ({ clientX, clientY }) => {
-          if (viewer.vrEffect.isPresenting) return;
-          pointerX = clientX;
-          pointerY = clientY;
-        };
-
-        onMouseDown = ({ clientX, clientY, touches }) => {
-          let x = clientX;
-          let y = clientY;
-          if (touches && touches.length > 0) {
-            x = touches[0].pageX;
-            y = touches[0].pageY;
-          }
-          if (viewer.vrEffect.isPresenting) return;
-          hoverHead = closestHead(x, y, playlist.rooms);
-          if (hoverHead[0] === undefined) hoverHead = null;
-          if (hoverHead) {
-            viewer.switchCamera('default');
-            if (process.env.FLAVOR === 'cms') {
-              document.querySelectorAll('.room-label')
-                .forEach(room => room.classList.add('mod-hidden'));
-            }
-            InstancedItem.group.add(viewer.camera);
-          }
-        };
-
-        onMouseUp = () => {
-          if (viewer.vrEffect.isPresenting) return;
-          hoverHead = null;
-          viewer.switchCamera('orthographic');
-          if (process.env.FLAVOR === 'cms') {
-            document.querySelectorAll('.room-label')
-              .forEach(room => room.classList.remove('mod-hidden'));
-          }
-        };
-
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mousedown', onMouseDown);
-        window.addEventListener('mouseup', onMouseUp);
-        window.addEventListener('touchstart', onMouseDown, false);
-        window.addEventListener('touchend', onMouseUp, false);
+        pov.setupInput();
       });
       if (component.destroyed) return;
 
@@ -235,9 +177,7 @@ export default (req) => {
       playlist.destroy();
       progressBar.destroy();
       background.destroy();
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mouseup', onMouseUp);
+      pov.removeInput();
     },
   };
   return component;

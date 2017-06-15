@@ -12,6 +12,7 @@ import hud from '../../hud';
 import router from '../../router';
 import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
+import layout from '../../room/layout';
 
 export default (goto, req) => {
   const { roomDepth, roomOffset } = settings;
@@ -54,7 +55,7 @@ export default (goto, req) => {
   const pressToFinish = {
     removeOnPress: true,
     left: {
-      text: 'press to redo',
+      text: 'press\nto\nrestart',
       onPress: async () => {
         await transition.enter({
           text: 'Let’s try that again...',
@@ -63,7 +64,7 @@ export default (goto, req) => {
       },
     },
     right: {
-      text: 'press to finish',
+      text: 'press\nto\nfinish',
       onPress: performFinish,
     },
   };
@@ -71,7 +72,7 @@ export default (goto, req) => {
   const pressToStart = {
     removeOnPress: true,
     right: {
-      text: 'press to start',
+      text: 'press\nto\nstart',
       onPress: performStart,
     },
   };
@@ -135,8 +136,7 @@ export default (goto, req) => {
     recording.tick();
   };
   recording.setup({
-    loopIndex: req.params.loopIndex
-      || (Math.floor(Math.random() * settings.loopCount) + 1),
+    roomIndex: parseInt(req.params.roomIndex, 10),
     hideHead: /no/.test(req.params.hideHead),
   });
 
@@ -147,7 +147,7 @@ export default (goto, req) => {
       ? 'press right controller to start'
       : count === 1
         ? 'turn on both of your controllers'
-        : 'turn on your controllers'
+        : 'turn on your controllers\nthen press any button to begin'
     );
   };
 
@@ -155,19 +155,21 @@ export default (goto, req) => {
     mount: async () => {
       Room.reset();
       await audio.load({
-        src: `/public/sound/room-${recording.loopIndex}.ogg`,
+        src: `/public/sound/room-${layout.loopIndex(recording.roomIndex)}.ogg`,
         loops: 2,
         loopOffset: 0.5,
       });
       if (component.destroyed) return;
 
       viewer.switchCamera('default');
-      room = new Room({ recording });
+      room = new Room({ recording, index: recording.roomIndex, single: true });
       room.changeColor(waitRoomColor);
 
       instructions.add();
       instructions.setMainText('');
       viewer.events.on('tick', controllersTick);
+
+      controllers.add();
 
       orb = new Orb();
       orb2 = new Orb();

@@ -18,7 +18,7 @@ import { worldToScreen } from '../../utils/three';
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 
 // TODO: replace with better recording:
-const TUTORIAL_RECORDING_URL = 'hIR_Tw';
+const TUTORIAL_RECORDING_ID = 'hIR_Tw';
 
 const { roomDepth, roomOffset } = settings;
 
@@ -215,7 +215,7 @@ export default (goto, req) => {
       objects.orb = new Orb();
       objects.orb2 = new Orb();
 
-      elements.tutorialText = hud.create('div.tutorial-text.mod-removed');
+      elements.tutorialText = hud.create('div.tutorial-text');
       elements.skipTutorialButton = hud.create(
         'div.skip-button',
         {
@@ -257,10 +257,9 @@ export default (goto, req) => {
       hud.hideLoader();
 
       room = new Room({
-        url: TUTORIAL_RECORDING_URL,
-        showHead: true,
+        id: TUTORIAL_RECORDING_ID,
         index: 0,
-        recording: true,
+        single: true,
       });
       room.changeColor(waitRoomColor);
 

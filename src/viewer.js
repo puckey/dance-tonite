@@ -176,7 +176,7 @@ const animate = () => {
       : 0
   );
 
-  if (viewer.camera === cameras.default) {
+  if (!vrEffect.isPresenting && viewer.camera === cameras.default) {
     renderPostProcessed();
   } else {
     vrEffect.render(viewer.renderScene, viewer.camera);
