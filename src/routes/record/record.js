@@ -169,6 +169,8 @@ export default (goto, req) => {
       instructions.setMainText('');
       viewer.events.on('tick', controllersTick);
 
+      controllers.add();
+
       orb = new Orb();
       orb2 = new Orb();
 
