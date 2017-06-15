@@ -1,5 +1,5 @@
 import closestHead from './utils/closestHead';
-import intersectCenter from './utils/intersectcenter';
+import intersectOrb from './utils/intersectcenter';
 import viewer from './viewer';
 import InstancedItem from './instanced-item';
 import Room from './room';
@@ -13,12 +13,14 @@ let pointerY;
 
 export default function create(orb, playlist) {
   let hoverPerformance;
+  let hoverOrb;
 
+  //  for some reason position has to be done here as well as in playback
+  //  otherwise the positional values begin spiraling into infinity
   function move(progress) {
     const position = layout.getPosition(progress + 0.5);
     position.y += holeHeight;
     position.z *= -1;
-    orb.position.copy(position);
     return position;
   }
 
@@ -27,28 +29,37 @@ export default function create(orb, playlist) {
     playlist.rooms[index].transformToHead(viewer.camera, headIndex);
   }
 
+  function viewFromOrb() {
+    viewer.camera.position.z *= -1;
+    viewer.camera.rotation.set(0, Math.PI, 0);
+  }
+
   function update(progress) {
-    if (!viewer.vrEffect.isPresenting) {
-      if (intersectCenter(pointerX, pointerY)) {
-        orb.highlight();
-        Room.setHighlight();
-      } else {
-        orb.unhighlight();
-        if (!hoverPerformance) {
-          Room.setHighlight(
-            closestHead(
-              pointerX,
-              pointerY,
-              playlist.rooms
-            )
-          );
-        }
+    if (viewer.vrEffect.isPresenting) {
+      return;
+    }
+
+    if (intersectOrb(pointerX, pointerY)) {
+      orb.highlight();
+      Room.setHighlight();
+    } else {
+      orb.unhighlight();
+      if (!hoverPerformance) {
+        Room.setHighlight(
+          closestHead(
+            pointerX,
+            pointerY,
+            playlist.rooms
+          )
+        );
       }
     }
 
     const position = move(progress || 0);
     viewer.camera.position.copy(position);
-    if (hoverPerformance) {
+    if (hoverOrb) {
+      viewFromOrb();
+    } else if (hoverPerformance) {
       viewFromPerformance(hoverPerformance);
     }
   }
@@ -68,16 +79,16 @@ export default function create(orb, playlist) {
       y = touches[0].pageY;
     }
 
-    if (intersectCenter(x, y)) {
-      viewer.switchCamera('default');
+    if (intersectOrb(x, y)) {
       hoverPerformance = null;
-      // viewer.camera.rotation.set(0, Math.PI, 0);
+      hoverOrb = true;
     } else {
       hoverPerformance = closestHead(x, y, playlist.rooms);
       if (hoverPerformance[0] === undefined) hoverPerformance = null;
+      hoverOrb = false;
     }
 
-    if (hoverPerformance) {
+    if (hoverPerformance || hoverOrb) {
       setPerformanceView();
     }
   };
@@ -85,6 +96,7 @@ export default function create(orb, playlist) {
   const onMouseUp = () => {
     if (viewer.vrEffect.isPresenting) return;
     hoverPerformance = null;
+    hoverOrb = false;
     setOrthographicView();
   };
 
@@ -104,22 +116,27 @@ export default function create(orb, playlist) {
 
   function setPerformanceView() {
     viewer.switchCamera('default');
-    if (process.env.FLAVOR === 'cms') {
-      document.querySelectorAll('.room-label')
-        .forEach(room => room.classList.add('mod-hidden'));
-    }
+    setCMSModHidden(true);
     InstancedItem.group.add(viewer.camera);
   }
 
   function setOrthographicView() {
     viewer.switchCamera('orthographic');
-    if (process.env.FLAVOR === 'cms') {
-      document.querySelectorAll('.room-label')
-        .forEach(room => room.classList.remove('mod-hidden'));
-    }
+    setCMSModHidden(false);
   }
 
-  move(0);
+  function setCMSModHidden(hidden) {
+    if (process.env.FLAVOR === 'cms') {
+      document.querySelectorAll('.room-label')
+        .forEach(function (room) {
+          if (hidden) {
+            room.classList.add('mod-hidden');
+          } else {
+            room.classList.remove('mod-hidden');
+          }
+        });
+    }
+  }
 
   return {
     update,

@@ -14,6 +14,9 @@ import Room from '../room';
 import progressBar from '../progress-bar';
 import background from '../background';
 import setupPOV from '../pov';
+import layout from '../room/layout';
+
+const { holeHeight } = settings;
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
@@ -64,6 +67,14 @@ export default (req) => {
   let pov;
 
 
+  function move(progress) {
+    const position = layout.getPosition(progress + 0.5);
+    position.y += holeHeight;
+    position.z *= -1;
+    orb.position.copy(position);
+    return position;
+  }
+
   const component = {
     hud: hudSettings,
     mount: async () => {
@@ -77,6 +88,7 @@ export default (req) => {
       titles = createTitles(orb);
       titles.mount();
 
+      move(0);
       Room.rotate180();
       playlist = new Playlist();
 
@@ -94,6 +106,7 @@ export default (req) => {
           progressBar.tick();
         }
 
+        move(audio.progress || 0);
         pov.update(audio.progress);
       };
       viewer.events.on('tick', tick);
