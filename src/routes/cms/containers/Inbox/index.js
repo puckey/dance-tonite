@@ -25,8 +25,9 @@ export default class Inbox extends Component {
       starred: false,
     };
 
-    this.toggleStarred = this.toggleStarred.bind(this);
     this.titleInputChanged = this.titleInputChanged.bind(this);
+    this.toggleStarred = this.toggleStarred.bind(this);
+    this.toggleMegaGridWorthy = this.toggleMegaGridWorthy.bind(this);
     this.toggleUniversal = this.toggleUniversal.bind(this);
     this.submit = this.submit.bind(this);
     this.updateTitle = debounce(300, this.updateTitle);
@@ -70,7 +71,8 @@ export default class Inbox extends Component {
     }
 
     // Filter out faulty room with -1:
-    unmoderated = unmoderated.filter(recording => recording.room >= 0);
+    unmoderated = unmoderated
+      .filter(recording => recording.room >= 0);
     const { recordingId } = this.props;
     if (!recordingId && unmoderated.length) {
       const recording = unmoderated[0];
@@ -111,6 +113,14 @@ export default class Inbox extends Component {
 
   titleInputChanged(event) {
     this.updateTitle(event.target.value);
+  }
+
+  toggleMegaGridWorthy() {
+    const { recording } = this.state;
+    recording.is_megagrid_worthy = !recording.is_megagrid_worthy;
+    this.setState({
+      recording,
+    });
   }
 
   toggleUniversal() {
@@ -177,6 +187,13 @@ export default class Inbox extends Component {
                 onInput={this.titleInputChanged}
                 value={recording.title}
               />
+              <div>Mega Grid Worthy
+                <input
+                  type="checkbox"
+                  checked={recording.is_megagrid_worthy}
+                  onChange={this.toggleMegaGridWorthy}
+                />
+              </div>
               <div>Universal
                 <input
                   type="checkbox"

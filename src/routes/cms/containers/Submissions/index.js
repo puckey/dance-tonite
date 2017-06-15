@@ -28,6 +28,7 @@ export default class Choose extends Component {
     this.toggleStarred = this.toggleStarred.bind(this);
     this.titleInputChanged = this.titleInputChanged.bind(this);
     this.toggleUniversal = this.toggleUniversal.bind(this);
+    this.toggleMegaGridWorthy = this.toggleMegaGridWorthy.bind(this);
     this.submit = this.submit.bind(this);
     this.updateTitle = debounce(300, this.updateTitle);
   }
@@ -46,7 +47,6 @@ export default class Choose extends Component {
   }
 
   async submit() {
-    const { submissions, items } = this.state;
     this.setState({
       loading: 'submitting',
     });
@@ -83,6 +83,14 @@ export default class Choose extends Component {
   toggleStarred() {
     const { recording } = this.state;
     recording.rating = recording.rating === 1 ? -1 : 1;
+    this.setState({
+      recording,
+    });
+  }
+
+  toggleMegaGridWorthy() {
+    const { recording } = this.state;
+    recording.is_megagrid_worthy = !recording.is_megagrid_worthy;
     this.setState({
       recording,
     });
@@ -173,6 +181,13 @@ export default class Choose extends Component {
                   type="checkbox"
                   checked={recording.is_universal}
                   onChange={this.toggleUniversal}
+                />
+              </div>
+              <div>Mega Grid Worthy
+                <input
+                  type="checkbox"
+                  checked={recording.is_megagrid_worthy}
+                  onChange={this.toggleMegaGridWorthy}
                 />
               </div>
               <div
