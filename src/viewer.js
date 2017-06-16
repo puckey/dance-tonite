@@ -134,7 +134,7 @@ const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
 const scene = createScene();
 
 const viewer = {
-  camera: cameras.default,
+  camera: cameras.orthographic,
   cameras,
   scene,
   renderScene: scene,

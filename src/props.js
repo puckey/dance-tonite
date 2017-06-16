@@ -1,7 +1,7 @@
 import * as THREE from './lib/three';
 import { loadModel } from './utils/three';
 import settings from './settings';
-import { recordCostumeColor, highlightColor } from './theme/colors';
+import { recordCostumeColor, orbColor } from './theme/colors';
 
 import wallUrl from './public/models/obj/new-rooms/vr/first-wall.obj';
 
@@ -99,7 +99,7 @@ const props = {
       segments,
     );
     const material = new MeshBasicMaterial({
-      color: highlightColor.clone(),
+      color: orbColor.clone(),
     });
     const mesh = new Mesh(geometry, material);
     return mesh;

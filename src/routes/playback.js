@@ -182,15 +182,3 @@ export default (req) => {
   };
   return component;
 };
-<<<<<<< HEAD
-
-//  duration / loopDuration causes the mega orb to be too far off-screen
-//  move it back a ways so we can see it more immediately
-const endPosMoveAhead = 0.86;
-
-function positionMegaOrb( orb, audio ){
-  const endPos = -( audio.duration * endPosMoveAhead / audio.loopDuration * roomDepth );
-  orb.move(endPos);
-}
-=======
->>>>>>> master

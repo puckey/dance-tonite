@@ -34,7 +34,7 @@ export default function create(orb, playlist) {
     viewer.camera.rotation.set(0, Math.PI, 0);
   }
 
-  function update(progress) {
+  function performHighlight() {
     if (viewer.vrEffect.isPresenting) {
       return;
     }
@@ -44,7 +44,7 @@ export default function create(orb, playlist) {
       Room.setHighlight();
     } else {
       orb.unhighlight();
-      if (!hoverPerformance) {
+      if (!hoverPerformance && !hoverOrb) {
         Room.setHighlight(
           closestHead(
             pointerX,
@@ -54,6 +54,10 @@ export default function create(orb, playlist) {
         );
       }
     }
+  }
+
+  function update(progress) {
+    performHighlight();
 
     const position = move(progress || 0);
     viewer.camera.position.copy(position);

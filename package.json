@@ -28,12 +28,9 @@
     "tween-ticker": "^3.3.2",
     "unfetch": "^2.1.2",
     "unique-s3-uploader": "0.0.2",
-<<<<<<< HEAD
     "ccapture.js": "1.0.6",
-    "gif.js": "0.2.0"
-=======
+    "gif.js": "0.2.0",
     "webvr-polyfill": "^0.9.34"
->>>>>>> master
   },
   "devDependencies": {
     "autoprefixer-loader": "^3.2.0",

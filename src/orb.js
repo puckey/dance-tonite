@@ -4,7 +4,7 @@ import props from './props';
 import viewer from './viewer';
 import settings from './settings';
 import { Color } from './lib/three';
-import { highlightColor } from './theme/colors';
+import { orbColor, highlightColor } from './theme/colors';
 
 const BLACK = new Color(0, 0, 0);
 
@@ -39,11 +39,11 @@ export default class Orb {
   }
 
   fadeOut() {
-    this._fade(highlightColor, BLACK);
+    this._fade(orbColor, BLACK);
   }
 
   fadeIn() {
-    this._fade(BLACK, highlightColor);
+    this._fade(BLACK, orbColor);
   }
 
   destroy() {
@@ -51,7 +51,7 @@ export default class Orb {
   }
 
   highlight() {
-    this.mesh.material.color.setHex(0xffffff);
+    this.mesh.material.color.copy(highlightColor);
   }
 
   unhighlight() {

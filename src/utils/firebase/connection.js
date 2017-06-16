@@ -1,7 +1,7 @@
 import * as firebase from 'firebase';
 
 const serverURL = 'https://us-central1-you-move-me.cloudfunctions.net/';
-//const serverURL = 'http://localhost:5002/you-move-me/us-central1/';
+// const serverURL = 'http://localhost:5002/you-move-me/us-central1/';
 
 const config = {
   apiKey: 'AIzaSyCvrZWf22Z4QGRDpL-qI3YlLGkP9-BIsrY',
@@ -12,29 +12,41 @@ const config = {
 firebase.initializeApp(config);
 
 const auth = firebase.auth();
+const userAuth = { id: '', token: '' };
 
 // this will return immediately if the user is already logged in
 const loginAnonymously = (callback) => {
-  auth.signInAnonymously()
-    .then(() => {
+  auth.signInAnonymously().then((user) => {
+    userAuth.id = user.uid;
+    user.getIdToken().then((token) => {
+      userAuth.token = token;
       callback(null);
-    })
-    .catch((error) => {
-      callback(error);
     });
+  })
+  .catch((error) => {
+    callback(error);
+  });
 };
 
 // URL: endpoint of http function
 // dataToSend: data object to send in the request body
-const contactServer = (URL, dataToSend) => {
+const contactServer = (URL, dataToSend, secretAuth) => {
   const promise = new Promise((resolve, reject) => {
     loginAnonymously((error) => {
       if (error) throw error;
 
-      const secret = localStorage ? localStorage.getItem('secret') : '';
+      let authString = '';
+      if (secretAuth) {
+        // authorize with the secret key
+        authString = localStorage ? localStorage.getItem('secret') : '';
+      } else {
+        // otherwise, auth with our user ID
+        authString = userAuth.token;
+      }
+
       const request = new XMLHttpRequest();
       request.open('PUT', URL, true);
-      request.setRequestHeader('Authorization', `Bearer ${secret}`);
+      request.setRequestHeader('Authorization', `Bearer ${authString}`);
 
       request.onload = () => {
         if (request.status >= 200 && request.status < 400) {
@@ -61,7 +73,7 @@ const contactServer = (URL, dataToSend) => {
 const firebaseConnection = {
   firebase,
   contactServer,
-  serverURL, 
+  serverURL,
 };
 
 export default firebaseConnection;
