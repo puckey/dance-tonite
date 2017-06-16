@@ -43,6 +43,8 @@ const rooms = [
   [0, 0, 28, em],
   [0, 0, 29, em],
   [0, 0, 30, em],
+  [0, 0, 31, em],
+  [0, 0, 32, em],
 ];
 
 const layout = rooms.filter(([,,, { type }]) => type !== 'EMPTY');
