@@ -2,7 +2,7 @@
 import { h, render } from 'preact';
 
 import hud from '../../hud';
-import Submissions from './containers/Submissions';
+import Submissions from '../containers/Submissions';
 
 export default () => {
   let root;

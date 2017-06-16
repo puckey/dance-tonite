@@ -3,7 +3,7 @@ import { h, render } from 'preact';
 
 import hud from '../../hud';
 import router from '../../router';
-import Choose from './containers/Choose';
+import Choose from '../containers/Choose';
 
 let root;
 

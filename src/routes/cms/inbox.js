@@ -3,7 +3,7 @@ import { h, render } from 'preact';
 
 import hud from '../../hud';
 import router from '../../router';
-import Inbox from './containers/Inbox';
+import Inbox from '../containers/Inbox';
 
 export default (req) => {
   let root;

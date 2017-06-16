@@ -1,0 +1,81 @@
+@import '../../../theme/theme';
+
+.cms-aligner {
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  position: absolute;
+
+  * {
+    pointer-events: all;
+  }
+
+  &.mod-center {
+    align-items: center;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+
+    &:not(.mod-rows) > * {
+      margin-bottom: 1rem;
+    }
+
+    &.mod-rows > * {
+      margin-right: .5rem;
+    }
+  }
+
+  &.mod-top-left {
+    &:not(.mod-rows) > * {
+      margin-bottom: 1rem;
+    }
+
+    &.mod-rows > * {
+      margin-right: .5rem;
+    }
+  }
+
+  &.mod-bottom-left {
+    bottom: .5rem;
+
+    &:not(.mod-rows) > * {
+      margin-top: 1rem;
+    }
+
+    &.mod-rows > * {
+      margin-right: .5rem;
+    }
+  }
+
+  &.mod-top-right {
+    align-items: flex-end;
+    right: .5rem;
+
+    &:not(.mod-rows) > * {
+      margin-bottom: 1rem;
+    }
+
+    &.mod-rows > * {
+      margin-left: .5rem;
+    }
+  }
+
+  &.mod-bottom-right {
+    align-items: flex-end;
+    bottom: .5rem;
+    right: .5rem;
+
+    &:not(.mod-rows) > * {
+      margin-top: 1rem;
+    }
+
+    &.mod-rows > * {
+      margin-left: .5rem;
+      margin-top: 0;
+    }
+  }
+
+  &.mod-rows {
+    flex-direction: row;
+  }
+}
