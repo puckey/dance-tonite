@@ -7,7 +7,6 @@ import { Color } from './lib/three';
 import { orbColor, highlightColor } from './theme/colors';
 
 const BLACK = new Color(0, 0, 0);
-console.log(highlightColor);
 
 export default class Orb {
   constructor(scene) {
