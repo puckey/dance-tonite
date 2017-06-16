@@ -1,0 +1,22 @@
+@import '../../theme/theme';
+
+.audio-progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: .1rem;
+  background: $text-color;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.audio-progress-bar-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 1rem;
+  z-index: $interface-layer;
+  cursor: pointer;
+}

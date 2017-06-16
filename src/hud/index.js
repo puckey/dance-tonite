@@ -2,7 +2,6 @@ import hyperscript from 'hyperscript';
 import router from '../router';
 import feature from '../utils/feature';
 import audio from '../audio';
-import about from '../about';
 import addIconSvg from './icons/addvr.svg';
 import enterIconSvg from './icons/entervr.svg';
 import enterIconDisabledSvg from './icons/x_entervr.svg';
@@ -20,7 +19,7 @@ const componentContext = hyperscript.context();
 
 const toggleMute = () => {
   const muted = audio.toggleMute();
-  elements.muteButton.querySelector('.menu-item-icon').innerHTML =
+  elements.muteButton.querySelector('.button-item-icon').innerHTML =
     muted ? speakerMuteIconSvg : speakerIconSvg;
 };
 
@@ -42,10 +41,10 @@ const showVRError = () => {
 };
 
 let elements = {
-  menuAdd: '.menu-item-add',
-  menuEnter: '.menu-item-enter',
-  aboutButton: '.menu-item-about',
-  muteButton: '.menu-item-mute',
+  menuAdd: '.button-item-add',
+  menuEnter: '.button-item-enter',
+  aboutButton: '.button-item-about',
+  muteButton: '.button-item-mute',
   loaderOverlay: '.spinner-overlay',
   loaderOverlayText: '.spinner-overlay-text',
   playButton: '.play-button',
@@ -55,7 +54,7 @@ let elements = {
 let defaultState = {
   menuAdd: false,
   menuEnter: false,
-  aboutButton: about.toggle,
+  aboutButton: false,
   muteButton: toggleMute,
   colophon: false,
   nextRoom: false,
@@ -67,7 +66,7 @@ let defaultState = {
 if (process.env.FLAVOR === 'cms') {
   document.querySelector('.menu-left').appendChild(
     componentContext('div.cms-playback-controls',
-      componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-prev-button',
+      componentContext('div.button-item-icon.mod-fill.mod-no-stroke.cms-prev-button',
         {
           onclick: e => {
             e.preventDefault();
@@ -76,13 +75,13 @@ if (process.env.FLAVOR === 'cms') {
           innerHTML: prevIconSvg,
         },
       ),
-      componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-play-pause-button', {
+      componentContext('div.button-item-icon.mod-fill.mod-no-stroke.cms-play-pause-button', {
         onclick: () => {
           audio.toggle();
         },
         innerHTML: pauseIconSvg,
       }),
-      componentContext('div.menu-item-icon.mod-fill.mod-no-stroke.cms-next-button',
+      componentContext('div.button-item-icon.mod-fill.mod-no-stroke.cms-next-button',
         {
           onclick: e => {
             e.preventDefault();
@@ -131,7 +130,7 @@ const hud = {
     elements.hud = hudEl;
 
     elements.menuEnter.addEventListener('mouseenter', function () {
-      this.querySelector('.menu-item-label')
+      this.querySelector('.button-item-label')
         .innerHTML = viewer.vrEffect.isPresenting
           ? 'Exit VR'
           : feature.hasVR
@@ -148,11 +147,11 @@ const hud = {
       document.body.classList.add('mod-mobile');
     }
 
-    elements.menuEnter.querySelector('.menu-item-label').innerHTML = feature.hasVR
+    elements.menuEnter.querySelector('.button-item-label').innerHTML = feature.hasVR
       ? 'Enter VR'
       : 'VR not found';
 
-    elements.menuEnter.querySelector('.menu-item-icon').innerHTML = feature.hasVR
+    elements.menuEnter.querySelector('.button-item-icon').innerHTML = feature.hasVR
       ? enterIconSvg
       : enterIconDisabledSvg;
 
@@ -161,9 +160,9 @@ const hud = {
     }
 
     // Add icons
-    elements.menuAdd.querySelector('.menu-item-icon').innerHTML = addIconSvg;
-    elements.aboutButton.querySelector('.menu-item-icon').innerHTML = aboutIconSvg;
-    elements.muteButton.querySelector('.menu-item-icon').innerHTML = speakerIconSvg;
+    elements.menuAdd.querySelector('.button-item-icon').innerHTML = addIconSvg;
+    elements.aboutButton.querySelector('.button-item-icon').innerHTML = aboutIconSvg;
+    elements.muteButton.querySelector('.button-item-icon').innerHTML = speakerIconSvg;
   },
 
   update(param = {}) {

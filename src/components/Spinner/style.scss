@@ -1,0 +1,37 @@
+@import '../../theme/theme';
+
+.cms-spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 100%;
+  box-sizing: border-box;
+  z-index: $popover-layer;
+  background: $text-color;
+  margin-bottom: 0 !important;
+}
+
+.cms-spinner-inner {
+  position: absolute;
+  border-radius: 100%;
+  background: $text-color;
+  width: 1.5rem;
+  height: 1.5rem;
+  animation: grow1 2s infinite;
+}
+
+.cms-spinner-inner-negative {
+  width: 1.4rem;
+  height: 1.4rem;
+  margin: 0.05rem;
+  background: $background-color;
+  animation: grow2 2s infinite;
+}
+
+.cms-spinner-text {
+  position: relative;
+  text-align: center;
+  left: 0.75rem;
+  transform: translateY(2rem) translateX(-50%);
+  user-select: none;
+  width: 50vw;
+}

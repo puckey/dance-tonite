@@ -11,10 +11,9 @@ const { holeHeight } = settings;
 let pointerX;
 let pointerY;
 
-export default function create(orb, playlist) {
+export default function create({ rooms, orb }) {
   let hoverPerformance;
   let hoverOrb;
-
   //  for some reason position has to be done here as well as in playback
   //  otherwise the positional values begin spiraling into infinity
   function move(progress) {
@@ -26,7 +25,7 @@ export default function create(orb, playlist) {
 
   function viewFromPerformance(performance) {
     const [index, headIndex] = performance;
-    playlist.rooms[index].transformToHead(viewer.camera, headIndex);
+    rooms[index].transformToHead(viewer.camera, headIndex);
   }
 
   function viewFromOrb() {
@@ -49,7 +48,7 @@ export default function create(orb, playlist) {
           closestHead(
             pointerX,
             pointerY,
-            playlist.rooms
+            rooms
           )
         );
       }
@@ -87,7 +86,7 @@ export default function create(orb, playlist) {
       hoverPerformance = null;
       hoverOrb = true;
     } else {
-      hoverPerformance = closestHead(x, y, playlist.rooms);
+      hoverPerformance = closestHead(x, y, rooms);
       if (hoverPerformance[0] === undefined) hoverPerformance = null;
       hoverOrb = false;
     }

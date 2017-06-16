@@ -1,9 +1,8 @@
 /** @jsx h */
 import { h, render } from 'preact';
 
-import hud from '../../hud';
 import router from '../../router';
-import Inbox from '../containers/Inbox';
+import Inbox from '../../containers/Inbox';
 
 export default (req) => {
   let root;
@@ -17,13 +16,12 @@ export default (req) => {
         <Inbox
           roomId={req.params.roomId ? parseInt(req.params.roomId, 10) : null}
           recordingId={req.params.recordingId}
-          goHome={() => router.navigate('/')}
         />
-      ), hud.elements.hud);
+      ), document.body);
     },
 
     unmount: () => {
-      render(() => null, hud.elements.hud, root);
+      render(() => null, document.body, root);
     },
   };
 };

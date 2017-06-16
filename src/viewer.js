@@ -169,6 +169,7 @@ const animate = () => {
   }
 
   controls.update();
+  audio.tick();
   events.emit('tick', dt);
   zoomCamera(
     audio.progress > 21

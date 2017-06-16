@@ -1,0 +1,40 @@
+@import '../../theme/theme';
+@import '../../theme/util';
+
+.button-item {
+  @extend .mod-fill;
+  @extend .mod-no-stroke;
+
+  cursor: pointer;
+  display: flex;
+  line-height: 2.1rem;
+
+  &:hover .button-item-label {
+    display: flex;
+  }
+}
+
+.button-item-label {
+  display: none;
+  pointer-events: none;
+  user-select: none;
+  font-size: 1.2rem;
+  margin-right: .5rem;
+  height: 2rem;
+}
+
+@media (max-width: $min-width) {
+  .mod-mobile .button-item-label {
+    display: flex;
+    opacity: 0;
+    animation: fadeOut 5s forwards;
+  }
+}
+
+.button-item-icon {
+  display: flex;
+  &.mod-label {
+  }
+  width: 2rem;
+  height: 2rem;
+}

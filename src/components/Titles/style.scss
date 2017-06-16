@@ -1,0 +1,28 @@
+@import '../../theme/theme';
+
+.titles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $interface-layer;
+  pointer-events: none;
+  user-select: none;
+  cursor: default;
+  flex-direction: column;
+}
+
+.titles-title {
+  width: 100%;
+  font-size: 10vw;
+  text-align: center;
+  text-transform: uppercase;
+  font-feature-settings: 'ss01';
+  pointer-events: none;
+  box-sizing: border-box;
+  user-select: none;
+}

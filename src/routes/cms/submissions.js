@@ -1,8 +1,7 @@
 /** @jsx h */
 import { h, render } from 'preact';
 
-import hud from '../../hud';
-import Submissions from '../containers/Submissions';
+import Submissions from '../../containers/Submissions';
 
 export default () => {
   let root;
@@ -14,11 +13,11 @@ export default () => {
     mount: () => {
       root = render((
         <Submissions />
-      ), hud.elements.hud);
+      ), document.body);
     },
 
     unmount: () => {
-      render(() => null, hud.elements.hud, root);
+      render(() => null, document.body, root);
     },
   };
 };

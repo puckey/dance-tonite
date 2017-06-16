@@ -1,6 +1,5 @@
 import createTimeline from './lib/timeline';
 import { getRoomColorByIndex } from './theme/colors';
-import audio from './audio';
 import viewer from './viewer';
 import { Color } from './lib/three';
 
@@ -30,8 +29,8 @@ timeline.on('change-color', ({ color }) => {
 });
 
 export default {
-  tick: () => {
-    timeline.tick(audio.time);
+  update: (time) => {
+    timeline.tick(time);
   },
   destroy: () => {
     viewer.renderer.setClearColor(BLACK);
