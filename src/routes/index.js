@@ -1,7 +1,4 @@
 import router from '../router';
-// import playback from './playback';
-// import record from './record';
-// import giffer from './giffer';
 import notFound from './not-found';
 import transition from '../transition';
 import hud from '../hud';
@@ -9,16 +6,6 @@ import audio from '../audio';
 
 let current;
 
-// const components = { record, playback };
-/*
-const components = { record, playback, giffer };
-const routes = {
-  '/record/:loopIndex?/:hideHead?': record,
-  '/giffer/:id?': giffer,
-  '/:loopIndex?/:id?': playback,
-  '/*': notFound,
-};
-*/
 const { components, routes } = require(`./routes-${
   process.env.FLAVOR === 'cms' ? 'cms' : 'website'
 }`).default;

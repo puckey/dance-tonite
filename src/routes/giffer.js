@@ -22,8 +22,8 @@ export default (req) => {
   const height = 512;
   const duration = 16; //  Unit is Seconds.
   const fps = 20;
-  const quality = 97;
-  const workers = 16;
+  const quality = 100; // 97;
+  const workers = 32;
   // const audioLoopDuration = 8.0043537414966;
 
 
@@ -31,7 +31,7 @@ export default (req) => {
   //  Default dance is the Tutorial recording.
   //  http://localhost:3000/giffer/1030266141029-b5ba6ff6
 
-  const id = req.params.id ? req.params.id : '1030266141029-b5ba6ff6';
+  const id = req.params.id ? req.params.id : 'hIR_Tw'; // '1030266141029-b5ba6ff6';
   if (verbose) console.log('Export GIF of this dance ID#', id);
 
 
@@ -192,9 +192,9 @@ export default (req) => {
       //  Move that orb!
 
       const z = (progress - 0.5) * -roomDepth - roomOffset;
-      objects.orb.move(z);
+      objects.orb.position.z = z;
       if (gifProgress > 1) {
-        objects.orb2.move(z - roomDepth * 2);
+        objects.orb2.position.z = z - roomDepth * 2;
       }
     }
 
@@ -228,11 +228,12 @@ export default (req) => {
       Room.reset();
       Room.rotate180();
       room = new Room({
-        url: `${id}.json`,
+        id,
         showHead: true,
         index: 0,
         recording: false,
         isGiffing: true,
+        single: true,
       });
       room.changeColor(waitRoomColor);
       room.load();
