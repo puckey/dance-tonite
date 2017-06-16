@@ -38,7 +38,8 @@
 }
 
 .cms-aligner.mod-bottom-right {
-  .paginated-list-item {
+  .paginated-list-item-name-container {
+    flex-direction: column;
     text-align: right;
   }
 
