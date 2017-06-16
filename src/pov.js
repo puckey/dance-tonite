@@ -44,7 +44,7 @@ export default function create(orb, playlist) {
       Room.setHighlight();
     } else {
       orb.unhighlight();
-      if (!hoverPerformance) {
+      if (!hoverPerformance && !hoverOrb) {
         Room.setHighlight(
           closestHead(
             pointerX,
