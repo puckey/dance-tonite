@@ -9,14 +9,14 @@ import audio from '../../audio';
 import viewer from '../../viewer';
 import storage from '../../storage';
 import layout from '../../room/layout';
-import size from '../../utils/windowSize';
-import { worldToScreen } from '../../utils/three';
-import router from '../../router';
 import background from '../../background';
 import setupPOV from '../../pov';
 import Orb from '../../orb';
 import settings from '../../settings';
 import transition from '../../transition';
+import router from '../../router';
+
+import RoomLabel from '../../components/RoomLabel';
 
 const easeOut = t => -t * (t - 2.0);
 
@@ -42,7 +42,9 @@ export default class Playlist extends Component {
     }
 
     this.pov = setupPOV(this);
-    this.pov.setupInput();
+    if (process.env.FLAVOR !== 'cms') {
+      this.pov.setupInput();
+    }
     this.moveOrb(0);
     Room.reset();
     Room.rotate180();
@@ -61,12 +63,7 @@ export default class Playlist extends Component {
 
   componentWillUnmount() {
     this.orb.destroy();
-    this.rooms.forEach((room, index) => {
-      room.destroy();
-      // if (process.env.FLAVOR === 'cms') {
-      //   document.body.removeChild(document.getElementById(`room-label-${index}`));
-      // }
-    });
+    this.rooms.forEach((room) => room.destroy());
     viewer.events.off('tick', this.tick);
     this.pov.removeInput();
     background.destroy();
@@ -74,7 +71,7 @@ export default class Playlist extends Component {
 
   async asyncMount() {
     const { pathRecording, pathRoomIndex } = this.props;
-    const entries = await storage.loadPlaylist();
+    const entries = this.entries = await storage.loadPlaylist();
     if (!this.mounted) return;
 
     for (let i = 0; i < entries.length; i++) {
@@ -94,32 +91,6 @@ export default class Playlist extends Component {
     }
 
     await new Promise((resolve) => {
-      // entries.forEach(
-      //   (entry) => {
-      //     // if (process.env.FLAVOR === 'cms') {
-      //     //   const days = Math.floor(entry.days_featured);
-      //     //   const hours = Math.floor(entry.days_featured % 1 * 24);
-      //     //   document.body.appendChild(
-      //     //     h(
-      //     //       `div.room-label#room-label-${index}`,
-      //     //       {
-      //     //         onmousedown: (event) => {
-      //     //           router.navigate(`/choose/${index + 1}`);
-      //     //           event.stopPropagation();
-      //     //         },
-      //     //       },
-      //     //       h('span', `Room ${index + 1}`),
-      //     //       h('span.wrap', entry.title === '' ? 'Unnamed' : entry.title),
-      //     //       h(
-      //     //         'span.newline',
-      //     //         `Featured ${days} day${days > 1 ? 's' : ''}, ${hours} hour${hours > 0 ? 's' : ''}`
-      //     //       ),
-      //     //     )
-      //     //   );
-      //     // }
-      // 
-      //   },
-      // );
       const destroyedErrorName = 'playlist destroyed';
       asyncEach(
         this.rooms,
@@ -155,6 +126,12 @@ export default class Playlist extends Component {
     background.update(audio.time);
     this.moveOrb(audio.progress || 0);
 
+    if (process.env.FLAVOR === 'cms') {
+      this.setState({
+        visibleRooms: this.rooms.filter(room => room.isVisibleOnScreen()),
+      });
+    }
+
     for (let i = 0; i < this.rooms.length; i++) {
       const room = this.rooms[i];
       let time = audio.time;
@@ -173,23 +150,24 @@ export default class Playlist extends Component {
         ) * slowdownDuration;
       }
       room.gotoTime(time % (audio.loopDuration * 2));
-
-      // if (process.env.FLAVOR === 'cms') {
-      //   const coords = worldToScreen(viewer.camera, room.worldPosition);
-      //   const label = document.getElementById(`room-label-${i}`);
-      //   if (coords.x > 0 && coords.x < size.width && label && !label.classList.contains('mod-hidden')) {
-      //     label.classList.remove('mod-removed');
-      //     label.style.transform = `translate(${coords.x}px, ${coords.y}px)`;
-      //   } else if (label) {
-      //     label.classList.add('mod-removed');
-      //   }
-      // }
     }
   }
-  
-  // render() {
-  //   return process.env.FLAVOR === 'cms' && (
-  //     
-  //   )
-  // }
+
+  navigateToChooser(room) {
+    router.navigate(`/choose/${room.index}/`);
+  }
+
+  render() {
+    const { visibleRooms } = this.state;
+    return process.env.FLAVOR === 'cms' && (
+      <div>
+        {
+          visibleRooms &&
+            visibleRooms.map(room => (
+              <RoomLabel room={room} entry={this.entries[room.index]} />)
+            )
+        }
+      </div>
+    );
+  }
 }

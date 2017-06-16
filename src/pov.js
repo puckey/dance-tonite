@@ -119,26 +119,11 @@ export default function create({ rooms, orb }) {
 
   function setPerformanceView() {
     viewer.switchCamera('default');
-    setCMSModHidden(true);
     InstancedItem.group.add(viewer.camera);
   }
 
   function setOrthographicView() {
     viewer.switchCamera('orthographic');
-    setCMSModHidden(false);
-  }
-
-  function setCMSModHidden(hidden) {
-    if (process.env.FLAVOR === 'cms') {
-      document.querySelectorAll('.room-label')
-        .forEach(function (room) {
-          if (hidden) {
-            room.classList.add('mod-hidden');
-          } else {
-            room.classList.remove('mod-hidden');
-          }
-        });
-    }
   }
 
   return {

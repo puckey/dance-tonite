@@ -5,7 +5,9 @@ import {
   tempVector,
   setIdentityMatrix,
   set180RotationMatrix,
+  worldToScreen,
 } from '../utils/three';
+import windowSize from '../utils/windowSize';
 import viewer from '../viewer';
 import settings from '../settings';
 import {
@@ -113,6 +115,16 @@ export default class Room {
     );
     object.position.copy(position);
     object.quaternion.copy(rotation);
+  }
+
+  // To be used in orthographic mode:
+  isVisibleOnScreen() {
+    const coords = this.getScreenCoordinates();
+    return coords.x > 0 && coords.x < windowSize.width;
+  }
+
+  getScreenCoordinates() {
+    return worldToScreen(viewer.camera, this.worldPosition);
   }
 
   gotoTime(seconds, maxLayers) {
