@@ -1,13 +1,18 @@
-import { serializeMatrix } from './utils/three';
+import { serializeMatrix } from './utils/serializer';
 
 import audio from './audio';
 import viewer from './viewer';
+import { Matrix4 } from './lib/three';
+import layout from './room/layout';
 
 let stopped = false;
 let frames;
 let frameNumber;
 
-const addFrame = (head, left, right) => {
+let left = serializeMatrix(new Matrix4());
+let right = serializeMatrix(new Matrix4());
+
+const addFrame = (head) => {
   if (frames.length <= frameNumber) {
     frames.push([...head, ...left, ...right]);
   } else {
@@ -24,21 +29,21 @@ const addFrame = (head, left, right) => {
   }
 };
 
-const fillMissingFrames = (time, head, left, right) => {
+const fillMissingFrames = (time, head) => {
   const totalFrames = Math.round(time * 90);
   const diff = totalFrames - frameNumber;
   if (diff > 1) {
     for (let i = 0; i < (diff - 1); i++) {
       frameNumber++;
-      addFrame(head, left, right);
+      addFrame(head);
     }
   }
 };
 
 const recording = {
-  setup({ loopIndex, hideHead }) {
+  setup({ roomIndex, hideHead }) {
     this.frames = [];
-    this.loopIndex = loopIndex;
+    this.roomIndex = roomIndex;
     frames = null;
     frameNumber = null;
     stopped = false;
@@ -49,10 +54,15 @@ const recording = {
   tick() {
     if (stopped) return;
     const head = serializeMatrix(viewer.camera.matrixWorld);
-    const left = serializeMatrix(viewer.controllers[0].matrixWorld);
-    const right = serializeMatrix(viewer.controllers[1].matrixWorld);
+    const [leftController, rightController] = viewer.controllers;
+    if (leftController.matrixWorld) {
+      left = serializeMatrix(leftController.matrixWorld);
+    }
+    if (rightController.matrixWorld) {
+      right = serializeMatrix(rightController.matrixWorld);
+    }
     if (!frames || audio.looped) {
-      if (frames) fillMissingFrames(audio.duration, head, left, right);
+      if (frames) fillMissingFrames(audio.duration, head);
       frameNumber = 0;
       if (frames) {
         for (let i = 0; i < frames.length; i++) {
@@ -66,8 +76,8 @@ const recording = {
     } else {
       frameNumber++;
     }
-    addFrame(head, left, right);
-    fillMissingFrames(audio.time, head, left, right);
+    addFrame(head);
+    fillMissingFrames(audio.time, head);
   },
 
   stop() {
@@ -77,12 +87,10 @@ const recording = {
   serialize() {
     return [{
       count: this.frames[0] ? (this.frames[0].length / 21) : 0,
-      loopIndex: this.loopIndex,
+      loopIndex: layout.loopIndex(this.roomIndex),
       hideHead: this.hideHead,
     }]
-      .concat(this.frames)
-      .map(JSON.stringify)
-      .join('\n');
+      .concat(this.frames);
   },
 };
 

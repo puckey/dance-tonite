@@ -1,0 +1,14 @@
+.close-button {
+  position: fixed;
+  top: 0;
+  right: 0;
+  font-size: 1.5rem;
+  padding: 1rem;
+  width: 1rem;
+  height: 1rem;
+  background: none;
+  line-height: 1;
+  cursor: pointer;
+  z-index: $popover-layer;
+  user-select: none;
+}

@@ -10,8 +10,13 @@ $line-width: .075rem;
 // Colors
 $background-color: #000;
 $text-color: #ff0;
+$inactive-color: transparentize($text-color, .5);
+$white-color: #fff;
+$overlay-background-color: rgba(0, 0, 0, .7);
+$transparent-color: rgba(0, 0, 0, 0);
 
 // Z indices
 $scene-layer: 10;
+$cms-layer: 19;
 $interface-layer: 20;
 $popover-layer: 30;

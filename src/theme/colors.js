@@ -1,4 +1,5 @@
 import { Color } from '../lib/three';
+import layout from '../room/layout';
 
 const green = new Color(0x55b848);
 const red = new Color(0xef4f36);
@@ -24,8 +25,15 @@ const pairs = ([
 
 const pairCount = pairs.length;
 
-export const getRoomColor = roomIndex => pairs[roomIndex % pairCount][0];
-export const getCostumeColor = roomIndex => pairs[roomIndex % pairCount][1];
+const pairByRoomIndex = (roomIndex) => {
+  const [x, y, z] = layout.getRoom(roomIndex);
+  return pairs[(x + Math.ceil(Math.abs(y)) + z) % pairCount];
+};
+
+export const getRoomColor = roomIndex => pairByRoomIndex(roomIndex)[0];
+export const getRoomColorByIndex = index => pairs[index % pairs.length][0];
+
+export const getCostumeColor = roomIndex => pairByRoomIndex(roomIndex)[1];
 export const namedColors = { green, red, orange, purple, blue, pink };
 export const roomColors = { green, red, orange, blue, pink };
 
@@ -36,3 +44,4 @@ const pairColor = (color) => pairs.filter(
 export const recordRoomColor = namedColors[window.localStorage.getItem('color')] || namedColors.green;
 export const recordCostumeColor = window.localStorage.getItem('color') ? pairColor(recordRoomColor) : namedColors.red;
 export const waitRoomColor = new Color(0x838181);
+export const highlightColor = new Color(0xffff00);

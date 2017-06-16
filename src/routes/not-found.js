@@ -1,10 +1,12 @@
 
-export default {
-  mount: () => {
-    console.log('404');
-  },
+export default () => (
+  {
+    mount: () => {
+      console.log('404');
+    },
 
-  unmount: () => {
+    unmount: () => {
 
-  },
-};
+    },
+  }
+);

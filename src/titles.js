@@ -3,6 +3,19 @@ import audio from './audio';
 import createTimeline from './lib/timeline';
 
 export default (orb) => {
+  if (process.env.FLAVOR === 'cms') {
+    return {
+      hide: () => {},
+      mount: () => {
+        const c = document.querySelector('.colophon');
+        if (!c) return;
+        c.parentNode.removeChild(c);
+      },
+      destroy: () => {},
+      tick: () => {},
+    };
+  }
+
   const hudEl = document.querySelector('.hud');
 
   const splashTitle = h(
@@ -18,12 +31,12 @@ export default (orb) => {
 
   const elements = { splash };
 
-  const chromeExperiment = document.querySelector('.chrome-experiment');
+  const colophon = document.querySelector('.colophon');
 
   const timeline = createTimeline([
     {
       time: 0,
-      show: [chromeExperiment],
+      show: [colophon],
     },
     {
       time: 4.1,
@@ -67,7 +80,7 @@ export default (orb) => {
     },
     {
       time: 15,
-      hide: [chromeExperiment],
+      hide: [colophon],
     },
   ]);
 
@@ -109,7 +122,7 @@ export default (orb) => {
       }
     },
     tick: () => {
-      timeline.tick(audio.currentTime);
+      timeline.tick(audio.time);
     },
   };
 };

@@ -1,0 +1,11 @@
+@import '../../../../theme/theme';
+
+.cms-container {
+  bottom: 0;
+  left: 0;
+  margin: 1rem;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: $cms-layer;
+}

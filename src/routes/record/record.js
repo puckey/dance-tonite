@@ -8,8 +8,11 @@ import createTimeline from '../../lib/timeline';
 import controllers from '../../controllers';
 import transition from '../../transition';
 import instructions from '../../instructions';
-import { waitRoomColor, recordRoomColor } from '../../theme/colors';
+import hud from '../../hud';
+import router from '../../router';
+import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
+import layout from '../../room/layout';
 
 export default (goto, req) => {
   const { roomDepth, roomOffset } = settings;
@@ -17,6 +20,7 @@ export default (goto, req) => {
   let room;
   let orb;
   let orb2;
+  const roomColor = getRoomColor(parseInt(req.params.roomIndex, 10));
 
   let performedFinish = false;
   const performFinish = async () => {
@@ -51,7 +55,7 @@ export default (goto, req) => {
   const pressToFinish = {
     removeOnPress: true,
     left: {
-      text: 'press to redo',
+      text: 'press\nto\nrestart',
       onPress: async () => {
         await transition.enter({
           text: 'Let’s try that again...',
@@ -60,7 +64,7 @@ export default (goto, req) => {
       },
     },
     right: {
-      text: 'press to finish',
+      text: 'press\nto\nfinish',
       onPress: performFinish,
     },
   };
@@ -68,7 +72,7 @@ export default (goto, req) => {
   const pressToStart = {
     removeOnPress: true,
     right: {
-      text: 'press to start',
+      text: 'press\nto\nstart',
       onPress: performStart,
     },
   };
@@ -111,7 +115,7 @@ export default (goto, req) => {
     {
       time: 1,
       callback: () => {
-        room.changeColor(recordRoomColor);
+        room.changeColor(roomColor);
         controllers.update();
       },
     },
@@ -125,26 +129,25 @@ export default (goto, req) => {
     timeline.tick(audio.progress);
 
     const z = (progress - 0.5) * roomDepth + roomOffset;
-    orb.move(z);
+    orb.position.z = z;
     if (audio.totalProgress > 1) {
-      orb2.move(z + roomDepth * 2);
+      orb2.position.z = z + roomDepth * 2;
     }
     recording.tick();
   };
   recording.setup({
-    loopIndex: req.params.loopIndex
-      || (Math.floor(Math.random() * settings.loopCount) + 1),
-    hideHead: req.params.hideHead === '1',
+    roomIndex: parseInt(req.params.roomIndex, 10),
+    hideHead: /no/.test(req.params.hideHead),
   });
 
   const controllersTick = () => {
-    const count = viewer.countActiveControllers();
+    const count = controllers.countActiveControllers();
     controllers.update(count === 2 ? pressToStart : null);
     instructions.setSubText(count === 2
       ? 'press right controller to start'
       : count === 1
         ? 'turn on both of your controllers'
-        : 'turn on your controllers'
+        : 'turn on your controllers\nthen press any button to begin'
     );
   };
 
@@ -152,14 +155,14 @@ export default (goto, req) => {
     mount: async () => {
       Room.reset();
       await audio.load({
-        src: `/public/sound/room-${recording.loopIndex}.ogg`,
+        src: `/public/sound/room-${layout.loopIndex(recording.roomIndex)}.ogg`,
         loops: 2,
         loopOffset: 0.5,
       });
       if (component.destroyed) return;
 
       viewer.switchCamera('default');
-      room = new Room({ recording });
+      room = new Room({ recording, index: recording.roomIndex, single: true });
       room.changeColor(waitRoomColor);
 
       instructions.add();
@@ -170,6 +173,14 @@ export default (goto, req) => {
 
       orb = new Orb();
       orb2 = new Orb();
+
+      // Create close button
+      hud.create('div.close-button',
+        {
+          onclick: () => router.navigate('/'),
+        },
+        '×'
+      );
 
       transition.exit();
     },

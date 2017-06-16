@@ -1,12 +1,10 @@
 import Orb from '../orb';
-import MegaOrb from '../megaorb';
 import audio from '../audio';
 import audioSrcOgg from '../public/sound/tonite.ogg';
 import audioSrcMp3 from '../public/sound/tonite.mp3';
 import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
-import about from '../about';
 import createTitles from '../titles';
 import transition from '../transition';
 import hud from '../hud';
@@ -14,11 +12,16 @@ import feature from '../utils/feature';
 import { sleep } from '../utils/async';
 import Room from '../room';
 import progressBar from '../progress-bar';
+import background from '../background';
+import setupPOV from '../pov';
+import layout from '../room/layout';
+
+const { holeHeight } = settings;
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
-const { roomDepth, roomOffset, holeHeight } = settings;
+
 
 let titles;
 
@@ -45,16 +48,32 @@ export default (req) => {
   const hudSettings = {
     menuAdd: true,
     menuEnter: toggleVR,
-    aboutButton: about.toggle,
     colophon: true,
-    chromeExperiment: true,
   };
 
+  if (process.env.FLAVOR === 'cms') {
+    Object.assign(hudSettings, {
+      playPauseButton: true,
+      nextButton: true,
+      prevButton: true,
+      menuAdd: false,
+    });
+  }
+
   let orb;
-  let megaOrb;
   let playlist;
   let tick;
-  const loopIndex = parseInt(req.params.loopIndex, 10);
+  const roomIndex = parseInt(req.params.roomIndex, 10);
+  let pov;
+
+
+  function move(progress) {
+    const position = layout.getPosition(progress + 0.5);
+    position.y += holeHeight;
+    position.z *= -1;
+    orb.position.copy(position);
+    return position;
+  }
 
   const component = {
     hud: hudSettings,
@@ -66,29 +85,29 @@ export default (req) => {
       }
 
       orb = new Orb();
-      megaOrb = new MegaOrb();
       titles = createTitles(orb);
       titles.mount();
 
-      const moveCamera = (progress) => {
-        const emptySpace = 2.5;
-        const z = ((progress - emptySpace) * roomDepth) + roomOffset;
-        viewer.camera.position.set(0, holeHeight, -z);
-        orb.move(-z);
-      };
-
-      moveCamera(0);
+      move(0);
       Room.rotate180();
       playlist = new Playlist();
 
+      pov = setupPOV(orb, playlist);
+
       tick = () => {
         if (transition.isInside()) return;
+
         audio.tick();
         Room.clear();
         playlist.tick();
         titles.tick();
-        progressBar.tick();
-        moveCamera(audio.progress);
+        background.tick();
+        if (!feature.isMobile || !viewer.vrEffect.isPresenting) {
+          progressBar.tick();
+        }
+
+        move(audio.progress || 0);
+        pov.update(audio.progress);
       };
       viewer.events.on('tick', tick);
 
@@ -106,9 +125,11 @@ export default (req) => {
       hud.showLoader('Gathering user performances');
 
       playlist.load({
-        url: 'curated.json',
         pathRecording: req.params.id,
-        loopIndex,
+        pathRoomIndex: roomIndex,
+      }).then(() => {
+        if (component.destroyed) return;
+        pov.setupInput();
       });
       if (component.destroyed) return;
 
@@ -116,10 +137,33 @@ export default (req) => {
       if (transition.isInside()) {
         transition.exit();
       }
-      audio.fadeIn();
-      audio.play();
 
-      positionMegaOrb( megaOrb, audio );
+      if (roomIndex) {
+        // Start at 3 rooms before the recording, or 60 seconds before
+        // the end of the track – whichever comes first.
+        const watchTime = 30;
+        const startTime = Math.min(
+          (roomIndex - 2) * audio.loopDuration,
+          audio.duration - watchTime
+        );
+        audio.gotoTime(startTime);
+        if (viewer.vrEffect.isPresenting) {
+          setTimeout(() => {
+            if (component.destroyed) return;
+            audio.fadeOut();
+            transition.enter({
+              text: 'Please take off your headset',
+            });
+            // TODO add share screen
+          }, watchTime * 1000);
+        }
+      }
+
+      // Safari won't play unless we wait until next tick
+      setTimeout(() => {
+        audio.play();
+        audio.fadeIn();
+      });
     },
 
     unmount: () => {
@@ -132,10 +176,13 @@ export default (req) => {
       titles.destroy();
       playlist.destroy();
       progressBar.destroy();
+      background.destroy();
+      pov.removeInput();
     },
   };
   return component;
 };
+<<<<<<< HEAD
 
 //  duration / loopDuration causes the mega orb to be too far off-screen
 //  move it back a ways so we can see it more immediately
@@ -145,3 +192,5 @@ function positionMegaOrb( orb, audio ){
   const endPos = -( audio.duration * endPosMoveAhead / audio.loopDuration * roomDepth );
   orb.move(endPos);
 }
+=======
+>>>>>>> master

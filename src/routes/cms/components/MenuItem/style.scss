@@ -1,0 +1,12 @@
+@import '../../../../theme/theme';
+@import '../../../../theme/util';
+
+.cms-menu-item {
+  @extend .mod-fill;
+  @extend .mod-no-stroke;
+
+  width: 2rem;
+  height: 2rem;
+  margin-top: -0.4rem;
+  cursor: pointer;
+}

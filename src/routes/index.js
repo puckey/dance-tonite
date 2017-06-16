@@ -1,7 +1,10 @@
 import router from '../router';
+<<<<<<< HEAD
 import playback from './playback';
 import record from './record';
 import giffer from './giffer';
+=======
+>>>>>>> master
 import notFound from './not-found';
 import transition from '../transition';
 import hud from '../hud';
@@ -9,6 +12,7 @@ import audio from '../audio';
 
 let current;
 
+<<<<<<< HEAD
 // const components = { record, playback };
 const components = { record, playback, giffer };
 const routes = {
@@ -17,6 +21,13 @@ const routes = {
   '/:loopIndex?/:id?': playback,
   '/*': notFound,
 };
+=======
+const { components, routes } = require(`./routes-${
+  process.env.FLAVOR === 'cms' ? 'cms' : 'website'
+}`).default;
+
+routes['/*'] = notFound;
+>>>>>>> master
 
 export const mount = async (id, req = { params: {} }, event) => {
   const route = routes[id] || components[id];

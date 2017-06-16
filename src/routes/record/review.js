@@ -8,9 +8,10 @@ import storage from '../../storage';
 import controllers from '../../controllers';
 import transition from '../../transition';
 import Room from '../../room';
+import hud from '../../hud';
+import router from '../../router';
 import { tempVector } from '../../utils/three';
 import { sleep } from '../../utils/async';
-import feature from '../../utils/feature';
 
 export default (goto) => {
   const { roomDepth, roomOffset } = settings;
@@ -44,7 +45,7 @@ export default (goto) => {
 
   const performSubmit = async () => {
     controllers.update();
-    const persisting = storage.persist(recording.serialize());
+    const persisting = storage.persist(recording.serialize(), recording.roomIndex);
     audio.fadeOut();
 
     await transition.fadeOut();
@@ -61,7 +62,7 @@ export default (goto) => {
 
     if (component.destroyed) return;
 
-    goto(`/${recording.loopIndex}/${recordingSrc.replace('.json', '')}`);
+    goto(`/${recording.roomIndex}/${recordingSrc.replace('.json', '')}`);
   };
 
   const performRedo = async () => {
@@ -83,9 +84,7 @@ export default (goto) => {
 
   const component = {
     mount: async () => {
-      Room.reset({
-        showAllWalls: true,
-      });
+      Room.reset();
       Room.rotate180();
       playlist = new Playlist({ recording });
 
@@ -107,17 +106,26 @@ export default (goto) => {
       viewer.events.on('tick', tick);
       controllers.update({
         left: {
-          text: 'press to redo',
+          text: 'press\nto\nredo',
           onPress: performRedo,
           removeOnPress: true,
         },
         right: {
-          text: 'press to submit',
+          text: 'press\nto\nsubmit',
           onPress: performSubmit,
           removeOnPress: true,
         },
       });
       controllers.add();
+
+      // Create close button
+      hud.create('div.close-button',
+        {
+          onclick: () => router.navigate('/'),
+        },
+        '×'
+      );
+
       transition.exit();
     },
 

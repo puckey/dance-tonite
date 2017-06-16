@@ -7,14 +7,18 @@ import viewer from '../../viewer';
 import settings from '../../settings';
 import hud from '../../hud';
 import createTimeline from '../../lib/timeline';
-import { waitRoomColor, recordRoomColor } from '../../theme/colors';
-import { Vector3 } from '../../lib/three';
+import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
 import windowSize from '../../utils/windowSize';
+import audioSrcOgg from '../../public/sound/room-1.ogg';
+import audioSrcMp3 from '../../public/sound/room-1.mp3';
+import { worldToScreen } from '../../utils/three';
+
+const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 
 // TODO: replace with better recording:
-const TUTORIAL_RECORDING_URL = '1030266141029-b5ba6ff6.json';
+const TUTORIAL_RECORDING_ID = 'hIR_Tw';
 
 const { roomDepth, roomOffset } = settings;
 
@@ -24,28 +28,16 @@ const getLineTransform = (x1, y1, x2, y2, margin) => {
   return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
 };
 
-export default (goto) => {
+export default (goto, req) => {
   let getLineTarget;
   let room;
+  const roomColor = getRoomColor(parseInt(req.params.roomIndex, 10));
   const state = { minLayers: 0 };
   const elements = {};
   const objects = {};
 
-  const TEMP_VECTOR = new Vector3();
-  const worldToScreen = (position) => {
-    // map to normalized device coordinate (NDC) space
-    TEMP_VECTOR
-      .copy(position)
-      .project(viewer.camera);
-    TEMP_VECTOR.x = (TEMP_VECTOR.x + 1) * (windowSize.width * 0.5);
-    TEMP_VECTOR.y = (-TEMP_VECTOR.y + 1) * (windowSize.height * 0.5);
-
-    return TEMP_VECTOR;
-  };
-
   const performSkip = async () => {
-    // TODO: we need to make sure the user has a vr device capable of room vr:
-    if (feature.hasVR) {
+    if (feature.has6DOF) {
       elements.skipTutorialButton.classList.add('mod-hidden');
       const removeOverlay = hud.enterVR();
       if (!viewer.vrEffect.isPresenting) {
@@ -73,27 +65,30 @@ export default (goto) => {
     {
       time: 1,
       callback: () => {
-        room.changeColor(recordRoomColor);
+        room.changeColor(roomColor);
       },
     },
   ]);
 
   const createOverlay = () => {
     if (elements.overlayEl) return;
-    elements.overlayEl = hud.create(
+    elements.overlayEl = feature.has6DOF ? hud.create(
       'div.tutorial-overlay',
-      {
-        onclick: performSkip,
-      },
+      h('div.tutorial-overlay-text', h('a', { onclick: performSkip }, 'Add your performance')),
+    ) :
+    hud.create(
+      'div.tutorial-overlay',
       h(
         'div.tutorial-overlay-text',
         h(
           'span',
-          feature.hasVR
-            ? 'Add your performance'
-            : 'A message about Vive not being found. Click here to go home.'
-        ),
-      )
+          h('h3', 'Shucks, room-scale VR not found.'),
+          h('p', 'This requires room-scale VR and a WebVR-enabled browser.'),
+          h('a', { href: 'https://webvr.info', target: '_blank' }, 'Get set up'),
+          ' or ',
+          h('a', { onclick: performSkip }, 'return home.')
+        )
+      ),
     );
   };
 
@@ -101,11 +96,11 @@ export default (goto) => {
     {
       time: 0.5,
       text: 'This is you.',
-      getPosition: () => room.getHeadPosition(0, audio.time),
+      getPosition: () => room.getHeadPosition(0),
       layers: 1,
     },
     {
-      time: 3,
+      time: 5,
       text: 'This is the camera.',
       getPosition: () => objects.orb.mesh.position,
     },
@@ -115,7 +110,7 @@ export default (goto) => {
     },
     {
       time: 10.5,
-      text: '(Don’t bump into the camera)',
+      text: '(Try to avoid bumping into the camera)',
       getPosition: null,
     },
     {
@@ -125,26 +120,22 @@ export default (goto) => {
     },
     {
       time: 14,
-      getPosition: () => room.getHeadPosition(0, audio.time),
+      getPosition: () => room.getHeadPosition(0),
       text: 'This is you...',
     },
     {
       time: 16,
-      getPosition: () => room.getHeadPosition(1, audio.time),
+      getPosition: () => room.getHeadPosition(1),
       text: 'This is you...',
     },
     {
       time: 17,
       text: 'This is your previous recording.',
-      getPosition: () => room.getHeadPosition(0, audio.time),
+      getPosition: () => room.getHeadPosition(0),
     },
     {
       time: 24,
       text: 'Dance together!',
-    },
-    {
-      time: 26.5,
-      text: '(Don’t bump into each other)',
     },
     {
       time: 32,
@@ -180,27 +171,27 @@ export default (goto) => {
     );
     const progress = audio.progress - 1; // value between -1 and 1
     colorTimeline.tick(audio.progress);
-    textTimeline.tick(audio.currentTime % 48);
+    textTimeline.tick(audio.time % 48);
 
     const z = (progress - 0.5) * -roomDepth - roomOffset;
-    objects.orb.move(z);
+    objects.orb.position.z = z;
     if (audio.totalProgress > 1) {
-      objects.orb2.move(z - roomDepth * 2);
+      objects.orb2.position.z = z - roomDepth * 2;
     }
 
     if (getLineTarget) {
-      const { x, y } = worldToScreen(getLineTarget());
+      const { x, y } = worldToScreen(viewer.camera, getLineTarget());
       elements.lineEl.style.transform = getLineTransform(
         state.lineOriginX,
         state.lineOriginY,
         x,
         y,
-        state.windowHeight * 0.03
+        windowSize.height * 0.04
       );
     }
   };
 
-  const updateWindowDimensions = ({ width, height }) => {
+  const updateWindowDimensions = ({ width }) => {
     state.lineOriginX = width / 2;
     state.lineOriginY = elements.tutorialText.offsetHeight * 1.2;
   };
@@ -226,7 +217,7 @@ export default (goto) => {
 
       elements.tutorialText = hud.create('div.tutorial-text');
       elements.skipTutorialButton = hud.create(
-        'div.skip-tutorial-button',
+        'div.skip-button',
         {
           onclick: createOverlay,
         },
@@ -238,7 +229,7 @@ export default (goto) => {
         },
         '×'
       );
-      elements.lineEl = hud.create('div.line', {
+      elements.lineEl = hud.create('div.tutorial-line', {
         style: {
           transform: 'scaleX(0)',
         },
@@ -249,14 +240,13 @@ export default (goto) => {
       state.originalZoom = viewer.camera.zoom;
       viewer.camera.position.y = 2;
       viewer.camera.position.z = 1.3;
-      viewer.camera.zoom = 0.7;
       viewer.camera.updateProjectionMatrix();
 
       Room.rotate180();
 
       await Promise.all([
         audio.load({
-          src: '/public/sound/room-1.ogg',
+          src: audioSrc,
           loops: 2,
           loopOffset: 0.5,
         }),
@@ -267,10 +257,9 @@ export default (goto) => {
       hud.hideLoader();
 
       room = new Room({
-        url: TUTORIAL_RECORDING_URL,
-        showHead: true,
+        id: TUTORIAL_RECORDING_ID,
         index: 0,
-        recording: true,
+        single: true,
       });
       room.changeColor(waitRoomColor);
 
@@ -301,7 +290,6 @@ export default (goto) => {
         room.destroy();
       }
       viewer.camera.position.y = 0;
-      viewer.camera.zoom = 1;
       viewer.camera.updateProjectionMatrix();
       viewer.events.off('tick', tick);
       textTimeline.off('keyframe', handleKeyframe);
