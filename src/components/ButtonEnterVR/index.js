@@ -19,14 +19,14 @@ const toggleVR = async () => {
     viewer.switchCamera('orthographic');
   } else {
     viewer.vrEffect.requestPresent();
-    this.removeMessage = hud.enterVR();
+    const removeMessage = hud.enterVR();
     await audio.fadeOut();
     viewer.switchCamera('default');
     await sleep(1000);
     audio.pause();
     audio.rewind();
     await sleep(4000);
-    this.removeMessage();
+    removeMessage();
     audio.play();
   }
 };
