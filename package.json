@@ -8,7 +8,9 @@
     "start": "cross-env NODE_ENV=development webpack-dev-server --display-error-details -d --history-api-fallback --inline --progress --colors --port 3000",
     "start-cms": "cross-env NODE_ENV=development FLAVOR=cms webpack-dev-server --display-error-details -d --history-api-fallback --inline --progress --colors --port 3000",
     "build": "cross-env NODE_ENV=production webpack --progress --colors",
-    "build-cms": "cross-env NODE_ENV=production FLAVOR=cms webpack --progress --colors"
+    "build-cms": "cross-env NODE_ENV=production FLAVOR=cms webpack --progress --colors",
+    "deploy": "npm run build && npm run deploy-app-engine",
+    "deploy-app-engine": "appcfg.py update -A you-move-me -V master ."
   },
   "dependencies": {
     "async": "^2.3.0",

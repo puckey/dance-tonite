@@ -1,0 +1,18 @@
+runtime: go
+api_version: go1
+
+handlers:
+  - url: .*
+    script: _go_app
+    secure: always
+
+skip_files:
+- ^(.*/)?\..*$
+- package.json
+- ^node_modules/(.*/)?
+- \.gitignore
+- ^\.git/.*
+- (.*).DS_Store
+- ^src/(.*/)?
+- ^README\..*
+- ^webpack.config\.js
