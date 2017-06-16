@@ -3,7 +3,6 @@ import { h, Component } from 'preact';
 import './style.scss';
 
 import router from '../../router';
-import viewer from '../../viewer';
 
 export default class RoomLabel extends Component {
   constructor() {
