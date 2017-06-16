@@ -5,7 +5,6 @@ import instructions from '../../instructions';
 import router from '../../router';
 import hud from '../../hud';
 import audio from '../../audio';
-import viewer from '../../viewer';
 
 let current;
 
