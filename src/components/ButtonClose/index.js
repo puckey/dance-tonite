@@ -2,7 +2,11 @@
 import { h } from 'preact';
 import './style.scss';
 import ButtonItem from '../ButtonItem';
+import icon from './icon.svg';
 
 export default ({ onClick }) => (
-  <ButtonItem onClick={onClick}>×</ButtonItem>
+  <ButtonItem
+    onClick={onClick}
+    icon={icon}
+  />
 );
