@@ -120,11 +120,13 @@ export default class Playback extends Component {
           pathRoomIndex={roomIndex}
           orb={orb}
         />
-        <Titles
-          viewer={viewer}
-          audio={audio}
-          onUpdate={this.onTitlesChanged}
-        />
+        { process.env.FLAVOR !== 'cms' &&
+          <Titles
+            viewer={viewer}
+            audio={audio}
+            onUpdate={this.onTitlesChanged}
+          />
+        }
         <ProgressBar />
         <Align type="center">
           { error
