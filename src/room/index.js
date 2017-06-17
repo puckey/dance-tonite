@@ -46,7 +46,7 @@ const lerpPose = (
 };
 
 export default class Room {
-  constructor({ id, recording, index, single = false, wall = false }) {
+  constructor({ id, recording, index, single = false, wall = false, isGiffing = false }) {
     this._worldPosition = new THREE.Vector3();
     this.index = recording ? recording.roomIndex : index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
@@ -71,6 +71,7 @@ export default class Room {
     if (single || wall || layout.hasWall(index)) {
       items.wall.add([position, null], getRoomColor(this.index));
     }
+    Room.isGiffing = isGiffing;
   }
 
   load(callback) {
@@ -192,11 +193,12 @@ Room.reset = () => {
       ),
     };
   }
+  // if (!Room.isGiffing) viewer.scene.add(roomsGroup);
 
-  // Move an extra invisible object3d with a texture to the end of scene's
-  // children array in order to solve a texture glitch as described in:
+  // Move an extra invisible object3d with a texture to the end of scene's children
+  // array in order to solve a texture glitch as described in:
   // https://github.com/puckey/you-move-me/issues/129
-  viewer.scene.add(debugMesh);
+  if (!Room.isGiffing) viewer.scene.add(debugMesh);
 };
 
 Room.rotate180 = () => {
@@ -209,3 +211,5 @@ Room.setHighlight = ([room, performance] = []) => {
   Room.highlight.roomIndex = room;
   Room.highlight.performanceIndex = performance;
 };
+
+Room.getGroup = () => InstancedItem.group;
