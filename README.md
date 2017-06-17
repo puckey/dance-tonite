@@ -16,11 +16,24 @@
 
 ## Deployments
 
+### __Development Servers__
+
 Password to access deployments: CYtTx8gMi7qyPJZ
 
 - __Staging__: Commits on [master](https://github.com/puckey/you-move-me/tree/master) branch are automatically deployed to staging: http://staging-tonite-dance.puckey.studio
 - __Production__: Commits on [deploy-dance-tonite](https://github.com/puckey/you-move-me/tree/deploy-dance-tonite) branch are automatically deployed to production: http://dance-tonite.puckey.studio
 - __Branches__: Builds of all branches can be accessed through: `https://{branch-name}--dance-tonite.netlify.com/`
+
+### __App Engine__
+
+https://master-dot-you-move-me.appspot.com/
+
+Login: Username: [blank], Password: realityreality
+
+__Deploying__:
+
+  1. Install the [Go SDK for App Engine](https://cloud.google.com/appengine/downloads#Google_App_Engine_SDK_for_Go)
+  2. run the command: `npm run deploy`
 
 ## Recording
 - To record a specific room, add the number behind the record url: `/record/1/head=yes/` up to `/record/21/head=yes/`.
