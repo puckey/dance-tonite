@@ -159,7 +159,7 @@ export default class Playlist extends Component {
 
   render() {
     const { visibleRooms } = this.state;
-    return process.env.FLAVOR === 'cms' && (
+    return process.env.FLAVOR === 'cms' && !viewer.vrEffect.isPresenting && (
       <div>
         {
           visibleRooms &&
