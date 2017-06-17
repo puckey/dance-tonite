@@ -33,6 +33,8 @@ export default class Playback extends Component {
     this.tick = this.tick.bind(this);
     this.performFinish = this.performFinish.bind(this);
     this.performStart = this.performStart.bind(this);
+    this.onOrbLeftRoom = this.onOrbLeftRoom.bind(this);
+    this.onOrbEnteredRoom = this.onOrbEnteredRoom.bind(this);
 
     this.controllerSettings = {
       pressToFinish: {
@@ -63,28 +65,11 @@ export default class Playback extends Component {
     this.timeline = createTimeline([
       {
         time: 0,
-        callback: () => {
-          this.room.changeColor(waitRoomColor);
-          this.orb2.fadeOut();
-          this.orb.fadeIn();
-          if (audio.totalProgress > 1) {
-            controllers.update(this.controllerSettings.pressToFinish);
-          }
-          const round = Math.floor(audio.totalProgress / 2);
-          const countdownSeconds = Math.round(audio.loopDuration - audio.time);
-          this.setState({ round, countdownSeconds });
-          if (round === settings.maxLayerCount) {
-            this.performFinish();
-            controllers.update();
-          }
-        },
+        callback: this.onOrbLeftRoom,
       },
       {
         time: 1,
-        callback: () => {
-          this.room.changeColor(this.roomColor);
-          controllers.update();
-        },
+        callback: this.onOrbEnteredRoom,
       },
     ]);
   }
@@ -99,6 +84,27 @@ export default class Playback extends Component {
 
   componentWillUnmount() {
     this.mounted = false;
+  }
+
+  onOrbLeftRoom() {
+    this.room.changeColor(waitRoomColor);
+    this.orb2.fadeOut();
+    this.orb.fadeIn();
+    if (audio.totalProgress > 1) {
+      controllers.update(this.controllerSettings.pressToFinish);
+    }
+    const round = Math.floor(audio.totalProgress / 2);
+    const countdownSeconds = Math.round(audio.loopDuration - audio.time);
+    this.setState({ round, countdownSeconds });
+    if (round === settings.maxLayerCount) {
+      this.performFinish();
+      controllers.update();
+    }
+  }
+
+  onOrbEnteredRoom() {
+    this.room.changeColor(this.roomColor);
+    controllers.update();
   }
 
   setLoading(loading) {
