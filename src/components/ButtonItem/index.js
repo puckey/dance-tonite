@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import './style.scss';
 
-export default ({ onClick, icon, label, children }) => (
+export default ({ onClick, icon, label, children, className }) => (
   <div
     className="button-item"
     onClick={onClick}
@@ -15,7 +15,13 @@ export default ({ onClick, icon, label, children }) => (
     }
     { icon &&
       <div
-        className={classNames('button-item-icon', label && 'mod-label')}
+        className={
+          classNames(
+            'button-item-icon',
+            label && 'mod-label',
+            className,
+          )
+        }
         dangerouslySetInnerHTML={{ __html: icon }}
       />
     }

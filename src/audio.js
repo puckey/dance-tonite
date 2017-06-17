@@ -98,11 +98,13 @@ const audio = Object.assign(emitter(), {
         onPause = () => {
           this.paused = true;
           pauseTime = getAudioTime();
+          this.emit('pause');
         };
         onPlay = () => {
           startTime = Date.now() - getAudioTime();
           this.paused = false;
           pauseTime = null;
+          this.emit('play');
         };
         onSeeked = () => {
           if (pauseTime) {
@@ -146,14 +148,12 @@ const audio = Object.assign(emitter(), {
     this.paused = false;
     if (context) context.resume();
     if (audioElement) audioElement.play();
-    audio.emit('play');
   },
 
   pause() {
     this.paused = true;
     if (context) context.suspend();
     if (audioElement) audioElement.pause();
-    audio.emit('pause');
   },
 
   toggle() {
