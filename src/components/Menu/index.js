@@ -25,16 +25,22 @@ export default class Menu extends Component {
   }
 
   render() {
+    const {
+      enterVR = true,
+      addRoom = true,
+      about = true,
+      mute = true,
+    } = this.props;
     return (
       <div>
         { this.state.about && <About onClose={this.toggleAbout} />}
         <Align type="top-left" rows>
-          <ButtonAbout onClick={this.toggleAbout} />
-          <ButtonMute />
+          { about && <ButtonAbout onClick={this.toggleAbout} /> }
+          { mute && <ButtonMute /> }
         </Align>
         <Align type="bottom-right">
-          <ButtonEnterVR label />
-          <ButtonAddRoom label />
+          { enterVR && <ButtonEnterVR label /> }
+          { addRoom && <ButtonAddRoom label /> }
         </Align>
       </div>
     );

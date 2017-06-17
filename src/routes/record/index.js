@@ -1,7 +1,6 @@
 import record from './record';
 import review from './review';
 import tutorial from './tutorial';
-import instructions from '../../instructions';
 import router from '../../router';
 import hud from '../../hud';
 import audio from '../../audio';
@@ -39,7 +38,6 @@ export default (req) => (
 
     unmount: () => {
       audio.fadeOut();
-      instructions.reset();
       if (current) {
         current.unmount();
         current = null;

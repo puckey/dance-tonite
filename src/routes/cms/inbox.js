@@ -1,7 +1,6 @@
 /** @jsx h */
 import { h, render } from 'preact';
 
-import router from '../../router';
 import Inbox from '../../containers/Inbox';
 
 export default (req) => {
