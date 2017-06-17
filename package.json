@@ -8,7 +8,9 @@
     "start": "cross-env NODE_ENV=development webpack-dev-server --display-error-details -d --history-api-fallback --inline --progress --colors --port 3000",
     "start-cms": "cross-env NODE_ENV=development FLAVOR=cms webpack-dev-server --display-error-details -d --history-api-fallback --inline --progress --colors --port 3000",
     "build": "cross-env NODE_ENV=production webpack --progress --colors",
-    "build-cms": "cross-env NODE_ENV=production FLAVOR=cms webpack --progress --colors"
+    "build-cms": "cross-env NODE_ENV=production FLAVOR=cms webpack --progress --colors",
+    "deploy": "npm run build && npm run deploy-app-engine",
+    "deploy-app-engine": "appcfg.py update -A you-move-me -V master ."
   },
   "dependencies": {
     "async": "^2.3.0",
@@ -28,6 +30,8 @@
     "tween-ticker": "^3.3.2",
     "unfetch": "^2.1.2",
     "unique-s3-uploader": "0.0.2",
+    "ccapture.js": "1.0.6",
+    "gif.js": "0.2.0",
     "webvr-polyfill": "^0.9.34"
   },
   "devDependencies": {

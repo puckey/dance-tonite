@@ -58,8 +58,7 @@ const checkHas6DOF = () => (
         resolve(
           !!displays[0] &&
           !!displays[0].capabilities &&
-          !!displays[0].capabilities.hasPosition &&
-          !!displays[0].capabilities.hasOrientation
+          !!displays[0].capabilities.hasPosition
         );
       })
       .catch((error) => {
