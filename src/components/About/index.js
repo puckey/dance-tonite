@@ -52,7 +52,7 @@ export default class About extends Component {
       <Portal into="body">
         <div className="about">
           <Align type="top-right">
-            <ButtonClose onClick={this.props.onClose} />
+            <ButtonClose onClick={this.props.onClose} className="mod-black" />
           </Align>
           <div
             className="about-content"

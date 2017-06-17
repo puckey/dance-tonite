@@ -12,6 +12,11 @@
   &:hover .button-item-label {
     display: flex;
   }
+
+  &.mod-black {
+    fill: $black-color;
+  }
+
 }
 
 .button-item-label {

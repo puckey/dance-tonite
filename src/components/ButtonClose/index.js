@@ -4,9 +4,10 @@ import './style.scss';
 import ButtonItem from '../ButtonItem';
 import icon from './icon.svg';
 
-export default ({ onClick }) => (
+export default ({ onClick, className }) => (
   <ButtonItem
     onClick={onClick}
+    className={className}
     icon={icon}
   />
 );
