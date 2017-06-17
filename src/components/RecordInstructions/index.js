@@ -6,25 +6,34 @@ import * as SDFText from '../../sdftext';
 import viewer from '../../viewer';
 import settings from '../../settings';
 
-const textCreator = SDFText.creator();
-const subtitleItem = textCreator.create('', {
-  scale: 2.25,
-  align: 'center',
-  color: settings.textColor,
-  mode: 'nowrap',
-});
-
-const mainItem = textCreator.create('', {
-  scale: 7.5,
-  align: 'center',
-  color: settings.textColor,
-  mode: 'nowrap',
-});
-mainItem.position.y = -0.65;
+let subtitleItem;
+let mainItem;
 
 export default class RecordInstructions extends Component {
   constructor() {
     super();
+
+    if (!subtitleItem) {
+      const textCreator = SDFText.creator();
+
+      const textSettings = {
+        align: 'center',
+        color: settings.textColor,
+        mode: 'nowrap',
+      };
+
+      subtitleItem = textCreator.create('', {
+        ...textSettings,
+        scale: 2.25,
+      });
+
+      mainItem = textCreator.create('', {
+        ...textSettings,
+        scale: 7.5,
+      });
+
+      mainItem.position.y = -0.65;
+    }
 
     const group = this.group = new Group();
     group.name = 'Instructions';
