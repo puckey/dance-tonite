@@ -33,7 +33,14 @@ const toggleVR = async () => {
 
 export default ({ label }) => (
   <ButtonItem
-    label={label && (feature.hasVR ? 'Enter VR' : 'VR not found')}
+    label={label && (
+      feature.hasVR
+        ? viewer.vrEffect.isPresenting
+          ? 'Exit VR'
+          : 'Enter VR'
+        : 'VR not found'
+      )
+    }
     onClick={toggleVR}
     icon={feature.hasVR ? enterIconSvg : enterIconDisabledSvg}
   />
