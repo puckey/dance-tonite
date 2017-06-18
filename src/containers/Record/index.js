@@ -163,7 +163,7 @@ export default class Playback extends Component {
     });
   }
 
-  performControllersDisonnected() {
+  performControllersDisconnected() {
     this.setState({
       controllerSettings: null,
     });
