@@ -1,8 +1,6 @@
-import * as serializer from './utils/serializer';
-import InstancedItem from './instanced-item';
-import audio from './audio';
-
-const POSITION_ROTATION = [null, null];
+import * as serializer from '../utils/serializer';
+import InstancedItem from '../instanced-item';
+import audio from '../audio';
 
 const getFrame = (frames, number) => {
   let frame = frames[number];

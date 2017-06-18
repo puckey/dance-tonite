@@ -1,6 +1,6 @@
-import { queryData } from './utils/url';
-import streamJSON from './lib/stream-json';
-import feature from './utils/feature';
+import { queryData } from '../utils/url';
+import streamJSON from '../lib/stream-json';
+import feature from '../utils/feature';
 import Frame from './frame';
 
 const PROTOCOL = location.protocol;

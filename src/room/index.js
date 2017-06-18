@@ -19,7 +19,7 @@ import {
 import layout from './layout';
 import dummyTextureUrl from '../public/dummy.png';
 import InstancedItem from '../instanced-item';
-import Frames from '../frames';
+import Frames from './frames';
 import { createPose } from '../utils/serializer';
 import audio from '../audio';
 
