@@ -1,8 +1,6 @@
 const userAgent = navigator.userAgent;
 
-const vrSupported = () => {
-  return navigator.getVRDisplays !== undefined;
-};
+const vrSupported = () => navigator.getVRDisplays !== undefined;
 
 const checkHasExternalDisplay = () => (
   new Promise((resolve) => {

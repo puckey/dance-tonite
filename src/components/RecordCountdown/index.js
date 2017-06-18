@@ -4,7 +4,8 @@ import { h, Component } from 'preact';
 import { sleep } from '../../utils/async';
 import roundText from './round-text';
 
-import RecordInstructions from '../RecordInstructions';
+import RoomInstructions from '../RoomInstructions';
+import audio from '../../audio';
 
 export default class RecordCountdown extends Component {
   constructor() {
@@ -22,11 +23,11 @@ export default class RecordCountdown extends Component {
   }
 
   async beginCountdown() {
-    const { seconds, round } = this.props;
+    const { round } = this.props;
     this.setState({
       subtitle: roundText(round),
     });
-    let remaining = seconds;
+    let remaining = Math.round(audio.loopDuration - audio.time);
     while (remaining > -2) {
       if (remaining > 0) {
         this.setState({
@@ -51,7 +52,7 @@ export default class RecordCountdown extends Component {
 
   render(props, { main, subtitle }) {
     return (
-      <RecordInstructions
+      <RoomInstructions
         main={main}
         subtitle={subtitle}
       />

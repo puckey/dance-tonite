@@ -6,17 +6,16 @@ import Container from '../../components/Container';
 import Error from '../../components/Error';
 import Align from '../../components/Align';
 import Spinner from '../../components/Spinner';
-import RecordInstructions from '../../components/RecordInstructions';
 import RecordCountdown from '../../components/RecordCountdown';
+import ConnectControllers from '../../components/ConnectControllers';
+import RecordOrbs from '../../components/RecordOrbs';
+import Controllers from '../../components/Controllers';
 
 import Room from '../../room';
-import Orb from '../../orb';
 import audio from '../../audio';
 import viewer from '../../viewer';
 import settings from '../../settings';
 import recording from '../../recording';
-import createTimeline from '../../lib/timeline';
-import controllers from '../../controllers';
 import transition from '../../transition';
 import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
@@ -25,53 +24,16 @@ import layout from '../../room/layout';
 export default class Playback extends Component {
   constructor() {
     super();
+    this.state = { };
 
-    this.state = {
-    };
-
-    this.controllersTick = this.controllersTick.bind(this);
     this.tick = this.tick.bind(this);
     this.performFinish = this.performFinish.bind(this);
     this.performStart = this.performStart.bind(this);
-    this.onOrbLeftRoom = this.onOrbLeftRoom.bind(this);
-    this.onOrbEnteredRoom = this.onOrbEnteredRoom.bind(this);
-
-    this.controllerSettings = {
-      pressToFinish: {
-        removeOnPress: true,
-        left: {
-          text: 'press\nto\nrestart',
-          onPress: async () => {
-            await transition.enter({
-              text: 'Let’s try that again...',
-            });
-            if (this.mounted) this.props.goto('record');
-          },
-        },
-        right: {
-          text: 'press\nto\nfinish',
-          onPress: this.performFinish,
-        },
-      },
-      pressToStart: {
-        removeOnPress: true,
-        right: {
-          text: 'press\nto\nstart',
-          onPress: this.performStart,
-        },
-      },
-    };
-
-    this.timeline = createTimeline([
-      {
-        time: 0,
-        callback: this.onOrbLeftRoom,
-      },
-      {
-        time: 1,
-        callback: this.onOrbEnteredRoom,
-      },
-    ]);
+    this.performNextRound = this.performNextRound.bind(this);
+    this.performWaitRoom = this.performWaitRoom.bind(this);
+    this.performRetry = this.performRetry.bind(this);
+    this.performControllersDisconnected = this.performControllersDisconnected.bind(this);
+    this.performControllersConnected = this.performControllersConnected.bind(this);
   }
 
   componentDidMount() {
@@ -84,27 +46,6 @@ export default class Playback extends Component {
 
   componentWillUnmount() {
     this.mounted = false;
-  }
-
-  onOrbLeftRoom() {
-    this.room.changeColor(waitRoomColor);
-    this.orb2.fadeOut();
-    this.orb.fadeIn();
-    if (audio.totalProgress > 1) {
-      controllers.update(this.controllerSettings.pressToFinish);
-    }
-    const round = Math.floor(audio.totalProgress / 2);
-    const countdownSeconds = Math.round(audio.loopDuration - audio.time);
-    this.setState({ round, countdownSeconds });
-    if (round === settings.maxLayerCount) {
-      this.performFinish();
-      controllers.update();
-    }
-  }
-
-  onOrbEnteredRoom() {
-    this.room.changeColor(this.roomColor);
-    controllers.update();
   }
 
   setLoading(loading) {
@@ -130,12 +71,9 @@ export default class Playback extends Component {
     });
     this.room.changeColor(waitRoomColor);
 
-    viewer.events.on('tick', this.controllersTick);
-
-    controllers.add();
-
-    this.orb = new Orb();
-    this.orb2 = new Orb();
+    this.setState({
+      mode: 'connect-controllers',
+    });
 
     transition.exit();
   }
@@ -143,8 +81,11 @@ export default class Playback extends Component {
   async performFinish() {
     if (this.performedFinish) return;
     this.performedFinish = true;
+    this.setState({
+      controllerInstructions: null,
+    });
     await Promise.all([
-      // Wait for loop to finish:
+      // Keep recording until loop finishes:
       sleep(
         (audio.duration - audio.time) < (audio.loopDuration * 0.5)
           ? (audio.duration - audio.time + 0.1) * 1000
@@ -160,57 +101,115 @@ export default class Playback extends Component {
     if (this.mounted) this.props.goto('review');
   }
 
+  performNextRound() {
+    this.room.changeColor(waitRoomColor);
+    if (audio.totalProgress > 1) {
+      this.setState({
+        controllerSettings: {
+          removeOnPress: true,
+          left: {
+            text: 'press\nto\nrestart',
+            onPress: this.performRetry,
+          },
+          right: {
+            text: 'press\nto\nfinish',
+            onPress: this.performFinish,
+          },
+        },
+      });
+    }
+    const round = Math.floor(audio.totalProgress / 2);
+    this.setState({ round });
+    if (round === settings.maxLayerCount) {
+      this.performFinish();
+    }
+  }
+
+  performWaitRoom() {
+    if (this.room) {
+      this.room.changeColor(this.roomColor);
+    }
+    this.setState({
+      controllerSettings: null,
+    });
+  }
+
   async performStart() {
     this.setState({
-      instructions: null,
+      mode: 'recording',
     });
     audio.play();
     audio.mute();
     audio.fadeIn();
     viewer.events.on('tick', this.tick);
-    viewer.events.off('tick', this.controllersTick);
+  }
+
+  async performRetry() {
+    await transition.enter({
+      text: 'Let’s try that again...',
+    });
+    if (this.mounted) this.props.goto('record');
+  }
+
+  performControllersConnected() {
+    this.setState({
+      controllerSettings: {
+        removeOnPress: true,
+        right: {
+          text: 'press\nto\nstart',
+          onPress: this.performStart,
+        },
+      },
+    });
+  }
+
+  performControllersDisonnected() {
+    this.setState({
+      controllerSettings: null,
+    });
   }
 
   tick() {
     Room.clear();
     audio.tick();
     this.room.gotoTime(audio.time);
-    const progress = audio.progress - 1; // value between -1 and 1
-    this.timeline.tick(audio.progress);
-
-    const z = (progress - 0.5) * settings.roomDepth + settings.roomOffset;
-    this.orb.position.z = z;
-    if (audio.totalProgress > 1) {
-      this.orb2.position.z = z + settings.roomDepth * 2;
-    }
     recording.tick();
   }
 
-  controllersTick() {
-    const count = controllers.countActiveControllers();
-    controllers.update(count === 2 ? this.controllerSettings.pressToStart : null);
-    this.setState({
-      instructions: count === 2
-        ? 'press right controller to start'
-        : count === 1
-          ? 'turn on both of your controllers'
-          : 'turn on your controllers\nthen press any button to begin',
-    });
-  }
-
-  render(props, { error, loading, round, countdownSeconds, instructions }) {
+  render(
+    props,
+    {
+      error,
+      loading,
+      round,
+      countdownSeconds,
+      controllerSettings,
+      mode,
+    }
+  ) {
     return (
       <Container>
-        { round !== undefined
-          ? <RecordCountdown
+        {mode === 'recording' &&
+          <RecordOrbs
+            onEnteredRoom={this.performNextRound}
+            onLeftRoom={this.performWaitRoom}
+          />
+        }
+        { mode === 'connect-controllers' &&
+          <ConnectControllers
+            onConnected={this.performControllersConnected}
+            onDisconnected={this.performControllersDisconnected}
+          />
+        }
+        { !loading &&
+          <Controllers settings={controllerSettings} />
+        }
+        { round !== undefined &&
+          <RecordCountdown
             key={round}
             round={round}
             seconds={countdownSeconds}
           />
-          : instructions !== undefined &&
-            <RecordInstructions
-              subtitle={instructions}
-            />
         }
         <Align type="center">
           { error
