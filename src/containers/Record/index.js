@@ -170,8 +170,6 @@ export default class Playback extends Component {
   }
 
   tick() {
-    Room.clear();
-    audio.tick();
     this.room.gotoTime(audio.time);
     recording.tick();
   }

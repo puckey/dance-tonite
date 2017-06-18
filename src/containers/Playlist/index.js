@@ -115,7 +115,6 @@ export default class Playlist extends Component {
 
   tick() {
     if (!this.rooms || transition.isInside()) return;
-    Room.clear();
     this.moveOrb(audio.progress || 0);
 
     if (!audio.loopDuration) return;

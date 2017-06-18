@@ -27,7 +27,6 @@ const colorTimeline = createTimeline([
 
 const tick = () => {
   audio.tick();
-  Room.clear();
   room.gotoTime(audio.time);
   colorTimeline.tick(audio.progress);
   const progress = audio.progress - 1; // value between -1 and 1

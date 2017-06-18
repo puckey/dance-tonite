@@ -16,6 +16,7 @@ import feature from './utils/feature';
 import windowSize from './utils/windowSize';
 import audio from './audio';
 import postprocessing from './postprocessing';
+import Room from './room';
 
 // if we're on a mobile phone that doesn't support WebVR, use polyfill
 if (feature.isMobile && !feature.isTablet && (navigator.getVRDisplays === undefined)) {
@@ -170,6 +171,7 @@ const animate = () => {
 
   controls.update();
   audio.tick();
+  Room.clear();
   events.emit('tick', dt);
   zoomCamera(
     audio.progress > 21

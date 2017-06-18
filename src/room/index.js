@@ -174,6 +174,7 @@ export default class Room {
 }
 
 Room.clear = () => {
+  if (!items) return;
   items.hand.empty();
   items.head.empty();
 };

@@ -160,8 +160,6 @@ export default (goto, req) => {
   ]);
 
   const tick = () => {
-    audio.tick();
-    Room.clear();
     room.gotoTime(
       audio.time,
       Math.max(
