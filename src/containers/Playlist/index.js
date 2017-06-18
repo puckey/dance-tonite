@@ -15,8 +15,8 @@ import settings from '../../settings';
 import transition from '../../transition';
 import router from '../../router';
 
-import RoomLabel from '../../components/RoomLabel';
 import BackgroundTimeline from '../../components/BackgroundTimeline';
+import RoomLabels from '../../components/RoomLabels';
 
 const easeOut = t => -t * (t - 2.0);
 
@@ -124,11 +124,6 @@ export default class Playlist extends Component {
     this.pov.update(audio.progress);
     this.moveOrb(audio.progress || 0);
 
-    if (process.env.FLAVOR === 'cms') {
-      this.setState({
-        visibleRooms: this.rooms.filter(room => room.isVisibleOnScreen()),
-      });
-    }
     if (!audio.loopDuration) return;
     for (let i = 0; i < this.rooms.length; i++) {
       const room = this.rooms[i];
@@ -156,16 +151,15 @@ export default class Playlist extends Component {
   }
 
   render() {
-    const { visibleRooms } = this.state;
     return (
       <div>
         {
           process.env.FLAVOR === 'cms' &&
           !viewer.vrEffect.isPresenting &&
-          visibleRooms &&
-          visibleRooms.map(room => (
-            <RoomLabel room={room} entry={this.entries[room.index]} />)
-          )
+          <RoomLabels
+            rooms={this.rooms}
+            entries={this.entries}
+          />
         }
         <BackgroundTimeline />
       </div>
