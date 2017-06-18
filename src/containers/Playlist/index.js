@@ -9,7 +9,6 @@ import audio from '../../audio';
 import viewer from '../../viewer';
 import storage from '../../storage';
 import layout from '../../room/layout';
-import background from '../../background';
 import setupPOV from '../../pov';
 import Orb from '../../orb';
 import settings from '../../settings';
@@ -17,6 +16,7 @@ import transition from '../../transition';
 import router from '../../router';
 
 import RoomLabel from '../../components/RoomLabel';
+import BackgroundTimeline from '../../components/BackgroundTimeline';
 
 const easeOut = t => -t * (t - 2.0);
 
@@ -66,7 +66,6 @@ export default class Playlist extends Component {
     this.rooms.forEach((room) => room.destroy());
     viewer.events.off('tick', this.tick);
     this.pov.removeInput();
-    background.destroy();
   }
 
   async asyncMount() {
@@ -123,7 +122,6 @@ export default class Playlist extends Component {
     if (!this.rooms || transition.isInside()) return;
     Room.clear();
     this.pov.update(audio.progress);
-    background.update(audio.time);
     this.moveOrb(audio.progress || 0);
 
     if (process.env.FLAVOR === 'cms') {
@@ -131,7 +129,7 @@ export default class Playlist extends Component {
         visibleRooms: this.rooms.filter(room => room.isVisibleOnScreen()),
       });
     }
-
+    if (!audio.loopDuration) return;
     for (let i = 0; i < this.rooms.length; i++) {
       const room = this.rooms[i];
       let time = audio.time;
@@ -159,14 +157,17 @@ export default class Playlist extends Component {
 
   render() {
     const { visibleRooms } = this.state;
-    return process.env.FLAVOR === 'cms' && !viewer.vrEffect.isPresenting && (
+    return (
       <div>
         {
+          process.env.FLAVOR === 'cms' &&
+          !viewer.vrEffect.isPresenting &&
           visibleRooms &&
-            visibleRooms.map(room => (
-              <RoomLabel room={room} entry={this.entries[room.index]} />)
-            )
+          visibleRooms.map(room => (
+            <RoomLabel room={room} entry={this.entries[room.index]} />)
+          )
         }
+        <BackgroundTimeline />
       </div>
     );
   }

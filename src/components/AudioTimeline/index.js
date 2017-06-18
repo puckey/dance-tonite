@@ -5,7 +5,7 @@ import viewer from '../../viewer';
 import audio from '../../audio';
 import createTimeline from '../../lib/timeline';
 
-export default class ControllersInstructions extends Component {
+export default class AudioTimeline extends Component {
   constructor() {
     super();
     this.tick = this.tick.bind(this);
@@ -14,7 +14,8 @@ export default class ControllersInstructions extends Component {
   componentDidMount() {
     this.mounted = true;
     viewer.events.on('tick', this.tick);
-    this.timeline = createTimeline(this.props.keyframes);
+    const { keyframes, callback } = this.props;
+    this.timeline = createTimeline(keyframes, callback);
   }
 
   componentWillUnmount() {
@@ -27,7 +28,7 @@ export default class ControllersInstructions extends Component {
     this.timeline.tick(
       tick === 'progress'
         ? audio.progress
-        : audio.currentTime
+        : audio.time
       );
   }
 }
