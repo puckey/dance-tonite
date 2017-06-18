@@ -3,12 +3,12 @@ import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
 import settings from './settings';
-import { Group } from './lib/three';
+import * as THREE from './lib/three';
 
 
 //  These are empty objects -- but we'll fill them soon.
 let [leftController, rightController] = viewer.controllers;
-const controllerGroup = new Group();
+const controllerGroup = new THREE.Group();
 
 function handleLeftPress() {
   if (leftPress) leftPress();
@@ -223,5 +223,20 @@ const controllers = Object.assign(
 );
 
 controllers.countActiveControllers = () => +!!leftController.gamepad + +!!rightController.gamepad;
+
+controllers.fixToPosition = (function () {
+  const MATRIX = new THREE.Matrix4();
+  const POSITION = new THREE.Vector3();
+  const ROTATION = new THREE.Quaternion();
+  const SCALE = new THREE.Vector3();
+  return (position) => {
+    for (let i = 0; i < controllers.length; i++) {
+      const controller = controllers[i];
+      controller.matrix.decompose(POSITION, ROTATION, SCALE);
+      const { x, y, z } = POSITION.add(position).sub(viewer.camera.position);
+      controller.matrix.copyPosition(MATRIX.makeTranslation(x, y, z));
+    }
+  };
+}());
 
 export default controllers;

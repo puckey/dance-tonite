@@ -9,7 +9,6 @@ import audio from '../../audio';
 import viewer from '../../viewer';
 import storage from '../../storage';
 import layout from '../../room/layout';
-import setupPOV from '../../pov';
 import Orb from '../../orb';
 import settings from '../../settings';
 import transition from '../../transition';
@@ -17,6 +16,7 @@ import router from '../../router';
 
 import BackgroundTimeline from '../../components/BackgroundTimeline';
 import RoomLabels from '../../components/RoomLabels';
+import POV from '../../components/POV';
 
 const easeOut = t => -t * (t - 2.0);
 
@@ -41,10 +41,6 @@ export default class Playlist extends Component {
       }
     }
 
-    this.pov = setupPOV(this);
-    if (process.env.FLAVOR !== 'cms') {
-      this.pov.setupInput();
-    }
     this.moveOrb(0);
     Room.reset();
     Room.rotate180();
@@ -65,7 +61,6 @@ export default class Playlist extends Component {
     this.orb.destroy();
     this.rooms.forEach((room) => room.destroy());
     viewer.events.off('tick', this.tick);
-    this.pov.removeInput();
   }
 
   async asyncMount() {
@@ -121,7 +116,6 @@ export default class Playlist extends Component {
   tick() {
     if (!this.rooms || transition.isInside()) return;
     Room.clear();
-    this.pov.update(audio.progress);
     this.moveOrb(audio.progress || 0);
 
     if (!audio.loopDuration) return;
@@ -153,6 +147,11 @@ export default class Playlist extends Component {
   render() {
     return (
       <div>
+        <POV
+          rooms={this.rooms}
+          orb={this.orb}
+          enterHeads={process.env.FLAVOR !== 'cms'}
+        />
         {
           process.env.FLAVOR === 'cms' &&
           !viewer.vrEffect.isPresenting &&

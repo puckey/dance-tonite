@@ -219,7 +219,9 @@ Room.rotate180 = () => {
 
 Room.highlight = {};
 
-Room.setHighlight = ([room, performance] = []) => {
+Room.setHighlight = (highlight) => {
+  if (!highlight) return;
+  const [room, performance] = highlight;
   Room.highlight.roomIndex = room;
   Room.highlight.performanceIndex = performance;
 };
