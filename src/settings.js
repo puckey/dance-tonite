@@ -1,6 +1,6 @@
 import { Color } from './lib/three';
 
-const IS_PRODUCTION = true;
+const ASSET_BASE_URL = window.__publicPath; // set by webpack
 
 export default {
   // Room dimensions:
@@ -28,5 +28,5 @@ export default {
   textColor: '#ffff07',
 
   // where are assets hosted
-  assetsURL: IS_PRODUCTION ? 'https://storage.googleapis.com/you-move-me.appspot.com/public/' : '../public/',
+  assetsURL: `${ASSET_BASE_URL}public/`,
 };

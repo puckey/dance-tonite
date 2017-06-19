@@ -19,7 +19,7 @@ const config = {
     path: path.join(__dirname, './dist'),
     filename: 'bundle.js',
     sourcePrefix: '',
-    publicPath: '/',
+    publicPath: process.env.NODE_ENV === 'production' ? 'https://storage.googleapis.com/you-move-me.appspot.com/dist/' : '/',
   },
   module: {
     loaders: [
@@ -102,9 +102,9 @@ const config = {
     new HtmlWebpackPlugin({
       inject: true,
       cache: false,
-      template: 'templates/index.html',
+      template: 'templates/index.ejs',
       title: 'You Move Me',
-      favicon: './public/favico.png',
+      favicon: './public/favico.png'
     }),
     new webpack.ExtendedAPIPlugin(),
     new ScriptExtHtmlWebpackPlugin({
