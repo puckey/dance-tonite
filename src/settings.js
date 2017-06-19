@@ -1,5 +1,7 @@
 import { Color } from './lib/three';
 
+const IS_PRODUCTION = true;
+
 export default {
   // Room dimensions:
   roomDepth: 6,
@@ -24,4 +26,7 @@ export default {
   // The total amount of loops contained in the playback file:
   totalLoopCount: 28,
   textColor: '#ffff07',
+
+  // where are assets hosted
+  assetsURL: IS_PRODUCTION ? 'https://storage.googleapis.com/you-move-me.appspot.com/public/' : '../public/',
 };
