@@ -15,20 +15,23 @@ import {
 } from '../theme/colors';
 
 import layout from './layout';
-import dummyTextureUrl from '../public/dummy.png';
 import InstancedItem from '../instanced-item';
 import Frames from '../frames';
 import { createPose } from '../utils/serializer';
 import audio from '../audio';
 
+const { roomHeight, assetsURL } = settings;
+
 let items;
 
-const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
+const dummyTextureUrl = `${assetsURL}dummy.png`;
+
+const roomOffset = new THREE.Vector3(0, roomHeight * 0.5, 0);
 
 const debugMesh = new THREE.Mesh(
   new THREE.BoxGeometry(0, 0, 0),
   new THREE.MeshBasicMaterial({
-    map: new THREE.TextureLoader().load(dummyTextureUrl),
+    map: new THREE.TextureLoader().setCrossOrigin('anonymous').load(dummyTextureUrl),
   })
 );
 debugMesh.frustumCulled = false;

@@ -10,7 +10,7 @@ import createTimeline from '../../../../lib/timeline';
 import layout from '../../../../room/layout';
 import feature from '../../../../utils/feature';
 
-const { roomDepth, roomOffset } = settings;
+const { roomDepth, roomOffset, assetsURL } = settings;
 
 const state = {};
 const objects = {};
@@ -78,7 +78,7 @@ export default class RoomComponent extends Component {
     viewer.camera.updateProjectionMatrix();
     Room.rotate180();
     await audio.load({
-      src: `/public/sound/room-${layout.loopIndex(recording.room)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
+      src: `${assetsURL}sound/room-${layout.loopIndex(recording.room)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
       loops: 2,
       loopOffset: 0.5,
     });

@@ -95,7 +95,7 @@ const loadObject = (url) => new Promise(
 
 const loadTexture = (url) => new Promise(
   (resolve, reject) => {
-    new THREE.TextureLoader().load(
+    new THREE.TextureLoader().setCrossOrigin('anonymous').load(
       url,
       resolve,
       () => {},

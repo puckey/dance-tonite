@@ -11,16 +11,17 @@ import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
 import windowSize from '../../utils/windowSize';
-import audioSrcOgg from '../../public/sound/room-1.ogg';
-import audioSrcMp3 from '../../public/sound/room-1.mp3';
 import { worldToScreen } from '../../utils/three';
 
+const { roomDepth, roomOffset, assetsURL } = settings;
+
+const audioSrcOgg = `${assetsURL}sound/room-1.ogg`;
+const audioSrcMp3 = `${assetsURL}sound/room-1.mp3`;
 const audioSrc = feature.isChrome ? audioSrcOgg : audioSrcMp3;
 
 // TODO: replace with better recording:
 const TUTORIAL_RECORDING_ID = 'hIR_Tw';
 
-const { roomDepth, roomOffset } = settings;
 
 const getLineTransform = (x1, y1, x2, y2, margin) => {
   const length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) - margin;

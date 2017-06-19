@@ -14,7 +14,7 @@ import { tempVector } from '../../utils/three';
 import { sleep } from '../../utils/async';
 
 export default (goto) => {
-  const { roomDepth, roomOffset } = settings;
+  const { roomDepth, roomOffset, assetsURL } = settings;
   const MATRIX = new THREE.Matrix4();
   const POSITION = new THREE.Vector3();
   const ROTATION = new THREE.Quaternion();
@@ -91,7 +91,7 @@ export default (goto) => {
       await Promise.all(
         [
           audio.load({
-            src: `/public/sound/room-${recording.loopIndex || 1}.ogg`,
+            src: `${assetsURL}/sound/room-${recording.loopIndex || 1}.ogg`,
             loops: 2,
           }),
           sleep(5000),

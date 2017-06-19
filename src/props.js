@@ -3,14 +3,16 @@ import { loadModel } from './utils/three';
 import settings from './settings';
 import { recordCostumeColor, orbColor } from './theme/colors';
 
-import wallUrl from './public/models/obj/new-rooms/vr/first-wall.obj';
+const { assetsURL, textColor, sphereRadius } = settings;
 
-import roomUrl from './public/models/obj/new-rooms/vr/horizontal-room.obj';
-import roomTextureUrl from './public/models/obj/new-rooms/vr/bake/horizontal-room-AOMap.jpg';
+const wallUrl = `${assetsURL}models/obj/new-rooms/vr/first-wall.obj`;
 
-import isometricWallUrl from './public/models/obj/new-rooms/first-wall.obj';
-import isometricRoomUrl from './public/models/obj/new-rooms/horizontal-room.obj';
-import isometricRoomTextureUrl from './public/models/obj/new-rooms/bake/horizontal-room-AOMap.jpg';
+const roomUrl = `${assetsURL}models/obj/new-rooms/vr/horizontal-room.obj`;
+const roomTextureUrl = `${assetsURL}models/obj/new-rooms/vr/bake/horizontal-room-AOMap.jpg`;
+
+const isometricWallUrl = `${assetsURL}models/obj/new-rooms/first-wall.obj`;
+const isometricRoomUrl = `${assetsURL}models/obj/new-rooms/horizontal-room.obj`;
+const isometricRoomTextureUrl = `${assetsURL}models/obj/new-rooms/bake/horizontal-room-AOMap.jpg`;
 
 const {
   Mesh,
@@ -61,7 +63,7 @@ const props = {
     const thumbpadHeight = 0.02;
     const thumbpad = new THREE.Mesh(
       new CylinderBufferGeometry(thumbpadRadius, thumbpadRadius, thumbpadHeight, segments),
-      new MeshLambertMaterial({ color: settings.textColor })
+      new MeshLambertMaterial({ color: textColor })
     );
     thumbpad.name = 'button';
     thumbpad.position.z = -0.05;
@@ -94,7 +96,7 @@ const props = {
   sphere: (function createSphere() {
     const segments = 32;
     const geometry = new SphereGeometry(
-      settings.sphereRadius,
+      sphereRadius,
       segments,
       segments,
     );

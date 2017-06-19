@@ -15,7 +15,7 @@ import { sleep } from '../../utils/async';
 import layout from '../../room/layout';
 
 export default (goto, req) => {
-  const { roomDepth, roomOffset } = settings;
+  const { roomDepth, roomOffset, assetsURL } = settings;
 
   let room;
   let orb;
@@ -155,7 +155,7 @@ export default (goto, req) => {
     mount: async () => {
       Room.reset();
       await audio.load({
-        src: `/public/sound/room-${layout.loopIndex(recording.roomIndex)}.ogg`,
+        src: `${assetsURL}sound/room-${layout.loopIndex(recording.roomIndex)}.ogg`,
         loops: 2,
         loopOffset: 0.5,
       });

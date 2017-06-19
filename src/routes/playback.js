@@ -1,7 +1,5 @@
 import Orb from '../orb';
 import audio from '../audio';
-import audioSrcOgg from '../public/sound/tonite.ogg';
-import audioSrcMp3 from '../public/sound/tonite.mp3';
 import Playlist from '../playlist';
 import viewer from '../viewer';
 import settings from '../settings';
@@ -16,7 +14,10 @@ import background from '../background';
 import setupPOV from '../pov';
 import layout from '../room/layout';
 
-const { holeHeight } = settings;
+const { holeHeight, assetsURL } = settings;
+
+const audioSrcOgg = `${assetsURL}sound/tonite.ogg`;
+const audioSrcMp3 = `${assetsURL}sound/tonite.mp3`;
 
 // Chromium does not support mp3:
 // TODO: Switch to always use MP3 in production.

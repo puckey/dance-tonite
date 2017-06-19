@@ -6,7 +6,8 @@ import * as SDFText from './sdftext';
 import * as THREE from './lib/three';
 import { offsetFrom } from './utils/three';
 import settings from './settings';
-import dummyTextureUrl from './public/dummy.png';
+
+const dummyTextureUrl = `${settings.assetsURL}dummy.png`;
 
 let transitionVersion = 0;
 
@@ -32,7 +33,7 @@ transitionScene.add(props.grid);
 const debugMesh = new THREE.Mesh(
   new THREE.BoxGeometry(0, 0, 0),
   new THREE.MeshBasicMaterial({
-    map: new THREE.TextureLoader().load(dummyTextureUrl),
+    map: new THREE.TextureLoader().setCrossOrigin('anonymous').load(dummyTextureUrl),
   })
 );
 debugMesh.frustumCulled = false;
