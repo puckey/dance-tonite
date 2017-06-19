@@ -2,11 +2,14 @@
 import { h, Component } from 'preact';
 import './style.scss';
 
+import router from '../../router';
+
 import Align from '../../components/Align';
 import ButtonMute from '../../components/ButtonMute';
 import ButtonEnterVR from '../../components/ButtonEnterVR';
 import ButtonAbout from '../../components/ButtonAbout';
 import ButtonAddRoom from '../../components/ButtonAddRoom';
+import ButtonClose from '../../components/ButtonClose';
 import About from '../../components/About';
 
 export default class Menu extends Component {
@@ -16,12 +19,18 @@ export default class Menu extends Component {
       about: false,
     };
     this.toggleAbout = this.toggleAbout.bind(this);
+    this.goHome = this.goHome.bind(this);
   }
 
   toggleAbout() {
     this.setState({
       about: !this.state.about,
     });
+  }
+
+  goHome() {
+    // TODO: switch camera to orthographic?
+    router.navigate('/');
   }
 
   render() {
@@ -42,6 +51,13 @@ export default class Menu extends Component {
           { enterVR && <ButtonEnterVR label /> }
           { addRoom && <ButtonAddRoom label /> }
         </Align>
+        {
+          close && (
+            <Align type="top-right">
+              <ButtonClose onClick={this.goHome} />
+            </Align>
+          )
+        }
       </div>
     );
   }
