@@ -11,6 +11,7 @@
     "build-cms": "cross-env NODE_ENV=production FLAVOR=cms webpack --progress --colors",
     "deploy": "npm run build && npm run deploy-app-engine",
     "deploy-app-engine": "appcfg.py update -A you-move-me -V master .",
+    "deploy-assets": "gsutil -m rsync -d -r src/public gs://you-move-me.appspot.com/public && gsutil -m acl -r ch -u AllUsers:R gs://you-move-me.appspot.com/public",
     "analyze": "cross-env NODE_ENV=production webpack --profile --json > stats.json && webpack-bundle-analyzer stats.json"
   },
   "dependencies": {
