@@ -86,6 +86,7 @@ const audio = Object.assign(emitter(), {
           ? audioPool.get()
           : new Audio();
         audioElement.addEventListener('ended', () => audio.emit('ended'));
+        audioElement.crossOrigin = 'anonymous';
         audioElement.autoplay = true;
         audioElement.src = param.src;
         audioElement.loop = param.loop === undefined ? true : param.loop;
