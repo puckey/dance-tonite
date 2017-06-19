@@ -17,8 +17,7 @@ function handleRightPress() {
   if (rightPress) rightPress();
 }
 
-
-window.addEventListener('vr controller connected', ({ detail: controller }) => {
+function addController(controller) {
   //  We're only interested in Vive or Oculus controllers right now.
   const isVive = controller.gamepadStyle !== 'vive';
   if (isVive && controller.gamepadStyle !== 'oculus') {
@@ -103,6 +102,25 @@ window.addEventListener('vr controller connected', ({ detail: controller }) => {
   //  whatever’s connected.
   // (And yes, Jonathan -- we will remove it on disconnect and destroy it.)
   controllerGroup.add(controller);
+}
+
+window.addEventListener('vr controller connected', ({ detail: controller }) => {
+  //  If .hand is an empty String, null, or undefined...
+  if (!controller.gamepad.hand) {
+    //  Tempted to add a setTimeOut here so if a "hand changed" event doesn't fire
+    //  within a second or two we just assign a hand. HOWEVER if the controllers
+    //  are already turned on and a button was pressed, then window refreshed
+    //  the controllers will show up with hand === '' and event won't fire until
+    //  Tutorial Mode is exited! So if you left Tutorial running for 5 minutes
+    //  the "hand changed" event won't hand a chance to fire during that time.
+    //  Unclear why... But if we believe this event WILL FIRE EVENTUALLY then
+    //  this current setup is totally fine.
+    const onHandChanged = () => {
+      addController(controller);
+      controller.removeEventListener(onHandChanged);
+    };
+    controller.addEventListener('hand changed', onHandChanged);
+  } else addController(controller);
 });
 
 
