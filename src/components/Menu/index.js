@@ -35,10 +35,11 @@ export default class Menu extends Component {
 
   render() {
     const {
-      enterVR = true,
-      addRoom = true,
-      about = true,
-      mute = true,
+      vr = false,
+      mute = false,
+      addRoom = false,
+      about = false,
+      close = false,
     } = this.props;
     return (
       <div>
@@ -48,7 +49,7 @@ export default class Menu extends Component {
           { mute && <ButtonMute /> }
         </Align>
         <Align type="bottom-right">
-          { enterVR && <ButtonEnterVR label /> }
+          { vr && <ButtonEnterVR label /> }
           { addRoom && <ButtonAddRoom label /> }
         </Align>
         {

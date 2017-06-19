@@ -219,8 +219,9 @@ export default class Playback extends Component {
           }
         </Align>
         <Menu
-          addRoom={false}
-          enterVR={false}
+          mute
+          about
+          close
         />
       </Container>
     );

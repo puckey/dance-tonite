@@ -162,7 +162,14 @@ export default class Inbox extends Component {
     const starred = !!recording && (recording.rating === 1);
     return (
       <Container>
-        <CMSMenu unreadCount={unmoderatedCount} close />
+        <CMSMenu
+          unreadCount={unmoderatedCount}
+          vr
+          mute
+          submissions
+          inbox
+          close
+        />
         {
           recording && (
             <Align type="bottom-right">

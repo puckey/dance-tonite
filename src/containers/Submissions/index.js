@@ -144,7 +144,13 @@ export default class Choose extends Component {
   render({ room, goHome }, { items, item, recording, error, loading }) {
     return (
       <Container>
-        <CMSMenu close />
+        <CMSMenu
+          vr
+          mute
+          submissions
+          inbox
+          close
+        />
         <Align type="bottom-left">
           <PaginatedList
             item={item}

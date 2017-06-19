@@ -139,8 +139,21 @@ export default class Playback extends Component {
         </Align>
         {
           process.env.FLAVOR === 'cms'
-            ? <CMSMenu audioControls />
-            : <Menu />
+            ? <CMSMenu
+              vr
+              audio
+              mute
+              submissions
+              inbox
+            />
+            : (
+              <Menu
+                vr
+                addRoom
+                about
+                mute
+              />
+            )
         }
       </Container>
     );

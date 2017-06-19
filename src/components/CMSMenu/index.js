@@ -14,13 +14,21 @@ import AudioControls from '../../components/AudioControls';
 
 const navigateHome = () => router.navigate('/');
 
-export default ({ unreadCount, close, audioControls = false }) => (
+export default ({
+  unreadCount,
+  close,
+  audio,
+  vr,
+  mute,
+  submissions,
+  inbox,
+}) => (
   <div>
     <Align type="top-left" rows>
-      <ButtonEnterVR />
-      <ButtonMute />
-      <ButtonSubmissions />
-      <ButtonInbox unreadCount={unreadCount} />
+      {vr && <ButtonEnterVR />}
+      {mute && <ButtonMute />}
+      {submissions && <ButtonSubmissions />}
+      {inbox && <ButtonInbox unreadCount={unreadCount} />}
     </Align>
     {
       close &&
@@ -29,7 +37,7 @@ export default ({ unreadCount, close, audioControls = false }) => (
       </Align>
     }
     {
-      audioControls &&
+      audio &&
       <Align type="top-right" rows>
         <AudioControls />
       </Align>

@@ -107,7 +107,13 @@ export default class Choose extends Component {
   render({ room }, { items, item, error, loading }) {
     return (
       <Container>
-        <CMSMenu close />
+        <CMSMenu
+          vr
+          mute
+          submissions
+          inbox
+          close
+        />
         <Align type="bottom-right">
           <PaginatedList
             item={item}
