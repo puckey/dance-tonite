@@ -91,7 +91,7 @@ export default (goto) => {
       await Promise.all(
         [
           audio.load({
-            src: `${assetsURL}/sound/room-${recording.loopIndex || 1}.ogg`,
+            src: `${assetsURL}sound/room-${recording.loopIndex || 1}.ogg`,
             loops: 2,
           }),
           sleep(5000),
