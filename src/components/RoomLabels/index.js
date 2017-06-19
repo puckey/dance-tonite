@@ -29,16 +29,21 @@ export default class RoomLabels extends Component {
   }
 
   roomToRoomLabel(room) {
-    return (
+    const { entries } = this.props;
+    return entries && (
       <RoomLabel
         room={room}
         key={room.index}
-        entry={this.props.entries[room.index]}
+        entry={entries[room.index]}
       />
     );
   }
 
   render(props, { visibleRooms }) {
-    return visibleRooms.map(this.roomToRoomLabel);
+    return visibleRooms && (
+      <div className="room-labels">
+        { visibleRooms.map(this.roomToRoomLabel) }
+      </div>
+    );
   }
 }
