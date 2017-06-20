@@ -74,7 +74,14 @@ function addController(controller) {
     if (controller.hand === 'left') handleLeftPress();
     else handleRightPress();
   };
+
+  //  For Vive, it's so straight forward.
   controller.addEventListener('thumbpad press began', handlePress);
+
+  //  For Oculus we need to add a little more flexibility...
+  controller.addEventListener('thumbstick press began', handlePress);
+  controller.addEventListener('A press began', handlePress);
+  controller.addEventListener('B press began', handlePress);
 
   // On vive also listen for menu presses, since the menu button is also on the
   // front of the controller:
