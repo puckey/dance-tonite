@@ -131,6 +131,7 @@ THREE.VRController = function( gamepad ){
 
 		if( hand !== controller.gamepad.hand ){
 
+			if( verbosity >= 0.5 ) console.log( prefix +'hand changed from "'+ hand +'" to "'+ controller.gamepad.hand +'"' );
 			hand = controller.gamepad.hand;
 			controller.dispatchEvent({ type: 'hand changed', hand: hand });
 		}
@@ -330,7 +331,7 @@ THREE.VRController.onGamepadConnect = function( gamepad ){
 	//  Let’s give the controller a little rumble; some haptic feedback to
 	//  let the user know it’s connected and happy.
 
-	if( controller.gamepad.hapticActuators && controller.gamepad.hapticActuators.length > 0 ) controller.gamepad.hapticActuators[ 0 ].pulse( 0.1, 300 );
+	// if( controller.gamepad.hapticActuators && controller.gamepad.hapticActuators.length > 0 ) controller.gamepad.hapticActuators[ 0 ].pulse( 0.1, 300 );
 
 
 	//  Now we’ll broadcast a global connection event.
@@ -515,9 +516,7 @@ THREE.VRController.supported = {
 
 
 			//  Oculus’s thumbstick has axes values and is also a button,
-			//  similar to Vive’s thumbpad.
-			//  But unlike Vive’s thumbpad it only has a binary touch value.
-			//  The press value is never set to true.
+			//  with touch and press states similar to Vive’s thumbpad.
 			//  X axis: -1 = Left, +1 = Right
 			//  Y axis: -1 = Top,  +1 = Bottom  NOTE THIS IS FLIPPED FROM VIVE!
 
