@@ -1,10 +1,15 @@
-runtime: go
-api_version: go1
+runtime: python27
+api_version: 1
+threadsafe: true
 
 handlers:
-  - url: .*
-    script: _go_app
-    secure: always
+- url: /
+  static_files: dist/index.html
+  upload: dist/index.html
+
+- url: /(.*)
+  static_files: dist/\1
+  upload: dist/(.*)
 
 skip_files:
 - ^(.*/)?\..*$
