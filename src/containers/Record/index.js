@@ -16,9 +16,7 @@ import viewer from '../../viewer';
 import settings from '../../settings';
 import recording from '../../recording';
 import transition from '../../transition';
-// import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
-// import layout from '../../room/layout';
 
 export default class Record extends Component {
   constructor() {
