@@ -30,6 +30,7 @@ const audio = Object.assign(emitter(), {
     if ((!audioElement && !context) || !startTime) {
       this.progress = 0;
       this.time = 0;
+      this.totalTime = 0;
       this.loopProgress = 0;
       this.totalProgress = 0;
       this.looped = false;
@@ -56,6 +57,7 @@ const audio = Object.assign(emitter(), {
     }
 
     this.totalProgress = this.loopCount * loopCount + this.progress;
+    this.totalTime = this.totalProgress * this.loopDuration;
     lastTime = time;
   },
 
