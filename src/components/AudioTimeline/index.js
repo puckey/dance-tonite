@@ -24,11 +24,13 @@ export default class AudioTimeline extends Component {
   }
 
   tick() {
-    const { tick } = this.props;
+    const { progress, getTime } = this.props;
     this.timeline.tick(
-      tick === 'progress'
-        ? audio.progress
-        : audio.time
+      getTime
+        ? getTime()
+        : progress
+          ? audio.progress
+          : audio.time
       );
   }
 }
