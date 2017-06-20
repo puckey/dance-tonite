@@ -1,94 +1,135 @@
 /** @jsx h */
-import { Component } from 'preact';
+import { h, Component } from 'preact';
 
-import Orb from '../../orb';
 import audio from '../../audio';
 import viewer from '../../viewer';
 import Room from '../../room';
-import settings from '../../settings';
-import createTimeline from '../../lib/timeline';
 import layout from '../../room/layout';
 import feature from '../../utils/feature';
+import { waitRoomColor, getRoomColor } from '../../theme/colors';
+import recording from '../../recording';
 
-const { roomDepth, roomOffset } = settings;
+import RecordOrbs from '../RecordOrbs';
 
 const state = {};
-const objects = {};
-
-const colorTimeline = createTimeline([
-  {
-    time: 0,
-    callback: () => {
-      objects.orb2.fadeOut();
-      objects.orb.fadeIn();
-    },
-  },
-]);
-
-const tick = () => {
-  audio.tick();
-  room.gotoTime(audio.time);
-  colorTimeline.tick(audio.progress);
-  const progress = audio.progress - 1; // value between -1 and 1
-
-  const z = (progress - 0.5) * -roomDepth - roomOffset;
-  objects.orb.position.z = z;
-  if (audio.totalProgress > 1) {
-    objects.orb2.position.z = z - roomDepth * 2;
-  }
-};
-
-let room;
 
 export default class RoomComponent extends Component {
+  constructor() {
+    super();
+    this.performOrbLeftRoom = this.performOrbLeftRoom.bind(this);
+    this.performOrbEnteredRoom = this.performOrbEnteredRoom.bind(this);
+    this.receiveOrb = this.receiveOrb.bind(this);
+    this.tick = this.tick.bind(this);
+  }
+
+  getChildContext() {
+    return this.state;
+  }
+
   componentDidMount() {
     this.mounted = true;
     this.asyncMount(this.props);
+    const { roomId } = this.props;
+    this.roomColor = getRoomColor(roomId);
   }
 
   componentWillUnmount() {
     this.mounted = false;
-    objects.orb.destroy();
-    objects.orb2.destroy();
     viewer.camera.position.copy(state.originalCameraPosition);
     viewer.camera.zoom = state.originalZoom;
     viewer.camera.updateProjectionMatrix();
     audio.reset();
     audio.fadeOut();
-    if (room) {
-      room.destroy();
+    if (this.state.room) {
+      this.state.room.destroy();
     }
     viewer.camera.position.y = 0;
     viewer.camera.updateProjectionMatrix();
-    viewer.events.off('tick', tick);
-    // Room.reset();
+    viewer.events.off('tick', this.tick);
   }
 
-  async asyncMount({ recording }) {
+  async asyncMount({ roomId, id, record, onLoading }) {
     Room.reset();
-    objects.orb = new Orb();
-    objects.orb2 = new Orb();
-    if (!viewer.vrEffect.isPresenting) viewer.switchCamera('orthographic');
     state.originalCameraPosition = viewer.camera.position.clone();
     state.originalZoom = viewer.camera.zoom;
-    viewer.camera.position.y = 2;
-    viewer.camera.position.z = 1.3;
+    if (!viewer.vrEffect.isPresenting) {
+      viewer.switchCamera('orthographic');
+      viewer.camera.position.y = 2;
+      viewer.camera.position.z = 1.3;
+      viewer.camera.updateProjectionMatrix();
+      Room.rotate180();
+    }
 
-    viewer.camera.updateProjectionMatrix();
-    Room.rotate180();
+    if (onLoading) {
+      onLoading('Loading audio…');
+    }
     await audio.load({
-      src: `/public/sound/room-${layout.loopIndex(recording.room)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
+      src: `/public/sound/room-${layout.loopIndex(roomId)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
       loops: 2,
       loopOffset: 0.5,
     });
+    if (onLoading) {
+      onLoading();
+    }
     if (!this.mounted) return;
-    audio.play();
-    room = new Room({
-      id: recording.id,
-      index: recording.room - 1,
+    const room = new Room({
+      id,
+      index: roomId - 1,
       single: true,
+      recording: record ? recording : null,
     });
-    room.load();
-    viewer.events.on('tick', tick);
+    if (id) {
+      audio.play();
+      room.load();
+    }
+    this.setState({ room });
+    viewer.events.on('tick', this.tick);
+  }
+
+  performOrbLeftRoom() {
+    if (!this.state.room) return;
+    this.state.room.changeColor(waitRoomColor);
+
+    const { onOrbLeftRoom } = this.props;
+    if (onOrbLeftRoom) {
+      onOrbLeftRoom();
+    }
+  }
+
+  performOrbEnteredRoom() {
+    const { room } = this.state;
+    if (!room) return;
+    if (room && this.roomColor) {
+      room.changeColor(this.roomColor);
+    }
+
+    const { onOrbEnteredRoom } = this.props;
+    if (onOrbEnteredRoom) {
+      onOrbEnteredRoom();
+    }
+  }
+
+  receiveOrb(orb) {
+    this.setState({ orb });
+  }
+
+  tick() {
+    audio.tick();
+    this.state.room.gotoTime(audio.time, this.props.layers);
+  }
+
+  render() {
+    return (
+      <div>
+        {this.props.orbs &&
+          <RecordOrbs
+            onEnteredRoom={this.performOrbEnteredRoom}
+            onLeftRoom={this.performOrbLeftRoom}
+            onCreatedOrb={this.receiveOrb}
+          />
+        }
+        {this.props.children}
+      </div>
+    );
   }
 }

@@ -7,7 +7,6 @@ import Controllers from '../../components/Controllers';
 import POV from '../../components/POV';
 import Playlist from '../../containers/Playlist';
 
-import Room from '../../room';
 import audio from '../../audio';
 import viewer from '../../viewer';
 import recording from '../../recording';
@@ -31,9 +30,6 @@ export default class Review extends Component {
   }
 
   async asyncMount() {
-    Room.reset();
-    Room.rotate180();
-
     await Promise.all(
       [
         audio.load({

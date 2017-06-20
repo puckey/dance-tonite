@@ -1,15 +1,16 @@
 /** @jsx h */
 import { h, render } from 'preact';
 
-import Review from '../../containers/Review';
+import RecordFlow from '../containers/RecordFlow';
 
-export default (goto) => {
+export default (req) => {
   let root;
   const component = {
     mount: () => {
       root = render((
-        <Review
-          goto={goto}
+        <RecordFlow
+          roomId={parseInt(req.params.roomIndex, 10)}
+          hideHead={/no/.test(req.params.hideHead)}
         />
       ), document.body);
     },

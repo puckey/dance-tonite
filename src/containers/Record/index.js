@@ -8,23 +8,24 @@ import Align from '../../components/Align';
 import Spinner from '../../components/Spinner';
 import RecordCountdown from '../../components/RecordCountdown';
 import ConnectControllers from '../../components/ConnectControllers';
-import RecordOrbs from '../../components/RecordOrbs';
 import Controllers from '../../components/Controllers';
+import Room from '../../components/Room';
 
-import Room from '../../room';
 import audio from '../../audio';
 import viewer from '../../viewer';
 import settings from '../../settings';
 import recording from '../../recording';
 import transition from '../../transition';
-import { waitRoomColor, getRoomColor } from '../../theme/colors';
+// import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import { sleep } from '../../utils/async';
-import layout from '../../room/layout';
+// import layout from '../../room/layout';
 
-export default class Playback extends Component {
+export default class Record extends Component {
   constructor() {
     super();
-    this.state = { };
+    this.state = {
+      mode: 'connect-controllers',
+    };
 
     this.tick = this.tick.bind(this);
     this.performFinish = this.performFinish.bind(this);
@@ -34,14 +35,14 @@ export default class Playback extends Component {
     this.performRetry = this.performRetry.bind(this);
     this.performControllersDisconnected = this.performControllersDisconnected.bind(this);
     this.performControllersConnected = this.performControllersConnected.bind(this);
+    this.setLoading = this.setLoading.bind(this);
   }
 
   componentDidMount() {
     this.mounted = true;
     const { roomIndex, hideHead } = this.props;
     recording.setup({ roomIndex, hideHead });
-    this.roomColor = getRoomColor(roomIndex);
-    this.asyncMount();
+    viewer.switchCamera('default');
   }
 
   componentWillUnmount() {
@@ -50,32 +51,6 @@ export default class Playback extends Component {
 
   setLoading(loading) {
     this.setState({ loading });
-  }
-
-  async asyncMount() {
-    Room.reset();
-    this.setLoading('Loading audio…');
-    await audio.load({
-      src: `/public/sound/room-${layout.loopIndex(recording.roomIndex)}.ogg`,
-      loops: 2,
-      loopOffset: 0.5,
-    });
-    this.setLoading();
-    if (!this.mounted) return;
-
-    viewer.switchCamera('default');
-    this.room = new Room({
-      recording,
-      index: recording.roomIndex,
-      single: true,
-    });
-    this.room.changeColor(waitRoomColor);
-
-    this.setState({
-      mode: 'connect-controllers',
-    });
-
-    transition.exit();
   }
 
   async performFinish() {
@@ -102,7 +77,6 @@ export default class Playback extends Component {
   }
 
   performNextRound() {
-    this.room.changeColor(waitRoomColor);
     if (audio.totalProgress > 1) {
       this.setState({
         controllerSettings: {
@@ -126,9 +100,6 @@ export default class Playback extends Component {
   }
 
   performWaitRoom() {
-    if (this.room) {
-      this.room.changeColor(this.roomColor);
-    }
     this.setState({
       controllerSettings: null,
     });
@@ -175,7 +146,9 @@ export default class Playback extends Component {
   }
 
   render(
-    props,
+    {
+      roomId,
+    },
     {
       error,
       loading,
@@ -187,12 +160,14 @@ export default class Playback extends Component {
   ) {
     return (
       <Container>
-        {mode === 'recording' &&
-          <RecordOrbs
-            onEnteredRoom={this.performNextRound}
-            onLeftRoom={this.performWaitRoom}
-          />
-        }
+        <Room
+          record={mode === 'recording'}
+          roomId={roomId}
+          onEnteredRoom={this.performNextRound}
+          onLeftRoom={this.performWaitRoom}
+          onReady={this.performExitTransition}
+          onLoading={this.setLoading}
+        />
         { mode === 'connect-controllers' &&
           <ConnectControllers
             onConnected={this.performControllersConnected}

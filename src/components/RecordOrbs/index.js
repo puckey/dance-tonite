@@ -23,6 +23,9 @@ export default class RecordOrbs extends Component {
   componentDidMount() {
     this.mounted = true;
     viewer.events.on('tick', this.tick);
+    if (this.props.onCreatedOrb) {
+      this.props.onCreatedOrb(this.orb);
+    }
   }
 
   shouldComponentUpdate({ mode }) {
@@ -35,14 +38,16 @@ export default class RecordOrbs extends Component {
   componentWillUnmount() {
     this.mounted = false;
     viewer.events.off('tick', this.tick);
+    this.orb.destroy();
+    this.orb2.destroy();
   }
 
   tick() {
     const progress = audio.progress - 1; // value between -1 and 1
-    const z = (progress - 0.5) * settings.roomDepth + settings.roomOffset;
+    const z = -(progress - 0.5) * settings.roomDepth + settings.roomOffset;
     this.orb.position.z = z;
     if (audio.totalProgress > 1) {
-      this.orb2.position.z = z + settings.roomDepth * 2;
+      this.orb2.position.z = z + -settings.roomDepth * 2;
     }
   }
 
@@ -65,7 +70,7 @@ export default class RecordOrbs extends Component {
   render() {
     return (
       <AudioTimeline
-        tick="progress"
+        progress
         keyframes={[
           {
             time: 0,
