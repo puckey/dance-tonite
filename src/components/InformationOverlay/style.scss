@@ -1,6 +1,6 @@
 @import '../../theme/theme';
 
-.tutorial-overlay {
+.information-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,10 +13,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: $interface-layer;
+  z-index: $popover-layer;
 }
 
-.tutorial-overlay-text {
+.information-overlay-text {
   position: relative;
   top: -1rem;
   padding: 0 1rem;
@@ -34,4 +34,3 @@
     max-width: 90vw;
   }
 }
-

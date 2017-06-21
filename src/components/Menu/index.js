@@ -10,6 +10,7 @@ import ButtonEnterVR from '../../components/ButtonEnterVR';
 import ButtonAbout from '../../components/ButtonAbout';
 import ButtonAddRoom from '../../components/ButtonAddRoom';
 import ButtonClose from '../../components/ButtonClose';
+import InformationOverlay from '../../components/InformationOverlay';
 import EnterVROverlay from '../../components/EnterVROverlay';
 import About from '../../components/About';
 
@@ -18,7 +19,7 @@ export default class Menu extends Component {
     super();
     this.state = {
       about: false,
-      vrOverlay: false,
+      enterVROverlay: false,
     };
     this.toggleAbout = this.toggleAbout.bind(this);
     this.toggleVROverlay = this.toggleVROverlay.bind(this);
@@ -33,7 +34,7 @@ export default class Menu extends Component {
 
   toggleVROverlay() {
     this.setState({
-      vrOverlay: !this.state.vrOverlay,
+      enterVROverlay: !this.state.enterVROverlay,
     });
   }
 
@@ -49,11 +50,20 @@ export default class Menu extends Component {
       addRoom = false,
       about = false,
       close = false,
+      overlay = false,
     } = this.props;
     return (
       <div>
         { this.state.about && <About onClose={this.toggleAbout} />}
-        { this.state.vrOverlay && <EnterVROverlay /> }
+        {
+          overlay && !this.state.enterVROverlay &&
+            <InformationOverlay
+              type={overlay}
+              goto={this.props.goto}
+              toggleVROverlay={this.toggleVROverlay}
+            />
+        }
+        { this.state.enterVROverlay && <EnterVROverlay /> }
         <Align type="top-left" rows>
           { about && <ButtonAbout onClick={this.toggleAbout} /> }
           { mute && <ButtonMute /> }

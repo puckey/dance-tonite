@@ -90,6 +90,11 @@ export default class TutorialTimeline extends Component {
         text: 'Add up to 10 copies of yourself.',
         layers: 5,
       },
+      {
+        time: 38,
+        text: '',
+        ended: true,
+      },
     ];
     viewer.events.on('tick', this.tick);
     windowSize.on('resize', this.updateWindowDimensions);
@@ -144,7 +149,10 @@ export default class TutorialTimeline extends Component {
     });
   }
 
-  performUpdateTutorial({ text, getPosition, layers }) {
+  performUpdateTutorial({ text, getPosition, layers, ended }) {
+    if (ended) {
+      this.props.onEnd();
+    }
     // just !text would return true on empty string, so:
     if (text !== undefined) {
       this.setState({ text });

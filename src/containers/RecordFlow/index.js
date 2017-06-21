@@ -1,12 +1,11 @@
 /** @jsx h */
 import { h, Component } from 'preact';
 
+import Menu from '../../components/Menu';
+import Container from '../../components/Container';
 import Tutorial from '../Tutorial';
 import Record from '../Record';
 import Review from '../Review';
-
-import TutorialOverlay from '../../components/TutorialOverlay';
-
 import router from '../../router';
 
 const modes = ['tutorial', 'record', 'review'];
@@ -16,6 +15,7 @@ export default class RecordFlow extends Component {
     super();
     this.state = {
       mode: 'tutorial',
+      overlay: false,
     };
     this.goto = this.goto.bind(this);
     this.revealOverlay = this.revealOverlay.bind(this);
@@ -30,9 +30,9 @@ export default class RecordFlow extends Component {
   }
 
   revealOverlay() {
-    // this.setState({
-    //   overlay: true,
-    // });
+    this.setState({
+      overlay: true,
+    });
   }
 
   render(
@@ -40,8 +40,13 @@ export default class RecordFlow extends Component {
     { mode, overlay }
   ) {
     return (
-      <div className="record-flow">
-        { overlay && <TutorialOverlay/> }
+      <Container>
+        <Menu
+          mute
+          close
+          overlay={overlay}
+          goto={this.goto}
+        />
         {
           mode === 'tutorial'
             ? <Tutorial
@@ -52,7 +57,7 @@ export default class RecordFlow extends Component {
               ? <Review {...props} goto={this.goto} />
               : <Record {...props} goto={this.goto} />
         }
-      </div>
+      </Container>
     );
   }
 }
