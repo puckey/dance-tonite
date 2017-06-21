@@ -1,5 +1,3 @@
-import { Color } from './lib/three';
-
 export default {
   // Room dimensions:
   roomDepth: 6,
@@ -17,6 +15,8 @@ export default {
 
   // The amount of loops that can be recorded:
   loopCount: 28,
+
+  roomCount: 17,
 
   // The maximum amount of layers allowed in recording mode:
   maxLayerCount: 20,

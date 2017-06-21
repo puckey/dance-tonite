@@ -8,7 +8,7 @@ import router from '../../router';
 import settings from '../../settings';
 
 const navigateToRecord = () => {
-  router.navigate(`/record/${Math.ceil(Math.random() * settings.loopCount)}/head=yes/`);
+  router.navigate(`/record/${Math.ceil(Math.random() * settings.roomCount)}/head=yes/`);
 };
 
 export default (props) => (
