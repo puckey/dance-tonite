@@ -34,7 +34,7 @@ export default class Playlist extends Component {
     this.mounted = true;
 
     const { recording } = this.props;
-    const { rooms } = this;
+    const { rooms } = this.state;
 
     if (recording) {
       for (let index = 1; index < 20; index += 2) {
