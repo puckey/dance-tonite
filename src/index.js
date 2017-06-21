@@ -13,7 +13,6 @@ import playIconSvg from './hud/icons/play.svg';
 
 window.THREE = THREE;
 
-
 (async () => {
   await Promise.all([
     props.prepare(),
