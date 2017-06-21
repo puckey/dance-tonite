@@ -25,6 +25,8 @@ export default function setup({ renderer, scene, camera }) {
 
   let shaderTime = 0;
 
+  const pixelRatio = window.devicePixelRatio || 1;
+
   return {
     render: function () {
       shaderTime += 0.01;
@@ -33,8 +35,8 @@ export default function setup({ renderer, scene, camera }) {
       composer.render(0.1);
     },
     resize: function (width, height) {
-      composer.renderTarget1.setSize(width, height);
-      composer.renderTarget2.setSize(width, height);
+      composer.renderTarget1.setSize(width * pixelRatio, height * pixelRatio);
+      composer.renderTarget2.setSize(width * pixelRatio, height * pixelRatio);
     },
   };
 }
