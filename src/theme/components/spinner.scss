@@ -14,20 +14,14 @@
 
 .spinner-inner {
   position: absolute;
-  top: 50%;
-  left: 50%;
   border-radius: 100%;
   background: $text-color;
   width: 1.5rem;
   height: 1.5rem;
-  margin: -.75rem;
   animation: grow1 2s infinite;
 }
 
 .spinner-inner-negative {
-  width: 1.4rem;
-  height: 1.4rem;
-  margin: -.70rem;
   background: $background-color;
   animation: grow2 2s infinite;
 }
@@ -50,8 +44,6 @@
 
 @keyframes grow2 {
   0% { transform: scale(0); }
-  50% { transform: scale(1); }
-  100% { transform: scale(1); }
 }
 
 @keyframes splash {
