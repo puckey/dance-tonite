@@ -27,9 +27,9 @@ export default class ConnectControllers extends Component {
     if (count === this.state.count) return;
     this.setState({ count });
     if (count === 2) {
-      if (this.state.onConnected) this.state.onConnected();
-    } else if (this.state.onDisconnected) {
-      this.state.onDisconnected();
+      if (this.props.onConnected) this.props.onConnected();
+    } else if (this.props.onDisconnected) {
+      this.props.onDisconnected();
     }
   }
 
