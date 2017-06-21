@@ -32,6 +32,7 @@ export default class Record extends Component {
     this.performRetry = this.performRetry.bind(this);
     this.performControllersDisconnected = this.performControllersDisconnected.bind(this);
     this.performControllersConnected = this.performControllersConnected.bind(this);
+    this.performRecordRoom = this.performRecordRoom.bind(this);
     this.setLoading = this.setLoading.bind(this);
   }
 
@@ -73,6 +74,12 @@ export default class Record extends Component {
     if (this.mounted) this.props.goto('review');
   }
 
+  performRecordRoom() {
+    this.setState({
+      controllerSettings: null,
+    });
+  }
+
   performWaitRoom() {
     if (audio.totalProgress > 1) {
       this.setState({
@@ -94,9 +101,6 @@ export default class Record extends Component {
     if (round === settings.maxLayerCount) {
       this.performFinish();
     }
-    this.setState({
-      controllerSettings: null,
-    });
   }
 
   async performStart() {
@@ -161,6 +165,7 @@ export default class Record extends Component {
           reverseOrbs
           record
           roomId={roomId}
+          onOrbEnteredRoom={this.performRecordRoom}
           onOrbLeftRoom={this.performWaitRoom}
           onReady={this.performExitTransition}
           onLoading={this.setLoading}

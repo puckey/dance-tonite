@@ -11,8 +11,8 @@ export default class Controllers extends Component {
   }
 
   shouldComponentUpdate({ settings }) {
-    if (this.props.settings !== settings) {
-      controllers.update(this.props.settings);
+    if (settings !== this.props.settings) {
+      controllers.update(settings);
     }
   }
 
