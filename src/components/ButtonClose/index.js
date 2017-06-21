@@ -7,7 +7,7 @@ import icon from './icon.svg';
 export default ({ onClick, className }) => (
   <ButtonItem
     onClick={onClick}
-    className={className}
+    className={`${className} close`}
     icon={icon}
   />
 );

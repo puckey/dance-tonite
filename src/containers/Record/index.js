@@ -2,7 +2,6 @@
 import { h, Component } from 'preact';
 
 import Menu from '../../components/Menu';
-import Container from '../../components/Container';
 import Error from '../../components/Error';
 import Align from '../../components/Align';
 import Spinner from '../../components/Spinner';
@@ -163,7 +162,7 @@ export default class Record extends Component {
     }
   ) {
     return (
-      <Container>
+      <div>
         <Room
           orbs
           reverseOrbs
@@ -199,12 +198,7 @@ export default class Record extends Component {
               />)
           }
         </Align>
-        <Menu
-          mute
-          about
-          close
-        />
-      </Container>
+      </div>
     );
   }
 }

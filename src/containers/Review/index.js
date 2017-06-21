@@ -2,7 +2,6 @@
 import { h, Component } from 'preact';
 
 import Menu from '../../components/Menu';
-import Container from '../../components/Container';
 import Controllers from '../../components/Controllers';
 import POV from '../../components/POV';
 import Playlist from '../../containers/Playlist';
@@ -86,7 +85,7 @@ export default class Review extends Component {
 
   render() {
     return (
-      <Container>
+      <div>
         <POV />
         <Controllers
           settings={{
@@ -103,11 +102,7 @@ export default class Review extends Component {
           }}
         />
         <Playlist recording={recording} />
-        <Menu
-          mute
-          close
-        />
-      </Container>
+      </div>
     );
   }
 }

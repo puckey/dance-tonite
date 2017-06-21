@@ -1,16 +1,11 @@
 /** @jsx h */
 import { h, Component } from 'preact';
 
-import Menu from '../../components/Menu';
-import Container from '../../components/Container';
 import Room from '../../components/Room';
 import TutorialTimeline from '../../components/TutorialTimeline';
 import Align from '../../components/Align';
-
 import audio from '../../audio';
 import feature from '../../utils/feature';
-import { sleep } from '../../utils/async';
-import viewer from '../../viewer';
 
 export default class Review extends Component {
   constructor() {
@@ -41,27 +36,16 @@ export default class Review extends Component {
     this.setState({ layers });
   }
 
-  async performSkip() {
-    const { goto, revealOverlay } = this.props;
-    if (feature.has6DOF) {
-      revealOverlay();
-      this.setState({
-        skipButton: false,
-      });
-      if (!viewer.vrEffect.isPresenting) {
-        await viewer.vrEffect.requestPresent();
-      }
-      // Wait for the VR overlay to cover the screen:
-      await sleep(500);
-      goto('record');
-    } else {
-      goto('/');
-    }
+  performSkip() {
+    this.props.revealOverlay(feature.has6DOF ? 'add-performance' : 'room-scale-error');
+    this.setState({
+      skipButton: false,
+    });
   }
 
   render({ roomId }, { skipButton, layers }) {
     return (
-      <Container>
+      <div>
         <Room
           roomId={roomId}
           id="hIR_Tw"
@@ -70,19 +54,16 @@ export default class Review extends Component {
         >
           <TutorialTimeline
             onUpdateLayers={this.updateLayers}
+            onEnd={this.performSkip}
           />
         </Room>
-        <Menu
-          mute
-          close
-        />
         { skipButton && (
           <Align type="bottom-right">
             <a onClick={this.performSkip}>Skip Tutorial</a>
           </Align>
           )
         }
-      </Container>
+      </div>
     );
   }
 }
