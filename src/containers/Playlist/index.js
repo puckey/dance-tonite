@@ -23,7 +23,9 @@ const easeOut = t => -t * (t - 2.0);
 export default class Playlist extends Component {
   constructor() {
     super();
-    this.rooms = [];
+    this.state = {
+      rooms: [],
+    };
     this.orb = new Orb();
     this.tick = this.tick.bind(this);
   }
@@ -66,12 +68,15 @@ export default class Playlist extends Component {
   async asyncMount() {
     const { pathRecording, pathRoomIndex } = this.props;
     const entries = this.entries = await storage.loadPlaylist();
+
     if (!this.mounted) return;
+
+    const rooms = this.state.rooms;
 
     for (let i = 0; i < entries.length; i++) {
       const isPathRecording = i === pathRoomIndex - 1;
       const entry = entries[i];
-      this.rooms.push(
+      rooms.push(
         new Room({
           id: isPathRecording
             ? `${pathRecording}`
@@ -84,10 +89,12 @@ export default class Playlist extends Component {
       );
     }
 
+    this.setState({ entries, rooms });
+
     await new Promise((resolve) => {
       const destroyedErrorName = 'playlist destroyed';
       asyncEach(
-        this.rooms,
+        this.state.rooms,
         4,
         (room, callback) => {
           // If destroyed, callback with error to stop loading further files:
@@ -114,12 +121,12 @@ export default class Playlist extends Component {
   }
 
   tick() {
-    if (!this.rooms || transition.isInside()) return;
+    if (!this.state.rooms || transition.isInside()) return;
     this.moveOrb(audio.progress || 0);
 
     if (!audio.loopDuration) return;
-    for (let i = 0; i < this.rooms.length; i++) {
-      const room = this.rooms[i];
+    for (let i = 0; i < this.state.rooms.length; i++) {
+      const room = this.state.rooms[i];
       let time = audio.time;
       if (layout.isOdd(room.index)) {
         time += audio.loopDuration;
@@ -147,7 +154,7 @@ export default class Playlist extends Component {
     return (
       <div>
         <POV
-          rooms={this.rooms}
+          rooms={this.state.rooms}
           orb={this.orb}
           enterHeads={process.env.FLAVOR !== 'cms'}
         />
@@ -155,8 +162,8 @@ export default class Playlist extends Component {
           process.env.FLAVOR === 'cms' &&
           !viewer.vrEffect.isPresenting &&
           <RoomLabels
-            rooms={this.rooms}
-            entries={this.entries}
+            rooms={this.state.rooms}
+            entries={this.state.entries}
           />
         }
         <BackgroundTimeline />
