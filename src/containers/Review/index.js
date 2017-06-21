@@ -1,9 +1,7 @@
 /** @jsx h */
 import { h, Component } from 'preact';
 
-import Menu from '../../components/Menu';
 import Controllers from '../../components/Controllers';
-import POV from '../../components/POV';
 import Playlist from '../../containers/Playlist';
 
 import audio from '../../audio';
@@ -14,6 +12,16 @@ import { sleep } from '../../utils/async';
 import storage from '../../storage';
 
 export default class Review extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      showPlaylist: true,
+    };
+    this.performSubmit = this.performSubmit.bind(this);
+    this.performRedo = this.performRedo.bind(this);
+  }
+
   componentDidMount() {
     this.mounted = true;
     this.asyncMount();
@@ -40,31 +48,36 @@ export default class Review extends Component {
     );
     if (!this.mounted) return;
 
-    await transition.fadeOut();
+    await transition.exit();
     if (!this.mounted) return;
 
     audio.play();
   }
 
   async performSubmit() {
-    const persisting = storage.persist(recording.serialize(), recording.roomIndex);
+    const persisting = storage.persist(
+      recording.serialize(),
+      recording.roomIndex
+    );
     audio.fadeOut();
 
     await transition.fadeOut();
+    this.setState({
+      showPlaylist: false,
+    });
     if (!this.mounted) return;
 
     viewer.events.off('tick', this.tick);
     const [recordingSrc] = await Promise.all([
       persisting,
       transition.enter({
-        text: 'Please take off your headset',
+        text: 'Submitting your recording. Please wait.',
       }),
       sleep(5000),
     ]);
-
     if (!this.mounted) return;
-
-    this.props.goto(`/${recording.roomIndex}/${recordingSrc.replace('.json', '')}`);
+    const id = recordingSrc.replace('.json', '');
+    this.props.goto(`/${recording.roomIndex}/${id}`);
   }
 
   async performRedo() {
@@ -83,8 +96,8 @@ export default class Review extends Component {
     this.props.goto('record');
   }
 
-  render() {
-    return (
+  render(props, { showPlaylist }) {
+    return showPlaylist && (
       <div>
         <Controllers
           settings={{
