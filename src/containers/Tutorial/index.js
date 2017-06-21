@@ -37,10 +37,10 @@ export default class Review extends Component {
   }
 
   performSkip() {
+    this.props.revealOverlay(feature.has6DOF ? 'add-performance' : 'room-scale-error');
     this.setState({
       skipButton: false,
     });
-    this.props.revealOverlay(feature.has6DOF ? 'add-performance' : 'room-scale-error');
   }
 
   render() {

@@ -24,23 +24,26 @@ export default class ButtonEnterVR extends Component {
     if (this.state.processingClick) return;
 
     this.setState({ processingClick: true });
+    audio.pause();
 
-    if (!feature.hasVR) {
-      return;
-    }
     if (viewer.vrEffect.isPresenting) {
       viewer.vrEffect.exitPresent();
       viewer.switchCamera('orthographic');
       this.setState({ processingClick: false });
     } else {
-      viewer.vrEffect.requestPresent();
       this.props.toggleVROverlay();
+
+      if (!feature.hasVR) {
+        this.setState({ processingClick: false });
+        return;
+      }
+
+      viewer.vrEffect.requestPresent();
       await audio.fadeOut();
 
       viewer.switchCamera('default');
       await sleep(1000);
 
-      audio.pause();
       audio.rewind();
       await sleep(4000);
 

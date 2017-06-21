@@ -4,29 +4,8 @@ import './style.scss';
 import viewer from '../../viewer';
 import router from '../../router';
 import { sleep } from '../../utils/async';
-
-// TODO: implement:
-// const createOverlay = () => {
-//   if (elements.overlayEl) return;
-//   elements.overlayEl = feature.has6DOF ? hud.create(
-//     'div.tutorial-overlay',
-//     h('div.tutorial-overlay-text', h('a', { onclick: performSkip }, 'Add your performance')),
-//   ) :
-//   hud.create(
-//     'div.tutorial-overlay',
-//     h(
-//       'div.tutorial-overlay-text',
-//       h(
-//         'span',
-//         h('h3', 'Shucks, room-scale VR not found.'),
-//         h('p', 'This requires room-scale VR and a WebVR-enabled browser.'),
-//         h('a', { href: 'https://webvr.info', target: '_blank' }, 'Get set up'),
-//         ' or ',
-//         h('a', { onclick: performSkip }, 'return home.')
-//       )
-//     ),
-//   );
-// };
+import Align from '../../components/Align';
+import ButtonClose from '../../components/ButtonClose';
 
 export default class InformationOverlay extends Component {
   constructor() {
@@ -61,12 +40,35 @@ export default class InformationOverlay extends Component {
       return (
         <div className="information-overlay">
           <div className="information-overlay-text">
-            <p>To add your dance, you will need a room-scale VR device and a WebVR-enabled browser.</p>
+            <p>
+              To add your dance, you will need a room-scale VR
+              device and a WebVR-enabled browser.
+            </p>
             <a href="https://webvr.info" target="_blank" rel="noopener noreferrer">
               Learn more
             </a> or <a onClick={() => router.navigate('/')}>
               continue watching
             </a>
+          </div>
+        </div>
+      );
+    }
+
+    if (type === 'no-vr') {
+      return (
+        <div>
+          <Align type="top-right">
+            <ButtonClose onClick={this.props.close} />
+          </Align>
+          <div className="information-overlay">
+            <div className="information-overlay-text">
+              <p>Headset required to watch in VR.</p>
+              <a href="https://webvr.info" target="_blank" rel="noopener noreferrer">
+                Learn more
+              </a> or <a onClick={this.props.close}>
+                continue watching without VR
+              </a>
+            </div>
           </div>
         </div>
       );

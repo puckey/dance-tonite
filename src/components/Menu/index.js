@@ -3,7 +3,7 @@ import { h, Component } from 'preact';
 import './style.scss';
 
 import router from '../../router';
-
+import feature from '../../utils/feature';
 import Align from '../../components/Align';
 import ButtonMute from '../../components/ButtonMute';
 import ButtonEnterVR from '../../components/ButtonEnterVR';
@@ -13,6 +13,7 @@ import ButtonClose from '../../components/ButtonClose';
 import InformationOverlay from '../../components/InformationOverlay';
 import EnterVROverlay from '../../components/EnterVROverlay';
 import About from '../../components/About';
+import audio from '../../audio';
 
 export default class Menu extends Component {
   constructor() {
@@ -23,6 +24,7 @@ export default class Menu extends Component {
     };
     this.toggleAbout = this.toggleAbout.bind(this);
     this.toggleVROverlay = this.toggleVROverlay.bind(this);
+    this.closeOverlay = this.closeOverlay.bind(this);
     this.goHome = this.goHome.bind(this);
   }
 
@@ -33,8 +35,21 @@ export default class Menu extends Component {
   }
 
   toggleVROverlay() {
+    if (this.state.enterVROverlay === false && !feature.hasVR) {
+      this.setState({
+        overlay: 'no-vr',
+      });
+    } else {
+      this.setState({
+        enterVROverlay: !this.state.enterVROverlay,
+      });
+    }
+  }
+
+  closeOverlay() {
+    audio.play();
     this.setState({
-      enterVROverlay: !this.state.enterVROverlay,
+      overlay: false,
     });
   }
 
@@ -56,10 +71,11 @@ export default class Menu extends Component {
       <div>
         { this.state.about && <About onClose={this.toggleAbout} />}
         {
-          overlay && !this.state.enterVROverlay &&
+          (overlay || this.state.overlay) && !this.state.enterVROverlay &&
             <InformationOverlay
-              type={overlay}
+              type={overlay || this.state.overlay}
               goto={this.props.goto}
+              close={this.closeOverlay}
               toggleVROverlay={this.toggleVROverlay}
             />
         }
