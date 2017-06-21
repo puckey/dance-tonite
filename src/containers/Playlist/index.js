@@ -66,7 +66,8 @@ export default class Playlist extends Component {
   }
 
   async asyncMount() {
-    const { pathRecording, pathRoomIndex } = this.props;
+    const { pathRecording, pathRoomIndex, recording } = this.props;
+    if (recording) return;
     const entries = this.entries = await storage.loadPlaylist();
 
     if (!this.mounted) return;
