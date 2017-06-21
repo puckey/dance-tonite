@@ -42,6 +42,7 @@ export default (req) => {
       await sleep(4000);
       removeMessage();
       audio.play();
+      viewer.scene.add(viewer.camera);
     }
   };
 
