@@ -101,7 +101,12 @@ export default class Review extends Component {
             },
           }}
         />
-        <Playlist recording={recording} />
+        <Playlist
+          review
+          totalProgress
+          fixedControllers
+          recording={recording}
+        />
       </div>
     );
   }
