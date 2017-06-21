@@ -5,7 +5,7 @@ import props from './props';
 import * as SDFText from './sdftext';
 import * as THREE from './lib/three';
 import { offsetFrom } from './utils/three';
-import settings from './settings';
+import { textColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
 
 let transitionVersion = 0;
@@ -18,7 +18,7 @@ const textItem = textCreator.create('', {
   wrapWidth: 4000,
   scale: 15,
   align: 'center',
-  color: settings.textColor,
+  color: textColor.getHex(),
 });
 
 const pivot = new THREE.Object3D();

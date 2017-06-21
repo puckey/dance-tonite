@@ -1,7 +1,8 @@
 import * as THREE from './lib/three';
 import { loadModel } from './utils/three';
 import settings from './settings';
-import { recordCostumeColor, orbColor } from './theme/colors';
+
+import { recordCostumeColor, orbColor, textColor } from './theme/colors';
 
 import wallUrl from './public/models/obj/first-wall.obj';
 import roomUrl from './public/models/obj/space-bigger-holes.obj';
@@ -59,7 +60,7 @@ const props = {
     const thumbpadHeight = 0.02;
     const thumbpad = new THREE.Mesh(
       new CylinderBufferGeometry(thumbpadRadius, thumbpadRadius, thumbpadHeight, segments),
-      new MeshLambertMaterial({ color: settings.textColor })
+      new MeshLambertMaterial({ color: textColor.getHex() })
     );
     thumbpad.name = 'button';
     thumbpad.position.z = -0.05;
