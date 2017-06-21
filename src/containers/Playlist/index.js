@@ -61,7 +61,7 @@ export default class Playlist extends Component {
 
   componentWillUnmount() {
     this.orb.destroy();
-    this.rooms.forEach((room) => room.destroy());
+    this.state.rooms.forEach((room) => room.destroy());
     viewer.events.off('tick', this.tick);
   }
 
