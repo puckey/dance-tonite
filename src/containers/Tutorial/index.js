@@ -6,6 +6,7 @@ import TutorialTimeline from '../../components/TutorialTimeline';
 import Align from '../../components/Align';
 import audio from '../../audio';
 import feature from '../../utils/feature';
+import viewer from '../../viewer';
 
 export default class Review extends Component {
   constructor() {
@@ -17,6 +18,8 @@ export default class Review extends Component {
 
     this.updateLayers = this.updateLayers.bind(this);
     this.performSkip = this.performSkip.bind(this);
+    viewer.vrEffect.exitPresent();
+    viewer.switchCamera('orthographic');
   }
 
   componentDidMount() {

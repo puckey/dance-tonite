@@ -52,7 +52,7 @@ export default class RoomComponent extends Component {
     Room.reset();
     state.originalCameraPosition = viewer.camera.position.clone();
     state.originalZoom = viewer.camera.zoom;
-    if (!viewer.vrEffect.isPresenting) {
+    if (!record) {
       viewer.switchCamera('orthographic');
       viewer.camera.position.y = 2;
       viewer.camera.position.z = 1.3;
