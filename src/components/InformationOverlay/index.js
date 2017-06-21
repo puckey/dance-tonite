@@ -2,7 +2,7 @@
 import { h, Component } from 'preact';
 import './style.scss';
 import viewer from '../../viewer';
-import feature from '../../utils/feature';
+import router from '../../router';
 import { sleep } from '../../utils/async';
 
 // TODO: implement:
@@ -37,26 +37,41 @@ export default class InformationOverlay extends Component {
 
   async addPerformance() {
     const { goto, toggleVROverlay } = this.props;
-    if (feature.has6DOF) {
-      toggleVROverlay();
-      if (!viewer.vrEffect.isPresenting) {
-        await viewer.vrEffect.requestPresent();
-      }
-      // Wait for the VR overlay to cover the screen:
-      await sleep(500);
-      goto('record');
-    } else {
-      goto('/');
+    toggleVROverlay();
+    if (!viewer.vrEffect.isPresenting) {
+      await viewer.vrEffect.requestPresent();
     }
+    // Wait for the VR overlay to cover the screen:
+    await sleep(500);
+    goto('record');
   }
 
   render({ type }) {
-    return (
-      <div className="information-overlay">
-        <div className="information-overlay-text">
-          <a onClick={this.addPerformance}>Add your performance</a>
+    if (type === 'add-performance') {
+      return (
+        <div className="information-overlay">
+          <div className="information-overlay-text">
+            <a onClick={this.addPerformance}>Add your performance</a>
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
+
+    if (type === 'room-scale-error') {
+      return (
+        <div className="information-overlay">
+          <div className="information-overlay-text">
+            <p>To add your dance, you will need a room-scale VR device and a WebVR-enabled browser.</p>
+            <a href="https://webvr.info" target="_blank" rel="noopener noreferrer">
+              Learn more
+            </a> or <a onClick={() => router.navigate('/')}>
+              continue watching
+            </a>
+          </div>
+        </div>
+      );
+    }
+
+    return false;
   }
 }

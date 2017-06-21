@@ -29,9 +29,9 @@ export default class RecordFlow extends Component {
     }
   }
 
-  revealOverlay() {
+  revealOverlay(type) {
     this.setState({
-      overlay: true,
+      overlay: type,
     });
   }
 

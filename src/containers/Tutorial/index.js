@@ -5,6 +5,7 @@ import Room from '../../components/Room';
 import TutorialTimeline from '../../components/TutorialTimeline';
 import Align from '../../components/Align';
 import audio from '../../audio';
+import feature from '../../utils/feature';
 
 export default class Review extends Component {
   constructor() {
@@ -39,7 +40,7 @@ export default class Review extends Component {
     this.setState({
       skipButton: false,
     });
-    this.props.revealOverlay();
+    this.props.revealOverlay(feature.has6DOF ? 'add-performance' : 'room-scale-error');
   }
 
   render() {
