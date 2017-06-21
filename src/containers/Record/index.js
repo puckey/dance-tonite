@@ -28,7 +28,6 @@ export default class Record extends Component {
     this.tick = this.tick.bind(this);
     this.performFinish = this.performFinish.bind(this);
     this.performStart = this.performStart.bind(this);
-    this.performNextRound = this.performNextRound.bind(this);
     this.performWaitRoom = this.performWaitRoom.bind(this);
     this.performRetry = this.performRetry.bind(this);
     this.performControllersDisconnected = this.performControllersDisconnected.bind(this);
@@ -74,7 +73,7 @@ export default class Record extends Component {
     if (this.mounted) this.props.goto('review');
   }
 
-  performNextRound() {
+  performWaitRoom() {
     if (audio.totalProgress > 1) {
       this.setState({
         controllerSettings: {
@@ -95,9 +94,6 @@ export default class Record extends Component {
     if (round === settings.maxLayerCount) {
       this.performFinish();
     }
-  }
-
-  performWaitRoom() {
     this.setState({
       controllerSettings: null,
     });
@@ -107,6 +103,7 @@ export default class Record extends Component {
     this.setState({
       mode: 'recording',
     });
+    this.performWaitRoom();
     audio.play();
     audio.mute();
     audio.fadeIn();
@@ -139,8 +136,9 @@ export default class Record extends Component {
   }
 
   tick() {
-    this.room.gotoTime(audio.time);
-    recording.tick();
+    if (this.state.mode === 'recording') {
+      recording.tick();
+    }
   }
 
   render(
@@ -159,10 +157,11 @@ export default class Record extends Component {
     return (
       <Container>
         <Room
-          record={mode === 'recording'}
+          orbs
+          reverseOrbs
+          record
           roomId={roomId}
-          onEnteredRoom={this.performNextRound}
-          onLeftRoom={this.performWaitRoom}
+          onOrbLeftRoom={this.performWaitRoom}
           onReady={this.performExitTransition}
           onLoading={this.setLoading}
         />

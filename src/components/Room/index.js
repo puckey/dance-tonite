@@ -126,6 +126,7 @@ export default class RoomComponent extends Component {
             onEnteredRoom={this.performOrbEnteredRoom}
             onLeftRoom={this.performOrbLeftRoom}
             onCreatedOrb={this.receiveOrb}
+            reversed={this.props.reverseOrbs}
           />
         }
         {this.props.children}
