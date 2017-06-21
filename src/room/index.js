@@ -50,7 +50,7 @@ const lerpPose = (
 export default class Room {
   constructor({ id, recording, index, single = false, wall = false, isGiffing = false }) {
     this._worldPosition = new THREE.Vector3();
-    this.index = recording ? recording.roomIndex : index;
+    this.index = index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
     this.single = single;
     const frames = this.frames = new Frames(id, recording);
