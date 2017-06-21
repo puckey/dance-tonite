@@ -116,6 +116,9 @@ export default class Record extends Component {
   }
 
   async performRetry() {
+    this.setState({
+      mode: 'retry',
+    });
     await transition.enter({
       text: 'Let’s try that again...',
     });
@@ -180,7 +183,7 @@ export default class Record extends Component {
         { !loading &&
           <Controllers settings={controllerSettings} />
         }
-        { round !== undefined &&
+        { mode === 'recording' && round !== undefined &&
           <RecordCountdown
             key={round}
             round={round}
