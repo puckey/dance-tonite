@@ -9,7 +9,7 @@ export default (req) => {
     mount: () => {
       root = render((
         <RecordFlow
-          roomId={parseInt(req.params.roomIndex, 10)}
+          roomId={parseInt(req.params.roomId, 10)}
           hideHead={/no/.test(req.params.hideHead)}
         />
       ), document.body);

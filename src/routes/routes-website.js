@@ -4,9 +4,9 @@ const giffer = require('./giffer').default;
 
 export default {
   routes: {
-    '/record/:roomIndex?/:hideHead?': record,
+    '/record/:roomId?/:hideHead?': record,
     '/giffer/:id?': giffer,
-    '/:roomIndex?/:id?': playback,
+    '/:roomId?/:id?': playback,
   },
   components: { record, playback },
 };

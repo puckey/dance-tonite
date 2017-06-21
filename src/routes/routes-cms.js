@@ -12,7 +12,7 @@ export default {
     '/inbox/:recordingId?': inbox,
     '/choose/:roomId': choose,
     '/submissions/': submissions,
-    '/:roomIndex?/:id?': playback,
+    '/:roomId?/:id?': playback,
   },
   components: { playback, choose, inbox },
 };
