@@ -86,7 +86,6 @@ export default class Review extends Component {
   render() {
     return (
       <div>
-        <POV />
         <Controllers
           settings={{
             left: {

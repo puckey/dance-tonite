@@ -158,6 +158,8 @@ export default class Playlist extends Component {
           rooms={this.state.rooms}
           orb={this.orb}
           enterHeads={process.env.FLAVOR !== 'cms'}
+          totalProgress={this.props.totalProgress}
+          fixedControllers={this.props.fixedControllers}
         />
         {
           process.env.FLAVOR === 'cms' &&

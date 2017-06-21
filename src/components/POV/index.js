@@ -29,6 +29,9 @@ export default class POV extends Component {
   }
 
   tick() {
-    this.pov.update(audio.progress, !!this.props.fixedControllers);
+    const progress = this.props.totalProgress
+      ? audio.totalProgress
+      : audio.progress;
+    this.pov.update(progress, !!this.props.fixedControllers);
   }
 }

@@ -48,7 +48,7 @@ export default class RoomComponent extends Component {
     viewer.events.off('tick', this.tick);
   }
 
-  async asyncMount({ roomId, id, record, onLoading }) {
+  async asyncMount({ roomId, id, record }) {
     Room.reset();
     state.originalCameraPosition = viewer.camera.position.clone();
     state.originalZoom = viewer.camera.zoom;
@@ -60,17 +60,11 @@ export default class RoomComponent extends Component {
       Room.rotate180();
     }
 
-    if (onLoading) {
-      onLoading('Loading audio…');
-    }
     await audio.load({
       src: `/public/sound/room-${layout.loopIndex(roomId - 1)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
       loops: 2,
       loopOffset: 0.5,
     });
-    if (onLoading) {
-      onLoading();
-    }
     if (!this.mounted) return;
     const room = new Room({
       id,
