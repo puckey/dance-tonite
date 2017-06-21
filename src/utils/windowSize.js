@@ -10,11 +10,13 @@ const size = Object.assign(
 
 size.aspectRatio = size.width / size.height;
 
-window.addEventListener('resize', () => {
+function onResize() {
   const width = size.width = window.innerWidth;
   const height = size.height = window.innerHeight;
   const aspectRatio = size.aspectRatio = width / height;
   size.emit('resize', { width, height, aspectRatio });
-});
+}
+
+window.addEventListener('resize', onResize);
 
 export default size;

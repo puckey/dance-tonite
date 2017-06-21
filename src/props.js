@@ -3,14 +3,12 @@ import { loadModel } from './utils/three';
 import settings from './settings';
 import { recordCostumeColor, orbColor } from './theme/colors';
 
-import wallUrl from './public/models/obj/new-rooms/vr/first-wall.obj';
-
-import roomUrl from './public/models/obj/new-rooms/vr/horizontal-room.obj';
-import roomTextureUrl from './public/models/obj/new-rooms/vr/bake/horizontal-room-AOMap.jpg';
-
-import isometricWallUrl from './public/models/obj/new-rooms/first-wall.obj';
-import isometricRoomUrl from './public/models/obj/new-rooms/horizontal-room.obj';
-import isometricRoomTextureUrl from './public/models/obj/new-rooms/bake/horizontal-room-AOMap.jpg';
+import wallUrl from './public/models/obj/first-wall.obj';
+import roomUrl from './public/models/obj/space-bigger-holes.obj';
+import isometricWallUrl from './public/models/obj/first-wall-isometric.obj';
+import isometricRoomUrl from './public/models/obj/space-isometric.obj';
+import roomTextureUrl from './public/models/obj/bake/VR_AOMap.png';
+import isometricRoomTextureUrl from './public/models/obj/bake/ISO_AOMap.png';
 
 const {
   Mesh,
