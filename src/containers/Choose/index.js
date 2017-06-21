@@ -128,7 +128,8 @@ export default class Choose extends Component {
           (item)
             ? (
               <Room
-                recording={item}
+                id={item.id}
+                roomId={item.room}
                 key={item && item.id}
               />
             )

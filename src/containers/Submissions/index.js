@@ -201,8 +201,9 @@ export default class Choose extends Component {
         {
           recording &&
             <Room
-              recording={recording}
-              key={item && recording.id}
+              id={recording.id}
+              roomId={recording.room}
+              key={recording && recording.id}
             />
         }
         { (error || loading) &&
