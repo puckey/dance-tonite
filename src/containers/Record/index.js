@@ -41,6 +41,7 @@ export default class Record extends Component {
     const { roomId, hideHead } = this.props;
     recording.setup({ roomIndex: roomId - 1, hideHead });
     viewer.switchCamera('default');
+    transition.exit();
   }
 
   componentWillUnmount() {
