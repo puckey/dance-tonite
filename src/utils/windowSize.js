@@ -18,6 +18,5 @@ function onResize() {
 }
 
 window.addEventListener('resize', onResize);
-window.addEventListener('orientationchange', onResize);
 
 export default size;
