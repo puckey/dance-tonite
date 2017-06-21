@@ -16,26 +16,35 @@ export default class Review extends Component {
       skipButton: true,
     };
 
-    this.updateLayers = this.updateLayers.bind(this);
+    this.setLayers = this.setLayers.bind(this);
     this.performSkip = this.performSkip.bind(this);
+    this.onAudioLoop = this.onAudioLoop.bind(this);
+
     viewer.vrEffect.exitPresent();
     viewer.switchCamera('orthographic');
   }
 
   componentDidMount() {
     this.mounted = true;
+    audio.on('loop', this.onAudioLoop);
   }
 
   componentWillUnmount() {
     this.mounted = false;
     audio.fadeOut();
+    audio.off('loop', this.onAudioLoop);
   }
 
-  setLoading(loading) {
-    this.setState({ loading });
+  onAudioLoop(loopCount) {
+    // Update the max layer count every time the audio loops,
+    // but only if the loop count is smaller than the max layers already set:
+    const count = loopCount + 1;
+    if (count > this.state.layers) {
+      this.setLayers(count);
+    }
   }
 
-  updateLayers(layers) {
+  setLayers(layers) {
     this.setState({ layers });
   }
 
@@ -56,7 +65,7 @@ export default class Review extends Component {
           layers={layers}
         >
           <TutorialTimeline
-            onUpdateLayers={this.updateLayers}
+            onUpdateLayers={this.setLayers}
             onEnd={this.performSkip}
           />
         </Room>
