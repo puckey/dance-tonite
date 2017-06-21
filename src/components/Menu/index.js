@@ -10,6 +10,7 @@ import ButtonEnterVR from '../../components/ButtonEnterVR';
 import ButtonAbout from '../../components/ButtonAbout';
 import ButtonAddRoom from '../../components/ButtonAddRoom';
 import ButtonClose from '../../components/ButtonClose';
+import EnterVROverlay from '../../components/EnterVROverlay';
 import About from '../../components/About';
 
 export default class Menu extends Component {
@@ -17,14 +18,22 @@ export default class Menu extends Component {
     super();
     this.state = {
       about: false,
+      vrOverlay: false,
     };
     this.toggleAbout = this.toggleAbout.bind(this);
+    this.toggleVROverlay = this.toggleVROverlay.bind(this);
     this.goHome = this.goHome.bind(this);
   }
 
   toggleAbout() {
     this.setState({
       about: !this.state.about,
+    });
+  }
+
+  toggleVROverlay() {
+    this.setState({
+      vrOverlay: !this.state.vrOverlay,
     });
   }
 
@@ -44,12 +53,13 @@ export default class Menu extends Component {
     return (
       <div>
         { this.state.about && <About onClose={this.toggleAbout} />}
+        { this.state.vrOverlay && <EnterVROverlay /> }
         <Align type="top-left" rows>
           { about && <ButtonAbout onClick={this.toggleAbout} /> }
           { mute && <ButtonMute /> }
         </Align>
         <Align type="bottom-right">
-          { vr && <ButtonEnterVR label /> }
+          { vr && <ButtonEnterVR label toggleVROverlay={this.toggleVROverlay} /> }
           { addRoom && <ButtonAddRoom label /> }
         </Align>
         {

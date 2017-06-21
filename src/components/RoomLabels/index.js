@@ -40,7 +40,7 @@ export default class RoomLabels extends Component {
   }
 
   render(props, { visibleRooms }) {
-    return visibleRooms && (
+    return visibleRooms && !viewer.vrEffect.isPresenting && (
       <div className="room-labels">
         { visibleRooms.map(this.roomToRoomLabel) }
       </div>
