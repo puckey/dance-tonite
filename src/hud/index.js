@@ -203,20 +203,6 @@ const hud = {
     elements.loaderOverlay.classList.add('mod-hidden');
   },
 
-  enterVR: () => {
-    if (!feature.isMobile) {
-      const el = hud.add(
-        componentContext(
-        'div.vr-info-overlay.mod-entering-vr',
-        componentContext('div.vr-info-overlay-text', 'Put on your VR headset')
-      ), false);
-      return () => {
-        hud.remove(el);
-      };
-    }
-    return () => {};
-  },
-
   create(/* tag, attrs, [text?, Elements?,...] */...args) {
     return hud.add(componentContext.apply(componentContext, args));
   },
