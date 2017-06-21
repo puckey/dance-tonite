@@ -135,6 +135,7 @@ const transition = {
   },
 
   async exit() {
+    if (!insideTransition) return;
     transitionVersion += 1;
     const version = transitionVersion;
     if (!fadedOut) {

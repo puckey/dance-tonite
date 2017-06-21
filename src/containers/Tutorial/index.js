@@ -59,12 +59,11 @@ export default class Review extends Component {
     }
   }
 
-  render() {
-    const { skipButton, layers } = this.state;
+  render({ roomId }, { skipButton, layers }) {
     return (
       <Container>
         <Room
-          roomId={1}
+          roomId={roomId}
           id="hIR_Tw"
           orbs
           layers={layers}
