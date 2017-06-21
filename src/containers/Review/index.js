@@ -33,7 +33,7 @@ export default class Review extends Component {
     await Promise.all(
       [
         audio.load({
-          src: `/public/sound/room-${recording.loopIndex || 1}.ogg`,
+          src: `/public/sound/room-${this.props.roomId}.ogg`,
           loops: 2,
         }),
         sleep(5000),
