@@ -37,7 +37,7 @@ export default class Playlist extends Component {
     const { rooms } = this.state;
 
     if (recording) {
-      for (let index = 1; index < 20; index += 2) {
+      for (let index = 1; index < 18; index += 2) {
         const room = new Room({ recording, index, wall: true });
         rooms.push(room);
       }
