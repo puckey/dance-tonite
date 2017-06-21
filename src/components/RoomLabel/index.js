@@ -18,7 +18,7 @@ export default class RoomLabel extends Component {
   }
 
   navigateToChooser(event) {
-    router.navigate(`/choose/${this.props.room.index}`);
+    router.navigate(`/choose/${this.props.room.index + 1}`);
     event.stopPropagation();
   }
 
