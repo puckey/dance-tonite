@@ -19,16 +19,17 @@
         DEFER_INITIALIZATION: true,
       };
 
-      function webgl_support() {
+      function supportsWebGL() {
         try {
           var canvas = document.createElement('canvas');
-          return !!window.WebGLRenderingContext && (
-            canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
-          );
+          return !!window.WebGLRenderingContext &&
+            (
+              canvas.getContext('webgl') ||
+              canvas.getContext('experimental-webgl')
+            );
         } catch(e) { return false; }
       }
-      console.log(webgl_support());
-      if (!webgl_support()) {
+      if (!supportsWebGL()) {
         window.location = '/no-webgl.html';
       }
     </script>
