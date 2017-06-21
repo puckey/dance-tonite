@@ -38,8 +38,8 @@ export default class Record extends Component {
 
   componentDidMount() {
     this.mounted = true;
-    const { roomIndex, hideHead } = this.props;
-    recording.setup({ roomIndex, hideHead });
+    const { roomId, hideHead } = this.props;
+    recording.setup({ roomIndex: roomId - 1, hideHead });
     viewer.switchCamera('default');
   }
 
