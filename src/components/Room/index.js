@@ -114,7 +114,6 @@ export default class RoomComponent extends Component {
   }
 
   tick() {
-    audio.tick();
     this.state.room.gotoTime(audio.time, this.props.layers);
   }
 
