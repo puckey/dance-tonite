@@ -49,13 +49,9 @@ export default class RecordInstructions extends Component {
   componentDidMount() {
     this.mounted = true;
     viewer.scene.add(this.group);
-    const { subtitle, main } = this.props;
-    if (subtitle) {
-      subtitleItem.updateLabel(subtitle);
-    }
-    if (main) {
-      mainItem.updateLabel(main);
-    }
+    const { subtitle = '', main = '' } = this.props;
+    subtitleItem.updateLabel(subtitle);
+    mainItem.updateLabel(main);
   }
 
   shouldComponentUpdate({ subtitle, main }) {
