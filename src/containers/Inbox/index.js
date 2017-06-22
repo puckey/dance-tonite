@@ -222,7 +222,13 @@ export default class Inbox extends Component {
                 }
               </Align>
             )
-            : <Room key={recording.id} recording={recording} />
+            : (
+              <Room
+                id={recording.id}
+                roomId={recording.room}
+                key={recording && recording.id}
+              />
+            )
         }
       </Container>
     );
