@@ -2,7 +2,7 @@ import emitter from 'mitt';
 import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
-import settings from './settings';
+import { textColor } from './theme/colors';
 import { Group } from './lib/three';
 
 
@@ -146,13 +146,13 @@ const rText = textCreator.create('', {
   wrapWidth: 1600,
   scale: 0.25,
   align: 'left',
-  color: settings.textColor,
+  color: textColor.getHex(),
 });
 const lText = textCreator.create('', {
   wrapWidth: 1980, // was originally 1600.
   scale: 0.25,
   align: 'right',
-  color: settings.textColor,
+  color: textColor.getHex(),
 });
 rhand.add(rText);
 lhand.add(lText);

@@ -1,12 +1,11 @@
 import { Group } from './lib/three';
 import * as SDFText from './sdftext';
 import viewer from './viewer';
-import settings from './settings';
+import { textColor } from './theme/colors';
 import { sleep } from './utils/async';
 
 const { scene } = viewer;
 const textCreator = SDFText.creator();
-const { textColor } = settings;
 
 const group = new Group();
 let countdownVersion = 0;
@@ -20,14 +19,14 @@ let subTextString;
 const subtext = textCreator.create('START IN', {
   scale: 2.25,
   align: 'center',
-  color: textColor,
+  color: textColor.getHex(),
   mode: 'nowrap',
 });
 
 const mainText = textCreator.create('', {
   scale: 7.5,
   align: 'center',
-  color: textColor,
+  color: textColor.getHex(),
   mode: 'nowrap',
 });
 
