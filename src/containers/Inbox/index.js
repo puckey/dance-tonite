@@ -172,7 +172,7 @@ export default class Inbox extends Component {
         />
         {
           recording && (
-            <Align type="bottom-right">
+            <Align type="bottom-right" margin>
               <input
                 placeHolder="Performance title"
                 type="text"

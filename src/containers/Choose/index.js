@@ -115,7 +115,7 @@ export default class Choose extends Component {
           inbox
           close
         />
-        <Align type="bottom-right">
+        <Align type="bottom-right" margin>
           <PaginatedList
             item={item}
             items={items}

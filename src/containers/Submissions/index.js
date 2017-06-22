@@ -151,7 +151,7 @@ export default class Choose extends Component {
           inbox
           close
         />
-        <Align type="bottom-left">
+        <Align type="bottom-left" margin>
           <PaginatedList
             item={item}
             items={items}
@@ -161,7 +161,7 @@ export default class Choose extends Component {
         </Align>
         {
           recording && (
-            <Align type="bottom-right">
+            <Align type="bottom-right" margin>
               <input
                 placeHolder="Performance title"
                 type="text"

@@ -42,7 +42,7 @@ export default class CMSMenu extends Component {
     return (
       <div>
         { this.state.vrOverlay && <EnterVROverlay /> }
-        <Align type="top-left" rows>
+        <Align type="top-left" margin rows>
           {vr && <ButtonEnterVR toggleVROverlay={this.toggleVROverlay} />}
           {mute && <ButtonMute />}
           {submissions && <ButtonSubmissions />}
@@ -50,13 +50,13 @@ export default class CMSMenu extends Component {
         </Align>
         {
           close &&
-          <Align type="top-right" rows>
+          <Align type="top-right" margin rows>
             <ButtonClose onClick={navigateHome} />
           </Align>
         }
         {
           audio &&
-          <Align type="top-right" rows>
+          <Align type="top-right" margin rows>
             <AudioControls />
           </Align>
         }
