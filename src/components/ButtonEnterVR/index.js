@@ -1,12 +1,16 @@
 /** @jsx h */
 import { h, Component } from 'preact';
+
 import './style.scss';
+import enterIconSvg from './icons/entervr.svg';
+import enterIconDisabledSvg from './icons/x_entervr.svg';
+
 import { sleep } from '../../utils/async';
 import feature from '../../utils/feature';
 import viewer from '../../viewer';
 import audio from '../../audio';
-import enterIconSvg from './icons/entervr.svg';
-import enterIconDisabledSvg from './icons/x_entervr.svg';
+import pov from '../../pov';
+
 import ButtonItem from '../ButtonItem';
 
 export default class ButtonEnterVR extends Component {
@@ -51,6 +55,7 @@ export default class ButtonEnterVR extends Component {
       this.setState({ processingClick: false });
       audio.play();
     }
+    pov.clearHighlights();
   }
 
   render({ label }) {

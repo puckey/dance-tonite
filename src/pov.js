@@ -74,7 +74,6 @@ export default function create({ rooms, orb }) {
       if (fixedControllers) {
         controllers.fixToPosition(position);
       }
-
       viewer.camera.position.copy(position);
       if (hoverOrb) {
         // Move camera into orb:
@@ -99,6 +98,13 @@ export default function create({ rooms, orb }) {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mouseup', onMouseUp);
+    },
+
+    clearHighlights: () => {
+      hoverPerformance = null;
+      hoverOrb = false;
+      orb.unhighlight();
+      Room.setHighlight();
     },
   };
 }

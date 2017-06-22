@@ -46,3 +46,5 @@ export const recordCostumeColor = window.localStorage.getItem('color') ? pairCol
 export const waitRoomColor = new Color(0x838181);
 export const orbColor = new Color(0xffff00);
 export const highlightColor = new Color(0xffffff);
+
+export const textColor = new Color(0xffff07);

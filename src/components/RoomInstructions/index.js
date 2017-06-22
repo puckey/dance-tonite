@@ -4,7 +4,7 @@ import { Component } from 'preact';
 import { Group } from '../../lib/three';
 import * as SDFText from '../../sdftext';
 import viewer from '../../viewer';
-import settings from '../../settings';
+import { textColor } from '../../theme/colors';
 
 let subtitleItem;
 let mainItem;
@@ -18,7 +18,7 @@ export default class RecordInstructions extends Component {
 
       const textSettings = {
         align: 'center',
-        color: settings.textColor,
+        color: textColor.getHex(),
         mode: 'nowrap',
       };
 
