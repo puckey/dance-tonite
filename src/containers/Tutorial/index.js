@@ -20,7 +20,9 @@ export default class Tutorial extends Component {
     this.performSkip = this.performSkip.bind(this);
     this.onAudioLoop = this.onAudioLoop.bind(this);
 
-    viewer.vrEffect.exitPresent();
+    if (viewer.vrEffect.isPresenting) {
+      viewer.vrEffect.exitPresent();
+    }
     viewer.switchCamera('orthographic');
   }
 
