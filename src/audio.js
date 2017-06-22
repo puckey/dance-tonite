@@ -171,7 +171,7 @@ const audio = Object.assign(emitter(), {
     startTime = Date.now() - time * 1000;
   },
 
-  prevLoop() {
+  previousLoop() {
     const time = (Math.round(this.progress) - 1.1) * this.loopDuration;
     this.gotoTime(Math.max(0, Math.min(this.duration, time)));
   },

@@ -9,7 +9,7 @@ import ButtonPrevious from '../ButtonPrevious';
 import ButtonPlay from './ButtonPlay';
 
 const performNext = audio.nextLoop.bind(audio);
-const performPrevious = audio.nextLoop.bind(audio);
+const performPrevious = audio.previousLoop.bind(audio);
 
 const AudioControls = () => (
   <div className="audio-controls">
