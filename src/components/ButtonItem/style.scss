@@ -18,11 +18,14 @@
   }
 
   &:hover {
+    color: $white-color;
+    fill: $white-color;
 
     .button-item-label {
       display: inline;
     }
   }
+
 
   &.mod-text {
     display: flex;
