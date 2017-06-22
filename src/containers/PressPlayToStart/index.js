@@ -11,7 +11,7 @@ export default function PressPlayToStart({ onClick }) {
     <Container>
       <Align type="center">
         <ButtonPlay onClick={onClick} />
-        <a onClick={onClick}><div>Press play to start</div></a>
+        <a onClick={onClick}><div>Press play to Dance Tonite</div></a>
       </Align>
     </Container>
   );
