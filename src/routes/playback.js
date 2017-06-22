@@ -44,6 +44,7 @@ export default (req) => {
       audio.play();
       viewer.scene.add(viewer.camera);
     }
+    pov.clearHighlights();
   };
 
   const hudSettings = {

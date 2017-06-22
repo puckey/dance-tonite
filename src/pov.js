@@ -142,9 +142,17 @@ export default function create(orb, playlist) {
     }
   }
 
+  function clearHighlights() {
+    hoverPerformance = null;
+    hoverOrb = false;
+    orb.unhighlight();
+    Room.setHighlight();
+  }
+
   return {
     update,
     setupInput,
     removeInput,
+    clearHighlights,
   };
 }
