@@ -55,7 +55,6 @@ export default class ButtonEnterVR extends Component {
       this.setState({ processingClick: false });
       audio.play();
     }
-    pov.clearHighlights();
   }
 
   render({ label }) {

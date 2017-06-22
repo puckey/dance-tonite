@@ -23,9 +23,7 @@ export default class POV extends Component {
   componentWillUnmount() {
     this.mounted = false;
     viewer.events.off('tick', this.tick);
-    if (this.props.enterHeads) {
-      this.pov.removeInput();
-    }
+    this.pov.removeInput();
   }
 
   tick() {

@@ -45,7 +45,16 @@ export default function create({ rooms, orb }) {
     viewer.switchCamera('orthographic');
   };
 
-  return {
+  const clearHighlights = () => {
+    hoverPerformance = null;
+    hoverOrb = false;
+    orb.unhighlight();
+    Room.setHighlight();
+  };
+
+  window.addEventListener('vrdisplaypresentchange', clearHighlights, false);
+
+  const POV = {
     update: (progress = 0, fixedControllers = false) => {
       if (!viewer.vrEffect.isPresenting) {
         if (intersectOrb(pointerX, pointerY)) {
@@ -98,13 +107,11 @@ export default function create({ rooms, orb }) {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('vrdisplaypresentchange', clearHighlights);
     },
 
-    clearHighlights: () => {
-      hoverPerformance = null;
-      hoverOrb = false;
-      orb.unhighlight();
-      Room.setHighlight();
-    },
+    clearHighlights,
   };
+
+  return POV;
 }

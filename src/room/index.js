@@ -221,10 +221,14 @@ Room.rotate180 = () => {
 Room.highlight = {};
 
 Room.setHighlight = (highlight) => {
-  if (!highlight) return;
-  const [room, performance] = highlight;
-  Room.highlight.roomIndex = room;
-  Room.highlight.performanceIndex = performance;
+  if (highlight) {
+    const [room, performance] = highlight;
+    Room.highlight.roomIndex = room;
+    Room.highlight.performanceIndex = performance;
+  } else {
+    Room.highlight.roomIndex = null;
+    Room.highlight.performanceIndex = null;
+  }
 };
 
 Room.getGroup = () => InstancedItem.group;
