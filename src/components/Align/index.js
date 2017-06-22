@@ -16,4 +16,4 @@ export default function Align({ children, type, rows, margin }) {
       {children}
     </div>
   );
-};
+}

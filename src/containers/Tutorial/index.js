@@ -8,7 +8,7 @@ import audio from '../../audio';
 import feature from '../../utils/feature';
 import viewer from '../../viewer';
 
-export default class Review extends Component {
+export default class Tutorial extends Component {
   constructor() {
     super();
     this.state = {
