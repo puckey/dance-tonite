@@ -32,6 +32,8 @@ export default class Playlist extends Component {
 
   componentWillMount() {
     this.mounted = true;
+    Room.reset();
+    Room.rotate180();
 
     const { recording } = this.props;
     const { rooms } = this.state;
@@ -44,8 +46,6 @@ export default class Playlist extends Component {
     }
 
     this.moveOrb(0);
-    Room.reset();
-    Room.rotate180();
 
     this.asyncMount();
     viewer.events.on('tick', this.tick);
