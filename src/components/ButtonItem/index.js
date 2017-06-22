@@ -24,6 +24,6 @@ export default ({ onClick, icon, label, children, className, text }) => (
         dangerouslySetInnerHTML={{ __html: icon }}
       />
     }
-    { text && <span>{ children }</span> }
+    { text ? <span>{ children }</span> : null }
   </div>
 );

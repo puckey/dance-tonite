@@ -41,24 +41,36 @@ export default class CMSMenu extends Component {
   }) {
     return (
       <div>
-        { this.state.vrOverlay && <EnterVROverlay /> }
+        { this.state.vrOverlay
+          ? <EnterVROverlay />
+          : null
+        }
         <Align type="top-left" margin rows>
-          {vr && <ButtonEnterVR toggleVROverlay={this.toggleVROverlay} />}
-          {mute && <ButtonMute />}
-          {submissions && <ButtonSubmissions />}
-          {inbox && <ButtonInbox unreadCount={unreadCount} />}
+          {vr ? <ButtonEnterVR toggleVROverlay={this.toggleVROverlay} /> : null}
+          {mute ? <ButtonMute /> : null}
+          {submissions ? <ButtonSubmissions /> : null}
+          {inbox ? <ButtonInbox unreadCount={unreadCount} /> : null}
         </Align>
         {
-          close &&
-          <Align type="top-right" margin rows>
-            <ButtonClose onClick={navigateHome} />
-          </Align>
+          close
+            ? <Align type="top-right" margin rows>
+              <ButtonClose onClick={navigateHome} />
+            </Align>
+            : null
         }
         {
-          audio &&
-          <Align type="top-right" margin rows>
-            <AudioControls />
-          </Align>
+          audio
+            ? <Align type="top-right" margin rows>
+              <AudioControls />
+            </Align>
+            : null
+        }
+        {
+          publish
+            ? <Align type="bottom-right" margin rows>
+              <ButtonPublish />
+            </Align>
+            : null
         }
 
       </div>

@@ -69,31 +69,52 @@ export default class Menu extends Component {
     } = this.props;
     return (
       <div className="menu">
-        { this.state.about && <About onClose={this.toggleAbout} />}
+        { this.state.about
+          ? <About onClose={this.toggleAbout} />
+          : null
+        }
         {
-          (overlay || this.state.overlay) && !this.state.enterVROverlay &&
-            <InformationOverlay
+          ((overlay || this.state.overlay) && !this.state.enterVROverlay)
+            ? <InformationOverlay
               type={overlay || this.state.overlay}
               goto={this.props.goto}
               close={this.closeOverlay}
               toggleVROverlay={this.toggleVROverlay}
             />
+            : null
         }
-        { this.state.enterVROverlay && <EnterVROverlay /> }
+        { this.state.enterVROverlay
+          ? <EnterVROverlay />
+          : null
+        }
         <Align type="top-left" rows>
-          { about && <ButtonAbout onClick={this.toggleAbout} /> }
-          { mute && <ButtonMute /> }
+          { about
+            ? <ButtonAbout onClick={this.toggleAbout} />
+            : null
+          }
+          { mute
+            ? <ButtonMute />
+            : null
+          }
         </Align>
         <Align type="bottom-right">
-          { vr && <ButtonEnterVR label toggleVROverlay={this.toggleVROverlay} /> }
-          { addRoom && <ButtonAddRoom label /> }
+          { vr
+            ? <ButtonEnterVR label toggleVROverlay={this.toggleVROverlay} />
+            : null
+          }
+          { addRoom
+            ? <ButtonAddRoom label />
+            : null
+          }
         </Align>
         {
-          close && (
-            <Align type="top-right">
-              <ButtonClose onClick={this.goHome} />
-            </Align>
-          )
+          close
+            ? (
+              <Align type="top-right">
+                <ButtonClose onClick={this.goHome} />
+              </Align>
+            )
+            : null
         }
       </div>
     );
