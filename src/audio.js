@@ -224,6 +224,10 @@ const audio = Object.assign(emitter(), {
     gainNode.gain.value = 1;
   },
 
+  isMuted() {
+    return muted;
+  },
+
   toggleMute() {
     this[muted ? 'unmute' : 'mute']();
     muted = !muted;
