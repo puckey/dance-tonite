@@ -1,5 +1,6 @@
 import GIF from 'gif.js';
 import CCapture from 'ccapture.js';
+import download from 'downloadjs';
 import Room from '../room';
 import Orb from '../orb';
 import settings from '../settings';
@@ -33,6 +34,15 @@ export default (req) => {
 
   const id = req.params.id ? req.params.id : 'hIR_Tw'; // '1030266141029-b5ba6ff6';
   if (verbose) console.log('Export GIF of this dance ID#', id);
+
+
+  //  These bits are for downloading the rendered GIF.
+
+  let gifBlob;
+  const downloadGIF = () => {
+    if (verbose) console.log('Attempting to download GIF.');
+    download(gifBlob, `dance-tonite-${id}.gif`, 'image/gif');
+  };
 
 
   //  We need our own renderer with dimensions
@@ -211,7 +221,22 @@ export default (req) => {
       if (gifFrame === duration * fps) {
         if (verbose) console.log('> STOP saving canvas frame grabs for GIF.');
         capturer.stop();
-        capturer.save();
+
+        //  By passing a callback to capturer.save() we prevent CCapture from
+        //  automatically downloading the rendered GIF.
+        capturer.save((blob) => {
+          gifBlob = blob;
+          return false;
+        });
+        const el = document.createElement('a');
+        el.innerText = 'Download GIF';
+        el.addEventListener('click', downloadGIF);
+        document.body.appendChild(el);
+
+        //  ***************************************************************
+        //  Since I don't have real UI hooked up right now I just have this
+        //  for testing from the console to be sure it works ;)
+        window.downloadGIF = downloadGIF;
       }
       if (verbose) {
         const whole = Math.floor(gifProgress * 100);
