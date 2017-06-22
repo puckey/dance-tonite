@@ -8,7 +8,7 @@ const em = { type: 'EMPTY' };
 const ho = { type: 'HORIZONTAL' };
 const hw = { type: 'HORIZONTAL', wall: true };
 
-const rooms = [
+let rooms = [
   [0, 0, -3, em],
   [0, 0, -2, em],
   [0, 0, -1, em],
@@ -29,8 +29,8 @@ const rooms = [
   [0, 0, 14, ho],
   [0, 0, 15, ho],
   [0, 0, 16, ho],
-  [-1, 0, 17, ph], [0, 0, 17, ho], [1, 0, 17, ph],
-  [-2, 0, 18, ph], [-1, 0, 18, ph], [0, 0, 18, ho], [1, 0, 18, ph], [2, 0, 18, ph],
+  [0, 0, 17, ho],
+  [0, 0, 18, ho],
   [-3, 0, 19, ph], [-2, 0, 19, ph], [-1, 0, 19, ph], [0, 0, 19, plh], [1, 0, 19, ph], [2, 0, 19, ph], [3, 0, 19, ph],
   [-3, 0, 20, ph], [-2, 0, 20, ph], [-1, 0, 20, ph], [0, 0, 20, plh], [1, 0, 20, ph], [2, 0, 20, ph], [3, 0, 20, ph],
   [-3, 0, 21, ph], [-2, 0, 21, ph], [-1, 0, 21, ph], [0, 0, 21, plh], [1, 0, 21, ph], [2, 0, 21, ph], [3, 0, 21, ph],
@@ -46,6 +46,16 @@ const rooms = [
   [0, 0, 31, em],
   [0, 0, 32, em],
 ];
+
+if (process.env.FLAVOR === 'cms') {
+  rooms = rooms.filter(([,, type]) => type !== ph);
+  rooms.forEach((room) => {
+    const type = room[3];
+    if (type === plh) {
+      room[3] = em;
+    }
+  });
+}
 
 const layout = rooms.filter(([,,, { type }]) => type !== 'EMPTY');
 

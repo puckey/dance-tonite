@@ -16,7 +16,7 @@ export default {
   // The amount of loops that can be recorded:
   loopCount: 28,
 
-  roomCount: 17,
+  roomCount: 19,
 
   // The maximum amount of layers allowed in recording mode:
   maxLayerCount: 20,
