@@ -1,15 +1,15 @@
-import * as THREE from './lib/three';
-import { loadModel } from './utils/three';
-import settings from './settings';
+import * as THREE from '../lib/three';
+import { loadModel } from '../utils/three';
+import settings from '../settings';
 
-import { recordCostumeColor, orbColor, textColor } from './theme/colors';
+import { recordCostumeColor, orbColor, textColor } from '../theme/colors';
 
-import wallUrl from './public/models/obj/first-wall.obj';
-import roomUrl from './public/models/obj/space-bigger-holes.obj';
-import isometricWallUrl from './public/models/obj/first-wall-isometric.obj';
-import isometricRoomUrl from './public/models/obj/space-isometric.obj';
-import roomTextureUrl from './public/models/obj/bake/VR_AOMap.png';
-import isometricRoomTextureUrl from './public/models/obj/bake/ISO_AOMap.png';
+import wallUrl from './models/first-wall.obj';
+import roomUrl from './models/space-bigger-holes.obj';
+import isometricWallUrl from './models/first-wall-isometric.obj';
+import isometricRoomUrl from './models/space-isometric.obj';
+import roomTextureUrl from './models/bake/VR_AOMap.png';
+import isometricRoomTextureUrl from './models/bake/ISO_AOMap.png';
 
 const {
   Mesh,
