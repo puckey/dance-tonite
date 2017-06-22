@@ -114,7 +114,13 @@ export default class Playback extends Component {
   render({ roomIndex, recordingId }, { error, loading, orb, colophon }) {
     return (
       <Container>
-        <Colophon className={(!loading && (!colophon || process.env.FLAVOR === 'cms')) && 'mod-hidden'} />
+        <Colophon
+          className={
+            !loading &&
+            (!colophon || process.env.FLAVOR === 'cms') &&
+            'mod-hidden'
+          }
+        />
         <Playlist
           pathRecording={recordingId}
           pathRoomIndex={roomIndex}
