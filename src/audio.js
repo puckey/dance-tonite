@@ -218,6 +218,9 @@ const audio = Object.assign(emitter(), {
   },
 
   unmute() {
+    if (scheduledTime) {
+      gainNode.gain.cancelScheduledValues(scheduledTime);
+    }
     gainNode.gain.value = 1;
   },
 
