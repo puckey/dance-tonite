@@ -21,27 +21,47 @@ import SDFShader from 'three-bmfont-text/shaders/sdf';
 import createGeometry from 'three-bmfont-text';
 import parseASCII from 'parse-bmfont-ascii';
 import * as THREE from '../lib/three';
+import fontTextureURL from './larsvrc-light.png';
+import dummyTextureUrl from '../public/dummy.png';
 
 import * as Font from './font';
 
-export function createMaterial(color) {
-  const texture = new THREE.Texture();
-  const image = Font.image();
-  texture.image = image;
-  texture.needsUpdate = true;
-  texture.minFilter = THREE.LinearFilter;
-  texture.magFilter = THREE.LinearFilter;
-  texture.generateMipmaps = false;
+const materialInstances = [];
 
-  return new THREE.RawShaderMaterial(SDFShader({
+
+export function createMaterial(color) {
+  const material = new THREE.RawShaderMaterial(SDFShader({
     side: THREE.DoubleSide,
     transparent: true,
     color,
-    map: texture,
+    map: new THREE.TextureLoader().load(dummyTextureUrl),
   }));
+
+  materialInstances.push(material);
+
+  return material;
 }
 
 const textScale = 0.00024;
+
+export function loadFontTexture() {
+
+  const textureLoader = new THREE.TextureLoader().load('/sdftext/larsvrc-light.png', function (texture) {
+    console.log(materialInstances);
+    materialInstances.forEach(function (m) {
+      console.log(m);
+      m.uniforms.map.value = texture;
+      m.needsUpdate = true;
+      m.uniforms.map.needsUpdate = true;
+    });
+  }, function(e){
+    console.log(e);
+  }, function(e){
+    console.log(e);
+  });
+
+  return textureLoader;
+}
 
 export function creator() {
   const font = parseASCII(Font.fnt());
@@ -63,6 +83,7 @@ export function creator() {
     let material = colorMaterials[color];
     if (material === undefined) {
       material = colorMaterials[color] = createMaterial(color);
+      materialInstances.push(material);
     }
     const mesh = new THREE.Mesh(geometry, material);
     mesh.scale.multiply(new THREE.Vector3(1, -1, 1));
@@ -72,7 +93,6 @@ export function creator() {
     mesh.scale.multiplyScalar(finalScale);
 
     mesh.position.y = layout.height * 0.5 * finalScale;
-
     return mesh;
   }
 
