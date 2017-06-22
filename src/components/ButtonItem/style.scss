@@ -21,11 +21,20 @@
     color: $white-color;
     fill: $white-color;
 
+    &.mod-dark {
+      color: $black-color;
+      fill: $black-color;
+    }
+
     .button-item-label {
       display: inline;
     }
   }
 
+  &.mod-dark {
+    color: $black-color;
+    fill: $black-color;
+  }
 
   &.mod-text {
     display: flex;
