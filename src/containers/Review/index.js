@@ -5,7 +5,6 @@ import Controllers from '../../components/Controllers';
 import Playlist from '../../containers/Playlist';
 
 import audio from '../../audio';
-import viewer from '../../viewer';
 import recording from '../../recording';
 import transition from '../../transition';
 import { sleep } from '../../utils/async';
@@ -16,7 +15,7 @@ export default class Review extends Component {
     super();
 
     this.state = {
-      showPlaylist: true,
+      visible: false,
     };
     this.performSubmit = this.performSubmit.bind(this);
     this.performRedo = this.performRedo.bind(this);
@@ -32,26 +31,28 @@ export default class Review extends Component {
     audio.fadeOut();
   }
 
-  setLoading(loading) {
-    this.setState({ loading });
-  }
-
   async asyncMount() {
-    await Promise.all(
-      [
-        audio.load({
-          src: `/public/sound/room-${this.props.roomId}.ogg`,
-          loops: 2,
-        }),
-        sleep(5000),
-      ]
-    );
+    await Promise.all([
+      transition.enter({
+        text: 'Time to review your performance',
+      }),
+      audio.load({
+        src: `/public/sound/room-${this.props.roomId}.ogg`,
+        loops: 2,
+      }),
+      sleep(5000),
+    ]);
     if (!this.mounted) return;
 
-    await transition.exit();
+    await transition.fadeOut();
     if (!this.mounted) return;
 
+    this.setState({
+      visible: true,
+    });
+    audio.fadeIn();
     audio.play();
+    transition.exit();
   }
 
   async performSubmit() {
@@ -63,11 +64,10 @@ export default class Review extends Component {
 
     await transition.fadeOut();
     this.setState({
-      showPlaylist: false,
+      visible: false,
     });
     if (!this.mounted) return;
 
-    viewer.events.off('tick', this.tick);
     const [recordingSrc] = await Promise.all([
       persisting,
       transition.enter({
@@ -76,6 +76,7 @@ export default class Review extends Component {
       sleep(5000),
     ]);
     if (!this.mounted) return;
+
     const id = recordingSrc.replace('.json', '');
     this.props.goto(`/${recording.roomIndex}/${id}`);
   }
@@ -84,8 +85,6 @@ export default class Review extends Component {
     audio.fadeOut();
     await transition.fadeOut();
     if (!this.mounted) return;
-
-    viewer.events.off('tick', this.tick);
 
     await transition.enter({
       text: 'Okay, here we go again',
@@ -96,8 +95,8 @@ export default class Review extends Component {
     this.props.goto('record');
   }
 
-  render(props, { showPlaylist }) {
-    return showPlaylist && (
+  render(props, { visible }) {
+    return visible && (
       <div>
         <Controllers
           settings={{

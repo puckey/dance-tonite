@@ -1,7 +1,6 @@
 /** @jsx h */
 import { h, Component } from 'preact';
 
-import Menu from '../../components/Menu';
 import Error from '../../components/Error';
 import Align from '../../components/Align';
 import Spinner from '../../components/Spinner';
@@ -67,11 +66,12 @@ export default class Record extends Component {
         if (this.mounted) recording.stop();
       }),
       audio.fadeOut(),
-      transition.enter({
-        text: 'Let’s review your performance',
-      }),
+      transition.fadeOut(),
     ]);
-    if (this.mounted) this.props.goto('review');
+    viewer.events.off('tick', this.tick);
+    if (!this.mounted) return;
+
+    this.props.goto('review');
   }
 
   performRecordRoom() {
@@ -171,7 +171,6 @@ export default class Record extends Component {
           onOrbEnteredRoom={this.performRecordRoom}
           onOrbLeftRoom={this.performWaitRoom}
           onReady={this.performExitTransition}
-          onLoading={this.setLoading}
         />
         { mode === 'connect-controllers' &&
           <ConnectControllers

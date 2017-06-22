@@ -90,6 +90,12 @@ const tweenFog = (from, to, duration = 2) => {
 };
 
 const fadeOut = (duration) => {
+  const version = transitionVersion;
+  setTimeout(() => {
+    if (version === transitionVersion) {
+      textItem.updateLabel('');
+    }
+  }, duration * 0.5);
   fadedOut = true;
   return tweenFog(25, 0, duration);
 };
