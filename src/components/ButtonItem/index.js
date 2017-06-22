@@ -11,10 +11,10 @@ export default ({ onClick, icon, label, children, className }) => (
   >
     {
       label &&
-        <div className="button-item-label">{label}</div>
+        <span className="button-item-label">{label}</span>
     }
     { icon &&
-      <div
+      <span
         className={
           classNames(
             'button-item-icon',

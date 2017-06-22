@@ -8,10 +8,6 @@ let root;
 
 export default (req) => (
   {
-    hud: {
-      muteButton: false,
-      aboutButton: false,
-    },
     mount: () => {
       root = render((
         <Choose

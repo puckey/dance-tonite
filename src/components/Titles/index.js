@@ -10,9 +10,9 @@ export default class Titles extends Component {
 
     const timeline = this.timeline = createTimeline(keyframes);
 
-    timeline.on('keyframe', ({ titles }) => {
+    timeline.on('keyframe', ({ titles, colophon }) => {
       this.setState({ titles });
-      this.props.onUpdate(titles);
+      this.props.onUpdate(titles, colophon);
     });
 
     this.state = {

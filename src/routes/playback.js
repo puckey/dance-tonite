@@ -7,10 +7,6 @@ import Playback from '../containers/Playback';
 export default (req) => {
   let root;
   return {
-    hud: {
-      muteButton: false,
-      aboutButton: false,
-    },
     mount: () => {
       root = render((
         <Playback

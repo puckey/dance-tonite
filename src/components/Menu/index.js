@@ -68,7 +68,7 @@ export default class Menu extends Component {
       overlay = false,
     } = this.props;
     return (
-      <div>
+      <div className="menu">
         { this.state.about && <About onClose={this.toggleAbout} />}
         {
           (overlay || this.state.overlay) && !this.state.enterVROverlay &&

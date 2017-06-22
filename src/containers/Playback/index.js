@@ -10,6 +10,7 @@ import Align from '../../components/Align';
 import Spinner from '../../components/Spinner';
 import Titles from '../../components/Titles';
 import ProgressBar from '../../components/ProgressBar';
+import Colophon from '../../components/Colophon';
 import Playlist from '../Playlist';
 
 import audio from '../../audio';
@@ -29,6 +30,7 @@ export default class Playback extends Component {
       loading: 'room choices',
       hoverHead: null,
       orb: true,
+      colophon: true,
     };
     this.onTitlesChanged = this.onTitlesChanged.bind(this);
   }
@@ -45,9 +47,10 @@ export default class Playback extends Component {
     }
   }
 
-  onTitlesChanged(titles) {
+  onTitlesChanged(titles, colophon = true) {
     this.setState({
       orb: !titles,
+      colophon,
     });
   }
 
@@ -112,9 +115,10 @@ export default class Playback extends Component {
     });
   }
 
-  render({ roomIndex, recordingId }, { error, loading, orb }) {
+  render({ roomIndex, recordingId }, { error, loading, orb, colophon }) {
     return (
       <Container>
+        <Colophon className={!colophon && 'mod-hidden'} />
         <Playlist
           pathRecording={recordingId}
           pathRoomIndex={roomIndex}

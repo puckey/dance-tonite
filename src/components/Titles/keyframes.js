@@ -39,4 +39,9 @@ export default [
     time: 13.1,
     titles: null,
   },
+  {
+    time: 15,
+    titles: null,
+    colophon: false,
+  },
 ];

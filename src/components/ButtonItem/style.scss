@@ -5,18 +5,21 @@
   @extend .mod-fill;
   @extend .mod-no-stroke;
 
+  margin: 0;
   cursor: pointer;
-  display: flex;
-  line-height: 2.3rem;
+  user-select: none;
+
+  + .button-item {
+    margin-top: 0 !important;
+  }
+
+  .mod-disabled {
+    cursor: not-allowed;
+  }
 
   &:hover .button-item-label {
-    display: flex;
+    display: inline;
   }
-
-  &.mod-black {
-    fill: $black-color;
-  }
-
 }
 
 .button-item-label {
@@ -24,22 +27,23 @@
   pointer-events: none;
   user-select: none;
   font-size: 1.2rem;
-  margin-right: .5rem;
-  height: 2rem;
+  line-height: 1rem;
+
+  + .button-item-icon {
+    margin-left: .5rem;
+    top: .5rem;
+  }
 }
 
 @media (max-width: $min-width) {
   .mod-mobile .button-item-label {
-    display: flex;
-    opacity: 0;
-    animation: fadeOut 5s forwards;
+    display: none;
   }
 }
 
 .button-item-icon {
-  display: flex;
-  &.mod-label {
-  }
+  display: inline-block;
+  position: relative;
   width: 2rem;
   height: 2rem;
 }

@@ -12,7 +12,6 @@ import Align from '../../components/Align';
 import PaginatedList from '../../components/PaginatedList';
 import Spinner from '../../components/Spinner';
 import router from '../../router';
-import hud from '../../hud';
 
 export default class Choose extends Component {
   constructor() {
@@ -94,7 +93,9 @@ export default class Choose extends Component {
   }
 
   async performSave() {
-    hud.showLoader('Saving room...');
+    this.setState({
+      loading: 'Saving room...',
+    });
     const { item } = this.state;
     const { error } = await cms.updateDraftPlaylist(item);
     if (error) {

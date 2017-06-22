@@ -6,10 +6,6 @@ import Inbox from '../../containers/Inbox';
 export default (req) => {
   let root;
   return {
-    hud: {
-      muteButton: false,
-      aboutButton: false,
-    },
     mount: () => {
       root = render((
         <Inbox

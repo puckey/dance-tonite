@@ -4,7 +4,7 @@ import { h, Component } from 'preact';
 import ButtonItem from '../../ButtonItem';
 import audio from '../../../audio';
 
-import iconPlay from './icon-play.svg';
+import iconPlay from '../../ButtonPlay/icon.svg';
 import iconPause from './icon-pause.svg';
 
 export default class ButtonPlay extends Component {
