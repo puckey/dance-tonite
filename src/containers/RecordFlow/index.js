@@ -16,16 +16,18 @@ export default class RecordFlow extends Component {
     this.state = {
       mode: 'tutorial',
       overlay: false,
+      count: 0,
     };
     this.goto = this.goto.bind(this);
     this.revealOverlay = this.revealOverlay.bind(this);
   }
 
   goto(mode) {
+    const count = this.state.count + 1;
     if (modes.indexOf(mode) === -1) {
       router.navigate(mode);
     } else {
-      this.setState({ mode });
+      this.setState({ mode, count });
     }
   }
 
@@ -37,7 +39,7 @@ export default class RecordFlow extends Component {
 
   render(
     props,
-    { mode, overlay }
+    { mode, overlay, count }
   ) {
     return (
       <Container>
@@ -52,10 +54,11 @@ export default class RecordFlow extends Component {
             ? <Tutorial
               {...props} goto={this.goto}
               revealOverlay={this.revealOverlay}
+              key={count}
             />
             : mode === 'review'
-              ? <Review {...props} goto={this.goto} />
-              : <Record {...props} goto={this.goto} />
+              ? <Review {...props} goto={this.goto} key={count} />
+              : <Record {...props} goto={this.goto} key={count} />
         }
       </Container>
     );
