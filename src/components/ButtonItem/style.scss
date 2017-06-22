@@ -17,8 +17,16 @@
     cursor: not-allowed;
   }
 
-  &:hover .button-item-label {
-    display: inline;
+  &:hover {
+
+    .button-item-label {
+      display: inline;
+    }
+  }
+
+  &.mod-text {
+    display: flex;
+    align-items: center;
   }
 }
 

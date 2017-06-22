@@ -8,7 +8,7 @@ import './style.scss';
 const navigateToInbox = () => router.navigate('/inbox');
 
 export default ({ unreadCount }) => (
-  <ButtonItem onClick={navigateToInbox}>
+  <ButtonItem onClick={navigateToInbox} text>
     Inbox { unreadCount && `(${unreadCount})` }
   </ButtonItem>
 );

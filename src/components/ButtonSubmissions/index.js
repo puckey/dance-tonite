@@ -8,5 +8,5 @@ import './style.scss';
 const navigateToSubmissions = () => router.navigate('/submissions/');
 
 export default () => (
-  <ButtonItem onClick={navigateToSubmissions}>Submissions</ButtonItem>
+  <ButtonItem onClick={navigateToSubmissions} text>Submissions</ButtonItem>
 );
