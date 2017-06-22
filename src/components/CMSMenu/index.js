@@ -9,6 +9,7 @@ import ButtonMute from '../../components/ButtonMute';
 import ButtonEnterVR from '../../components/ButtonEnterVR';
 import ButtonInbox from '../../components/ButtonInbox';
 import ButtonSubmissions from '../../components/ButtonSubmissions';
+import ButtonPublish from '../../components/ButtonPublish';
 import ButtonClose from '../../components/ButtonClose';
 import EnterVROverlay from '../../components/EnterVROverlay';
 import AudioControls from '../../components/AudioControls';
@@ -38,6 +39,7 @@ export default class CMSMenu extends Component {
     mute,
     submissions,
     inbox,
+    publish,
   }) {
     return (
       <div>

@@ -145,6 +145,7 @@ export default class Playback extends Component {
               mute
               submissions
               inbox
+              publish
             />
             : (
               <Menu
