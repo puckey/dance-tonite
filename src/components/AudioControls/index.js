@@ -11,12 +11,12 @@ import ButtonPlay from './ButtonPlay';
 const performNext = audio.nextLoop.bind(audio);
 const performPrevious = audio.previousLoop.bind(audio);
 
-const AudioControls = () => (
-  <div className="audio-controls">
-    <ButtonPrevious onClick={performPrevious} />
-    <ButtonPlay />
-    <ButtonNext onClick={performNext} />
-  </div>
-);
-
-export default AudioControls;
+export default function AudioControls() {
+  return (
+    <div className="audio-controls">
+      <ButtonPrevious onClick={performPrevious} />
+      <ButtonPlay />
+      <ButtonNext onClick={performNext} />
+    </div>
+  );
+}

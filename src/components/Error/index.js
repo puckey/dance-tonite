@@ -2,5 +2,7 @@
 import { h } from 'preact';
 import './style.scss';
 
-export default ({ children }) => <div className="cms-error">Error: {children}</div>;
+export default function Error({ children }) {
+  return <div className="cms-error">Error: {children}</div>;
+}
 

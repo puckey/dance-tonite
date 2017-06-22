@@ -2,4 +2,6 @@
 import { h } from 'preact';
 import './style.scss';
 
-export default ({ children }) => <div className="app-container">{children}</div>;
+export default function Container({ children }) {
+  return <div className="app-container">{children}</div>;
+}
