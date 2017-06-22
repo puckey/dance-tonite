@@ -86,9 +86,13 @@ export default class Review extends Component {
     await transition.fadeOut();
     if (!this.mounted) return;
 
+    this.setState({
+      visible: false,
+    });
+
     await transition.enter({
       text: 'Okay, here we go again',
-      duration: 5000,
+      duration: 3000,
     });
     if (!this.mounted) return;
 
