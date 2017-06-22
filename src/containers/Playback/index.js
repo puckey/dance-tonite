@@ -64,7 +64,7 @@ export default class Playback extends Component {
       viewer.switchCamera('orthographic');
     }
 
-    this.setLoading('Buffering sound…');
+    this.setLoading('Moving dancers into position…');
 
     await Promise.all([
       audio.load({
@@ -73,12 +73,8 @@ export default class Playback extends Component {
         loop: true,
         progressive: true,
       }),
-      sleep(500),
+      sleep(1500),
     ]);
-    if (!this.mounted) return;
-
-    this.setLoading('Gathering user performances…');
-    await sleep(1000);
 
     if (!this.mounted) return;
 
