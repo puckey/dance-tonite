@@ -100,7 +100,7 @@ export default class Review extends Component {
   }
 
   render(props, { visible }) {
-    return visible && (
+    return visible ? (
       <div>
         <Controllers
           settings={{
@@ -123,6 +123,7 @@ export default class Review extends Component {
           recording={recording}
         />
       </div>
-    );
+    )
+    : null;
   }
 }

@@ -126,21 +126,23 @@ export default class Playback extends Component {
           pathRoomIndex={roomIndex}
           orb={orb}
         />
-        { process.env.FLAVOR !== 'cms' &&
-          <Titles
+        { process.env.FLAVOR !== 'cms'
+          ? <Titles
             viewer={viewer}
             audio={audio}
             onUpdate={this.onTitlesChanged}
           />
+          : null
         }
         <ProgressBar />
         <Align type="center">
           { error
             ? <Error>{error}</Error>
-            : (loading &&
-              <Spinner
+            : loading
+              ? <Spinner
                 text={`${loading}`}
-              />)
+              />
+              : null
           }
         </Align>
         {

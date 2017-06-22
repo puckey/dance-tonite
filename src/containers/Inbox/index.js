@@ -171,7 +171,7 @@ export default class Inbox extends Component {
           close
         />
         {
-          recording && (
+          recording ? (
             <Align type="bottom-right" margin>
               <input
                 placeHolder="Performance title"
@@ -201,6 +201,7 @@ export default class Inbox extends Component {
               >{starred ? 'Save' : 'Ignore'} and next &rarr;</div>
             </Align>
           )
+          : null
         }
         {
           (!recording || submitting || error)

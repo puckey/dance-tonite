@@ -172,29 +172,33 @@ export default class Record extends Component {
           onOrbLeftRoom={this.performWaitRoom}
           onReady={this.performExitTransition}
         />
-        { mode === 'connect-controllers' &&
-          <ConnectControllers
+        { mode === 'connect-controllers'
+          ? <ConnectControllers
             onConnected={this.performControllersConnected}
             onDisconnected={this.performControllersDisconnected}
           />
+          : null
         }
-        { !loading &&
-          <Controllers settings={controllerSettings} />
+        { !loading
+          ? <Controllers settings={controllerSettings} />
+          : null
         }
-        { mode === 'recording' && round !== undefined &&
-          <RecordCountdown
+        { (mode === 'recording' && round !== undefined)
+          ? <RecordCountdown
             key={round}
             round={round}
             seconds={countdownSeconds}
           />
+          : null
         }
         <Align type="center">
           { error
             ? <Error>{error}</Error>
-            : (loading &&
-              <Spinner
+            : loading
+              ? <Spinner
                 text={`${loading}`}
-              />)
+              />
+              : null
           }
         </Align>
       </div>

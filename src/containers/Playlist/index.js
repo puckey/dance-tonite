@@ -162,12 +162,12 @@ export default class Playlist extends Component {
           fixedControllers={this.props.fixedControllers}
         />
         {
-          process.env.FLAVOR === 'cms' &&
-          !viewer.vrEffect.isPresenting &&
-          <RoomLabels
+          (process.env.FLAVOR === 'cms' && !viewer.vrEffect.isPresenting)
+          ? <RoomLabels
             rooms={this.state.rooms}
             entries={this.state.entries}
           />
+          : null
         }
         <BackgroundTimeline />
       </div>

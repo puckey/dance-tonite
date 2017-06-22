@@ -160,8 +160,8 @@ export default class Choose extends Component {
           />
         </Align>
         {
-          recording && (
-            <Align type="bottom-right" margin>
+          recording
+            ? <Align type="bottom-right" margin>
               <input
                 placeHolder="Performance title"
                 type="text"
@@ -196,18 +196,19 @@ export default class Choose extends Component {
                 onClick={this.submit}
               >Save</div>
             </Align>
-          )
+          : null
         }
         {
-          recording &&
-            <Room
-              id={recording.id}
-              roomId={recording.room}
-              key={recording && recording.id}
-            />
+          recording
+          ? <Room
+            id={recording.id}
+            roomId={recording.room}
+            key={recording && recording.id}
+          />
+          : null
         }
-        { (error || loading) &&
-          <Align type="center">
+        { (error || loading)
+          ? <Align type="center">
             { error
               ? <Error>{error}</Error>
               : <Spinner
@@ -215,6 +216,7 @@ export default class Choose extends Component {
               />
             }
           </Align>
+          : null
         }
       </Container>
     );
