@@ -5,6 +5,7 @@ import StaticShader from './lib/StaticShader';
 
 export default function setup({ renderer, scene, camera }) {
   const composer = new EffectComposer(renderer);
+  // composer.setSize(renderer.width, renderer.height);
   const badTVPass = new ShaderPass(BadTVShader);
   badTVPass.uniforms.distortion.value = 0.5;
   badTVPass.uniforms.distortion2.value = 0.25;
@@ -24,11 +25,17 @@ export default function setup({ renderer, scene, camera }) {
 
   let shaderTime = 0;
 
-  return function render() {
-    shaderTime += 0.01;
-    badTVPass.uniforms.time.value = shaderTime;
-    staticPass.uniforms.time.value = shaderTime;
-    composer.render(0.1);
+  return {
+    render: function () {
+      shaderTime += 0.01;
+      badTVPass.uniforms.time.value = shaderTime;
+      staticPass.uniforms.time.value = shaderTime;
+      composer.render(0.1);
+    },
+    resize: function (width, height) {
+      composer.renderTarget1.setSize(width, height);
+      composer.renderTarget2.setSize(width, height);
+    },
   };
 }
 

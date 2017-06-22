@@ -1,4 +1,6 @@
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/storage';
 
 const serverURL = 'https://us-central1-you-move-me.cloudfunctions.net/';
 // const serverURL = 'http://localhost:5002/you-move-me/us-central1/';

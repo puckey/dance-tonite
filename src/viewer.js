@@ -122,6 +122,8 @@ windowSize.on('resize', ({ width, height, aspectRatio }) => {
   renderer.domElement.style.width = `${width}px`;
   renderer.domElement.style.height = `${height}px`;
 
+  resizePostProcessing(width, height);
+
   Object
     .values(cameras)
     .forEach((camera) => {
@@ -158,7 +160,11 @@ const viewer = {
 const clock = new THREE.Clock();
 clock.start();
 
-const renderPostProcessed = postprocessing({ renderer, camera: cameras.default, scene });
+const {
+  render: renderPostProcessing,
+  resize: resizePostProcessing,
+} = postprocessing({ renderer, camera: cameras.default, scene });
+
 const animate = () => {
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
@@ -180,7 +186,7 @@ const animate = () => {
   );
 
   if (!vrEffect.isPresenting && viewer.camera === cameras.default) {
-    renderPostProcessed();
+    renderPostProcessing();
   } else {
     vrEffect.render(viewer.renderScene, viewer.camera);
   }
