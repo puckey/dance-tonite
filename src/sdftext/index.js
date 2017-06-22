@@ -54,7 +54,7 @@ export function creator() {
       align,
       width: wrapWidth,
       flipY: true,
-      fnt,
+      font: fnt,
     });
 
 
