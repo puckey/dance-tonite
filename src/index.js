@@ -26,6 +26,7 @@ window.THREE = THREE;
   // If we are on a mobile device, we need a touch event in order
   // to play the audio:
   if (feature.isMobile) {
+    document.body.classList.add('mod-mobile');
     Room.reset();
     viewer.switchCamera('orthographic');
     await new Promise((resolve) => {
