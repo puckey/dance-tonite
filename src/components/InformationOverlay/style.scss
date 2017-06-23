@@ -24,10 +24,12 @@
   user-select: none;
   max-width: 70vw;
   line-height: 1.7rem;
+  pointer-events: none;
 
   a {
     border-bottom: solid $line-width * 1.5 $text-color;
     text-decoration: none;
+    pointer-events: all;
 
     &:hover {
       border-color: $white-color;

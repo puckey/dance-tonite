@@ -28,7 +28,7 @@ export default class InformationOverlay extends Component {
   render({ type }) {
     if (type === 'add-performance') {
       return (
-        <div className="information-overlay">
+        <div className="information-overlay" onClick={this.props.close}>
           <div className="information-overlay-text">
             <a onClick={this.addPerformance}>Add your performance</a>
           </div>
@@ -38,7 +38,7 @@ export default class InformationOverlay extends Component {
 
     if (type === 'room-scale-error') {
       return (
-        <div className="information-overlay">
+        <div className="information-overlay" onClick={() => router.navigate('/')}>
           <div className="information-overlay-text">
             <p>
               To add your dance, you will need a room-scale VR
@@ -60,7 +60,7 @@ export default class InformationOverlay extends Component {
           <Align type="top-right">
             <ButtonClose onClick={this.props.close} />
           </Align>
-          <div className="information-overlay">
+          <div className="information-overlay" onClick={this.props.close}>
             <div className="information-overlay-text">
               <p>Headset required to watch in VR.</p>
               <a href="https://webvr.info" target="_blank" rel="noopener noreferrer">
