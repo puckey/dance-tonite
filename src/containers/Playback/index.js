@@ -33,6 +33,7 @@ export default class Playback extends Component {
       colophon: true,
     };
     this.onTitlesChanged = this.onTitlesChanged.bind(this);
+    this.performExitPresent = this.performExitPresent.bind(this);
   }
 
   componentDidMount() {
@@ -56,6 +57,14 @@ export default class Playback extends Component {
 
   setLoading(loading) {
     this.setState({ loading });
+  }
+
+  performExitPresent() {
+    if (viewer.vrEffect.isPresenting) {
+      viewer.vrEffect.exitPresent();
+    }
+    viewer.switchCamera('default');
+    this.forceUpdate();
   }
 
   async asyncMount() {
@@ -112,6 +121,24 @@ export default class Playback extends Component {
   }
 
   render({ roomIndex, recordingId }, { error, loading, orb, colophon }) {
+    const polyfillAndPresenting = feature.vrPolyfill
+      && viewer.vrEffect.isPresenting;
+
+    if (polyfillAndPresenting) {
+      return (
+        <Container>
+          <Playlist
+            pathRecording={recordingId}
+            pathRoomIndex={roomIndex}
+            orb={orb}
+          />
+          <Menu
+            close={this.performExitPresent}
+          />
+        </Container>
+      );
+    }
+
     return (
       <Container>
         <Colophon
