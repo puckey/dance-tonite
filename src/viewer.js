@@ -19,7 +19,7 @@ import postprocessing from './postprocessing';
 import Room from './room';
 
 // if we're on a mobile phone that doesn't support WebVR, use polyfill
-if (feature.isMobile && !feature.isTablet && (navigator.getVRDisplays === undefined)) {
+if (feature.vrPolyfill) {
   window.WebVRConfig.BUFFER_SCALE = 0.75;
   window.polyfill = new window.WebVRPolyfill();
   console.log('WebVR polyfill');
