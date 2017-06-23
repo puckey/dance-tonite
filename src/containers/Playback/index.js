@@ -27,7 +27,6 @@ export default class Playback extends Component {
     super();
 
     this.state = {
-      loading: 'room choices',
       hoverHead: null,
       orb: true,
       colophon: true,
