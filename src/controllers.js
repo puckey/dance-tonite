@@ -26,7 +26,7 @@ function addController(controller) {
 
   //  For 6DOF systems we need to add the VRControls standingMatrix
   //  otherwise your controllers will be on the floor!
-  controller.standingMatrix = viewer.controls.getStandingMatrix();
+  controller.standingMatrix = viewer.getStandingMatrix();
 
   //  This is for if we do add Daydream controller support here,
   //  we'd need access to the camera (your head) position so we could

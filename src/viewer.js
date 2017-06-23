@@ -160,6 +160,10 @@ const exitPresentVR = () => {
   return renderer.vr.getDevice().exitPresent();
 };
 
+const getStandingMatrix = () => {
+  return renderer.vr.getStandingMatrix();
+}
+
 const viewer = {
   camera: cameras.orthographic,
   cameras,
@@ -182,6 +186,7 @@ const viewer = {
   isPresentingVR,
   requestPresentVR,
   exitPresentVR,
+  getStandingMatrix,
 };
 
 
