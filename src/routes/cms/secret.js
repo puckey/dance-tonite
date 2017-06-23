@@ -1,14 +1,14 @@
 /** @jsx h */
 import { h, render } from 'preact';
 
-import Publish from '../containers/Publish';
+import CMSSecret from '../../containers/CMSSecret';
 
 export default () => {
   let root;
   const component = {
     mount: () => {
       root = render((
-        <Publish />
+        <CMSSecret />
       ), document.body);
     },
 

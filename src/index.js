@@ -5,6 +5,7 @@ import { h, render } from 'preact';
 import './theme/index.scss';
 import * as THREE from './lib/three';
 import { installRouter } from './routes';
+import router from './router';
 import props from './props';
 import feature from './utils/feature';
 import Room from './room';
@@ -13,6 +14,12 @@ import audioPool from './utils/audio-pool';
 import PressPlayToStart from './containers/PressPlayToStart';
 
 window.THREE = THREE;
+
+if (process.env.FLAVOR === 'cms') {
+  if (!localStorage.getItem('secret')) {
+    router.navigate('/secret');
+  }
+}
 
 (async () => {
   await Promise.all([
