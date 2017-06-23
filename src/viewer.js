@@ -25,8 +25,8 @@ if (feature.vrPolyfill) {
   console.log('WebVR polyfill');
 }
 
-require('./lib/VREffect')(THREE);
-require('./lib/VRControls')(THREE);
+//require('./lib/VREffect')(THREE);
+//require('./lib/VRControls')(THREE);
 require('./lib/VRController')(THREE);
 
 const events = emitter();
@@ -88,11 +88,19 @@ renderer.sortObjects = false;
 const containerEl = h('div.viewer', renderer.domElement);
 document.body.appendChild(containerEl);
 
-const vrEffect = new THREE.VREffect(renderer);
+//const vrEffect = new THREE.VREffect(renderer);
 
-const controls = new THREE.VRControls(cameras.default);
-controls.standing = true;
+//const controls = new THREE.VRControls(cameras.default);
+//controls.standing = true;
+renderer.vr.enabled = false;
+renderer.vr.standing = true;
 
+if ('getVRDisplays' in navigator) {
+  navigator.getVRDisplays()
+    .then((displays) => {
+      renderer.vr.setDevice(displays[0]);
+    });
+}
 
 const createScene = () => {
   const scene = new THREE.Scene();
@@ -117,7 +125,8 @@ windowSize.on('resize', ({ width, height, aspectRatio }) => {
     },
   );
 
-  vrEffect.setSize(width, height);
+  //vrEffect.setSize(width, height);
+  renderer.setSize(width, height);
 
   renderer.domElement.style.width = `${width}px`;
   renderer.domElement.style.height = `${height}px`;
@@ -137,15 +146,18 @@ const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
 const scene = createScene();
 
 const isPresentingVR = () => {
-  return vrEffect.isPresenting;
+  const device = renderer.vr.getDevice();
+ // console.log("isPresentingVR", device, (device != null) ? device.isPresenting : null )
+  if (!device) return false;
+  return device.isPresenting;
 };
 
 const requestPresentVR = () => {
-  return vrEffect.requestPresent();
+  return renderer.vr.getDevice().requestPresent([{ source: renderer.domElement }]);
 };
 
 const exitPresentVR = () => {
-  return vrEffect.exitPresent();
+  return renderer.vr.getDevice().exitPresent();
 };
 
 const viewer = {
@@ -154,7 +166,7 @@ const viewer = {
   scene,
   renderScene: scene,
   controllers: [{}, {}],
-  controls,
+ // controls,
   createScene,
   events,
   renderer,
@@ -166,7 +178,7 @@ const viewer = {
     );
     viewer.camera = cameras[name];
   },
-  vrEffect,
+ // vrEffect,
   isPresentingVR,
   requestPresentVR,
   exitPresentVR,
@@ -183,7 +195,6 @@ const {
 
 const animate = () => {
   const dt = clock.getDelta();
-  vrEffect.requestAnimationFrame(animate);
 
   THREE.VRController.update();
 
@@ -191,7 +202,7 @@ const animate = () => {
     viewer.daydreamController.update();
   }
 
-  controls.update();
+  //controls.update();
   audio.tick();
   Room.clear();
   events.emit('tick', dt);
@@ -201,19 +212,25 @@ const animate = () => {
       : 0
   );
 
-  if (!vrEffect.isPresenting && viewer.camera === cameras.default) {
+  if (!isPresentingVR() && viewer.camera === cameras.default) {
     renderPostProcessing();
+  } else if ( isPresentingVR() ) {
+    renderer.vr.enabled = true;
+    renderer.render(viewer.renderScene, viewer.camera);
   } else {
-    vrEffect.render(viewer.renderScene, viewer.camera);
+    renderer.vr.enabled = false;
+    renderer.render(viewer.renderScene, viewer.camera);
   }
 
-  if (vrEffect.isPresenting && feature.hasExternalDisplay) {
-    renderer.render(viewer.renderScene, viewer.camera);
+  if (isPresentingVR() && feature.hasExternalDisplay) {
+   // renderer.render(viewer.renderScene, viewer.camera);
   }
 
   events.emit('render', dt);
   if (feature.stats) stats();
+
 };
+renderer.animate(animate);
 
 animate();
 
