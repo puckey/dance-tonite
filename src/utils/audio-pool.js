@@ -6,18 +6,19 @@ const silentData = feature.isAndroid
   : 'data:audio/mpeg;base64,/+MYxAAAAANIAAAAAExBTUUzLjk4LjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 const pool = [];
 
+const addItem = () => {
+  if (pool.length > 2) return;
+  const audio = new Audio();
+  audio.src = silentData;
+  audio.play();
+  pool.push(audio);
+};
+
+if (feature.isMobile) {
+  window.addEventListener('click', addItem);
+}
+
 export default {
-  fill: () => {
-    for (let i = 0; i < 1; i++) {
-      const audio = new Audio();
-      audio.src = silentData;
-      audio.play();
-      pool.push(audio);
-    }
-  },
   get: () => pool.shift(),
-  release: audio => {
-    audio.src = silentData;
-    pool.push(audio);
-  },
+  fill: addItem,
 };
