@@ -34,8 +34,7 @@ export const getQuaternion = (
 };
 
 export const getFrame = (frames, number) => {
-  let frame = frames[number];
-  if (!frame) frame--;
+  let frame = frames[Math.min(number, frames.length - 1)];
   // Check if data is still a string:
   if (frame[0] === '[') {
     frame = frames[number] = JSON.parse(frame);

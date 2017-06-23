@@ -28,14 +28,18 @@ export default class TutorialTimeline extends Component {
   componentWillMount() {
     const getHeadPosition = (index) => (
         this.context.room &&
-        this.context.room.getHeadPosition(index)
+        this.context.room.getHeadPosition(
+          index !== undefined
+            ? index
+            : this.context.room.frame.count - 1
+        )
     );
     this.keyframes = [
       {
         time: 0.5,
         text: 'This is you.',
-        getPosition: getHeadPosition.bind(this, 0),
-        layers: 1,
+        getPosition: getHeadPosition.bind(this),
+        layers: 2,
       },
       {
         time: 5,
@@ -58,12 +62,7 @@ export default class TutorialTimeline extends Component {
       },
       {
         time: 14,
-        getPosition: getHeadPosition.bind(this, 0),
-        text: 'This is you...',
-      },
-      {
-        time: 16,
-        getPosition: () => getHeadPosition.bind(this, 1),
+        getPosition: getHeadPosition.bind(this),
         text: 'This is you...',
       },
       {
