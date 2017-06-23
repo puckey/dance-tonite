@@ -10,8 +10,8 @@ export default function PressPlayToStart({ onClick }) {
   return (
     <Container>
       <Align type="center">
-        <ButtonPlay onClick={onClick} />
-        <a onClick={onClick}><div>Press play to Dance Tonite</div></a>
+        <ButtonPlay onClick={onClick} large />
+        <a onClick={onClick} className="play-button-label">Press play to Dance Tonite</a>
       </Align>
     </Container>
   );
