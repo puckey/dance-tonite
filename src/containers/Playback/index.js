@@ -140,13 +140,15 @@ export default class Playback extends Component {
 
     return (
       <Container>
-        <Colophon
-          className={
-            !loading &&
-            (!colophon || process.env.FLAVOR === 'cms') &&
-            'mod-hidden'
-          }
-        />
+        {process.env.FLAVOR !== 'cms' &&
+          <Colophon
+            className={
+              !loading &&
+              !colophon &&
+              'mod-hidden'
+            }
+          />
+        }
         <Playlist
           pathRecording={recordingId}
           pathRoomIndex={roomIndex}
