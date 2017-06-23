@@ -106,12 +106,14 @@ export default class Choose extends Component {
     const items = recordings
       .map((recording, index) => Object.assign({
         index,
-        title: `${padNumber(recording.room, 2)} - ${recording.title === '' ? 'Unnamed' : recording.title} ${
+        title: `${recording.is_universal ? '🌎' : padNumber(recording.room, 2)} - ${
+          recording.title === '' ? 'Unnamed' : recording.title} ${
           recording.rating !== 0
             ? recording.rating === -1
               ? '👎'
-              : '👍'
-            : '🆕'
+              : '⭐'
+            : '🆕'} ${
+          recording.is_megagrid_worthy ? '🎉' : ''
         }`,
       })
     );
