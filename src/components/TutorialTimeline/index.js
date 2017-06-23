@@ -39,7 +39,7 @@ export default class TutorialTimeline extends Component {
         time: 0.5,
         text: 'This is you.',
         getPosition: getHeadPosition.bind(this),
-        layers: 2,
+        layers: 1,
       },
       {
         time: 5,

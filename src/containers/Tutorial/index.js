@@ -52,7 +52,7 @@ export default class Tutorial extends Component {
           roomId={roomId}
           id="hIR_Tw"
           orbs
-          layers={layers}
+          tutorialLayers={layers}
         >
           <TutorialTimeline
             onUpdateLayers={this.setLayers}
