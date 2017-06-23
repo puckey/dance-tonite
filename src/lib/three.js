@@ -5612,7 +5612,7 @@
 
 	var aomap_pars_fragment = "#ifdef USE_AOMAP\n\tuniform sampler2D aoMap;\n\tuniform float aoMapIntensity;\n#endif";
 
-	var begin_vertex = "\nvec3 transformed = vec3( position );\n";
+	var begin_vertex = "\n#ifndef INSTANCE_TRANSFORM\nvec3 transformed = vec3( position );\n#else\n#ifndef INSTANCE_MATRIX \n\tmat4 _instanceMatrix = getInstanceMatrix();\n\t#define INSTANCE_MATRIX\n#endif\nvec3 transformed = ( _instanceMatrix * vec4( position , 1. )).xyz;\n#endif\n";
 
 	var beginnormal_vertex = "\nvec3 objectNormal = vec3( normal );\n";
 
@@ -5628,19 +5628,19 @@
 
 	var clipping_planes_vertex = "#if NUM_CLIPPING_PLANES > 0 && ! defined( PHYSICAL ) && ! defined( PHONG )\n\tvViewPosition = - mvPosition.xyz;\n#endif\n";
 
-	var color_fragment = "#ifdef USE_COLOR\n\tdiffuseColor.rgb *= vColor;\n#endif";
+	var color_fragment = "#ifdef USE_COLOR\n\tdiffuseColor.rgb *= vColor;\n#endif\n#ifdef INSTANCE_COLOR \n\t\t\n\tdiffuseColor.rgb *= vInstanceColor;\n\t\t\n#endif";
 
-	var color_pars_fragment = "#ifdef USE_COLOR\n\tvarying vec3 vColor;\n#endif\n";
+	var color_pars_fragment = "#ifdef USE_COLOR\n\tvarying vec3 vColor;\n#endif\n#if defined( INSTANCE_COLOR )\n\t\t\n\tvarying vec3 vInstanceColor;\n\t\t\n#endif\n";
 
 	var color_pars_vertex = "#ifdef USE_COLOR\n\tvarying vec3 vColor;\n#endif";
 
-	var color_vertex = "#ifdef USE_COLOR\n\tvColor.xyz = color.xyz;\n#endif";
+	var color_vertex = "#ifdef USE_COLOR\n\tvColor.xyz = color.xyz;\n#endif\n#if defined( INSTANCE_COLOR ) && defined( INSTANCE_TRANSFORM )\n\t\t\n\tvInstanceColor = instanceColor;\n\t\t\n#endif";
 
 	var common = "#define PI 3.14159265359\n#define PI2 6.28318530718\n#define PI_HALF 1.5707963267949\n#define RECIPROCAL_PI 0.31830988618\n#define RECIPROCAL_PI2 0.15915494\n#define LOG2 1.442695\n#define EPSILON 1e-6\n#define saturate(a) clamp( a, 0.0, 1.0 )\n#define whiteCompliment(a) ( 1.0 - saturate( a ) )\nfloat pow2( const in float x ) { return x*x; }\nfloat pow3( const in float x ) { return x*x*x; }\nfloat pow4( const in float x ) { float x2 = x*x; return x2*x2; }\nfloat average( const in vec3 color ) { return dot( color, vec3( 0.3333 ) ); }\nhighp float rand( const in vec2 uv ) {\n\tconst highp float a = 12.9898, b = 78.233, c = 43758.5453;\n\thighp float dt = dot( uv.xy, vec2( a,b ) ), sn = mod( dt, PI );\n\treturn fract(sin(sn) * c);\n}\nstruct IncidentLight {\n\tvec3 color;\n\tvec3 direction;\n\tbool visible;\n};\nstruct ReflectedLight {\n\tvec3 directDiffuse;\n\tvec3 directSpecular;\n\tvec3 indirectDiffuse;\n\tvec3 indirectSpecular;\n};\nstruct GeometricContext {\n\tvec3 position;\n\tvec3 normal;\n\tvec3 viewDir;\n};\nvec3 transformDirection( in vec3 dir, in mat4 matrix ) {\n\treturn normalize( ( matrix * vec4( dir, 0.0 ) ).xyz );\n}\nvec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {\n\treturn normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );\n}\nvec3 projectOnPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal ) {\n\tfloat distance = dot( planeNormal, point - pointOnPlane );\n\treturn - distance * planeNormal + point;\n}\nfloat sideOfPlane( in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal ) {\n\treturn sign( dot( point - pointOnPlane, planeNormal ) );\n}\nvec3 linePlaneIntersect( in vec3 pointOnLine, in vec3 lineDirection, in vec3 pointOnPlane, in vec3 planeNormal ) {\n\treturn lineDirection * ( dot( planeNormal, pointOnPlane - pointOnLine ) / dot( planeNormal, lineDirection ) ) + pointOnLine;\n}\nmat3 transpose( const in mat3 v ) {\n\tmat3 tmp;\n\ttmp[0] = vec3(v[0].x, v[1].x, v[2].x);\n\ttmp[1] = vec3(v[0].y, v[1].y, v[2].y);\n\ttmp[2] = vec3(v[0].z, v[1].z, v[2].z);\n\treturn tmp;\n}\n";
 
 	var cube_uv_reflection_fragment = "#ifdef ENVMAP_TYPE_CUBE_UV\n#define cubeUV_textureSize (1024.0)\nint getFaceFromDirection(vec3 direction) {\n\tvec3 absDirection = abs(direction);\n\tint face = -1;\n\tif( absDirection.x > absDirection.z ) {\n\t\tif(absDirection.x > absDirection.y )\n\t\t\tface = direction.x > 0.0 ? 0 : 3;\n\t\telse\n\t\t\tface = direction.y > 0.0 ? 1 : 4;\n\t}\n\telse {\n\t\tif(absDirection.z > absDirection.y )\n\t\t\tface = direction.z > 0.0 ? 2 : 5;\n\t\telse\n\t\t\tface = direction.y > 0.0 ? 1 : 4;\n\t}\n\treturn face;\n}\n#define cubeUV_maxLods1  (log2(cubeUV_textureSize*0.25) - 1.0)\n#define cubeUV_rangeClamp (exp2((6.0 - 1.0) * 2.0))\nvec2 MipLevelInfo( vec3 vec, float roughnessLevel, float roughness ) {\n\tfloat scale = exp2(cubeUV_maxLods1 - roughnessLevel);\n\tfloat dxRoughness = dFdx(roughness);\n\tfloat dyRoughness = dFdy(roughness);\n\tvec3 dx = dFdx( vec * scale * dxRoughness );\n\tvec3 dy = dFdy( vec * scale * dyRoughness );\n\tfloat d = max( dot( dx, dx ), dot( dy, dy ) );\n\td = clamp(d, 1.0, cubeUV_rangeClamp);\n\tfloat mipLevel = 0.5 * log2(d);\n\treturn vec2(floor(mipLevel), fract(mipLevel));\n}\n#define cubeUV_maxLods2 (log2(cubeUV_textureSize*0.25) - 2.0)\n#define cubeUV_rcpTextureSize (1.0 / cubeUV_textureSize)\nvec2 getCubeUV(vec3 direction, float roughnessLevel, float mipLevel) {\n\tmipLevel = roughnessLevel > cubeUV_maxLods2 - 3.0 ? 0.0 : mipLevel;\n\tfloat a = 16.0 * cubeUV_rcpTextureSize;\n\tvec2 exp2_packed = exp2( vec2( roughnessLevel, mipLevel ) );\n\tvec2 rcp_exp2_packed = vec2( 1.0 ) / exp2_packed;\n\tfloat powScale = exp2_packed.x * exp2_packed.y;\n\tfloat scale = rcp_exp2_packed.x * rcp_exp2_packed.y * 0.25;\n\tfloat mipOffset = 0.75*(1.0 - rcp_exp2_packed.y) * rcp_exp2_packed.x;\n\tbool bRes = mipLevel == 0.0;\n\tscale =  bRes && (scale < a) ? a : scale;\n\tvec3 r;\n\tvec2 offset;\n\tint face = getFaceFromDirection(direction);\n\tfloat rcpPowScale = 1.0 / powScale;\n\tif( face == 0) {\n\t\tr = vec3(direction.x, -direction.z, direction.y);\n\t\toffset = vec2(0.0+mipOffset,0.75 * rcpPowScale);\n\t\toffset.y = bRes && (offset.y < 2.0*a) ? a : offset.y;\n\t}\n\telse if( face == 1) {\n\t\tr = vec3(direction.y, direction.x, direction.z);\n\t\toffset = vec2(scale+mipOffset, 0.75 * rcpPowScale);\n\t\toffset.y = bRes && (offset.y < 2.0*a) ? a : offset.y;\n\t}\n\telse if( face == 2) {\n\t\tr = vec3(direction.z, direction.x, direction.y);\n\t\toffset = vec2(2.0*scale+mipOffset, 0.75 * rcpPowScale);\n\t\toffset.y = bRes && (offset.y < 2.0*a) ? a : offset.y;\n\t}\n\telse if( face == 3) {\n\t\tr = vec3(direction.x, direction.z, direction.y);\n\t\toffset = vec2(0.0+mipOffset,0.5 * rcpPowScale);\n\t\toffset.y = bRes && (offset.y < 2.0*a) ? 0.0 : offset.y;\n\t}\n\telse if( face == 4) {\n\t\tr = vec3(direction.y, direction.x, -direction.z);\n\t\toffset = vec2(scale+mipOffset, 0.5 * rcpPowScale);\n\t\toffset.y = bRes && (offset.y < 2.0*a) ? 0.0 : offset.y;\n\t}\n\telse {\n\t\tr = vec3(direction.z, -direction.x, direction.y);\n\t\toffset = vec2(2.0*scale+mipOffset, 0.5 * rcpPowScale);\n\t\toffset.y = bRes && (offset.y < 2.0*a) ? 0.0 : offset.y;\n\t}\n\tr = normalize(r);\n\tfloat texelOffset = 0.5 * cubeUV_rcpTextureSize;\n\tvec2 s = ( r.yz / abs( r.x ) + vec2( 1.0 ) ) * 0.5;\n\tvec2 base = offset + vec2( texelOffset );\n\treturn base + s * ( scale - 2.0 * texelOffset );\n}\n#define cubeUV_maxLods3 (log2(cubeUV_textureSize*0.25) - 3.0)\nvec4 textureCubeUV(vec3 reflectedDirection, float roughness ) {\n\tfloat roughnessVal = roughness* cubeUV_maxLods3;\n\tfloat r1 = floor(roughnessVal);\n\tfloat r2 = r1 + 1.0;\n\tfloat t = fract(roughnessVal);\n\tvec2 mipInfo = MipLevelInfo(reflectedDirection, r1, roughness);\n\tfloat s = mipInfo.y;\n\tfloat level0 = mipInfo.x;\n\tfloat level1 = level0 + 1.0;\n\tlevel1 = level1 > 5.0 ? 5.0 : level1;\n\tlevel0 += min( floor( s + 0.5 ), 5.0 );\n\tvec2 uv_10 = getCubeUV(reflectedDirection, r1, level0);\n\tvec4 color10 = envMapTexelToLinear(texture2D(envMap, uv_10));\n\tvec2 uv_20 = getCubeUV(reflectedDirection, r2, level0);\n\tvec4 color20 = envMapTexelToLinear(texture2D(envMap, uv_20));\n\tvec4 result = mix(color10, color20, t);\n\treturn vec4(result.rgb, 1.0);\n}\n#endif\n";
 
-	var defaultnormal_vertex = "vec3 transformedNormal = normalMatrix * objectNormal;\n#ifdef FLIP_SIDED\n\ttransformedNormal = - transformedNormal;\n#endif\n";
+	var defaultnormal_vertex = "#ifdef FLIP_SIDED\n\tobjectNormal = -objectNormal;\n#endif\n#ifndef INSTANCE_TRANSFORM\nvec3 transformedNormal = normalMatrix * objectNormal;\n#else\n#ifndef INSTANCE_MATRIX \n\tmat4 _instanceMatrix = getInstanceMatrix();\n\t#define INSTANCE_MATRIX\n#endif\n#ifndef INSTANCE_UNIFORM\n\t\nvec3 transformedNormal =  transpose( inverse( mat3( modelViewMatrix * _instanceMatrix ) ) ) * objectNormal ;\n#else\nvec3 transformedNormal = ( modelViewMatrix * _instanceMatrix * vec4( objectNormal , 0.0 ) ).xyz;\n#endif\n#endif";
 
 	var displacementmap_pars_vertex = "#ifdef USE_DISPLACEMENTMAP\n\tuniform sampler2D displacementMap;\n\tuniform float displacementScale;\n\tuniform float displacementBias;\n#endif\n";
 
@@ -5762,7 +5762,7 @@
 
 	var uv_pars_fragment = "#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )\n\tvarying vec2 vUv;\n#endif";
 
-	var uv_pars_vertex = "#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )\n\tvarying vec2 vUv;\n\tuniform vec4 offsetRepeat;\n#endif\n";
+	var uv_pars_vertex = "#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )\n\tvarying vec2 vUv;\n\tuniform vec4 offsetRepeat;\n#endif\n#if defined( INSTANCE_TRANSFORM )\nmat3 inverse(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\nattribute vec3 instancePosition;\nattribute vec4 instanceQuaternion;\nattribute vec3 instanceScale;\n#if defined( INSTANCE_COLOR )\n  attribute vec3 instanceColor;\n  varying vec3 vInstanceColor;\n#endif\nmat4 getInstanceMatrix(){\n  vec4 q = instanceQuaternion;\n  vec3 s = instanceScale;\n  vec3 v = instancePosition;\n  vec3 q2 = q.xyz + q.xyz;\n  vec3 a = q.xxx * q2.xyz;\n  vec3 b = q.yyz * q2.yzz;\n  vec3 c = q.www * q2.xyz;\n  vec3 r0 = vec3( 1.0 - (b.x + b.z) , a.y + c.z , a.z - c.y ) * s.xxx;\n  vec3 r1 = vec3( a.y - c.z , 1.0 - (a.x + b.z) , b.y + c.x ) * s.yyy;\n  vec3 r2 = vec3( a.z + c.y , b.y - c.x , 1.0 - (a.x + b.x) ) * s.zzz;\n  return mat4(\n      r0 , 0.,\n      r1 , 0.,\n      r2 , 0.,\n      v , 1.0\n  );\n}\n#endif\n";
 
 	var uv_vertex = "#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )\n\tvUv = uv * offsetRepeat.zw + offsetRepeat.xy;\n#endif";
 
@@ -16531,6 +16531,7 @@
 			infoRender.vertices += count;
 
 			if ( mode === gl.TRIANGLES ) infoRender.faces += count / 3;
+			else if ( mode === gl.POINTS ) infoRender.points += count;
 
 		}
 
@@ -16551,6 +16552,7 @@
 			infoRender.vertices += count * geometry.maxInstancedCount;
 
 			if ( mode === gl.TRIANGLES ) infoRender.faces += geometry.maxInstancedCount * count / 3;
+			else if ( mode === gl.POINTS ) infoRender.points += geometry.maxInstancedCount * count;
 
 		}
 
@@ -16585,6 +16587,7 @@
 			infoRender.vertices += count;
 
 			if ( mode === gl.TRIANGLES ) infoRender.faces += count / 3;
+			else if ( mode === gl.POINTS ) infoRender.points += count;
 
 		}
 
@@ -16617,6 +16620,7 @@
 			infoRender.vertices += count * geometry.maxInstancedCount;
 
 			if ( mode === gl.TRIANGLES ) infoRender.faces += geometry.maxInstancedCount * count / 3;
+			else if ( mode === gl.POINTS ) infoRender.points += geometry.maxInstancedCount * count;
 
 		}
 
@@ -23987,6 +23991,455 @@
 		}
 
 	} );
+
+	/**
+	 * @author benaadams / https://twitter.com/ben_a_adams
+	 */
+
+	function InstancedBufferGeometry() {
+
+		BufferGeometry.call( this );
+
+		this.type = 'InstancedBufferGeometry';
+		this.maxInstancedCount = undefined;
+
+	}
+
+	InstancedBufferGeometry.prototype = Object.assign( Object.create( BufferGeometry.prototype ), {
+
+		constructor: InstancedBufferGeometry,
+
+		isInstancedBufferGeometry: true,
+
+		addGroup: function ( start, count, materialIndex ) {
+
+			this.groups.push( {
+
+				start: start,
+				count: count,
+				materialIndex: materialIndex
+
+			} );
+
+		},
+
+		copy: function ( source ) {
+
+			var index = source.index;
+
+			if ( index !== null ) {
+
+				this.setIndex( index.clone() );
+
+			}
+
+			var attributes = source.attributes;
+
+			for ( var name in attributes ) {
+
+				var attribute = attributes[ name ];
+				this.addAttribute( name, attribute.clone() );
+
+			}
+
+			var groups = source.groups;
+
+			for ( var i = 0, l = groups.length; i < l; i ++ ) {
+
+				var group = groups[ i ];
+				this.addGroup( group.start, group.count, group.materialIndex );
+
+			}
+
+			return this;
+
+		}
+
+	} );
+
+	/**
+	 * @author benaadams / https://twitter.com/ben_a_adams
+	 */
+
+	function InstancedBufferAttribute( array, itemSize, meshPerAttribute ) {
+
+		BufferAttribute.call( this, array, itemSize );
+
+		this.meshPerAttribute = meshPerAttribute || 1;
+
+	}
+
+	InstancedBufferAttribute.prototype = Object.assign( Object.create( BufferAttribute.prototype ), {
+
+		constructor: InstancedBufferAttribute,
+
+		isInstancedBufferAttribute: true,
+
+		copy: function ( source ) {
+
+			BufferAttribute.prototype.copy.call( this, source );
+
+			this.meshPerAttribute = source.meshPerAttribute;
+
+			return this;
+
+		}
+
+	} );
+
+	/**
+	 * @author pailhead / www.dusanbosnjak.com
+	 */
+
+	//custom depth and distance material to be attached to meshes
+
+	var depthMaterialTemplate = new MeshDepthMaterial();
+
+	depthMaterialTemplate.depthPacking = RGBADepthPacking;
+
+	depthMaterialTemplate.clipping = true;
+
+	depthMaterialTemplate.defines = {
+
+		INSTANCE_TRANSFORM: ''
+
+	};
+
+	var distanceShader = ShaderLib[ "distanceRGBA" ];
+	var distanceUniforms = UniformsUtils.clone( distanceShader.uniforms );
+	var distanceMaterialTemplate = new ShaderMaterial( {
+			defines: {
+				'USE_SHADOWMAP': '',
+				'INSTANCE_TRANSFORM': ''
+			},
+			uniforms: distanceUniforms,
+			vertexShader: distanceShader.vertexShader,
+			fragmentShader: distanceShader.fragmentShader,
+			clipping: true
+		});
+
+	//main class
+	function InstancedMesh ( bufferGeometry , material , numInstances , dynamic , colors , uniformScale ) {
+
+		Mesh.call( this , (new InstancedBufferGeometry()).copy( bufferGeometry ) ); //hacky for now
+
+		this._dynamic = !!dynamic; //TODO: set a bit mask for different attributes?
+
+	 	this._uniformScale = !!uniformScale;
+
+	 	this._colors = !!colors;
+
+		this.numInstances = numInstances;
+
+		this._setAttributes();
+
+		/**
+		 * use the setter to decorate this material
+		 * this is in lieu of changing the renderer
+		 * WebGLRenderer injects stuff like this
+		 */
+		this.material = material.clone();
+	 	
+		this.frustumCulled = false; //you can uncheck this if you generate your own bounding info
+
+		//make it work with depth effects
+		this.customDepthMaterial = depthMaterialTemplate; 
+
+		this.customDistanceMaterial = distanceMaterialTemplate;
+
+	}
+
+	InstancedMesh.prototype = Object.create( Mesh.prototype );
+
+	InstancedMesh.constructor = InstancedMesh;
+
+	//this is kinda gnarly, done in order to avoid setting these defines in the WebGLRenderer (it manages most if not all of the define flags)
+	Object.defineProperties( InstancedMesh.prototype , {
+
+		'material': {
+
+			set: function( m ){ 
+
+				/**
+				 * whenever a material is set, decorate it, 
+				 * if a material used with regular geometry is passed, 
+				 * it will mutate it which is bad mkay
+				 *
+				 * either flag Material with these instance properties:
+				 * 
+				 *  "i want to create a RED PLASTIC material that will
+				 *   be INSTANCED and i know it will be used on clones
+				 *   that are known to be UNIFORMly scaled"
+				 *  (also figure out where dynamic fits here)
+				 *  
+				 * or check here if the material has INSTANCE_TRANSFORM
+				 * define set, if not, clone, document that it breaks reference
+				 * or do a shallow copy or something
+				 * 
+				 * or something else?
+				 */
+				m = m.clone();
+
+				if ( m.defines ) {
+					
+					m.defines.INSTANCE_TRANSFORM = '';
+					
+					if ( this._uniformScale ) m.defines.INSTANCE_UNIFORM = ''; //an optimization, should avoid doing an expensive matrix inverse in the shader
+					else delete m.defines['INSTANCE_UNIFORM'];
+
+					if ( this._colors ) m.defines.INSTANCE_COLOR = '';
+					else delete m.defines['INSTANCE_COLOR'];
+				}
+
+				else{ 
+				
+					m.defines = { INSTANCE_TRANSFORM: '' };
+
+					if ( this._uniformScale ) m.defines.INSTANCE_UNIFORM = '';
+					if ( this._colors ) m.defines.INSTANCE_COLOR = '';
+				}
+
+				this._material = m;
+
+			},
+
+			get: function(){ return this._material; }
+
+		},
+
+		//force new attributes to be created when set?
+		'numInstances': {
+
+			set: function( v ){ 
+
+				this._numInstances = v;
+
+				//reset buffers
+
+				this._setAttributes();
+
+			},
+
+			get: function(){ return this._numInstances; }
+
+		},
+
+		//do some auto-magic when BufferGeometry is set
+		//TODO: account for Geometry, or change this approach completely 
+		'geometry':{
+
+			set: function( g ){ 
+
+				//if its not already instanced attach buffers
+				if ( !!g.attributes.instancePosition ) {
+
+					this._geometry = new InstancedBufferGeometry();
+
+					this._setAttributes();
+
+				} 
+
+				else 
+
+					this._geometry = g;
+
+			},
+
+			get: function(){ return this._geometry; }
+
+		}
+
+	});
+
+	InstancedMesh.prototype.setPositionAt = function( index , position ){
+
+		this.geometry.attributes.instancePosition.setXYZ( index , position.x , position.y , position.z );
+
+	};
+
+	InstancedMesh.prototype.setQuaternionAt = function ( index , quat ) {
+
+		this.geometry.attributes.instanceQuaternion.setXYZW( index , quat.x , quat.y , quat.z , quat.w );
+
+	};
+
+	InstancedMesh.prototype.setScaleAt = function ( index , scale ) {
+
+		this.geometry.attributes.instanceScale.setXYZ( index , scale.x , scale.y , scale.z );
+
+	};
+
+	InstancedMesh.prototype.setColorAt = function ( index , color ) {
+
+		if( !this._colors ) {
+
+			console.warn( 'THREE.InstancedMesh: color not enabled');
+
+			return;
+
+		}
+
+		this.geometry.attributes.instanceColor.setXYZ( 
+			index , 
+			Math.floor( color.r * 255 ), 
+			Math.floor( color.g * 255 ), 
+			Math.floor( color.b * 255 )
+		);
+
+	};
+
+	InstancedMesh.prototype.setColorAt = function ( index , color ) {
+
+		if( !this._colors ) {
+
+			console.warn( 'THREE.InstancedMesh: color not enabled');
+
+			return;
+
+		}
+
+		this.geometry.attributes.instanceColor.setXYZ( 
+			index , 
+			Math.floor( color.r * 255 ), 
+			Math.floor( color.g * 255 ), 
+			Math.floor( color.b * 255 )
+		);
+
+	};
+
+	InstancedMesh.prototype.getPositionAt = function( index , position ){
+
+		var arr = this.geometry.attributes.instancePosition.array;
+
+		index *= 3;
+
+		return position ? 
+
+			position.set( arr[index++], arr[index++], arr[index] ) :
+
+			new Vector3(  arr[index++], arr[index++], arr[index] )
+		;
+		
+	};
+
+	InstancedMesh.prototype.getQuaternionAt = function ( index , quat ) {
+
+		var arr = this.geometry.attributes.instanceQuaternion.array;
+
+		index = index << 2;
+
+		return quat ? 
+
+			quat.set(       arr[index++], arr[index++], arr[index++], arr[index] ) :
+
+			new Quaternion( arr[index++], arr[index++], arr[index++], arr[index] )
+		;
+		
+	};
+
+	InstancedMesh.prototype.getScaleAt = function ( index , scale ) {
+
+		var arr = this.geometry.attributes.instanceScale.array;
+
+		index *= 3;
+
+		return scale ? 
+
+			scale.set(   arr[index++], arr[index++], arr[index] ) :
+
+			new Vector3( arr[index++], arr[index++], arr[index] )
+		;
+
+	};
+
+	InstancedMesh.prototype.getColorAt = (function(){
+
+		var inv255 = 1/255;
+
+		return function ( index , color ) {
+
+			if( !this._colors ) {
+
+				console.warn( 'THREE.InstancedMesh: color not enabled');
+
+				return false;
+
+			}
+
+			var arr = this.geometry.attributes.instanceColor.array;
+			
+			index *= 3;
+
+			return color ? 
+
+				color.setRGB( arr[index++] * inv255, arr[index++] * inv255, arr[index] * inv255 ) :
+
+				new Vector3( arr[index++], arr[index++], arr[index] ).multiplyScalar( inv255 )
+			;
+
+		};
+
+	})();
+
+	InstancedMesh.prototype.needsUpdate = function( attribute ){
+
+		switch ( attribute ){
+
+			case 'position' :
+
+				this.geometry.attributes.instancePosition.needsUpdate =   true;
+
+				break;
+
+			case 'quaternion' :
+
+				this.geometry.attributes.instanceQuaternion.needsUpdate = true;
+
+				break;
+
+			case 'scale' :
+
+				this.geometry.attributes.instanceScale.needsUpdate =      true;
+
+				break;
+
+			case 'colors' :
+
+				this.geometry.attributes.instanceColor.needsUpdate =      true;
+
+			default:
+
+				this.geometry.attributes.instancePosition.needsUpdate =   true;
+				this.geometry.attributes.instanceQuaternion.needsUpdate = true;
+				this.geometry.attributes.instanceScale.needsUpdate =      true;
+				this.geometry.attributes.instanceColor.needsUpdate =      true;
+
+				break;
+
+		}
+
+	};
+
+	InstancedMesh.prototype._setAttributes = function(){
+
+		this.geometry.addAttribute( 'instancePosition' , 	new InstancedBufferAttribute( new Float32Array( this.numInstances * 3 ) , 3 , 1 ) ); 
+		this.geometry.addAttribute( 'instanceQuaternion' , 	new InstancedBufferAttribute( new Float32Array( this.numInstances * 4 ) , 4 , 1 ) );
+		this.geometry.addAttribute( 'instanceScale' , 		new InstancedBufferAttribute( new Float32Array( this.numInstances * 3 ) , 3 , 1 ) );
+
+		//TODO: allow different combinations
+		this.geometry.attributes.instancePosition.dynamic = this._dynamic;
+		this.geometry.attributes.instanceQuaternion.dynamic = this._dynamic;
+		this.geometry.attributes.instanceScale.dynamic = this._dynamic;
+		
+		if ( this._colors ){
+
+			this.geometry.addAttribute( 'instanceColor' , 	new InstancedBufferAttribute( new Uint8Array( this.numInstances * 3 ) , 3 , 1 ) );
+			this.geometry.attributes.instanceColor.normalized = true;
+			this.geometry.attributes.instanceColor.dynamic = this._dynamic;
+
+		}	
+
+	};
 
 	/**
 	 * @author mrdoob / http://mrdoob.com/
@@ -39610,71 +40063,6 @@
 	 * @author benaadams / https://twitter.com/ben_a_adams
 	 */
 
-	function InstancedBufferGeometry() {
-
-		BufferGeometry.call( this );
-
-		this.type = 'InstancedBufferGeometry';
-		this.maxInstancedCount = undefined;
-
-	}
-
-	InstancedBufferGeometry.prototype = Object.assign( Object.create( BufferGeometry.prototype ), {
-
-		constructor: InstancedBufferGeometry,
-
-		isInstancedBufferGeometry: true,
-
-		addGroup: function ( start, count, materialIndex ) {
-
-			this.groups.push( {
-
-				start: start,
-				count: count,
-				materialIndex: materialIndex
-
-			} );
-
-		},
-
-		copy: function ( source ) {
-
-			var index = source.index;
-
-			if ( index !== null ) {
-
-				this.setIndex( index.clone() );
-
-			}
-
-			var attributes = source.attributes;
-
-			for ( var name in attributes ) {
-
-				var attribute = attributes[ name ];
-				this.addAttribute( name, attribute.clone() );
-
-			}
-
-			var groups = source.groups;
-
-			for ( var i = 0, l = groups.length; i < l; i ++ ) {
-
-				var group = groups[ i ];
-				this.addGroup( group.start, group.count, group.materialIndex );
-
-			}
-
-			return this;
-
-		}
-
-	} );
-
-	/**
-	 * @author benaadams / https://twitter.com/ben_a_adams
-	 */
-
 	function InterleavedBufferAttribute( interleavedBuffer, itemSize, offset, normalized ) {
 
 		this.uuid = _Math.generateUUID();
@@ -39938,36 +40326,6 @@
 		copy: function ( source ) {
 
 			InterleavedBuffer.prototype.copy.call( this, source );
-
-			this.meshPerAttribute = source.meshPerAttribute;
-
-			return this;
-
-		}
-
-	} );
-
-	/**
-	 * @author benaadams / https://twitter.com/ben_a_adams
-	 */
-
-	function InstancedBufferAttribute( array, itemSize, meshPerAttribute ) {
-
-		BufferAttribute.call( this, array, itemSize );
-
-		this.meshPerAttribute = meshPerAttribute || 1;
-
-	}
-
-	InstancedBufferAttribute.prototype = Object.assign( Object.create( BufferAttribute.prototype ), {
-
-		constructor: InstancedBufferAttribute,
-
-		isInstancedBufferAttribute: true,
-
-		copy: function ( source ) {
-
-			BufferAttribute.prototype.copy.call( this, source );
 
 			this.meshPerAttribute = source.meshPerAttribute;
 
@@ -43741,6 +44099,7 @@
 	exports.Skeleton = Skeleton;
 	exports.Bone = Bone;
 	exports.Mesh = Mesh;
+	exports.InstancedMesh = InstancedMesh;
 	exports.LineSegments = LineSegments;
 	exports.LineLoop = LineLoop;
 	exports.Line = Line;
