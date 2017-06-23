@@ -67,7 +67,7 @@ export default class Frame {
     const lower = this.lower = getFrame(frames, lowerNumber);
     this.higher = getFrame(frames, higherNumber);
     this.ratio = frameNumber % 1;
-    this._count = maxLayers !== undefined
+    this._count = maxLayers != null
       ? Math.min(maxLayers, serializer.count(lower))
       : serializer.count(lower);
     this.needsUpdate = false;
