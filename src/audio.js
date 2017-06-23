@@ -189,9 +189,6 @@ const audio = Object.assign(emitter(), {
       audioElement.removeEventListener('pause', onPause);
       audioElement.removeEventListener('play', onPlay);
       audioElement.removeEventListener('seeked', onSeeked);
-      if (feature.isMobile) {
-        audioPool.release(audioElement);
-      }
       audioElement = null;
       onCanPlayThrough = null;
     }
