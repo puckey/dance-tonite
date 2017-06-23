@@ -204,6 +204,7 @@ export default class Choose extends Component {
             id={recording.id}
             roomId={recording.room}
             key={recording && recording.id}
+            orbs
           />
           : null
         }
