@@ -19,8 +19,8 @@ export default class Tutorial extends Component {
     this.setLayers = this.setLayers.bind(this);
     this.performSkip = this.performSkip.bind(this);
 
-    if (viewer.vrEffect.isPresenting) {
-      viewer.vrEffect.exitPresent();
+    if (viewer.isPresentingVR()) {
+      viewer.exitPresentVR();
     }
     viewer.switchCamera('orthographic');
   }

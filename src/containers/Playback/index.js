@@ -42,8 +42,8 @@ export default class Playback extends Component {
 
   componentWillUnmount() {
     this.mounted = false;
-    if (viewer.vrEffect.isPresenting) {
-      viewer.vrEffect.exitPresent();
+    if (viewer.isPresentingVR()) {
+      viewer.exitPresentVR();
     }
   }
 
@@ -59,8 +59,8 @@ export default class Playback extends Component {
   }
 
   performExitPresent() {
-    if (viewer.vrEffect.isPresenting) {
-      viewer.vrEffect.exitPresent();
+    if (viewer.isPresentingVR()) {
+      viewer.exitPresentVR();
     }
     viewer.switchCamera('default');
     this.forceUpdate();
@@ -68,7 +68,7 @@ export default class Playback extends Component {
 
   async asyncMount() {
     const { roomIndex } = this.props;
-    if (!viewer.vrEffect.isPresenting) {
+    if (!viewer.isPresentingVR()) {
       viewer.switchCamera('orthographic');
     }
 
@@ -100,7 +100,7 @@ export default class Playback extends Component {
         audio.duration - watchTime
       );
       audio.gotoTime(startTime);
-      if (viewer.vrEffect.isPresenting) {
+      if (viewer.isPresentingVR()) {
         setTimeout(() => {
           if (!this.mounted) return;
           audio.fadeOut();
@@ -121,7 +121,7 @@ export default class Playback extends Component {
 
   render({ roomIndex, recordingId }, { error, loading, orb, colophon }) {
     const polyfillAndPresenting = feature.vrPolyfill
-      && viewer.vrEffect.isPresenting;
+      && viewer.isPresentingVR();
 
     if (polyfillAndPresenting) {
       return (

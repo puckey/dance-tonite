@@ -15,13 +15,13 @@ export default function create({ rooms, orb }) {
   let hoverOrb;
 
   const onMouseMove = ({ clientX, clientY }) => {
-    if (viewer.vrEffect.isPresenting) return;
+    if (viewer.isPresentingVR()) return;
     pointerX = clientX;
     pointerY = clientY;
   };
 
   const onMouseDown = ({ clientX, clientY, touches }) => {
-    if (viewer.vrEffect.isPresenting) return;
+    if (viewer.isPresentingVR()) return;
     let x = clientX;
     let y = clientY;
     if (touches && touches.length > 0) {
@@ -39,7 +39,7 @@ export default function create({ rooms, orb }) {
   };
 
   const onMouseUp = () => {
-    if (viewer.vrEffect.isPresenting) return;
+    if (viewer.isPresentingVR()) return;
     hoverPerformance = null;
     hoverOrb = false;
     viewer.switchCamera('orthographic');
@@ -56,7 +56,7 @@ export default function create({ rooms, orb }) {
 
   const POV = {
     update: (progress = 0, fixedControllers = false) => {
-      if (!viewer.vrEffect.isPresenting) {
+      if (!viewer.isPresentingVR()) {
         if (intersectOrb(pointerX, pointerY)) {
           orb.highlight();
           Room.setHighlight();

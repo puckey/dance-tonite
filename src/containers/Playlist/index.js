@@ -162,7 +162,7 @@ export default class Playlist extends Component {
           fixedControllers={this.props.fixedControllers}
         />
         {
-          (process.env.FLAVOR === 'cms' && !viewer.vrEffect.isPresenting)
+          (process.env.FLAVOR === 'cms' && !viewer.isPresentingVR())
           ? <RoomLabels
             rooms={this.state.rooms}
             entries={this.state.entries}

@@ -136,6 +136,18 @@ const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
 
 const scene = createScene();
 
+const isPresentingVR = () => {
+  return vrEffect.isPresenting;
+};
+
+const requestPresentVR = () => {
+  return vrEffect.requestPresent();
+};
+
+const exitPresentVR = () => {
+  return vrEffect.exitPresent();
+};
+
 const viewer = {
   camera: cameras.orthographic,
   cameras,
@@ -155,7 +167,11 @@ const viewer = {
     viewer.camera = cameras[name];
   },
   vrEffect,
+  isPresentingVR,
+  requestPresentVR,
+  exitPresentVR,
 };
+
 
 const clock = new THREE.Clock();
 clock.start();

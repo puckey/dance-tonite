@@ -29,8 +29,8 @@ export default class ButtonEnterVR extends Component {
 
     this.setState({ processingClick: true });
 
-    if (viewer.vrEffect.isPresenting) {
-      viewer.vrEffect.exitPresent();
+    if (viewer.isPresentingVR()) {
+      viewer.exitPresentVR();
       viewer.switchCamera('orthographic');
       this.setState({ processingClick: false });
       audio.play();
@@ -41,7 +41,7 @@ export default class ButtonEnterVR extends Component {
         return;
       }
 
-      viewer.vrEffect.requestPresent();
+      viewer.requestPresentVR();
       await audio.fadeOut();
       audio.pause();
 
@@ -61,7 +61,7 @@ export default class ButtonEnterVR extends Component {
       <ButtonItem
         label={label && (
           feature.hasVR
-            ? viewer.vrEffect.isPresenting
+            ? viewer.isPresentingVR()
               ? 'Exit VR'
               : 'Enter VR'
             : 'VR not found'

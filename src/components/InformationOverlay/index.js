@@ -17,8 +17,8 @@ export default class InformationOverlay extends Component {
   async addPerformance() {
     const { goto, toggleVROverlay } = this.props;
     toggleVROverlay();
-    if (!viewer.vrEffect.isPresenting) {
-      await viewer.vrEffect.requestPresent();
+    if (!viewer.isPresentingVR()) {
+      await viewer.requestPresentVR();
     }
     // Wait for the VR overlay to cover the screen:
     await sleep(500);
