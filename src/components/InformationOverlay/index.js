@@ -48,7 +48,7 @@ export default class InformationOverlay extends Component {
               Learn more
             </a> or <a onClick={() => router.navigate('/')}>
               continue watching
-            </a>
+            </a>.
           </div>
         </div>
       );
@@ -67,7 +67,7 @@ export default class InformationOverlay extends Component {
                 Learn more
               </a> or <a onClick={this.props.close}>
                 continue watching without VR
-              </a>
+              </a>.
             </div>
           </div>
         </div>
