@@ -20,9 +20,8 @@
 }
 
 .spinner-inner-negative {
-  width: 1.4rem;
-  height: 1.4rem;
-  margin: .05rem;
+  width: 1.5rem;
+  height: 1.5rem;
   background: $background-color;
   animation: grow2 2s infinite;
 }
@@ -45,7 +44,7 @@
 
 @keyframes grow2 {
   0% { transform: scale(0); }
-  50% { transform: scale(.9); }
-  100% { transform: scale(.9); }
+  50% { transform: scale(.85); }
+  100% { transform: scale(.85); }
 }
 
