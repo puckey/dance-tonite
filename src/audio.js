@@ -215,6 +215,9 @@ const audio = Object.assign(emitter(), {
       gainNode.gain.cancelScheduledValues(scheduledTime);
     }
     gainNode.gain.value = 0.001;
+    if (audioElement) {
+      audioElement.muted = true;
+    }
   },
 
   unmute() {
@@ -222,6 +225,9 @@ const audio = Object.assign(emitter(), {
       gainNode.gain.cancelScheduledValues(scheduledTime);
     }
     gainNode.gain.value = 1;
+    if (audioElement) {
+      audioElement.muted = false;
+    }
   },
 
   isMuted() {
