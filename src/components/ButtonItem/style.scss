@@ -42,6 +42,10 @@
   }
 }
 
+.mod-mobile .button-item:hover .button-item-label {
+  display: none;
+}
+
 .button-item-label {
   display: none;
   pointer-events: none;
