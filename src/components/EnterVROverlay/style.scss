@@ -14,6 +14,10 @@
   margin: -75vw;
   transform: scale(0);
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   &.mod-entering-vr {
     animation: splash 7s ease-in;
   }
@@ -26,11 +30,7 @@
 }
 
 .vr-info-overlay-text {
-  position: fixed;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  margin-top: -2rem;
+  width: 100vw;
   font-size: 2rem;
   text-align: center;
   text-transform: uppercase;
