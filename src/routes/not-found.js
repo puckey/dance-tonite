@@ -1,12 +1,19 @@
+/** @jsx h */
+import { h, render } from 'preact';
 
-export default () => (
-  {
+import NotFound from '../containers/NotFound';
+
+export default () => {
+  let root;
+  return {
     mount: () => {
-      console.log('404');
+      root = render((
+        <NotFound />
+      ), document.body);
     },
 
     unmount: () => {
-
+      render(() => null, document.body, root);
     },
-  }
-);
+  };
+};
