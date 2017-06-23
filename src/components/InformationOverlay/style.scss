@@ -16,6 +16,12 @@
   z-index: $popover-layer;
 }
 
+body:not(.mod-mobile) .information-overlay-text {
+  a:hover {
+    border-color: $white-color;
+  }
+}
+
 .information-overlay-text {
   position: relative;
   top: -1rem;
@@ -30,10 +36,6 @@
     border-bottom: solid $line-width * 1.5 $text-color;
     text-decoration: none;
     pointer-events: all;
-
-    &:hover {
-      border-color: $white-color;
-    }
   }
 
   h1 {

@@ -1,5 +1,9 @@
 @import '../../theme/theme';
 
+body:not(.mod-mobile) .room-label:hover .wrap {
+  text-decoration: underline;
+}
+
 .room-label {
   position: fixed;
   top: 0;
@@ -26,9 +30,5 @@
   .newline {
     font-size: 1.5vh;
     display: block;
-  }
-
-  &:hover .wrap {
-    text-decoration: underline;
   }
 }

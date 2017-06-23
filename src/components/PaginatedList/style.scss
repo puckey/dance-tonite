@@ -10,15 +10,15 @@
   }
 }
 
+body:not(.mod-mobile) .paginated-list-item-name:hover {
+  color: $color-white;
+}
+
 .paginated-list-item-name {
   white-space: nowrap;
   text-overflow: ellipsis;
   max-width: 33vw;
   cursor: pointer;
-
-  &:hover {
-    color: white;
-  }
 }
 
 .paginated-list-item-name-container {
@@ -61,12 +61,6 @@
 
   &.mod-active {
     color: white;
-  }
-
-  &:hover, &.mod-active {
-    .paginated-list-item-name {
-      max-width: 50vw;
-    }
   }
 
   &.mod-last {

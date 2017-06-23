@@ -1,6 +1,20 @@
 @import '../../theme/theme';
 @import '../../theme/util';
 
+body:not(.mod-mobile) .button-item:hover {
+  color: $white-color;
+  fill: $white-color;
+
+  &.mod-dark {
+    color: $black-color;
+    fill: $black-color;
+  }
+
+  .button-item-label {
+    display: inline;
+  }
+}
+
 .button-item {
   @extend .mod-fill;
   @extend .mod-no-stroke;
@@ -17,20 +31,6 @@
     cursor: not-allowed;
   }
 
-  &:hover {
-    color: $white-color;
-    fill: $white-color;
-
-    &.mod-dark {
-      color: $black-color;
-      fill: $black-color;
-    }
-
-    .button-item-label {
-      display: inline;
-    }
-  }
-
   &.mod-dark {
     color: $black-color;
     fill: $black-color;
@@ -40,10 +40,6 @@
     display: flex;
     align-items: center;
   }
-}
-
-.mod-mobile .button-item:hover .button-item-label {
-  display: none;
 }
 
 .button-item-label {

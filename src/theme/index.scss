@@ -24,13 +24,13 @@ html {
   height: 100%;
 }
 
+body:not(.mod-mobile) a:hover {
+  color: $white-color;
+}
+
 a {
   color: $text-color;
   cursor: pointer;
-
-  &:hover {
-    color: $white-color;
-  }
 }
 
 .viewer {
