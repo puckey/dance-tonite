@@ -34,8 +34,9 @@ const checkHasVR = () => (
     }
     navigator
       .getVRDisplays()
-      .then(() => {
-        resolve(true);
+      .then((displays) => {
+        if (displays.length === 0) resolve(false);
+        else resolve(true);
       })
       .catch((error) => {
         console.log(error);
