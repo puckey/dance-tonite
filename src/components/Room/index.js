@@ -109,7 +109,7 @@ export default class RoomComponent extends Component {
 
   tick() {
     const layers = this.props.layers
-      ? Math.min(Math.floor(audio.totalProgress), this.props.layers)
+      ? Math.min(Math.floor(audio.totalProgress) + 1, this.props.layers)
       : null;
     this.state.room.gotoTime(audio.time, layers);
   }
