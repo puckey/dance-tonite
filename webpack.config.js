@@ -36,7 +36,7 @@ const config = {
         loader: ExtractTextPlugin.extract('style', [
           'css-loader?minimize',
           'autoprefixer',
-          'sass',
+          'sass?sourceMap',
         ]),
       },
       {
