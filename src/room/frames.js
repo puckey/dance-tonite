@@ -35,8 +35,9 @@ export default class Frames {
       (error, json) => {
         if (error || !json) {
           if (callback) {
-            return callback(error);
+            callback(error);
           }
+          return;
         }
         if (!meta) {
           // First JSON is meta object:
