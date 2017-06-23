@@ -79,7 +79,7 @@ const audio = Object.assign(emitter(), {
       const canPlay = () => {
         this.duration = duration;
         this.loopDuration = duration / loopCount;
-        context.suspend();
+        if (context) context.suspend();
         resolve(param.src);
       };
 
@@ -189,9 +189,6 @@ const audio = Object.assign(emitter(), {
       audioElement.removeEventListener('pause', onPause);
       audioElement.removeEventListener('play', onPlay);
       audioElement.removeEventListener('seeked', onSeeked);
-      if (feature.isMobile) {
-        audioPool.release(audioElement);
-      }
       audioElement = null;
       onCanPlayThrough = null;
     }
@@ -215,6 +212,9 @@ const audio = Object.assign(emitter(), {
       gainNode.gain.cancelScheduledValues(scheduledTime);
     }
     gainNode.gain.value = 0.001;
+    if (audioElement) {
+      audioElement.muted = true;
+    }
   },
 
   unmute() {
@@ -222,6 +222,13 @@ const audio = Object.assign(emitter(), {
       gainNode.gain.cancelScheduledValues(scheduledTime);
     }
     gainNode.gain.value = 1;
+    if (audioElement) {
+      audioElement.muted = false;
+    }
+  },
+
+  isMuted() {
+    return muted;
   },
 
   toggleMute() {

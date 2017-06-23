@@ -1,13 +1,26 @@
 @import '../../theme/theme';
 @import '../../theme/util';
 
+body:not(.mod-mobile) .button-item:hover {
+  color: $white-color;
+  fill: $white-color;
+
+  &.mod-dark {
+    color: $black-color;
+    fill: $black-color;
+  }
+
+  .button-item-label {
+    display: inline;
+  }
+}
+
 .button-item {
   @extend .mod-fill;
   @extend .mod-no-stroke;
 
   margin: 0;
   cursor: pointer;
-  user-select: none;
 
   + .button-item {
     margin-top: 0 !important;
@@ -15,20 +28,6 @@
 
   .mod-disabled {
     cursor: not-allowed;
-  }
-
-  &:hover {
-    color: $white-color;
-    fill: $white-color;
-
-    &.mod-dark {
-      color: $black-color;
-      fill: $black-color;
-    }
-
-    .button-item-label {
-      display: inline;
-    }
   }
 
   &.mod-dark {
@@ -45,7 +44,6 @@
 .button-item-label {
   display: none;
   pointer-events: none;
-  user-select: none;
   font-size: 1.2rem;
   line-height: 1rem;
 
@@ -57,7 +55,9 @@
 
 @media (max-width: $min-width) {
   .mod-mobile .button-item-label {
-    display: none;
+    display: inline-block;
+    opacity: 0;
+    animation: fadeOut 5s forwards;
   }
 }
 
@@ -66,4 +66,10 @@
   position: relative;
   width: 2rem;
   height: 2rem;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  50% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
 }

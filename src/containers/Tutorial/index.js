@@ -18,7 +18,6 @@ export default class Tutorial extends Component {
 
     this.setLayers = this.setLayers.bind(this);
     this.performSkip = this.performSkip.bind(this);
-    this.onAudioLoop = this.onAudioLoop.bind(this);
 
     if (viewer.vrEffect.isPresenting) {
       viewer.vrEffect.exitPresent();
@@ -28,22 +27,11 @@ export default class Tutorial extends Component {
 
   componentDidMount() {
     this.mounted = true;
-    audio.on('loop', this.onAudioLoop);
   }
 
   componentWillUnmount() {
     this.mounted = false;
     audio.fadeOut();
-    audio.off('loop', this.onAudioLoop);
-  }
-
-  onAudioLoop(loopCount) {
-    // Update the max layer count every time the audio loops,
-    // but only if the loop count is smaller than the max layers already set:
-    const count = loopCount + 1;
-    if (count > this.state.layers) {
-      this.setLayers(count);
-    }
   }
 
   setLayers(layers) {

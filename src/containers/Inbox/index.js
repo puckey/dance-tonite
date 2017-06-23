@@ -228,6 +228,7 @@ export default class Inbox extends Component {
                 id={recording.id}
                 roomId={recording.room}
                 key={recording && recording.id}
+                orbs
               />
             )
         }

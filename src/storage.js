@@ -17,7 +17,6 @@ const loadPlaylist = async () => {
   if (process.env.FLAVOR !== 'cms') {
     const response = await fetch('https://storage.googleapis.com/you-move-me.appspot.com/playlists/playlist.json');
     const { playlist, megagrid } = await response.json();
-    console.log(playlist);
     shuffle(megagrid);
     playlist.length = settings.roomCount;
     const extra = [];
@@ -30,7 +29,6 @@ const loadPlaylist = async () => {
 
   const { data } = await cms.getDraftPlaylist();
   const { playlist } = data;
-  console.log(JSON.stringify(playlist.map(({ id }) => id)));
   if (playlist.length > settings.roomCount) {
     playlist.length = settings.roomCount;
   }

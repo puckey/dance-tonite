@@ -36,7 +36,7 @@ const config = {
         loader: ExtractTextPlugin.extract('style', [
           'css-loader?minimize',
           'autoprefixer',
-          'sass',
+          'sass?sourceMap',
         ]),
       },
       {
@@ -102,7 +102,7 @@ const config = {
     new HtmlWebpackPlugin({
       inject: true,
       cache: false,
-      template: 'templates/index.html',
+      template: `templates/${FLAVOR === 'cms' ? 'cms' : 'index'}.html`,
       title: 'You Move Me',
       favicon: './public/favico.png',
     }),

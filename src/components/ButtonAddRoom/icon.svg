@@ -1,47 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 17.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="80px" height="80px" viewBox="0 0 80 80" enable-background="new 0 0 80 80" xml:space="preserve">
-<g id="ADD">
-	<g>
-		<g>
-			<g>
-				<path fill="none" stroke="#000000" stroke-width="3" d="M41.826,74.139L7.34,58.489V30.757L38.167,5.862L72.66,21.527
-					l-0.015,27.732L41.826,74.139z M41.826,74.139l0.032-27.69L7.34,30.757 M29.247,40.785l8.9-7.235l34.497,15.709 M38.167,5.862
-					v27.721"/>
-			</g>
-		</g>
-		<polygon stroke="#000000" points="31.342,54.364 25.498,51.639 25.498,44.208 23.55,43.3 23.55,50.731 17.707,48.006
-			17.707,50.607 23.55,53.332 23.55,60.764 25.498,61.672 25.498,54.24 31.342,56.965 		"/>
-	</g>
-</g>
-<g id="VR" display="none">
-	<g display="inline">
-		<g>
-			<defs>
-				<rect id="SVGID_1_" x="0.07" y="20.365" width="79.86" height="39.271"/>
-			</defs>
-			<clipPath id="SVGID_2_">
-				<use xlink:href="#SVGID_1_"  overflow="visible"/>
-			</clipPath>
-			<path clip-path="url(#SVGID_2_)" fill="none" stroke="#000000" stroke-width="3" d="M40,21.865H8.865c0,0-7.295,0-7.295,7.295
-				v21.681c0,0,0,7.294,7.295,7.294H27.41c0,0,5.474,0.01,6.503-7.307l3.204-18.299c0.261-1.703,1.984-1.703,1.984-1.703H40
-				 M18.408,47.313c4.009,0,7.258-3.249,7.258-7.258s-3.249-7.259-7.258-7.259s-7.258,3.25-7.258,7.259S14.399,47.313,18.408,47.313
-				z"/>
-		</g>
-		<g>
-			<defs>
-				<rect id="SVGID_3_" x="0.07" y="20.365" width="79.86" height="39.271"/>
-			</defs>
-			<clipPath id="SVGID_4_">
-				<use xlink:href="#SVGID_3_"  overflow="visible"/>
-			</clipPath>
-			<path clip-path="url(#SVGID_4_)" fill="none" stroke="#000000" stroke-width="3" d="M40,21.865h31.135c0,0,7.295,0,7.295,7.295
-				v21.681c0,0,0,7.294-7.295,7.294H52.589c0,0-5.474,0.01-6.503-7.307l-3.204-18.299c-0.261-1.703-1.984-1.703-1.984-1.703H40
-				 M61.591,47.313c-4.009,0-7.258-3.249-7.258-7.258s3.249-7.259,7.258-7.259s7.258,3.25,7.258,7.259S65.6,47.313,61.591,47.313z"
-				/>
-		</g>
-	</g>
-</g>
+	 viewBox="0 0 80 80" style="enable-background:new 0 0 80 80;" xml:space="preserve">
+<path d="M42,75.9L5.8,59.5V30L37.9,4.1l36.2,16.4l0,29.4L42,75.9z M8.8,57.5l31.5,14.3l0-24.4L8.8,33.1V57.5z M32.1,40.4l11.2,5.1
+	l0,25.5l26.5-21.4L38.4,35.3L32.1,40.4z M39.7,32.6l31.5,14.3l0-24.4L39.7,8.2V32.6z M10.2,30.4L29.1,39l7.6-6.2V9L10.2,30.4z"/>
+<polygon points="26,51.3 26,43.9 23,42.5 23,49.9 17.2,47.2 17.2,50.9 23,53.7 23,61.1 26,62.5 26,55 31.8,57.8 31.8,54 "/>
 </svg>

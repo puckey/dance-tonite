@@ -13,7 +13,7 @@ export default class MuteButton extends Component {
     super();
 
     this.state = {
-      muted: false,
+      muted: audio.isMuted(),
     };
 
     this.toggleMute = this.toggleMute.bind(this);

@@ -17,6 +17,7 @@ body {
   color: $text-color;
   font-family: 'Lars';
   margin: 0;
+  user-select: none;
 }
 
 body,
@@ -24,13 +25,13 @@ html {
   height: 100%;
 }
 
+body:not(.mod-mobile) a:hover {
+  color: $white-color;
+}
+
 a {
   color: $text-color;
   cursor: pointer;
-
-  &:hover {
-    color: $white-color;
-  }
 }
 
 .viewer {
@@ -58,4 +59,3 @@ svg {
     font-size: $min-base-factor;
   }
 }
-

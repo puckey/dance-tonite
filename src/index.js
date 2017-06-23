@@ -5,6 +5,7 @@ import { h, render } from 'preact';
 import './theme/index.scss';
 import * as THREE from './lib/three';
 import { installRouter } from './routes';
+import router from './router';
 import props from './props';
 import feature from './utils/feature';
 import Room from './room';
@@ -13,6 +14,12 @@ import audioPool from './utils/audio-pool';
 import PressPlayToStart from './containers/PressPlayToStart';
 
 window.THREE = THREE;
+
+if (process.env.FLAVOR === 'cms') {
+  if (!localStorage.getItem('secret')) {
+    router.navigate('/secret');
+  }
+}
 
 (async () => {
   await Promise.all([
@@ -26,6 +33,7 @@ window.THREE = THREE;
   // If we are on a mobile device, we need a touch event in order
   // to play the audio:
   if (feature.isMobile) {
+    document.body.classList.add('mod-mobile');
     Room.reset();
     viewer.switchCamera('orthographic');
     await new Promise((resolve) => {

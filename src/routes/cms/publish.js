@@ -1,14 +1,14 @@
 /** @jsx h */
 import { h, render } from 'preact';
 
-import NotFound from '../containers/NotFound';
+import Publish from '../../containers/Publish';
 
 export default () => {
   let root;
-  return {
+  const component = {
     mount: () => {
       root = render((
-        <NotFound />
+        <Publish />
       ), document.body);
     },
 
@@ -16,4 +16,6 @@ export default () => {
       render(() => null, document.body, root);
     },
   };
+
+  return component;
 };

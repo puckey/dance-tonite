@@ -111,7 +111,7 @@ export default class Menu extends Component {
           close
             ? (
               <Align type="top-right">
-                <ButtonClose onClick={this.goHome} />
+                <ButtonClose onClick={close === true ? this.goHome : close} />
               </Align>
             )
             : null

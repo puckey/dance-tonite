@@ -23,6 +23,7 @@
   h2 {
     font-size: 1.75rem;
     font-feature-settings: 'ss01';
+    line-height: 1.75rem;
   }
 
   h3 {
@@ -44,6 +45,7 @@
   padding-bottom: 1rem;
   line-height: 1.25;
   padding-top: 2rem;
+  user-select: all;
 
   .about-video-container {
     position: relative;

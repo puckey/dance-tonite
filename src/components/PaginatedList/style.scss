@@ -10,15 +10,15 @@
   }
 }
 
+body:not(.mod-mobile) .paginated-list-item-name:hover {
+  color: $white-color;
+}
+
 .paginated-list-item-name {
   white-space: nowrap;
   text-overflow: ellipsis;
   max-width: 33vw;
   cursor: pointer;
-
-  &:hover {
-    color: white;
-  }
 }
 
 .paginated-list-item-name-container {
@@ -33,7 +33,6 @@
 }
 
 .item-list-navigation-pages {
-  user-select: none;
   cursor: default;
 }
 
@@ -49,7 +48,6 @@
 }
 
 .paginated-list-item {
-  user-select: none;
   color: $text-color;
   margin: 0;
   padding-bottom: 0.25rem;
@@ -61,12 +59,6 @@
 
   &.mod-active {
     color: white;
-  }
-
-  &:hover, &.mod-active {
-    .paginated-list-item-name {
-      max-width: 50vw;
-    }
   }
 
   &.mod-last {
@@ -97,7 +89,6 @@
 .paginated-list-next,
 .paginated-list-previous {
   padding-bottom: 1rem;
-  user-select: none;
   cursor: pointer;
 
   &.mod-disabled {
@@ -105,7 +96,7 @@
   }
 }
 
-// 
+//
 // .paginated-list-navigation-pages {
 //   @media (max-width: $min-width) {
 //     display: none;
