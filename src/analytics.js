@@ -106,7 +106,7 @@ const analytics = {
     - Total time on site.
 
     */
-    //  ---------------------------------------- WebGL
+    //  ------------------------------------------------------------ WebGL
     if (feature.hasWebGL) {
       analytics.record({
         hitType: 'event',
@@ -124,7 +124,7 @@ const analytics = {
         nonInteraction: true,
       });
     }
-    //  ---------------------------------------- WebVR
+    //  ------------------------------------------------------------ WebVR
     if (feature.hasVR) {
       analytics.record({
         hitType: 'event',
@@ -143,7 +143,10 @@ const analytics = {
         nonInteraction: true,
       });
     }
-    //  ---------------------------------------- VR device model
+    //  ------------------------------------------------------------ VR device CLASS
+    //  Subtle difference between CALSS and STRING (see below) is these
+    //  correspond to our detection feature buckets while the STRING
+    //  itself is the raw displayName reported by vrDisplay.
     (function () {
       const obj = {
         hitType: 'event',
@@ -154,7 +157,7 @@ const analytics = {
       if (feature.isVive) {
         obj.eventLabel = 'HTC Vive';
       } else if (feature.isOculus) {
-        obj.eventLabel = 'Oculus Rift';
+        obj.eventLabel = 'Oculus';//  Note that “Rift” is not part of the name.
       } else if (feature.isSamsungGearVR) {
         obj.eventLabel = 'Samsung GearVR';
       } else if (feature.isDaydream) {
@@ -164,40 +167,49 @@ const analytics = {
       } else obj.eventLabel = 'Unknown';
       analytics.record(obj);
     }());
-    //  ---------------------------------------- VR mode entry / exit attempt
-    /*
-    button.onclick = function() {
-
-    		if( Moar.effect.isPresenting ){
-
-    			Moar.note({
-
-    				hitType:       'event',
-    				eventCategory: 'VR Session',
-    				eventAction:   'VR Exit',
-    				eventLabel:    'VR exit attempted'
-    			})
-    			three.classList.remove( 'show' )
-    			button.classList.remove( 'ready' )
-    			window.setTimeout( function(){ Moar.effect.exitPresent() }, 500 )
-    		}
-    		else {
-
-    			Moar.note({
-
-    				hitType:       'event',
-    				eventCategory: 'VR Session',
-    				eventAction:   'VR Entry',
-    				eventLabel:    'VR entry attempted'
-    			})
-    			three.classList.remove( 'show' )
-    			button.classList.add( 'engaged' )
-    			window.setTimeout( function(){ Moar.effect.requestPresent() }, 500 )
-    		}
-    	}
-    */
-    //  ---------------------------------------- VR mode entry / exit success
     if (feature.vrDisplay) {
+      //  ------------------------------------------------------------ VR device STRING
+      analytics.record({
+        hitType: 'event',
+        eventCategory: 'Capabilities',
+        eventAction: 'VR Device String',
+        eventLabel: feature.vrDisplay.displayName,
+        nonInteraction: true,
+      });
+      //  ------------------------------------------------------------ VR mode entry / exit attempt
+      /*
+      button.onclick = function() {
+
+      		if( Moar.effect.isPresenting ){
+
+      			Moar.note({
+
+      				hitType:       'event',
+      				eventCategory: 'VR Session',
+      				eventAction:   'VR Exit',
+      				eventLabel:    'VR exit attempted'
+      			})
+      			three.classList.remove( 'show' )
+      			button.classList.remove( 'ready' )
+      			window.setTimeout( function(){ Moar.effect.exitPresent() }, 500 )
+      		}
+      		else {
+
+      			Moar.note({
+
+      				hitType:       'event',
+      				eventCategory: 'VR Session',
+      				eventAction:   'VR Entry',
+      				eventLabel:    'VR entry attempted'
+      			})
+      			three.classList.remove( 'show' )
+      			button.classList.add( 'engaged' )
+      			window.setTimeout( function(){ Moar.effect.requestPresent() }, 500 )
+      		}
+      	}
+      */
+
+      //  ------------------------------------------------------------ VR mode entry / exit success
       window.addEventListener('vrdisplaypresentchange', () => {
         if (feature.vrDisplay.isPresenting) {
           analytics.record({
