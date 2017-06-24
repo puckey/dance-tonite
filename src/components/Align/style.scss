@@ -16,22 +16,26 @@
     justify-content: center;
     width: 100%;
 
-    &:not(.mod-rows) > * {
-      margin-bottom: .4rem;
-    }
+    &.mod-margin {
+      &:not(.mod-rows) > * {
+        margin-bottom: .4rem;
+      }
 
-    &.mod-rows > * {
-      margin-right: .4rem;
+      &.mod-rows > * {
+        margin-right: .4rem;
+      }
     }
   }
 
   &.mod-top-left {
-    &:not(.mod-rows) > * {
-      margin-bottom: .4rem;
-    }
+    &.mod-margin {
+      &:not(.mod-rows) > * {
+        margin-bottom: .4rem;
+      }
 
-    &.mod-rows > * {
-      margin-right: .4rem;
+      &.mod-rows > * {
+        margin-right: .4rem;
+      }
     }
   }
 
