@@ -97,6 +97,15 @@ const analytics = {
     return true;
   },
   mount: () => {
+    /*
+
+    Some things already covered by Google Analytics:
+    - Platform (divided by device, OS, browser, etc.)
+    - Desktop vs Mobile (divded into phone / tablet)
+    - Inbound links (divided into Direct, Social, etc.)
+    - Total time on site.
+
+    */
     //  ---------------------------------------- WebGL
     if (feature.hasWebGL) {
       analytics.record({
@@ -155,6 +164,60 @@ const analytics = {
       } else obj.eventLabel = 'Unknown';
       analytics.record(obj);
     }());
+    //  ---------------------------------------- VR mode entry / exit attempt
+    /*
+    button.onclick = function() {
+
+    		if( Moar.effect.isPresenting ){
+
+    			Moar.note({
+
+    				hitType:       'event',
+    				eventCategory: 'VR Session',
+    				eventAction:   'VR Exit',
+    				eventLabel:    'VR exit attempted'
+    			})
+    			three.classList.remove( 'show' )
+    			button.classList.remove( 'ready' )
+    			window.setTimeout( function(){ Moar.effect.exitPresent() }, 500 )
+    		}
+    		else {
+
+    			Moar.note({
+
+    				hitType:       'event',
+    				eventCategory: 'VR Session',
+    				eventAction:   'VR Entry',
+    				eventLabel:    'VR entry attempted'
+    			})
+    			three.classList.remove( 'show' )
+    			button.classList.add( 'engaged' )
+    			window.setTimeout( function(){ Moar.effect.requestPresent() }, 500 )
+    		}
+    	}
+    */
+    //  ---------------------------------------- VR mode entry / exit success
+    if (feature.vrDisplay) {
+      window.addEventListener('vrdisplaypresentchange', () => {
+        if (feature.vrDisplay.isPresenting) {
+          analytics.record({
+            hitType: 'event',
+            eventCategory: 'VR Session',
+            eventAction: 'VR Entry',
+            eventLabel: 'VR entry successful',
+            nonInteraction: true,
+          });
+        } else {
+          analytics.record({
+            hitType: 'event',
+            eventCategory: 'VR Session',
+            eventAction: 'VR Exit',
+            eventLabel: 'VR exit successful',
+            nonInteraction: true,
+          });
+        }
+      }, false);
+    }
   },
 };
 
@@ -179,65 +242,5 @@ Outbound links
   clickedAboutSourceCode
   clickedAboutTCS
   clicked ... any sublinks from tech section (under technology section)
-
-
-button.onclick = function() {
-
-		if( Moar.effect.isPresenting ){
-
-			Moar.note({
-
-				hitType:       'event',
-				eventCategory: 'VR Session',
-				eventAction:   'VR Exit',
-				eventLabel:    'VR exit attempted'
-			})
-			three.classList.remove( 'show' )
-			button.classList.remove( 'ready' )
-			window.setTimeout( function(){ Moar.effect.exitPresent() }, 500 )
-		}
-		else {
-
-			Moar.note({
-
-				hitType:       'event',
-				eventCategory: 'VR Session',
-				eventAction:   'VR Entry',
-				eventLabel:    'VR entry attempted'
-			})
-			three.classList.remove( 'show' )
-			button.classList.add( 'engaged' )
-			window.setTimeout( function(){ Moar.effect.requestPresent() }, 500 )
-		}
-	}
-	window.addEventListener( 'vrdisplaypresentchange', function( event ){
-
-		if( Moar.effect.isPresenting ){
-
-			Moar.note({
-
-				hitType:       'event',
-				eventCategory: 'VR Session',
-				eventAction:   'VR Entry',
-				eventLabel:    'VR entry successful',
-				nonInteraction: true
-			})
-			button.classList.add( 'ready' )
-		}
-		else {
-
-			Moar.note({
-
-				hitType:       'event',
-				eventCategory: 'VR Session',
-				eventAction:   'VR Exit',
-				eventLabel:    'VR exit successful',
-				nonInteraction: true
-			})
-			button.classList.remove( 'engaged' )
-		}
-		three.classList.add( 'show' )
-
-	}, false )
 
 */

@@ -9,6 +9,13 @@ const hasWebGL = () => {
 
 const vrSupported = () => navigator.getVRDisplays !== undefined;
 
+let vrDisplay;
+if (vrSupported) {
+  navigator.getVRDisplays().then((displays) => {
+    if (displays.length > 0) vrDisplay = displays[0];
+  });
+}
+
 const checkHasExternalDisplay = () => (
   new Promise((resolve) => {
     if (!vrSupported()) {
@@ -101,6 +108,7 @@ const feature = {
   prepare: () => (
     Promise.all([
       hasWebGL,
+      vrDisplay,
       checkHasVR()
         .then((hasVR) => {
           feature.hasVR = !feature.isTablet && hasVR;
