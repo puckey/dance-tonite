@@ -129,7 +129,7 @@ const transition = {
     transitionScene.fog = new THREE.Fog(0x000000, 0, 0);
 
     floatingOrb.fadeIn();
-    viewer.events.on('tick', tick);
+    viewer.on('tick', tick);
     textItem.updateLabel(param.text);
     floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
     floatingOrb.mesh.scale.set(4, 4, 4);
@@ -156,7 +156,7 @@ const transition = {
   reset(soft) {
     insideTransition = false;
     fadedOut = false;
-    viewer.events.off('tick', tick);
+    viewer.off('tick', tick);
     viewer.renderScene = viewer.scene;
     if (tweener) tweener.cancel();
     insideTransition = false;

@@ -23,11 +23,11 @@ export default class Titles extends Component {
   }
 
   componentDidMount() {
-    this.props.viewer.events.on('tick', this.tick);
+    this.props.viewer.on('tick', this.tick);
   }
 
   componentWillUnmount() {
-    this.props.viewer.events.off('tick', this.tick);
+    this.props.viewer.off('tick', this.tick);
   }
 
   tick() {

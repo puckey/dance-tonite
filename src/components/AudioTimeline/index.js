@@ -13,14 +13,14 @@ export default class AudioTimeline extends Component {
 
   componentDidMount() {
     this.mounted = true;
-    viewer.events.on('tick', this.tick);
+    viewer.on('tick', this.tick);
     const { keyframes, callback } = this.props;
     this.timeline = createTimeline(keyframes, callback);
   }
 
   componentWillUnmount() {
     this.mounted = false;
-    viewer.events.off('tick', this.tick);
+    viewer.off('tick', this.tick);
   }
 
   tick() {

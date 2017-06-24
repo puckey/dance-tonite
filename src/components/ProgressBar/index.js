@@ -24,7 +24,7 @@ export default class ProgressBar extends Component {
   }
 
   componentDidMount() {
-    viewer.events.on('tick', this.tick);
+    viewer.on('tick', this.tick);
   }
 
   shouldComponentUpdate() {
@@ -32,7 +32,7 @@ export default class ProgressBar extends Component {
   }
 
   componentWillUnmount() {
-    viewer.events.off('tick', this.tick);
+    viewer.off('tick', this.tick);
   }
 
   onMouseMove(event) {

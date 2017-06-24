@@ -15,11 +15,11 @@ export default class RoomLabels extends Component {
   }
 
   componentDidMount() {
-    viewer.events.on('tick', this.tick);
+    viewer.on('tick', this.tick);
   }
 
   componentWillUnmount() {
-    viewer.events.off('tick', this.tick);
+    viewer.off('tick', this.tick);
   }
 
   tick() {

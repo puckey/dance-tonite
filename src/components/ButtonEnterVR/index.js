@@ -16,58 +16,35 @@ import ButtonItem from '../ButtonItem';
 export default class ButtonEnterVR extends Component {
   constructor() {
     super();
-
-    this.state = {
-      processingClick: false,
-    };
-
-    this.toggleVR = this.toggleVR.bind(this);
+    this.updateVRStatus = this.updateVRStatus.bind(this);
   }
 
-  async toggleVR() {
-    if (this.state.processingClick) return;
-
-    this.setState({ processingClick: true });
-
-    if (viewer.vrEffect.isPresenting) {
-      viewer.vrEffect.exitPresent();
-      viewer.switchCamera('orthographic');
-      this.setState({ processingClick: false });
-      audio.play();
-    } else {
-      this.props.toggleVROverlay();
-      if (!feature.hasVR) {
-        this.setState({ processingClick: false });
-        return;
-      }
-
-      viewer.vrEffect.requestPresent();
-      await audio.fadeOut();
-      audio.pause();
-
-      viewer.switchCamera('default');
-      await sleep(5000);
-
-      this.props.toggleVROverlay();
-      this.setState({ processingClick: false });
-      audio.play();
-      audio.unmute();
-      viewer.scene.add(viewer.camera);
-    }
+  componentDidMount() {
+    this.mounted = true;
+    this.updateVRStatus(viewer.vrEffect.isPresenting);
+    viewer.on('vr-present-change', this.updateVRStatus);
   }
 
-  render({ label }) {
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  updateVRStatus(presenting) {
+    this.setState({ presenting });
+  }
+
+  render({ label, onClick }, { presenting }) {
     return (
       <ButtonItem
         label={label && (
           feature.hasVR
-            ? viewer.vrEffect.isPresenting
+            ? presenting
               ? 'Exit VR'
               : 'Enter VR'
             : 'VR not found'
           )
         }
-        onClick={this.toggleVR}
+        onClick={onClick}
         icon={feature.hasVR ? enterIconSvg : enterIconDisabledSvg}
       />
     );

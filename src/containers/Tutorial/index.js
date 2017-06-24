@@ -2,11 +2,15 @@
 import { h, Component } from 'preact';
 
 import Room from '../../components/Room';
+import InformationOverlay from '../../components/InformationOverlay';
 import TutorialTimeline from '../../components/TutorialTimeline';
 import Align from '../../components/Align';
+
 import audio from '../../audio';
 import feature from '../../utils/feature';
 import viewer from '../../viewer';
+import { sleep } from '../../utils/async';
+import router from '../../router';
 
 export default class Tutorial extends Component {
   constructor() {
@@ -17,7 +21,9 @@ export default class Tutorial extends Component {
     };
 
     this.setLayers = this.setLayers.bind(this);
-    this.performSkip = this.performSkip.bind(this);
+    this.performShowOverlay = this.performShowOverlay.bind(this);
+    this.performHideOverlay = this.performHideOverlay.bind(this);
+    this.performAddPerformance = this.performAddPerformance.bind(this);
 
     if (viewer.vrEffect.isPresenting) {
       viewer.vrEffect.exitPresent();
@@ -38,16 +44,58 @@ export default class Tutorial extends Component {
     this.setState({ layers });
   }
 
-  performSkip() {
-    this.props.revealOverlay(feature.has6DOF ? 'add-performance' : 'room-scale-error');
+  performHideOverlay() {
     this.setState({
-      skipButton: false,
+      skipButton: true,
+      overlay: null,
     });
   }
 
-  render({ roomId }, { skipButton, layers }) {
+  async performAddPerformance() {
+    if (!viewer.vrEffect.isPresenting) {
+      await viewer.vrEffect.requestPresent();
+    }
+    // Wait for the VR overlay to cover the screen:
+    await sleep(500);
+    this.props.goto('record');
+  }
+
+  performShowOverlay() {
+    this.setState({
+      skipButton: false,
+      overlay: feature.has6DOF ? 'add-performance' : 'room-scale-error',
+    });
+  }
+
+  render({ roomId }, { skipButton, layers, overlay }) {
     return (
       <div>
+        {overlay === 'room-scale-error' &&
+          <InformationOverlay
+            type={overlay}
+            goto={this.props.goto}
+            onClose={this.performHideOverlay}
+          >
+            <p>
+              To add your dance, you will need a room-scale VR
+              device and a WebVR-enabled browser.
+            </p>
+            <a href="https://webvr.info" target="_blank" rel="noopener noreferrer">
+              Learn more
+            </a> or <a onClick={() => router.navigate('/')}>
+              go back to the experience
+            </a>.
+          </InformationOverlay>
+        }
+        {overlay === 'add-performance' &&
+          <InformationOverlay
+            type={overlay}
+            goto={this.props.goto}
+            onClose={this.performHideOverlay}
+          >
+            <a onClick={this.performAddPerformance}>Add your performance</a>
+          </InformationOverlay>
+        }
         <Room
           roomId={roomId}
           id="hIR_Tw"
@@ -56,12 +104,12 @@ export default class Tutorial extends Component {
         >
           <TutorialTimeline
             onUpdateLayers={this.setLayers}
-            onEnd={this.performSkip}
+            onEnd={this.performShowOverlay}
           />
         </Room>
         { skipButton && (
           <Align type="bottom-right">
-            <a onClick={this.performSkip}>Skip Tutorial</a>
+            <a onClick={this.performShowOverlay}>Skip Tutorial</a>
           </Align>
           )
         }

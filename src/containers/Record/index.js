@@ -68,7 +68,7 @@ export default class Record extends Component {
       audio.fadeOut(),
       transition.fadeOut(),
     ]);
-    viewer.events.off('tick', this.tick);
+    viewer.off('tick', this.tick);
     if (!this.mounted) return;
 
     this.props.goto('review');
@@ -111,7 +111,7 @@ export default class Record extends Component {
     audio.play();
     audio.mute();
     audio.fadeIn();
-    viewer.events.on('tick', this.tick);
+    viewer.on('tick', this.tick);
   }
 
   async performRetry() {

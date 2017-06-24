@@ -48,7 +48,7 @@ export default class Playlist extends Component {
     this.moveOrb(0);
 
     this.asyncMount();
-    viewer.events.on('tick', this.tick);
+    viewer.on('tick', this.tick);
   }
 
   componentWillReceiveProps({ orb }) {
@@ -62,7 +62,7 @@ export default class Playlist extends Component {
   componentWillUnmount() {
     this.orb.destroy();
     this.state.rooms.forEach((room) => room.destroy());
-    viewer.events.off('tick', this.tick);
+    viewer.off('tick', this.tick);
   }
 
   async asyncMount() {
