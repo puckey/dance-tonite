@@ -1,8 +1,13 @@
 const userAgent = navigator.userAgent;
 
-const vrSupported = () => {
-  return navigator.getVRDisplays !== undefined;
+const hasWebGL = () => {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl')
+    || canvas.getContext('experimental-webgl');
+  return (gl && gl instanceof WebGLRenderingContext);
 };
+
+const vrSupported = () => navigator.getVRDisplays !== undefined;
 
 const checkHasExternalDisplay = () => (
   new Promise((resolve) => {
@@ -95,13 +100,14 @@ const feature = {
   stats: /fps/.test(window.location.hash),
   prepare: () => (
     Promise.all([
-      checkHasExternalDisplay()
-        .then((hasExternalDisplay) => {
-          feature.hasExternalDisplay = hasExternalDisplay;
-        }),
+      hasWebGL,
       checkHasVR()
         .then((hasVR) => {
           feature.hasVR = !feature.isTablet && hasVR;
+        }),
+      checkHasExternalDisplay()
+        .then((hasExternalDisplay) => {
+          feature.hasExternalDisplay = hasExternalDisplay;
         }),
       checkHas6DOF()
         .then((has6DOF) => {
