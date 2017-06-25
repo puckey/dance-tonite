@@ -13,7 +13,7 @@ export default class FirebaseKey extends Component {
     super();
     this.state = {
       secret: localStorage.getItem('secret'),
-    }
+    };
     this.keyInputChanged = this.keyInputChanged.bind(this);
     this.performSave = this.performSave.bind(this);
   }

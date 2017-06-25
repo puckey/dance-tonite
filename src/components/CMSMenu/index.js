@@ -14,8 +14,6 @@ import ButtonClose from '../../components/ButtonClose';
 import EnterVROverlay from '../../components/EnterVROverlay';
 import AudioControls from '../../components/AudioControls';
 
-const navigateHome = () => router.navigate('/');
-
 export default class CMSMenu extends Component {
   constructor() {
     super();
@@ -56,7 +54,7 @@ export default class CMSMenu extends Component {
         {
           close
             ? <Align type="top-right" margin rows>
-              <ButtonClose onClick={navigateHome} />
+              <ButtonClose navigate="/" />
             </Align>
             : null
         }
