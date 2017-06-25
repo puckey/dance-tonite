@@ -7,18 +7,20 @@ const hasWebGL = () => {
   return (gl && gl instanceof WebGLRenderingContext);
 };
 
-const vrSupported = () => navigator.getVRDisplays !== undefined;
+const hasWebVR = () => navigator.getVRDisplays !== undefined;
 
+let vrDisplays = [];
 let vrDisplay;
-if (vrSupported) {
+if (hasWebVR) {
   navigator.getVRDisplays().then((displays) => {
+    vrDisplays = displays;
     if (displays.length > 0) vrDisplay = displays[0];
   });
 }
 
 const checkHasExternalDisplay = () => (
   new Promise((resolve) => {
-    if (!vrSupported()) {
+    if (!hasWebVR()) {
       resolve(false);
       return;
     }
@@ -42,7 +44,7 @@ const checkHasExternalDisplay = () => (
 
 const checkHasVR = () => (
   new Promise((resolve) => {
-    if (!vrSupported()) {
+    if (!hasWebVR()) {
       resolve(false);
       return;
     }
@@ -60,7 +62,7 @@ const checkHasVR = () => (
 
 const checkHas6DOF = () => (
   new Promise((resolve) => {
-    if (!vrSupported()) {
+    if (!hasWebVR()) {
       resolve(false);
       return;
     }
@@ -82,7 +84,7 @@ const checkHas6DOF = () => (
 
 const getVRDisplayName = () => (
   new Promise((resolve) => {
-    if (!vrSupported()) {
+    if (!hasWebVR()) {
       resolve(false);
       return;
     }
@@ -108,6 +110,7 @@ const feature = {
   prepare: () => (
     Promise.all([
       hasWebGL,
+      hasWebVR,
       vrDisplay,
       checkHasVR()
         .then((hasVR) => {

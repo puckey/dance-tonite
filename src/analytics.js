@@ -106,7 +106,7 @@ const analytics = {
     - Total time on site.
 
     */
-    //  ------------------------------------------------------------ WebGL
+    //  ------------------------------------------------------------ Capabilities: WebGL
     if (feature.hasWebGL) {
       analytics.record({
         hitType: 'event',
@@ -124,34 +124,68 @@ const analytics = {
         nonInteraction: true,
       });
     }
-    //  ------------------------------------------------------------ WebVR
-    if (feature.hasVR) {
+    //  ------------------------------------------------------------ Capabilities: WebVR
+    if (feature.hasWebVR) {
       analytics.record({
         hitType: 'event',
         eventCategory: 'Capabilities',
-        eventAction: 'VR Display Detect',
-        eventLabel: 'VR Display is present',
-        value: 0, // displays.length,
+        eventAction: 'WebVR API Detect',
+        eventLabel: 'WebVR API is present',
         nonInteraction: true,
       });
     } else {
       analytics.record({
         hitType: 'event',
         eventCategory: 'Capabilities',
-        eventAction: 'VR Display Detect',
-        eventLabel: 'VR Display is absent',
+        eventAction: 'WebVR API Detect',
+        eventLabel: 'WebVR API is absent',
         nonInteraction: true,
       });
     }
-    //  ------------------------------------------------------------ VR device CLASS
-    //  Subtle difference between CALSS and STRING (see below) is these
-    //  correspond to our detection feature buckets while the STRING
-    //  itself is the raw displayName reported by vrDisplay.
+    //  ------------------------------------------------------------ Capabilities: VR Displays
+    if (feature.vrDisplays.length > 0) {
+      analytics.record({
+        hitType: 'event',
+        eventCategory: 'Capabilities',
+        eventAction: 'VR Displays Detect',
+        eventLabel: 'VR Displays are present',
+        value: feature.vrDisplays.length,
+        nonInteraction: true,
+      });
+    } else {
+      analytics.record({
+        hitType: 'event',
+        eventCategory: 'Capabilities',
+        eventAction: 'VR Displays Detect',
+        eventLabel: 'VR Displays are absent',
+        nonInteraction: true,
+      });
+    }
+    //  ------------------------------------------------------------ Capabilities: VR device STRING
+    //  NOTE: We’re only recording the primary VR device,
+    //  ie. whatever’s in vrDisplays[0], because that’s what
+    //  our code will render for. They might have two VR
+    //  devices, like a Rift and Vive, but we want to know
+    //  what they’re actually using for this experience.
+    if (feature.vrDisplay) {
+      analytics.record({
+        hitType: 'event',
+        eventCategory: 'Capabilities',
+        eventAction: 'VR Device String',
+        eventLabel: feature.vrDisplay.displayName,
+        nonInteraction: true,
+      });
+    }
+    //  ------------------------------------------------------------ Capabilities: VR device BUCKET
+    //  Subtle difference between STRING and BUCKET is these
+    //  names below correspond to our own feature detection
+    //  buckets while the STRING is the raw displayName reported
+    //  directly from vrDisplay without intervention.
     (function () {
       const obj = {
         hitType: 'event',
         eventCategory: 'Capabilities',
-        eventAction: 'VR Device Model',
+        eventAction: 'VR Device Bucket',
         nonInteraction: true,
       };
       if (feature.isVive) {
@@ -163,25 +197,17 @@ const analytics = {
       } else if (feature.isDaydream) {
         obj.eventLabel = 'Google Daydream';
       } else if (feature.isCardboard) {
-        obj.eventLabel = 'Cardboard (fallback)';// isMobile + Polyfill (NOT Daydream)
+        obj.eventLabel = 'Cardboard (fallback)';// isMobile + Polyfill (ie NOT Daydream)
       } else obj.eventLabel = 'Unknown';
       analytics.record(obj);
     }());
     if (feature.vrDisplay) {
-      //  ------------------------------------------------------------ VR device STRING
-      analytics.record({
-        hitType: 'event',
-        eventCategory: 'Capabilities',
-        eventAction: 'VR Device String',
-        eventLabel: feature.vrDisplay.displayName,
-        nonInteraction: true,
-      });
+      //  ------------------------------------------------------------ VR controller stats?!?!?!
+
       //  ------------------------------------------------------------ VR mode entry / exit attempt
       /*
       button.onclick = function() {
-
       		if( Moar.effect.isPresenting ){
-
       			Moar.note({
 
       				hitType:       'event',
@@ -189,9 +215,6 @@ const analytics = {
       				eventAction:   'VR Exit',
       				eventLabel:    'VR exit attempted'
       			})
-      			three.classList.remove( 'show' )
-      			button.classList.remove( 'ready' )
-      			window.setTimeout( function(){ Moar.effect.exitPresent() }, 500 )
       		}
       		else {
 
@@ -202,9 +225,6 @@ const analytics = {
       				eventAction:   'VR Entry',
       				eventLabel:    'VR entry attempted'
       			})
-      			three.classList.remove( 'show' )
-      			button.classList.add( 'engaged' )
-      			window.setTimeout( function(){ Moar.effect.requestPresent() }, 500 )
       		}
       	}
       */
