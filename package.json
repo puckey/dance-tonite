@@ -23,7 +23,6 @@
     "firebase": "^4.1.1",
     "gif.js": "0.2.0",
     "grapnel": "^0.6.4",
-    "hyperscript": "^2.0.2",
     "just-shuffle": "^1.0.0",
     "mitt": "^1.1.0",
     "pad-number": "0.0.4",

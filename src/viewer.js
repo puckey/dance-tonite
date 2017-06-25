@@ -4,7 +4,6 @@
  */
 import 'webvr-polyfill';
 
-import h from 'hyperscript';
 import emitter from 'mitt';
 
 import * as THREE from './lib/three';
@@ -85,7 +84,8 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(windowSize.width, windowSize.height);
 renderer.sortObjects = false;
 
-const containerEl = h('div.viewer', renderer.domElement);
+const containerEl = document.createElement('div');
+containerEl.className = 'viewer';
 document.body.appendChild(containerEl);
 
 const vrEffect = new THREE.VREffect(renderer);
