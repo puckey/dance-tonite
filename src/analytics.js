@@ -18,9 +18,9 @@ const verbosity = 1;
 
 https://github.com/puckey/you-move-me/issues/315
 
-X = Done.
+✔️ = Done.
 L = Covered by hyperlink click tracking.
-? = Quetionable if possible or worthwhile.
+? = Questionable if possible or worthwhile.
 T = T/K.
 
 Homepage
@@ -35,10 +35,10 @@ About
 ?  Time spent on each section of the about page (we did this on the madeby.google website)
 
 Enter VR
-  No. of users who see Enter VR error
-  Time spent watching in VR
-X  No. of users watching Polyfill
-X  No. of users watching WebVR
+✔️  No. of users who see Enter VR error ****** sort of... TO BE CONTINUED
+✔️  Time spent watching in VR
+✔️  No. of users watching Polyfill
+✔️  No. of users watching WebVR
 
 Add Performance | Tutorial
 L  No. of users who skip the tutorial
@@ -58,11 +58,11 @@ L  No. of shares on G+
 L  No. of shares on T
 
 VR device detection
-X  No. users on mobile WebVR
-X  No. users on mobile WebVR Polyfill
-X  No. users on Vive
-X  No. users on Oculus
-X  No. users on Samsung Gear
+.  No. users on mobile WebVR
+.  No. users on mobile WebVR Polyfill
+✔️  No. users on Vive
+✔️  No. users on Oculus
+✔️  No. users on Samsung Gear
 
 Outbound links
 L  Homepage & About - User clicks on WebVR badge
@@ -77,6 +77,7 @@ L  About - User clicks on any sublinks from tech section (under technology secti
 
 
 const analytics = {
+  //  Super general event recording. Most stuff gets funneled through this.
   record: (obj) => {
     if (verbosity >= 0.5) console.log('Note:', obj);
     if (window.ga !== undefined && typeof window.ga === 'function') {
@@ -84,6 +85,7 @@ const analytics = {
       if (verbosity >= 0.5) console.log('Noted.');
     }
   },
+  //  This is basically “bounce” event recording.
   recordOutboundLink: (a) => {
     const url = a.getAttribute('href');
     if (verbosity >= 0.5) console.log('Note:', url);
@@ -96,6 +98,60 @@ const analytics = {
     }
     return true;
   },
+  sectionEnteredAt: Date.now(),
+  recordSectionChange: (a) => {
+    analytics.sectionDuration = null;
+    if (analytics.sectionSwitchedAt !== undefined) {
+      analytics.sectionDuration = (Date.now() - analytics.sectionSwitchedAt) / 1000;
+      // **** record sectionDuration separate? Or as "value" attribute in link recording???
+    }
+    analytics.sectionSwitchedAt = Date.now();
+    // const url = a.getAttribute('href');
+    // if (window.ga !== undefined && typeof window.ga === 'function') {
+    //   window.ga('send', 'event', 'outbound', 'click', url, {
+    //     transport: 'beacon',
+    //     hitCallback: function () {},
+    //     //hitCallback: function(){ document.location = url }
+    //   });
+    // }
+    // return true;
+  },
+  recordInternalLink: (a) => { // ****** HOW IS THIS DIF THAN ABOVE?????????
+    // const url = a.getAttribute('href');
+    // if (verbosity >= 0.5) console.log('Note:', url);
+    // if (window.ga !== undefined && typeof window.ga === 'function') {
+    //   window.ga('send', 'event', 'outbound', 'click', url, {
+    //     transport: 'beacon',
+    //     hitCallback: function () {},
+    //     //hitCallback: function(){ document.location = url }
+    //   });
+    // }
+    // return true;
+  },
+
+
+  //  -------------------------------------------------- VR Session: VR entry / exit ATTEMPT
+  //  NOTE: These functions must be called manually
+  //  when the user clicks or taps to initiate a VR
+  //  session. Compare to VR entry / exit SUCCESS below.
+  recordVREntryAttempt: () => {
+    analytics.record({
+      hitType: 'event',
+      eventCategory: 'VR Session',
+      eventAction: 'VR Entry',
+      eventLabel: 'VR entry attempted',
+    });
+  },
+  recordVRExitAttempt: () => {
+    analytics.record({
+      hitType: 'event',
+      eventCategory: 'VR Session',
+      eventAction: 'VR Exit',
+      eventLabel: 'VR exit attempted',
+    });
+  },
+
+
   mount: () => {
     /*
 
@@ -105,8 +161,12 @@ const analytics = {
     - Inbound links (divided into Direct, Social, etc.)
     - Total time on site.
 
+    *******
+    need to add look through all anchor elements to add link tracking.
+    inbound vs outbound vs section change tracking???
+
     */
-    //  ------------------------------------------------------------ Capabilities: WebGL
+    //  -------------------------------------------------- Capabilities: WebGL
     if (feature.hasWebGL) {
       analytics.record({
         hitType: 'event',
@@ -124,7 +184,7 @@ const analytics = {
         nonInteraction: true,
       });
     }
-    //  ------------------------------------------------------------ Capabilities: WebVR
+    //  -------------------------------------------------- Capabilities: WebVR
     if (feature.hasWebVR) {
       analytics.record({
         hitType: 'event',
@@ -142,7 +202,7 @@ const analytics = {
         nonInteraction: true,
       });
     }
-    //  ------------------------------------------------------------ Capabilities: VR Displays
+    //  -------------------------------------------------- Capabilities: VR Displays
     if (feature.vrDisplays.length > 0) {
       analytics.record({
         hitType: 'event',
@@ -161,7 +221,7 @@ const analytics = {
         nonInteraction: true,
       });
     }
-    //  ------------------------------------------------------------ Capabilities: VR device STRING
+    //  -------------------------------------------------- Capabilities: VR device STRING
     //  NOTE: We’re only recording the primary VR device,
     //  ie. whatever’s in vrDisplays[0], because that’s what
     //  our code will render for. They might have two VR
@@ -176,80 +236,64 @@ const analytics = {
         nonInteraction: true,
       });
     }
-    //  ------------------------------------------------------------ Capabilities: VR device BUCKET
+    //  -------------------------------------------------- Capabilities: VR device BUCKET
     //  Subtle difference between STRING and BUCKET is these
     //  names below correspond to our own feature detection
     //  buckets while the STRING is the raw displayName reported
     //  directly from vrDisplay without intervention.
-    (function () {
-      const obj = {
-        hitType: 'event',
-        eventCategory: 'Capabilities',
-        eventAction: 'VR Device Bucket',
-        nonInteraction: true,
-      };
-      if (feature.isVive) {
-        obj.eventLabel = 'HTC Vive';
-      } else if (feature.isOculus) {
-        obj.eventLabel = 'Oculus';//  Note that “Rift” is not part of the name.
-      } else if (feature.isSamsungGearVR) {
-        obj.eventLabel = 'Samsung GearVR';
-      } else if (feature.isDaydream) {
-        obj.eventLabel = 'Google Daydream';
-      } else if (feature.isCardboard) {
-        obj.eventLabel = 'Cardboard (fallback)';// isMobile + Polyfill (ie NOT Daydream)
-      } else obj.eventLabel = 'Unknown';
-      analytics.record(obj);
-    }());
     if (feature.vrDisplay) {
-      //  ------------------------------------------------------------ VR controller stats?!?!?!
-
-      //  ------------------------------------------------------------ VR mode entry / exit attempt
-      /*
-      button.onclick = function() {
-      		if( Moar.effect.isPresenting ){
-      			Moar.note({
-
-      				hitType:       'event',
-      				eventCategory: 'VR Session',
-      				eventAction:   'VR Exit',
-      				eventLabel:    'VR exit attempted'
-      			})
-      		}
-      		else {
-
-      			Moar.note({
-
-      				hitType:       'event',
-      				eventCategory: 'VR Session',
-      				eventAction:   'VR Entry',
-      				eventLabel:    'VR entry attempted'
-      			})
-      		}
-      	}
-      */
-
-      //  ------------------------------------------------------------ VR mode entry / exit success
+      (function () {
+        const obj = {
+          hitType: 'event',
+          eventCategory: 'Capabilities',
+          eventAction: 'VR Device Bucket',
+          nonInteraction: true,
+        };
+        if (feature.isVive) {
+          obj.eventLabel = 'HTC Vive';
+        } else if (feature.isOculus) {
+          obj.eventLabel = 'Oculus';//  Note that “Rift” is not part of the name.
+        } else if (feature.isSamsungGearVR) {
+          obj.eventLabel = 'Samsung GearVR';
+        } else if (feature.isDaydream) {
+          obj.eventLabel = 'Google Daydream';
+        } else if (feature.isCardboard) {
+          obj.eventLabel = 'Cardboard (fallback)';// isMobile + Polyfill (ie NOT Daydream)
+        } else obj.eventLabel = 'Unknown';
+        analytics.record(obj);
+      }());
+    }
+    //  -------------------------------------------------- VR Session: VR entry / exit SUCCESS
+    if (feature.vrDisplay) {
       window.addEventListener('vrdisplaypresentchange', () => {
-        if (feature.vrDisplay.isPresenting) {
+        if (feature.vrDisplay.isPresenting) { // ******* MAKE SURE THIS IS NOT ACCIDENTALLY REVERSED!!!!!!!!!!!!!!!!!!!!!!!!!!
+          analytics.vrSessionBeganAt = Date.now();
           analytics.record({
             hitType: 'event',
             eventCategory: 'VR Session',
             eventAction: 'VR Entry',
             eventLabel: 'VR entry successful',
-            nonInteraction: true,
+            nonInteraction: true, //  The ATTEMPT is an interaction. Its SUCCESS is not.
           });
         } else {
+          analytics.vrSessionEndedAt = Date.now();
+          analytics.vrSessionDuration = null;
+          if (analytics.vrSessionBeganAt !== undefined) {
+            analytics.vrSessionDuration = (analytics.vrSessionEndedAt -
+              analytics.vrSessionBeganAt) / 1000;
+          }
           analytics.record({
             hitType: 'event',
             eventCategory: 'VR Session',
             eventAction: 'VR Exit',
             eventLabel: 'VR exit successful',
-            nonInteraction: true,
+            value: analytics.vrSessionDuration, //  Unit here is seconds, accurate to milliseconds.
+            nonInteraction: true, //  The ATTEMPT is an interaction. Its SUCCESS is not.
           });
         }
       }, false);
     }
+    //  -------------------------------------------------- VR controller stats?!?!?!
   },
 };
 
