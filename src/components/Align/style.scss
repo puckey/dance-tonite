@@ -98,6 +98,10 @@ $vertical-margin: .6rem;
     }
   }
 
+  &.mod-inline {
+    position: relative;
+  }
+
   &.mod-rows {
     flex-direction: row;
   }
