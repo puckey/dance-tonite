@@ -179,8 +179,6 @@ export default class Playback extends Component {
         />
         { process.env.FLAVOR !== 'cms'
           ? <Titles
-            viewer={viewer}
-            audio={audio}
             onUpdate={this.onTitlesChanged}
           />
           : null

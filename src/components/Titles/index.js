@@ -1,8 +1,11 @@
 /** @jsx h */
 import { h, Component } from 'preact';
 import './style.scss';
-import createTimeline from '../../lib/timeline';
 import keyframes from './keyframes';
+
+import createTimeline from '../../lib/timeline';
+import audio from '../../audio';
+import viewer from '../../viewer';
 
 export default class Titles extends Component {
   constructor() {
@@ -23,15 +26,15 @@ export default class Titles extends Component {
   }
 
   componentDidMount() {
-    this.props.viewer.on('tick', this.tick);
+    viewer.on('tick', this.tick);
   }
 
   componentWillUnmount() {
-    this.props.viewer.off('tick', this.tick);
+    viewer.off('tick', this.tick);
   }
 
   tick() {
-    this.timeline.tick(this.props.audio.time);
+    this.timeline.tick(audio.time);
   }
 
   renderTitles() {
