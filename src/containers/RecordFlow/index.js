@@ -46,6 +46,7 @@ export default class RecordFlow extends Component {
     return (
       <Container>
         <Menu
+          about
           mute
           close
           overlay={overlay}
