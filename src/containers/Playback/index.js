@@ -13,7 +13,7 @@ import ProgressBar from '../../components/ProgressBar';
 import Colophon from '../../components/Colophon';
 import Playlist from '../Playlist';
 import ButtonItem from '../../components/ButtonItem';
-import InformationOverlay from '../../components/InformationOverlay';
+import Overlay from '../../components/Overlay';
 
 import audio from '../../audio';
 import audioSrcOgg from '../../public/sound/tonite.ogg';
@@ -156,9 +156,11 @@ export default class Playback extends Component {
           inContextOfRecording && (
             takeOffHeadset
               ? (
-                <InformationOverlay>
-                  <ButtonItem onClick={onGotoSubmission}>I took off my headset</ButtonItem>
-                </InformationOverlay>
+                <Overlay>
+                  <ButtonItem onClick={onGotoSubmission}>
+                    I took off my headset
+                  </ButtonItem>
+                </Overlay>
               )
               : (
                 <Align type="bottom-right">

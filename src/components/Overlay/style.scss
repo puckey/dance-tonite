@@ -1,6 +1,6 @@
 @import '../../theme/theme';
 
-.information-overlay {
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -16,13 +16,13 @@
   z-index: $popover-layer;
 }
 
-body:not(.mod-mobile) .information-overlay-text {
+body:not(.mod-mobile) .overlay-text {
   a:hover {
     border-color: $white-color;
   }
 }
 
-.information-overlay-text {
+.overlay-text {
   position: relative;
   top: -1rem;
   padding: 0 1rem;
