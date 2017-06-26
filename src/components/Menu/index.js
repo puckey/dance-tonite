@@ -53,10 +53,13 @@ export default class Menu extends Component {
     });
   }
 
-  toggleNoVROverlay() {
+  toggleNoVROverlay(event) {
     this.setState({
       noVROverlay: !this.state.noVROverlay,
     });
+    if (event) {
+      event.stopPropagation();
+    }
   }
 
   isMounted() {
