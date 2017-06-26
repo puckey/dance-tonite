@@ -11,70 +11,10 @@ window.ga('create', 'UA-97851584-1', 'auto');
 window.ga('send', 'pageview');
 
 
+//  Custom Analytics
+//  https://github.com/puckey/you-move-me/issues/315
+
 const verbosity = 1;
-
-
-/*
-
-https://github.com/puckey/you-move-me/issues/315
-
-✔️ = Done.
-L = Covered by hyperlink click tracking.
-? = Questionable if possible or worthwhile.
-T = T/K.
-> = Requires manual invocation of a function.
-
-Homepage
-L  No. of users who click ?
->  No. of users who click Enter VR
->  No. of users who click Add Performance
--  No. of users coming from a shared link
->  No. of clicks into heads and orb
->  No. of users who reach end credits
-
-About
-?  Time spent on each section of the about page (we did this on the madeby.google website)
-
-Enter VR
-✔️  No. of users who see Enter VR error ****** sort of... TO BE CONTINUED
-✔️  Time spent watching in VR
-✔️  No. of users watching Polyfill
-✔️  No. of users watching WebVR
-
-Add Performance | Tutorial
-L  No. of users who skip the tutorial
-L  No. of users who close the tutorial
-L  No. of users who add performance (after tutorial)
-?  No. of users who see error (after tutorial)
-
-Add Performance | Record
-  No. of rounds recorded per session
-  Time spent recording a dance before user submits
-  No. of users who submit
-  No. of users who record again (can we do this?)
-
-Add Performance | Share
-L  No. of shares on FB
-L  No. of shares on G+
-L  No. of shares on T
-
-VR device detection
-.  No. users on mobile WebVR
-.  No. users on mobile WebVR Polyfill
-✔️  No. users on Vive
-✔️  No. users on Oculus
-✔️  No. users on Samsung Gear
-
-Outbound links
-L  Homepage & About - User clicks on WebVR badge
-L  Homepage & About - User clicks on terms
-L  Homepage & About - User clicks on privacy
-L  About - User clicks source code link
-L  About - User clicks on technical case study link
-L  About - User clicks on any sublinks from tech section (under technology section)
-
-
-*/
 
 
 const analytics = {
@@ -124,6 +64,36 @@ const analytics = {
     //   });
     // }
     // return true;
+  },
+  //  -------------------------------------------------- Countables
+  countables: [],
+  recordCountable: (label) => {
+    if (typeof analytics.countables[label] !== 'number') analytics.countables[label] = 0;
+    analytics.countables[label]++;
+    analytics.record({
+      hitType: 'event',
+      eventCategory: 'Countables',
+      eventAction: label,
+      value: analytics.countables[label],
+      nonInteraction: true, // Don’t count this as separate “page.”
+    });
+  },
+  //  -------------------------------------------------- Timeables
+  timeables: [],
+  recordTimeableStart: (label) => {
+    analytics.timeables[label] = Date.now();
+  },
+  recordTimeableStop: (label) => {
+    if (analytics.timeables[label] !== undefined) {
+      const duration = Date.now() - analytics.timeables[label];
+      analytics.record({
+        hitType: 'event',
+        eventCategory: 'Timeables',
+        eventAction: label,
+        value: duration / 1000, //  Unit is seconds, accurate to milliseconds.
+        nonInteraction: true,   //  Don’t count this as separate “page.”
+      });
+    }
   },
 
 
@@ -186,6 +156,7 @@ const analytics = {
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
+
 
   mount: () => {
     /*
