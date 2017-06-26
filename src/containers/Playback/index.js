@@ -192,7 +192,7 @@ export default class Playback extends Component {
           />
           : null
         }
-        <ProgressBar />
+        {!inContextOfRecording && <ProgressBar />}
         <Align type="center">
           { error
             ? <Error>{error}</Error>
