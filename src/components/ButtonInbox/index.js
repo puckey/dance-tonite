@@ -5,7 +5,8 @@ import ButtonItem from '../ButtonItem';
 import './style.scss';
 
 export default ({ unreadCount }) => (
-  <ButtonItem navigate="/inbox" text>
-    Inbox { unreadCount && `(${unreadCount})` }
-  </ButtonItem>
+  <ButtonItem
+    navigate="/inbox"
+    text={`Inbox ${unreadCount && `(${unreadCount})`}`}
+  />
 );

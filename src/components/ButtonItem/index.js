@@ -40,7 +40,7 @@ export default class ButtonItem extends Component {
             dangerouslySetInnerHTML={{ __html: icon }}
           />
         }
-        { text ? <span>{ children }</span> : null }
+        { text ? <span>{ text }</span> : null }
       </div>
     );
   }

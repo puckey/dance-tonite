@@ -5,5 +5,5 @@ import ButtonItem from '../ButtonItem';
 import './style.scss';
 
 export default () => (
-  <ButtonItem navigate="/submissions/" text>Submissions</ButtonItem>
+  <ButtonItem navigate="/submissions/" text="Submissions" />
 );

@@ -77,7 +77,7 @@ export default class Submission extends Component {
         </Align>
         { feature.has6DOF &&
           <Align type="bottom-right">
-            <ButtonItem text navigate="/">Create animated GIF</ButtonItem>
+            <ButtonItem text="Create animated GIF" navigate="/" />
           </Align>
         }
       </Container>
