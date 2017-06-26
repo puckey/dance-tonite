@@ -3,7 +3,6 @@ import { h, Component } from 'preact';
 import './style.scss';
 
 import router from '../../router';
-import feature from '../../utils/feature';
 import Align from '../../components/Align';
 import ButtonMute from '../../components/ButtonMute';
 import ButtonEnterVR from '../../components/ButtonEnterVR';
@@ -13,19 +12,39 @@ import ButtonClose from '../../components/ButtonClose';
 import InformationOverlay from '../../components/InformationOverlay';
 import EnterVROverlay from '../../components/EnterVROverlay';
 import About from '../../components/About';
-import audio from '../../audio';
+import viewer from '../../viewer';
+import feature from '../../utils/feature';
 
 export default class Menu extends Component {
   constructor() {
     super();
     this.state = {
       about: false,
-      enterVROverlay: false,
+      noVROverlay: false,
+      enteredVROverlay: false,
     };
     this.toggleAbout = this.toggleAbout.bind(this);
-    this.toggleVROverlay = this.toggleVROverlay.bind(this);
-    this.closeOverlay = this.closeOverlay.bind(this);
+    this.toggleVR = this.toggleVR.bind(this);
+    this.toggleNoVROverlay = this.toggleNoVROverlay.bind(this);
+    this.toggleEnteredVROverlay = this.toggleEnteredVROverlay.bind(this);
     this.goHome = this.goHome.bind(this);
+    this.isMounted = this.isMounted.bind(this);
+  }
+
+  componentDidMount() {
+    this.mounted = true;
+    viewer.on('vr-present-change', this.toggleEnteredVROverlay);
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+    viewer.off('vr-present-change', this.toggleEnteredVROverlay);
+  }
+
+  toggleEnteredVROverlay() {
+    this.setState({
+      enteredVROverlay: !this.state.enteredVROverlay,
+    });
   }
 
   toggleAbout() {
@@ -34,23 +53,22 @@ export default class Menu extends Component {
     });
   }
 
-  toggleVROverlay() {
-    if (this.state.enterVROverlay === false && !feature.hasVR) {
-      this.setState({
-        overlay: 'no-vr',
-      });
-    } else {
-      this.setState({
-        enterVROverlay: !this.state.enterVROverlay,
-      });
-    }
+  toggleNoVROverlay() {
+    this.setState({
+      noVROverlay: !this.state.noVROverlay,
+    });
   }
 
-  closeOverlay() {
-    audio.play();
-    this.setState({
-      overlay: false,
-    });
+  isMounted() {
+    return this.mounted;
+  }
+
+  toggleVR() {
+    if (!feature.hasVR) {
+      this.toggleNoVROverlay();
+    } else {
+      viewer.toggleVR(this.isMounted);
+    }
   }
 
   goHome() {
@@ -58,33 +76,40 @@ export default class Menu extends Component {
     router.navigate('/');
   }
 
-  render() {
-    const {
+  render(
+    {
       vr = false,
       mute = false,
       addRoom = false,
       about = false,
       close = false,
-      overlay = false,
-    } = this.props;
+    },
+    {
+      enteredVROverlay,
+    }
+  ) {
     return (
       <div className="menu">
+        { enteredVROverlay
+          ? <EnterVROverlay />
+          : null
+        }
         { this.state.about
           ? <About onClose={this.toggleAbout} />
           : null
         }
-        {
-          ((overlay || this.state.overlay) && !this.state.enterVROverlay)
-            ? <InformationOverlay
-              type={overlay || this.state.overlay}
-              goto={this.props.goto}
-              close={this.closeOverlay}
-              toggleVROverlay={this.toggleVROverlay}
-            />
-            : null
-        }
-        { this.state.enterVROverlay
-          ? <EnterVROverlay />
+        { this.state.noVROverlay
+          ? <InformationOverlay
+            goto={this.props.goto}
+            onClose={this.toggleNoVROverlay}
+          >
+            <p>Headset required to watch in VR.</p>
+            <a href="https://webvr.info" target="_blank" rel="noopener noreferrer">
+              Learn more
+            </a> or <a onClick={this.toggleNoVROverlay}>
+              continue watching without VR
+            </a>.
+          </InformationOverlay>
           : null
         }
         <Align type="top-left" rows>
@@ -99,7 +124,7 @@ export default class Menu extends Component {
         </Align>
         <Align type="bottom-right">
           { vr
-            ? <ButtonEnterVR label toggleVROverlay={this.toggleVROverlay} />
+            ? <ButtonEnterVR label onClick={this.toggleVR} />
             : null
           }
           { addRoom

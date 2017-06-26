@@ -14,12 +14,12 @@ export default class ConnectControllers extends Component {
 
   componentDidMount() {
     this.mounted = true;
-    viewer.events.on('tick', this.tick);
+    viewer.on('tick', this.tick);
   }
 
   componentWillUnmount() {
     this.mounted = false;
-    viewer.events.off('tick', this.tick);
+    viewer.off('tick', this.tick);
   }
 
   tick() {

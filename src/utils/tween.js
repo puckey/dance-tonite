@@ -8,7 +8,7 @@ const tween = new Tween({
   },
 });
 
-viewer.events.on('tick', tween.tick.bind(tween));
+viewer.on('tick', tween.tick.bind(tween));
 
 export default (elements, param) => {
   const t = tween.to(elements, param);

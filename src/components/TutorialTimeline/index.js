@@ -95,12 +95,12 @@ export default class TutorialTimeline extends Component {
         ended: true,
       },
     ];
-    viewer.events.on('tick', this.tick);
+    viewer.on('tick', this.tick);
     windowSize.on('resize', this.updateWindowDimensions);
   }
 
   componentWillUnmount() {
-    viewer.events.off('tick', this.tick);
+    viewer.off('tick', this.tick);
     windowSize.off('resize', this.updateWindowDimensions);
   }
 

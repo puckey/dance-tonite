@@ -22,7 +22,7 @@ export default class RecordOrbs extends Component {
 
   componentDidMount() {
     this.mounted = true;
-    viewer.events.on('tick', this.tick);
+    viewer.on('tick', this.tick);
     if (this.props.onCreatedOrb) {
       this.props.onCreatedOrb(this.orb);
     }
@@ -37,7 +37,7 @@ export default class RecordOrbs extends Component {
 
   componentWillUnmount() {
     this.mounted = false;
-    viewer.events.off('tick', this.tick);
+    viewer.off('tick', this.tick);
     this.orb.destroy();
     this.orb2.destroy();
   }

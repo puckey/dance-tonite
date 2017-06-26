@@ -45,7 +45,7 @@ export default class RoomComponent extends Component {
     }
     viewer.camera.position.y = 0;
     viewer.camera.updateProjectionMatrix();
-    viewer.events.off('tick', this.tick);
+    viewer.off('tick', this.tick);
   }
 
   async asyncMount({ roomId, id, record }) {
@@ -77,7 +77,7 @@ export default class RoomComponent extends Component {
       room.load();
     }
     this.setState({ room });
-    viewer.events.on('tick', this.tick);
+    viewer.on('tick', this.tick);
   }
 
   performOrbLeftRoom() {

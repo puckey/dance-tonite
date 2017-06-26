@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const FLAVOR = process.env.FLAVOR || 'website';
@@ -134,6 +135,14 @@ if (process.env.NODE_ENV === 'production' && process.env.RG_ENV !== 'dev') {
       output: {
         comments: false,
       },
+    })
+  );
+}
+
+if (process.env.ANALYZE_BUNDLE) {
+  config.plugins = config.plugins.concat(
+    new BundleAnalyzerPlugin({
+      defaultSizes: 'gzip',
     })
   );
 }
