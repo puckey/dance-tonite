@@ -74,8 +74,6 @@ export default function create({ rooms, orb }) {
         }
       }
 
-      //  for some reason position has to be done here as well as in playback
-      //  otherwise the positional values begin spiraling into infinity
       const position = layout.getPosition(progress + 0.5);
       position.y += holeHeight;
       position.z *= -1;
