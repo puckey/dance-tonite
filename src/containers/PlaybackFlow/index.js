@@ -19,7 +19,7 @@ export default class PlaybackFlow extends Component {
   componentWillMount() {
     this.setState({
       mode: 'playback',
-      fromRecording: !!recording.frames,
+      fromRecording: recording.exists(),
     });
   }
 
@@ -30,6 +30,9 @@ export default class PlaybackFlow extends Component {
   }
 
   performGotoFullExperience() {
+    if (recording.exists()) {
+      recording.destroy();
+    }
     this.setState({
       mode: 'playback',
       fromRecording: false,
@@ -49,9 +52,9 @@ export default class PlaybackFlow extends Component {
         submissions inbox publish
       />
       : (
-        this.props.mode === 'playback'
-          ? <Menu vr addRoom about mute />
-          : <Menu about mute close />
+        this.state.fromRecording
+          ? <Menu about mute close />
+          : <Menu vr addRoom about mute />
       );
   }
 
@@ -70,6 +73,7 @@ export default class PlaybackFlow extends Component {
               onGotoSubmission={this.performGotoSubmission}
             />
             : <Submission
+              {...props}
               fromRecording={fromRecording}
               onGotoFullExperience={this.performGotoFullExperience}
             />
