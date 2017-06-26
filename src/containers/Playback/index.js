@@ -161,10 +161,9 @@ export default class Playback extends Component {
             takeOffHeadset
               ? (
                 <Overlay>
-                  <ButtonItem
-                    text="I took off my headset"
-                    onClick={onGotoSubmission}
-                  />
+                  <a onClick={onGotoSubmission}>
+                    <span>I took off my headset</span>
+                  </a>
                 </Overlay>
               )
               : (

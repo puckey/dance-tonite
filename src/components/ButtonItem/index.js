@@ -19,10 +19,14 @@ export default class ButtonItem extends Component {
     router.navigate(this.props.navigate);
   }
 
-  render({ onClick, navigate, icon, label, children, className, text }) {
+  render({ onClick, navigate, icon, label, className, text, underline }) {
     return (
       <div
-        className={classNames('button-item', className, text && 'mod-text')}
+        className={classNames(
+          'button-item',
+          className,
+          text && 'mod-text'
+        )}
         onClick={navigate ? this.navigate : onClick}
       >
         {
@@ -40,7 +44,12 @@ export default class ButtonItem extends Component {
             dangerouslySetInnerHTML={{ __html: icon }}
           />
         }
-        { text ? <span>{ text }</span> : null }
+        { text
+            ? underline
+              ? <a><span>{text}</span></a>
+              : <a>{text}</a>
+            : null
+        }
       </div>
     );
   }

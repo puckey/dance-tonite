@@ -93,7 +93,7 @@ export default class Tutorial extends Component {
             goto={this.props.goto}
             onClose={this.performHideOverlay}
           >
-            <a onClick={this.performAddPerformance}>Add your performance</a>
+            <a onClick={this.performAddPerformance}><span>Add your performance</span></a>
           </Overlay>
         }
         <Room

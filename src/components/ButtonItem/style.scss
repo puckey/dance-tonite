@@ -21,6 +21,7 @@ body:not(.mod-mobile) .button-item:hover {
 
   margin: 0;
   cursor: pointer;
+  line-height: 1.3em;
 
   + .button-item {
     margin-top: 0 !important;
@@ -38,6 +39,10 @@ body:not(.mod-mobile) .button-item:hover {
   &.mod-text {
     display: flex;
     align-items: center;
+  }
+
+  a {
+    white-space: pre-wrap;
   }
 }
 
