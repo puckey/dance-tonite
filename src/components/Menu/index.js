@@ -41,9 +41,11 @@ export default class Menu extends Component {
     viewer.off('vr-present-change', this.toggleEnteredVROverlay);
   }
 
-  toggleEnteredVROverlay() {
+  toggleEnteredVROverlay(isPresenting) {
     this.setState({
-      enteredVROverlay: !this.state.enteredVROverlay,
+      enteredVROverlay: isPresenting === undefined
+        ? !this.state.enteredVROverlay
+        : isPresenting,
     });
   }
 
