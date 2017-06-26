@@ -2,6 +2,8 @@
 import { h, Component } from 'preact';
 import asyncEach from 'async/eachLimit';
 
+import quadOut from 'eases/quad-out';
+
 import './style.scss';
 
 import Room from '../../room';
@@ -17,8 +19,6 @@ import router from '../../router';
 import BackgroundTimeline from '../../components/BackgroundTimeline';
 import RoomLabels from '../../components/RoomLabels';
 import POV from '../../components/POV';
-
-const easeOut = t => -t * (t - 2.0);
 
 export default class Playlist extends Component {
   constructor() {
@@ -136,7 +136,7 @@ export default class Playlist extends Component {
       const slowdownDuration = 0.4;
       const maxTime = 216.824266 - (slowdownDuration * 0.5);
       if (audio.time > maxTime) {
-        time = maxTime + easeOut(
+        time = maxTime + quadOut(
           Math.min(
             slowdownDuration,
             audio.time - maxTime
