@@ -14,6 +14,7 @@ import EnterVROverlay from '../../components/EnterVROverlay';
 import About from '../../components/About';
 import viewer from '../../viewer';
 import feature from '../../utils/feature';
+import audio from '../../audio';
 
 export default class Menu extends Component {
   constructor() {
@@ -54,9 +55,14 @@ export default class Menu extends Component {
   }
 
   toggleNoVROverlay(event) {
+    if (event && event.target.target === '_blank') return;
+
     this.setState({
       noVROverlay: !this.state.noVROverlay,
     });
+
+    audio[this.state.noVROverlay ? 'pause' : 'play']();
+
     if (event) {
       event.stopPropagation();
     }
