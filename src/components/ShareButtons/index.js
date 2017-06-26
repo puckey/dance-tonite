@@ -3,9 +3,9 @@ import { h, Component } from 'preact';
 import './style.scss';
 
 import Align from '../../components/Align';
-import Twitter from '../../components/Twitter';
-import Facebook from '../../components/Facebook';
-import GooglePlus from '../../components/GooglePlus';
+import ButtonTwitter from '../../components/ButtonTwitter';
+import ButtonFacebook from '../../components/ButtonFacebook';
+import ButtonGooglePlus from '../../components/ButtonGooglePlus';
 
 export default class Submission extends Component {
   constructor() {
@@ -40,9 +40,9 @@ export default class Submission extends Component {
       <Align type="bottom-left" margin>
         <div>Share</div>
         <div className="share-icons">
-          <GooglePlus onClick={this.shareToGooglePlus} />
-          <Twitter onClick={this.shareToTwitter} />
-          <Facebook onClick={this.shareToFacebook} />
+          <ButtonGooglePlus onClick={this.shareToGooglePlus} />
+          <ButtonTwitter onClick={this.shareToTwitter} />
+          <ButtonFacebook onClick={this.shareToFacebook} />
         </div>
         <a href={deepLink}><span>{deepLink}</span></a>
       </Align>
