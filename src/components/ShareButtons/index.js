@@ -28,13 +28,14 @@ export default class Submission extends Component {
 
   share(service) {
     window.open(
-      `${this.shareURL[service]}${this.props.deepLink}`,
+      `${this.shareURL[service]}${this.state.deepLink}`,
       '',
       'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600'
     );
   }
 
-  render({ deepLink, children }) {
+  render({ roomId, id }) {
+    const deepLink = `https://tonite.dance/${roomId}/${id}`;
     return (
       <Align type="bottom-left" margin>
         <div>Share</div>
@@ -43,8 +44,7 @@ export default class Submission extends Component {
           <Twitter onClick={this.shareToTwitter} />
           <Facebook onClick={this.shareToFacebook} />
         </div>
-        <a href={deepLink}>{deepLink}</a>
-        { children }
+        <a href={deepLink}><span>{deepLink}</span></a>
       </Align>
     );
   }

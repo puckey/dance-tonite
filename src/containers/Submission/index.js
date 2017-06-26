@@ -13,11 +13,10 @@ import viewer from '../../viewer';
 import transition from '../../transition';
 
 export default class Submission extends Component {
-  constructor({ roomId, id }) {
+  constructor() {
     super();
     this.state = {
       loading: 'Loading performance…',
-      deepLink: `https://tonite.dance/${roomId}/${id}`,
     };
 
     this.shareURL = {
@@ -49,7 +48,7 @@ export default class Submission extends Component {
     transition.reset();
   }
 
-  render({ roomId, id, fromRecording, onGotoFullExperience }, { deepLink }) {
+  render({ roomId, id, fromRecording, onGotoFullExperience }) {
     return (
       <div className="submission">
         <Room
@@ -70,7 +69,7 @@ in the full experience.`
           />
         </Align>
         { fromRecording &&
-          <ShareButtons deepLink={deepLink}>
+          <ShareButtons roomId={roomId} id={id}>
             <ButtonItem text="Create animated GIF" navigate="/" underline />
           </ShareButtons>
         }
