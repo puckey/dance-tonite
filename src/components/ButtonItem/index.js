@@ -1,19 +1,29 @@
 /** @jsx h */
 import { h, Component } from 'preact';
 import classNames from 'classnames';
-
 import './style.scss';
 
+import router from '../../router';
+
 export default class ButtonItem extends Component {
+  constructor() {
+    super();
+    this.navigate = this.navigate.bind(this);
+  }
+
   shouldComponentUpdate({ icon }) {
     return icon !== this.props.icon;
   }
 
-  render({ onClick, icon, label, children, className, text }) {
+  navigate() {
+    router.navigate(this.props.navigate);
+  }
+
+  render({ onClick, navigate, icon, label, children, className, text }) {
     return (
       <div
         className={classNames('button-item', className, text && 'mod-text')}
-        onClick={onClick}
+        onClick={navigate ? this.navigate : onClick}
       >
         {
           label &&
@@ -30,7 +40,7 @@ export default class ButtonItem extends Component {
             dangerouslySetInnerHTML={{ __html: icon }}
           />
         }
-        { text ? <span>{ children }</span> : null }
+        { text ? <span>{ text }</span> : null }
       </div>
     );
   }

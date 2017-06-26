@@ -9,11 +9,12 @@ import ButtonEnterVR from '../../components/ButtonEnterVR';
 import ButtonAbout from '../../components/ButtonAbout';
 import ButtonAddRoom from '../../components/ButtonAddRoom';
 import ButtonClose from '../../components/ButtonClose';
-import InformationOverlay from '../../components/InformationOverlay';
+import Overlay from '../../components/Overlay';
 import EnterVROverlay from '../../components/EnterVROverlay';
 import About from '../../components/About';
 import viewer from '../../viewer';
 import feature from '../../utils/feature';
+import audio from '../../audio';
 
 export default class Menu extends Component {
   constructor() {
@@ -53,10 +54,18 @@ export default class Menu extends Component {
     });
   }
 
-  toggleNoVROverlay() {
+  toggleNoVROverlay(event) {
+    if (event && event.target.target === '_blank') return;
+
     this.setState({
       noVROverlay: !this.state.noVROverlay,
     });
+
+    audio[this.state.noVROverlay ? 'pause' : 'play']();
+
+    if (event) {
+      event.stopPropagation();
+    }
   }
 
   isMounted() {
@@ -99,7 +108,7 @@ export default class Menu extends Component {
           : null
         }
         { this.state.noVROverlay
-          ? <InformationOverlay
+          ? <Overlay
             goto={this.props.goto}
             onClose={this.toggleNoVROverlay}
           >
@@ -109,7 +118,7 @@ export default class Menu extends Component {
             </a> or <a onClick={this.toggleNoVROverlay}>
               continue watching without VR
             </a>.
-          </InformationOverlay>
+          </Overlay>
           : null
         }
         <Align type="top-left" rows>

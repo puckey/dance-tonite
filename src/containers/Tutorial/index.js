@@ -2,7 +2,7 @@
 import { h, Component } from 'preact';
 
 import Room from '../../components/Room';
-import InformationOverlay from '../../components/InformationOverlay';
+import Overlay from '../../components/Overlay';
 import TutorialTimeline from '../../components/TutorialTimeline';
 import Align from '../../components/Align';
 
@@ -71,7 +71,7 @@ export default class Tutorial extends Component {
     return (
       <div>
         {overlay === 'room-scale-error' &&
-          <InformationOverlay
+          <Overlay
             type={overlay}
             goto={this.props.goto}
             onClose={this.performHideOverlay}
@@ -85,16 +85,16 @@ export default class Tutorial extends Component {
             </a> or <a onClick={() => router.navigate('/')}>
               go back to the experience
             </a>.
-          </InformationOverlay>
+          </Overlay>
         }
         {overlay === 'add-performance' &&
-          <InformationOverlay
+          <Overlay
             type={overlay}
             goto={this.props.goto}
             onClose={this.performHideOverlay}
           >
             <a onClick={this.performAddPerformance}>Add your performance</a>
-          </InformationOverlay>
+          </Overlay>
         }
         <Room
           roomId={roomId}

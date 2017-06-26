@@ -84,6 +84,14 @@ const recording = {
     stopped = true;
   },
 
+  exists() {
+    return !!recording.frames;
+  },
+
+  destroy() {
+    recording.frames = null;
+  },
+
   serialize() {
     return [{
       count: this.frames[0] ? (this.frames[0].length / 21) : 0,

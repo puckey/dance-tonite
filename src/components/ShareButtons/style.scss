@@ -1,0 +1,14 @@
+@import '../../theme/theme';
+
+.share-labels {
+  margin: 0.25rem 0;
+}
+
+.share-icons {
+  display: flex;
+  flex-direction: row;
+
+  * {
+    margin-right: 0.1rem;
+  }
+}

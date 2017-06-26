@@ -12,6 +12,8 @@ import Titles from '../../components/Titles';
 import ProgressBar from '../../components/ProgressBar';
 import Colophon from '../../components/Colophon';
 import Playlist from '../Playlist';
+import ButtonItem from '../../components/ButtonItem';
+import Overlay from '../../components/Overlay';
 
 import audio from '../../audio';
 import audioSrcOgg from '../../public/sound/tonite.ogg';
@@ -67,49 +69,54 @@ export default class Playback extends Component {
   }
 
   async asyncMount() {
-    const { roomIndex } = this.props;
+    const { inContextOfRecording, roomId } = this.props;
     if (!viewer.vrEffect.isPresenting) {
       viewer.switchCamera('orthographic');
     }
+    if (!inContextOfRecording) {
+      this.setLoading('Moving dancers into position…');
+    }
 
-    this.setLoading('Moving dancers into position…');
-
-    await Promise.all([
-      audio.load({
-        src: feature.isChrome ? audioSrcOgg : audioSrcMp3,
-        loops: settings.totalLoopCount,
-        loop: true,
-        progressive: true,
-      }),
-      sleep(1500),
-    ]);
-
+    const audioLoadTime = Date.now();
+    await audio.load({
+      src: feature.isChrome ? audioSrcOgg : audioSrcMp3,
+      loops: settings.totalLoopCount,
+      loop: true,
+      progressive: true,
+    });
     if (!this.mounted) return;
+
+    if (inContextOfRecording) {
+      // Start at 3 rooms before the recording, or 60 seconds before
+      // the end of the track – whichever comes first.
+      const watchTime = 30;
+      const roomOffset = 2;
+      const startTime = Math.min(
+        (roomId - 2 + roomOffset) * audio.loopDuration,
+        audio.duration - watchTime
+      );
+      audio.gotoTime(startTime);
+      setTimeout(() => {
+        if (!this.mounted) return;
+        audio.fadeOut();
+        transition.enter({
+          text: 'Please take off your headset',
+        });
+        this.setState({
+          takeOffHeadset: true,
+        });
+      }, watchTime * 1000);
+    }
+
+    const timeLeft = 1500 - (Date.now() - audioLoadTime);
+    if (timeLeft > 0) {
+      await sleep(timeLeft);
+      if (!this.mounted) return;
+    }
 
     this.setLoading(null);
     if (transition.isInside()) {
       transition.exit();
-    }
-
-    if (roomIndex) {
-      // Start at 3 rooms before the recording, or 60 seconds before
-      // the end of the track – whichever comes first.
-      const watchTime = 30;
-      const startTime = Math.min(
-        (roomIndex - 2) * audio.loopDuration,
-        audio.duration - watchTime
-      );
-      audio.gotoTime(startTime);
-      if (viewer.vrEffect.isPresenting) {
-        setTimeout(() => {
-          if (!this.mounted) return;
-          audio.fadeOut();
-          transition.enter({
-            text: 'Please take off your headset',
-          });
-          // TODO add share screen
-        }, watchTime * 1000);
-      }
     }
 
     // Safari won't play unless we wait until next tick
@@ -119,7 +126,16 @@ export default class Playback extends Component {
     });
   }
 
-  render({ roomIndex, recordingId }, { error, loading, orb, colophon }) {
+  render(
+    {
+      roomIndex,
+      recordingId,
+      inContextOfRecording,
+      takeOffHeadset,
+      onGotoSubmission,
+    },
+    { error, loading, orb, colophon }
+  ) {
     const polyfillAndPresenting = feature.vrPolyfill
       && viewer.vrEffect.isPresenting;
 
@@ -139,15 +155,27 @@ export default class Playback extends Component {
     }
 
     return (
-      <Container>
+      <div className="playback">
+        {
+          inContextOfRecording && (
+            takeOffHeadset
+              ? (
+                <Overlay>
+                  <ButtonItem
+                    text="I took off my headset"
+                    onClick={onGotoSubmission}
+                  />
+                </Overlay>
+              )
+              : (
+                <Align type="bottom-right">
+                  <ButtonItem text="Skip" onClick={onGotoSubmission} />
+                </Align>
+              )
+          )
+        }
         {process.env.FLAVOR !== 'cms' &&
-          <Colophon
-            className={
-              !loading &&
-              !colophon &&
-              'mod-hidden'
-            }
-          />
+          <Colophon hide={!loading && !colophon} />
         }
         <Playlist
           pathRecording={recordingId}
@@ -156,8 +184,6 @@ export default class Playback extends Component {
         />
         { process.env.FLAVOR !== 'cms'
           ? <Titles
-            viewer={viewer}
-            audio={audio}
             onUpdate={this.onTitlesChanged}
           />
           : null
@@ -173,26 +199,7 @@ export default class Playback extends Component {
               : null
           }
         </Align>
-        {
-          process.env.FLAVOR === 'cms'
-            ? <CMSMenu
-              vr
-              audio
-              mute
-              submissions
-              inbox
-              publish
-            />
-            : (
-              <Menu
-                vr
-                addRoom
-                about
-                mute
-              />
-            )
-        }
-      </Container>
+      </div>
     );
   }
 }
