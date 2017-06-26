@@ -10,6 +10,7 @@
   color: $background-color;
   width: 100%;
   min-height: 100%;
+  padding-bottom: 3rem;
   box-sizing: border-box;
   z-index: $popover-layer;
 
@@ -19,23 +20,37 @@
     font-weight: normal;
   }
 
+  h1 {
+    text-align: center;
+  }
+
   h1,
   h2 {
     font-size: 1.75rem;
     font-feature-settings: 'ss01';
     line-height: 1.75rem;
+    padding-top: 3rem;
   }
 
   h3 {
     font-size: 1rem;
+    font-weight: bold;
     padding-bottom: 0 !important;
-    text-decoration: underline;
   }
 
-  .close-button {
-    @media screen and (max-width: $min-width) {
-      position: absolute;
-    }
+  h2 + h3 {
+    padding-top: 0;
+  }
+
+  p {
+    padding: 0;
+  }
+
+  a {
+    color: $background-color;
+    text-decoration: none;
+    border-bottom: solid $line-width * 1.2 $background-color;
+    padding-bottom: 0;
   }
 }
 
@@ -47,31 +62,33 @@
   padding-top: 2rem;
   user-select: all;
 
-  .about-video-container {
-    position: relative;
-    width: 50%;
-    padding-top: 28.125%;
-    height: 0;
-    overflow: hidden;
-    margin: 1rem auto 2rem;
-
-    @media screen and (max-width: $min-width) {
-      width: 90vw;
-      max-width: $mobile-wrapper-width;
-      padding-top: 50.625vw;
-    }
-
-    iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
+  @media screen and (max-width: $min-width) {
+    width: 90vw;
+    max-width: $mobile-wrapper-width;
   }
+}
+
+.about-video-container {
+  position: relative;
+  width: 50%;
+  padding-top: 25px;
+  padding-bottom: 28.125%;
+  height: 0;
+  margin: 1rem auto 5rem;
+
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+  }
+
 
   @media screen and (max-width: $min-width) {
     width: 90vw;
     max-width: $mobile-wrapper-width;
+    padding-bottom: 50.625%;
   }
 }

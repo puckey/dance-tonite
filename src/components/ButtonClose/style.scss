@@ -6,3 +6,9 @@
   user-select: none;
   z-index: $overlay-button-layer;
 }
+
+.close {
+  @media (max-width: $min-width) {
+    position: absolute;
+  }
+}
