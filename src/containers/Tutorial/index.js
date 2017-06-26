@@ -81,9 +81,9 @@ export default class Tutorial extends Component {
               device and a WebVR-enabled browser.
             </p>
             <a href="https://webvr.info" target="_blank" rel="noopener noreferrer">
-              Learn more
+              <span>Learn more</span>
             </a> or <a onClick={() => router.navigate('/')}>
-              go back to the experience
+              <span>go back to the experience</span>
             </a>.
           </Overlay>
         }
