@@ -111,6 +111,7 @@ const feature = {
     Promise.all([
       hasWebGL,
       hasWebVR,
+      vrDisplays,
       vrDisplay,
       checkHasVR()
         .then((hasVR) => {

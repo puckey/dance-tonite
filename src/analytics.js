@@ -22,14 +22,15 @@ https://github.com/puckey/you-move-me/issues/315
 L = Covered by hyperlink click tracking.
 ? = Questionable if possible or worthwhile.
 T = T/K.
+> = Requires manual invocation of a function.
 
 Homepage
 L  No. of users who click ?
-L  No. of users who click Enter VR
-L  No. of users who click Add Performance
+>  No. of users who click Enter VR
+>  No. of users who click Add Performance
 -  No. of users coming from a shared link
-  No. of clicks into heads and orb
-  No. of users who reach end credits
+>  No. of clicks into heads and orb
+>  No. of users who reach end credits
 
 About
 ?  Time spent on each section of the about page (we did this on the madeby.google website)
@@ -85,7 +86,7 @@ const analytics = {
       if (verbosity >= 0.5) console.log('Noted.');
     }
   },
-  //  This is basically “bounce” event recording.
+  //  This is basically a “bounce” event recording.
   recordOutboundLink: (a) => {
     const url = a.getAttribute('href');
     if (verbosity >= 0.5) console.log('Note:', url);
@@ -98,23 +99,19 @@ const analytics = {
     }
     return true;
   },
-  sectionEnteredAt: Date.now(),
-  recordSectionChange: (a) => {
-    analytics.sectionDuration = null;
-    if (analytics.sectionSwitchedAt !== undefined) {
-      analytics.sectionDuration = (Date.now() - analytics.sectionSwitchedAt) / 1000;
-      // **** record sectionDuration separate? Or as "value" attribute in link recording???
+  //  -------------------------------------------------- Section Session
+  // -------------- *************** check with GA that this records session time automagically!!!!!
+  // right now this must be called manually
+  //  but can we make a location.href event listener instead? would that make sense??????
+  recordSectionChange: (label) => {
+    if (verbosity >= 0.5) console.log('Note:', label);
+    if (window.ga !== undefined && typeof window.ga === 'function') {
+      window.ga('set', {
+        page: document.location.href,
+        title: label,
+      });
+      window.ga('send', 'pageview');
     }
-    analytics.sectionSwitchedAt = Date.now();
-    // const url = a.getAttribute('href');
-    // if (window.ga !== undefined && typeof window.ga === 'function') {
-    //   window.ga('send', 'event', 'outbound', 'click', url, {
-    //     transport: 'beacon',
-    //     hitCallback: function () {},
-    //     //hitCallback: function(){ document.location = url }
-    //   });
-    // }
-    // return true;
   },
   recordInternalLink: (a) => { // ****** HOW IS THIS DIF THAN ABOVE?????????
     // const url = a.getAttribute('href');
@@ -131,9 +128,9 @@ const analytics = {
 
 
   //  -------------------------------------------------- VR Session: VR entry / exit ATTEMPT
-  //  NOTE: These functions must be called manually
-  //  when the user clicks or taps to initiate a VR
-  //  session. Compare to VR entry / exit SUCCESS below.
+  //  NOTE: These functions must be called manually when
+  //  the user clicks or taps to initiate a VR session.
+  //  Compare to VR entry / exit SUCCESS (far) below.
   recordVREntryAttempt: () => {
     analytics.record({
       hitType: 'event',
@@ -150,7 +147,45 @@ const analytics = {
       eventLabel: 'VR exit attempted',
     });
   },
-
+  //  -------------------------------------------------- VR Session: Orb select
+  orbSelects: 0,
+  recordOrbSelect: () => {
+    analytics.orbSelects++;
+    analytics.record({
+      hitType: 'event',
+      eventCategory: 'VR Session',
+      eventAction: 'Milestones',
+      eventLabel: 'Orb select',
+      value: analytics.orbSelects,
+      nonInteraction: true, // Don’t count this as separate “page.”
+    });
+  },
+  //  -------------------------------------------------- VR Session: Clicks on Heads
+  headSelects: 0,
+  recordHeadSelect: () => {
+    analytics.headSelects++;
+    analytics.record({
+      hitType: 'event',
+      eventCategory: 'VR Session',
+      eventAction: 'Milestones',
+      eventLabel: 'Head clicks',
+      value: analytics.headSelects,
+      nonInteraction: true, // Don’t count this as separate “page.”
+    });
+  },
+  //  -------------------------------------------------- VR Session: Made it to credits
+  creditViews: 0,
+  recordCreditsView: () => {
+    analytics.creditViews++;
+    analytics.record({
+      hitType: 'event',
+      eventCategory: 'VR Session',
+      eventAction: 'Milestones',
+      eventLabel: 'Credits',
+      value: analytics.creditViews,
+      nonInteraction: true, // Don’t count this as separate “page.”
+    });
+  },
 
   mount: () => {
     /*
@@ -266,7 +301,7 @@ const analytics = {
     //  -------------------------------------------------- VR Session: VR entry / exit SUCCESS
     if (feature.vrDisplay) {
       window.addEventListener('vrdisplaypresentchange', () => {
-        if (feature.vrDisplay.isPresenting) { // ******* MAKE SURE THIS IS NOT ACCIDENTALLY REVERSED!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (feature.vrDisplay.isPresenting) { // ******* MAKE SURE THIS LOGIC IS NOT ACCIDENTALLY REVERSED!!!!!!!!!!!!!!!!!!!!!!!!!!
           analytics.vrSessionBeganAt = Date.now();
           analytics.record({
             hitType: 'event',
@@ -293,30 +328,9 @@ const analytics = {
         }
       }, false);
     }
-    //  -------------------------------------------------- VR controller stats?!?!?!
+    //  -------------------------------------------------- VR controller info?!?!?!
   },
 };
 
 
 export default analytics;
-
-
-/*
-
-Outbound links
-
-  Homepage & About - User clicks on WebVR badge
-  Homepage & About - User clicks on terms
-  Homepage & About - User clicks on privacy
-  About - User clicks source code link
-  About - User clicks on technical case study link
-  About - User clicks on any sublinks from tech section (under technology section)
-
-  clickedHomepageWebVRBadge
-  clickedHomepageTerms
-  clickedHomepagePrivacy
-  clickedAboutSourceCode
-  clickedAboutTCS
-  clicked ... any sublinks from tech section (under technology section)
-
-*/
