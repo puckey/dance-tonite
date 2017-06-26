@@ -194,25 +194,6 @@ export default class Playback extends Component {
               : null
           }
         </Align>
-        {
-          process.env.FLAVOR === 'cms'
-            ? <CMSMenu
-              vr
-              audio
-              mute
-              submissions
-              inbox
-              publish
-            />
-            : (
-              <Menu
-                vr
-                addRoom
-                about
-                mute
-              />
-            )
-        }
       </div>
     );
   }

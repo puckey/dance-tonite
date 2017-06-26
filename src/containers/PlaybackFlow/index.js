@@ -2,6 +2,7 @@
 import { h, Component } from 'preact';
 
 import Menu from '../../components/Menu';
+import CMSMenu from '../../components/CMSMenu';
 import Container from '../../components/Container';
 import Playback from '../Playback';
 import Submission from '../Submission';
@@ -41,17 +42,26 @@ export default class PlaybackFlow extends Component {
     });
   }
 
+  renderMenu() {
+    return process.env.FLAVOR === 'cms'
+      ? <CMSMenu
+        vr audio mute
+        submissions inbox publish
+      />
+      : (
+        this.props.mode === 'playback'
+          ? <Menu vr addRoom about mute />
+          : <Menu about mute close />
+      );
+  }
+
   render(
     props,
-    { mode, overlay, fromRecording }
+    { mode, fromRecording }
   ) {
     return (
       <Container>
-        <Menu
-          mute
-          close
-          overlay={overlay}
-        />
+        { this.renderMenu() }
         {
           mode === 'playback'
             ? <Playback
