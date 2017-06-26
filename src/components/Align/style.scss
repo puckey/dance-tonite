@@ -22,12 +22,14 @@ $vertical-margin: .6rem;
     justify-content: center;
     width: 100%;
 
-    &:not(.mod-rows) > * {
-      margin-bottom: .4rem;
-    }
+    &.mod-margin {
+      &:not(.mod-rows) > * {
+        margin-bottom: .4rem;
+      }
 
-    &.mod-rows > * {
-      margin-right: .4rem;
+      &.mod-rows > * {
+        margin-right: .4rem;
+      }
     }
   }
 
@@ -38,9 +40,14 @@ $vertical-margin: .6rem;
     &:not(.mod-rows) > * {
       margin-bottom: .4rem;
     }
+    &.mod-margin {
+      &:not(.mod-rows) > * {
+        margin-bottom: .4rem;
+      }
 
-    &.mod-rows > * {
-      margin-right: .4rem;
+      &.mod-rows > * {
+        margin-right: .4rem;
+      }
     }
   }
 

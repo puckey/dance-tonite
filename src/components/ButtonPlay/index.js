@@ -3,10 +3,14 @@ import { h } from 'preact';
 
 import ButtonItem from '../ButtonItem';
 import icon from './icon.svg';
+import iconLarge from './icon-large.svg';
 
-export default ({ onClick }) => (
+import './style.scss';
+
+export default ({ onClick, large }) => (
   <ButtonItem
     onClick={onClick}
-    icon={icon}
+    icon={large ? iconLarge : icon}
+    className="button-play"
   />
 );

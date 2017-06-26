@@ -21,7 +21,6 @@ body:not(.mod-mobile) .button-item:hover {
 
   margin: 0;
   cursor: pointer;
-  user-select: none;
 
   + .button-item {
     margin-top: 0 !important;
@@ -45,7 +44,6 @@ body:not(.mod-mobile) .button-item:hover {
 .button-item-label {
   display: none;
   pointer-events: none;
-  user-select: none;
   font-size: 1.2rem;
   line-height: 1rem;
 

@@ -31,7 +31,6 @@
   text-align: center;
   left: .75rem;
   transform: translateY(2rem) translateX(-50%);
-  user-select: none;
   width: 50vw;
   top: 1rem;
 }
@@ -47,4 +46,3 @@
   50% { transform: scale(.85); }
   100% { transform: scale(.85); }
 }
-
