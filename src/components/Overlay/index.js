@@ -4,11 +4,11 @@ import './style.scss';
 import Align from '../../components/Align';
 import ButtonClose from '../../components/ButtonClose';
 
-export default function Overlay({ children }) {
+export default function Overlay({ children, onClose }) {
   return (
-    <div className="overlay" onClick={this.props.onClose}>
+    <div className="overlay" onClick={onClose}>
       <Align type="top-right">
-        <ButtonClose onClick={this.props.onClose} />
+        <ButtonClose onClick={onClose} />
       </Align>
       <div className="overlay-text">
         {children}

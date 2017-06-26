@@ -1,28 +1,24 @@
 /** @jsx h */
 import { h, Component } from 'preact';
 
+import './style.scss';
+
 import Room from '../../components/Room';
-import Menu from '../../components/Menu';
 import Align from '../../components/Align';
 import ButtonItem from '../../components/ButtonItem';
 import ShareButtons from '../../components/ShareButtons';
 import audio from '../../audio';
 import viewer from '../../viewer';
-import feature from '../../utils/feature';
-import Container from '../../components/Container';
+
+import transition from '../../transition';
 
 export default class Submission extends Component {
-  constructor({ roomId, recordingId }) {
+  constructor({ roomId, id }) {
     super();
     this.state = {
       loading: 'Loading performance…',
-      deepLink: `https://tonite.dance/${roomId}/${recordingId}`,
+      deepLink: `https://tonite.dance/${roomId}/${id}`,
     };
-
-    if (viewer.vrEffect.isPresenting) {
-      viewer.vrEffect.exitPresent();
-    }
-    viewer.switchCamera('orthographic');
 
     this.shareURL = {
       googlePlus: 'https://plus.google.com/share?url=',
@@ -33,6 +29,7 @@ export default class Submission extends Component {
 
   componentDidMount() {
     this.mounted = true;
+    this.asyncMount();
   }
 
   componentWillUnmount() {
@@ -40,26 +37,44 @@ export default class Submission extends Component {
     audio.fadeOut();
   }
 
-  render({ roomId, recordingId }, { deepLink }) {
+  async asyncMount() {
+    if (transition.isInside()) {
+      await transition.fadeOut();
+    }
+    if (!this.mounted) return;
+    if (viewer.vrEffect.isPresenting) {
+      viewer.vrEffect.exitPresent();
+    }
+    viewer.switchCamera('orthographic');
+    transition.reset();
+  }
+
+  render({ roomId, id, fromRecording, onGotoFullExperience }, { deepLink }) {
     return (
-      <Container>
-        <Menu
-          about
-          mute
-          close
-        />
+      <div className="submission">
         <Room
           roomId={roomId}
-          id={recordingId}
+          id={id}
           orbs
         />
-        <ShareButtons deepLink={deepLink} />
-        { feature.has6DOF &&
-          <Align type="bottom-right">
-            <ButtonItem text="Create animated GIF" navigate="/" />
-          </Align>
+        <Align type="bottom-right">
+          <ButtonItem
+            text={fromRecording
+              ? `Watch yourself in the
+full experience.`
+              : `Press here to watch them
+in the full experience.`
+            }
+            onClick={onGotoFullExperience}
+            underline
+          />
+        </Align>
+        { fromRecording &&
+          <ShareButtons deepLink={deepLink}>
+            <ButtonItem text="Create animated GIF" navigate="/" underline />
+          </ShareButtons>
         }
-      </Container>
+      </div>
     );
   }
 }

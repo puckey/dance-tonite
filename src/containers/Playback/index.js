@@ -131,10 +131,15 @@ export default class Playback extends Component {
       roomIndex,
       recordingId,
       inContextOfRecording,
-      takeOffHeadset,
       onGotoSubmission,
     },
-    { error, loading, orb, colophon }
+    {
+      error,
+      loading,
+      orb,
+      colophon,
+      takeOffHeadset,
+    }
   ) {
     const polyfillAndPresenting = feature.vrPolyfill
       && viewer.vrEffect.isPresenting;
@@ -161,15 +166,14 @@ export default class Playback extends Component {
             takeOffHeadset
               ? (
                 <Overlay>
-                  <ButtonItem
-                    text="I took off my headset"
-                    onClick={onGotoSubmission}
-                  />
+                  <a onClick={onGotoSubmission}>
+                    <span>I took off my headset</span>
+                  </a>
                 </Overlay>
               )
               : (
                 <Align type="bottom-right">
-                  <ButtonItem text="Skip" onClick={onGotoSubmission} />
+                  <ButtonItem text="Skip Preview" onClick={onGotoSubmission} />
                 </Align>
               )
           )
