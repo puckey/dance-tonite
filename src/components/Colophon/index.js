@@ -7,13 +7,13 @@ import iconVR from './icon-vr-experiments.svg';
 import iconFriends from './icon-friends-of-google.svg';
 
 export default class Colophon extends Component {
-  shouldComponentUpdate() {
-    return false;
+  shouldComponentUpdate({ hide }) {
+    return hide !== this.props.hide;
   }
 
-  render({ className }) {
+  render({ hide }) {
     return (
-      <div className={classNames('colophon', className)}>
+      <div className={classNames('colophon', hide && 'mod-hidden')}>
         <a
           target="_blank"
           rel="noopener noreferrer"

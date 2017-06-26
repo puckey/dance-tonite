@@ -12,6 +12,8 @@ import Titles from '../../components/Titles';
 import ProgressBar from '../../components/ProgressBar';
 import Colophon from '../../components/Colophon';
 import Playlist from '../Playlist';
+import ButtonItem from '../../components/ButtonItem';
+import InformationOverlay from '../../components/InformationOverlay';
 
 import audio from '../../audio';
 import audioSrcOgg from '../../public/sound/tonite.ogg';
@@ -67,7 +69,7 @@ export default class Playback extends Component {
   }
 
   async asyncMount() {
-    const { roomIndex } = this.props;
+    const { inContextOfRecording, roomId } = this.props;
     if (!viewer.vrEffect.isPresenting) {
       viewer.switchCamera('orthographic');
     }
@@ -91,25 +93,26 @@ export default class Playback extends Component {
       transition.exit();
     }
 
-    if (roomIndex) {
+    if (inContextOfRecording) {
       // Start at 3 rooms before the recording, or 60 seconds before
       // the end of the track – whichever comes first.
       const watchTime = 30;
+      const roomOffset = 2;
       const startTime = Math.min(
-        (roomIndex - 2) * audio.loopDuration,
+        (roomId - 2 + roomOffset) * audio.loopDuration,
         audio.duration - watchTime
       );
       audio.gotoTime(startTime);
-      if (viewer.vrEffect.isPresenting) {
-        setTimeout(() => {
-          if (!this.mounted) return;
-          audio.fadeOut();
-          transition.enter({
-            text: 'Please take off your headset',
-          });
-          // TODO add share screen
-        }, watchTime * 1000);
-      }
+      setTimeout(() => {
+        if (!this.mounted) return;
+        audio.fadeOut();
+        transition.enter({
+          text: 'Please take off your headset',
+        });
+        this.setState({
+          takeOffHeadset: true,
+        });
+      }, watchTime * 1000);
     }
 
     // Safari won't play unless we wait until next tick
@@ -119,7 +122,16 @@ export default class Playback extends Component {
     });
   }
 
-  render({ roomIndex, recordingId }, { error, loading, orb, colophon }) {
+  render(
+    {
+      roomIndex,
+      recordingId,
+      inContextOfRecording,
+      takeOffHeadset,
+      onGotoSubmission,
+    },
+    { error, loading, orb, colophon }
+  ) {
     const polyfillAndPresenting = feature.vrPolyfill
       && viewer.vrEffect.isPresenting;
 
@@ -139,15 +151,24 @@ export default class Playback extends Component {
     }
 
     return (
-      <Container>
+      <div className="playback">
+        {
+          inContextOfRecording && (
+            takeOffHeadset
+              ? (
+                <InformationOverlay>
+                  <ButtonItem onClick={onGotoSubmission}>I took off my headset</ButtonItem>
+                </InformationOverlay>
+              )
+              : (
+                <Align type="bottom-right">
+                  <ButtonItem onClick={onGotoSubmission}>Skip</ButtonItem>
+                </Align>
+              )
+          )
+        }
         {process.env.FLAVOR !== 'cms' &&
-          <Colophon
-            className={
-              !loading &&
-              !colophon &&
-              'mod-hidden'
-            }
-          />
+          <Colophon hide={!loading && !colophon} />
         }
         <Playlist
           pathRecording={recordingId}
@@ -192,7 +213,7 @@ export default class Playback extends Component {
               />
             )
         }
-      </Container>
+      </div>
     );
   }
 }
