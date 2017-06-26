@@ -86,6 +86,7 @@ renderer.sortObjects = false;
 
 const containerEl = document.createElement('div');
 containerEl.className = 'viewer';
+containerEl.appendChild(renderer.domElement);
 document.body.appendChild(containerEl);
 
 const vrEffect = new THREE.VREffect(renderer);
