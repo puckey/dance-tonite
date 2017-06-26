@@ -272,7 +272,7 @@ const analytics = {
     //  -------------------------------------------------- VR Session: VR entry / exit SUCCESS
     if (feature.vrDisplay) {
       window.addEventListener('vrdisplaypresentchange', () => {
-        if (feature.vrDisplay.isPresenting) { // ******* MAKE SURE THIS LOGIC IS NOT ACCIDENTALLY REVERSED!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (feature.vrDisplay.isPresenting) { // ****** MAKE SURE THIS LOGIC IS NOT REVERSED!!!!!!!
           analytics.vrSessionBeganAt = Date.now();
           analytics.record({
             hitType: 'event',
@@ -300,6 +300,20 @@ const analytics = {
       }, false);
     }
     //  -------------------------------------------------- VR controller info?!?!?!
+  },
+  //  -------------------------------------------------- Social shares
+  //  Examples:
+  //  analytics.recordSocialShare('Google+');
+  //  analytics.recordSocialShare('Facebook');
+  //  analytics.recordSocialShare('Twitter');
+  recordSocialShare: (label) => {
+    analytics.record({
+      hitType: 'event',
+      eventCategory: 'Social',
+      eventAction: 'Share Attempt', //  Remember: Just because they clicked to share doesn’t mean they finished.
+      eventLabel: label,
+      nonInteraction: true,
+    });
   },
 };
 
