@@ -53,7 +53,7 @@ const checkHasExternalDisplay = () => (
 
 const checkHasVR = () => (
   new Promise((resolve) => {
-    if (!hasWebVR) {
+    if (!hasWebVR && !vrPolyfill) {
       resolve(false);
       return;
     }
