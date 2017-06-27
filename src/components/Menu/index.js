@@ -83,7 +83,7 @@ export default class Menu extends Component {
   }
 
   goHome() {
-    // TODO: switch camera to orthographic?
+    viewer.switchCamera('orthographic');
     router.navigate('/');
   }
 
