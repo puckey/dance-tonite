@@ -8,6 +8,7 @@ import Align from '../../components/Align';
 import ButtonItem from '../../components/ButtonItem';
 import ShareButtons from '../../components/ShareButtons';
 import audio from '../../audio';
+import router from '../../router';
 import viewer from '../../viewer';
 
 import transition from '../../transition';
@@ -24,6 +25,8 @@ export default class Submission extends Component {
       twitter: 'https://twitter.com/intent/tweet?text=',
       facebook: 'https://www.facebook.com/sharer/sharer.php?u=',
     };
+
+    this.onRoomLoadError = this.onRoomLoadError.bind(this);
   }
 
   componentDidMount() {
@@ -34,6 +37,10 @@ export default class Submission extends Component {
   componentWillUnmount() {
     this.mounted = false;
     audio.fadeOut();
+  }
+
+  onRoomLoadError() {
+    window.location = '/'; // If the room was deleted, redirect to homepage
   }
 
   async asyncMount() {
@@ -55,6 +62,7 @@ export default class Submission extends Component {
           roomId={roomId}
           id={id}
           orbs
+          onRoomLoadError={this.onRoomLoadError}
         />
         <Align type="bottom-right">
           <ButtonItem

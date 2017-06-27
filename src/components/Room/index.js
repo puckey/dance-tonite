@@ -74,7 +74,7 @@ export default class RoomComponent extends Component {
     });
     if (id) {
       audio.play();
-      room.load();
+      room.load(this.props.onRoomLoadError);
     }
     this.setState({ room });
     viewer.on('tick', this.tick);
