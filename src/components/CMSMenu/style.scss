@@ -8,4 +8,9 @@
   .aligner.mod-top-right {
     margin: -.5rem;
   }
+
+  .aligner.mod-bottom-right,
+  .aligner.mod-bottom-left {
+    z-index: $cms-layer;
+  }
 }
