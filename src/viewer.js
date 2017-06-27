@@ -2,7 +2,6 @@
  * @author mflux / http://minmax.design
  * Based on @mattdesl three-orbit-viewer
  */
-import 'webvr-polyfill';
 
 import emitter from 'mitt';
 
@@ -17,17 +16,6 @@ import audio from './audio';
 import postprocessing from './postprocessing';
 import Room from './room';
 import { sleep } from './utils/async';
-
-// if we're on a mobile phone that doesn't support WebVR, use polyfill
-if (feature.vrPolyfill) {
-  window.WebVRConfig.BUFFER_SCALE = 0.75;
-  window.polyfill = new window.WebVRPolyfill();
-  console.log('WebVR polyfill');
-}
-
-require('./lib/VREffect')(THREE);
-require('./lib/VRControls')(THREE);
-require('./lib/VRController')(THREE);
 
 const orthographicDistance = 4;
 
@@ -78,37 +66,29 @@ const zoomCamera = (zoom) => {
   lastZoom = newZoom;
 };
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setClearColor(0x000000);
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(windowSize.width, windowSize.height);
-renderer.sortObjects = false;
+let renderer;
+let vrEffect;
+let controls;
+let renderPostProcessing;
+let resizePostProcessing;
+let clock;
 
-const containerEl = document.createElement('div');
-containerEl.className = 'viewer';
-containerEl.appendChild(renderer.domElement);
-document.body.appendChild(containerEl);
+const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
 
-const vrEffect = new THREE.VREffect(renderer);
-
-const controls = new THREE.VRControls(cameras.default);
-controls.standing = true;
-
-
-const createScene = () => {
-  const scene = new THREE.Scene();
+const scene = (() => {
+  const _scene = new THREE.Scene();
   const light = new THREE.DirectionalLight(0xffffff);
   light.position.set(-1.42, 1.86, 0.74).normalize();
 
   const ambientLight = new THREE.AmbientLight(0x444444, 0.7);
   const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
 
-  scene.add(hemisphereLight, light, ambientLight);
-  scene.fog = new THREE.Fog(0x000000, 0, 120);
-  return scene;
-};
+  _scene.add(hemisphereLight, light, ambientLight);
+  _scene.fog = new THREE.Fog(0x000000, 0, 120);
+  return _scene;
+})();
 
-windowSize.on('resize', ({ width, height, aspectRatio }) => {
+const onResize = ({ width, height, aspectRatio }) => {
   const { orthographic } = cameras;
   Object.assign(
     orthographic,
@@ -131,11 +111,7 @@ windowSize.on('resize', ({ width, height, aspectRatio }) => {
       camera.aspect = aspectRatio;
       camera.updateProjectionMatrix();
     });
-}, false);
-
-const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
-
-const scene = createScene();
+};
 
 const viewer = Object.assign(emitter(), {
   camera: cameras.orthographic,
@@ -144,8 +120,38 @@ const viewer = Object.assign(emitter(), {
   renderScene: scene,
   controllers: [{}, {}],
   controls,
-  createScene,
   renderer,
+  prepare: () => {
+    clock = new THREE.Clock();
+    clock.start();
+    require('./lib/VREffect')(THREE);
+    require('./lib/VRControls')(THREE);
+    require('./lib/VRController')(THREE);
+    viewer.renderer = renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setClearColor(0x000000);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(windowSize.width, windowSize.height);
+    renderer.sortObjects = false;
+
+    const containerEl = document.createElement('div');
+    containerEl.className = 'viewer';
+    containerEl.appendChild(renderer.domElement);
+    document.body.appendChild(containerEl);
+
+    viewer.vrEffect = vrEffect = new THREE.VREffect(renderer);
+    viewer.controls = controls = new THREE.VRControls(cameras.default);
+    controls.standing = true;
+
+    const { render, resize } = postprocessing({
+      renderer,
+      camera: cameras.default,
+      scene,
+    });
+    renderPostProcessing = render;
+    resizePostProcessing = resize;
+    windowSize.on('resize', onResize, false);
+    animate();
+  },
   toggleVR: async (isStillMounted) => {
     if (vrEffect.isPresenting) {
       vrEffect.exitPresent();
@@ -181,14 +187,6 @@ window.addEventListener('vrdisplaypresentchange', () => {
   viewer.emit('vr-present-change', vrEffect.isPresenting);
 }, false);
 
-const clock = new THREE.Clock();
-clock.start();
-
-const {
-  render: renderPostProcessing,
-  resize: resizePostProcessing,
-} = postprocessing({ renderer, camera: cameras.default, scene });
-
 const animate = () => {
   const dt = clock.getDelta();
   vrEffect.requestAnimationFrame(animate);
@@ -222,7 +220,5 @@ const animate = () => {
   viewer.emit('render', dt);
   if (feature.stats) stats();
 };
-
-animate();
 
 export default viewer;

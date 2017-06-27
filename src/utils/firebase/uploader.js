@@ -1,18 +1,24 @@
-import firebaseConnection from './connection';
+let connection;
+
+const getConnection = () => (
+  new Promise((resolve) => {
+    if (connection) return resolve(connection);
+    require.ensure([], function (require) {
+      connection = require('./connection').default;
+      resolve(connection);
+    });
+  })
+);
+
 import convertFPS from '../convertFPS';
 
-const generateTokenURL = `${firebaseConnection.serverURL}getUploadToken`;
-const processSubmissionURL = `${firebaseConnection.serverURL}processSubmission`;
-
-const storageRef = firebaseConnection.firebase.storage().ref();
-
-
-const requestUploadToken = (roomID) =>
-      firebaseConnection.contactServer(generateTokenURL, { room: roomID });
+const requestUploadToken = (roomID) => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}getUploadToken`, { room: roomID })
+);
 
 const uploadDataString = (dataString, filename, uploadToken) => {
   const promise = new Promise((resolve, reject) => {
-    const targetFileRef = storageRef.child(`_incoming/${filename}`);
+    const targetFileRef = connection.firebase.storage().ref().child(`_incoming/${filename}`);
 
     // metadata we want to store with the file
     const metadata = {
@@ -39,8 +45,9 @@ const uploadDataString = (dataString, filename, uploadToken) => {
   return promise;
 };
 
-const startSubmissionProcessing = (token) =>
-      firebaseConnection.contactServer(processSubmissionURL, { token });
+const startSubmissionProcessing = (token) => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}processSubmission`, { token })
+);
 
 const firebaseUploader = {
   upload: async (roomData, roomID, callback) => {
