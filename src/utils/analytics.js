@@ -232,7 +232,7 @@ const analytics = {
       });
     }
     //  -------------------------------------------------- Capabilities: VR Displays
-    //if (feature.vrDisplays && feature.vrDisplays.length > 0) {
+    // if (feature.vrDisplays && feature.vrDisplays.length > 0) {
     if (feature.vrDisplays) {
       analytics.record({
         hitType: 'event',
@@ -262,7 +262,7 @@ const analytics = {
         hitType: 'event',
         eventCategory: 'Capabilities',
         eventAction: 'VR Device String',
-        eventLabel: feature.vrDisplay, // .displayName,
+        eventLabel: feature.vrDisplay.displayName,
         nonInteraction: true,
       });
     }
@@ -296,7 +296,7 @@ const analytics = {
     //  -------------------------------------------------- VR Session: VR entry / exit SUCCESS
     if (feature.vrDisplay) {
       window.addEventListener('vrdisplaypresentchange', () => {
-        if (feature.vrDisplay.isPresenting) { // ****** MAKE SURE THIS LOGIC IS NOT REVERSED!!!!!!!
+        if (feature.vrDisplay.isPresenting) {
           analytics.vrSessionBeganAt = Date.now();
           analytics.record({
             hitType: 'event',

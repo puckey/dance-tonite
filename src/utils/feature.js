@@ -119,8 +119,10 @@ const feature = {
         .then((vrDisplays) => {
           feature.vrDisplays = vrDisplays.length;
           if (vrDisplays && vrDisplays.length > 0) {
+            //  Yes, this must be the full vrDisplay instance
+            //  because we want to check isPresenting in analytics!
+            feature.vrDisplay = vrDisplays[0];
             const displayName = vrDisplays[0].displayName;
-            feature.vrDisplay = displayName;
             //  Expecting "Google, Inc. Daydream View".
             //  Unclear if stand-alone Daydream just announced at I/O 2017
             //  will eventually require its own displayName check.
