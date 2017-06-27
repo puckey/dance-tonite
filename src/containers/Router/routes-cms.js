@@ -6,9 +6,9 @@ import Submissions from '../Submissions';
 import Playback from '../Playback';
 
 export default {
-  '/publish/': Publish,
-  '/secret/': Secret,
-  '/submissions/': Submissions,
+  '/publish': Publish,
+  '/secret': Secret,
+  '/submissions': Submissions,
   '/inbox/:recordingId?': Inbox,
   '/choose/:roomId': Choose,
   '/:roomId?/:id?': Playback,
