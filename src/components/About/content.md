@@ -81,13 +81,14 @@ Room-scale VR are essentially powerful motion capture tools found in our homes a
 ### Why don’t I see my dance on the website?
 Choreography on the website is curated by hand. Please be patient as we review and add submissions.
 
+<div class="credits-intro">
+  <h2>Credits</h2>
 
-<h2>Credits</h2>
-<h3>Music by <a href="http://lcdsoundsystem.com">LCD Soundsystem</a>
+  <h3>Music by <a href="http://lcdsoundsystem.com">LCD Soundsystem</a></h3>
 
-<h3>Created by <a href="http://puckey.studio">Studio Puckey</a>, <a href="http://studiomoniker.com">Moniker</a>, and <a href="http://workshop.chromeexperiments.com/">Google’s Data Arts Team</a></h3>
+  <h3>Created by <a href="http://puckey.studio">Studio Puckey</a>, <a href="http://studiomoniker.com">Moniker</a>, and <a href="http://workshop.chromeexperiments.com/">Google’s Data Arts Team</a></h3>
 
-<div class="credits">
+</div><div class="credits">
   <h3>Studio Puckey</h3>
   <a href="http://puckey.studio">
     Jonathan Puckey</a>,

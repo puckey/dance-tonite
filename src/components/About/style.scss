@@ -32,6 +32,7 @@
     font-size: 1rem;
     font-weight: bold;
     padding-bottom: 0 !important;
+    margin: 0 auto;
   }
 
   h2 + h3 {
@@ -68,17 +69,20 @@
       &:nth-of-type(even) {
         margin-right: 0;
       }
+    }
+  }
 
-      h3 {
-        margin: 0;
-      }
+  .credits-intro {
+    width: 100%;
+    padding: 0;
+
+    h2 {
+      margin-bottom: 1rem;
     }
   }
 
   .credits {
-    h3 {
-      margin: 0;
-    }
+    padding: 0;
 
     a {
       border: 0;
@@ -115,7 +119,7 @@
   .privacy-and-terms {
     font-size: 0.5rem;
     text-align: right;
-    margin-top: -4rem;
+    margin-top: -3rem;
 
     a {
       border-bottom-width: $line-width * 0.5;
