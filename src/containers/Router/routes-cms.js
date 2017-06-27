@@ -3,7 +3,7 @@ import Secret from '../CMSSecret';
 import Inbox from '../Inbox';
 import Choose from '../Choose';
 import Submissions from '../Submissions';
-import Playback from '../Playback';
+import PlaybackFlow from '../PlaybackFlow';
 
 export default {
   '/publish': Publish,
@@ -11,5 +11,5 @@ export default {
   '/submissions': Submissions,
   '/inbox/:recordingId?': Inbox,
   '/choose/:roomId': Choose,
-  '/:roomId?/:id?': Playback,
+  '/:roomId?/:id?': PlaybackFlow,
 };
