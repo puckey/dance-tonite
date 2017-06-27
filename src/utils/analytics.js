@@ -232,13 +232,14 @@ const analytics = {
       });
     }
     //  -------------------------------------------------- Capabilities: VR Displays
-    if (feature.vrDisplays.length > 0) {
+    //if (feature.vrDisplays && feature.vrDisplays.length > 0) {
+    if (feature.vrDisplays) {
       analytics.record({
         hitType: 'event',
         eventCategory: 'Capabilities',
         eventAction: 'VR Displays Detect',
         eventLabel: 'VR Displays are present',
-        value: feature.vrDisplays.length,
+        value: feature.vrDisplays, // .length,
         nonInteraction: true,
       });
     } else {
@@ -261,7 +262,7 @@ const analytics = {
         hitType: 'event',
         eventCategory: 'Capabilities',
         eventAction: 'VR Device String',
-        eventLabel: feature.vrDisplay.displayName,
+        eventLabel: feature.vrDisplay, // .displayName,
         nonInteraction: true,
       });
     }
