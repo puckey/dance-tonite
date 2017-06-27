@@ -48,10 +48,10 @@ const getAllRecordings = () =>
 //       0 = unrated
 //       1 = good (star)
 //      -1 = not good
-const updateRecording = ({ id, title, rating, is_universal, is_megagrid_worthy }) =>
+const updateRecording = ({ id, title, rating, is_universal, is_megagrid_worthy, room }) =>
       firebaseConnection.contactServer(
         `${serverURL}updateRecording`,
-         { id, title, rating, is_universal, is_megagrid_worthy },
+         { id, title, rating, is_universal, is_megagrid_worthy, room },
          true
        );
 

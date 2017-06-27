@@ -1,15 +1,6 @@
 @import '../../theme/theme';
 @import '../../components/ButtonItem/style';
 
-.inbox-button-item {
-  @extends .button-item;
-  cursor: pointer;
-
-  & + & {
-    margin-top: 1rem;
-  }
-}
-
 .inbox-title-input {
   width: 8rem;
   height: 1rem;
@@ -22,9 +13,17 @@
   font-size: 1rem;
 }
 
-.inbox-submit {
+.submit-button {
   cursor: pointer;
   margin-top: .5rem;
+}
+
+.submit-buttons {
+  margin-top: .5rem;
+
+  .submit-button {
+    margin-left: .5rem;
+  }
 }
 
 input[type="checkbox"] {

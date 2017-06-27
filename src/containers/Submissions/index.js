@@ -14,6 +14,8 @@ import Error from '../../components/Error';
 import Align from '../../components/Align';
 import PaginatedList from '../../components/PaginatedList';
 import Spinner from '../../components/Spinner';
+import Overlay from '../../components/Overlay';
+
 import router from '../../router';
 
 export default class Choose extends Component {
@@ -28,6 +30,8 @@ export default class Choose extends Component {
     this.toggleMegaGridWorthy = this.toggleMegaGridWorthy.bind(this);
     this.submit = this.submit.bind(this);
     this.updateTitle = debounce(300, this.updateTitle);
+    this.toggleDelete = this.toggleDelete.bind(this);
+    this.performDelete = this.performDelete.bind(this);
   }
 
   componentDidMount() {
@@ -93,6 +97,21 @@ export default class Choose extends Component {
     });
   }
 
+  toggleDelete(event) {
+    this.setState({ deleteOverlay: !this.state.deleteOverlay });
+    if (event) {
+      event.stopPropagation();
+    }
+  }
+
+  performDelete() {
+    const { recording } = this.state;
+    recording.room = -recording.room;
+    this.setState({
+      recording,
+    }, this.submit);
+  }
+
   async asyncMount() {
     this.setState({
       loading: 'Loading recordings…',
@@ -143,7 +162,10 @@ export default class Choose extends Component {
     router.navigate(`/inbox/${item.id}`);
   }
 
-  render({ room, goHome }, { items, item, recording, error, loading }) {
+  render(
+    { room, goHome },
+    { items, item, recording, error, loading, deleteOverlay }
+  ) {
     return (
       <Container>
         <CMSMenu
@@ -153,6 +175,13 @@ export default class Choose extends Component {
           inbox
           close
         />
+        { deleteOverlay &&
+          <Overlay onClose={this.toggleDelete}>
+            <p>Delete {recording.title || recording.id}?</p>
+            <p><a onClick={this.performDelete}><span>Yes, delete this recording</span></a></p>
+            <p><a onClick={this.toggleDelete}><span>No, I changed my mind</span></a></p>
+          </Overlay>
+        }
         <Align type="bottom-left" margin>
           <PaginatedList
             item={item}
@@ -193,10 +222,16 @@ export default class Choose extends Component {
                   onChange={this.toggleMegaGridWorthy}
                 />
               </div>
-              <div
-                className="inbox-submit"
-                onClick={this.submit}
-              >Save</div>
+              <div className="submit-buttons">
+                <a
+                  className="submit-button"
+                  onClick={this.toggleDelete}
+                >Delete</a>
+                <a
+                  className="submit-button"
+                  onClick={this.submit}
+                >Save</a>
+              </div>
             </Align>
           : null
         }

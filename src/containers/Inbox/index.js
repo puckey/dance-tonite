@@ -195,10 +195,10 @@ export default class Inbox extends Component {
                   onChange={this.toggleUniversal}
                 />
               </div>
-              <div
-                className="inbox-submit"
+              <a
+                className="submit-button"
                 onClick={this.submit}
-              >{starred ? 'Save' : 'Ignore'} and next &rarr;</div>
+              >{starred ? 'Save' : 'Ignore'} and next &rarr;</a>
             </Align>
           )
           : null
