@@ -1,4 +1,4 @@
-import feature from './utils/feature';
+import feature from './feature';
 
 
 //  Google Analytics injection.
