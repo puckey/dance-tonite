@@ -7,6 +7,6 @@ import './style.scss';
 export default ({ unreadCount }) => (
   <ButtonItem
     navigate="/inbox"
-    text={`Inbox ${unreadCount && `(${unreadCount})`}`}
+    text={`Inbox${unreadCount ? ` (${unreadCount})` : ''}`}
   />
 );
