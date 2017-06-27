@@ -1,2 +1,11 @@
 @import '../../theme/theme';
 
+.cms-menu {
+  .aligner.mod-top-left {
+    margin: -.5rem 0;
+  }
+
+  .aligner.mod-top-right {
+    margin: -.5rem;
+  }
+}

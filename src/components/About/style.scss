@@ -66,6 +66,10 @@
       margin-right: 2rem;
       min-width: 15rem;
 
+      h3 {
+        margin: 0;
+      }
+
       &:nth-of-type(even) {
         margin-right: 0;
       }
