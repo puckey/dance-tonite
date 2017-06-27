@@ -38,13 +38,6 @@ export default class FirebaseKey extends Component {
     const { secret, secretChanged } = this.state;
     return (
       <Container>
-        <CMSMenu
-          vr
-          mute
-          submissions
-          inbox
-          close
-        />
         <Align type="center" margin>
           <div>CMS authorization key</div>
           <input
