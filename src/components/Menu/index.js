@@ -116,9 +116,9 @@ export default class Menu extends Component {
           >
             <p>Headset required to watch in VR.</p>
             <a href="https://webvr.info" target="_blank" rel="noopener noreferrer">
-              Learn more
+              <span>Learn more</span>
             </a> or <a onClick={this.toggleNoVROverlay}>
-              continue watching without VR
+              <span>continue watching without VR</span>
             </a>.
           </Overlay>
           : null
