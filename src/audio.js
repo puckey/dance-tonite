@@ -11,6 +11,7 @@ let gainNode;
 let loopCount;
 let duration = 0;
 let lastTime = 0;
+let lastLoopProgress = 0;
 let startTime;
 let audioElement;
 let request;
@@ -60,8 +61,9 @@ const audio = Object.assign(emitter(), {
     this.totalTime = this.totalProgress * this.loopDuration;
     lastTime = time;
 
-    if (this.looped) {
-      this.emit('loop', this.loopCount);
+    if (this.totalProgress - lastLoopProgress > 1) {
+      lastLoopProgress = Math.floor(this.totalProgress);
+      this.emit('loop', lastLoopProgress);
     }
   },
 
@@ -72,6 +74,7 @@ const audio = Object.assign(emitter(), {
       gainNode = context.createGain();
       // Reset time, set loop count
       lastTime = 0;
+      lastLoopProgress = 0;
       loopCount = param.loops === undefined
         ? 1
         : param.loops;

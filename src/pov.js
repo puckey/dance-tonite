@@ -6,6 +6,7 @@ import Room from './room';
 import layout from './room/layout';
 import settings from './settings';
 import controllers from './controllers';
+import audio from './audio';
 
 export default function create({ rooms, orb, offset = 0 }) {
   const { holeHeight } = settings;
@@ -52,7 +53,22 @@ export default function create({ rooms, orb, offset = 0 }) {
     Room.setHighlight();
   };
 
+  // Whenever the audio loops, move to the next head if necessary:
+  const onLoop = (loopIndex) => {
+    if (!hoverPerformance) return;
+    const [index, headIndex] = hoverPerformance;
+    if (
+      (index % 2 === 0 && loopIndex % 2 === 1) ||
+      (index % 2 === 1 && loopIndex % 2 === 0)
+    ) {
+      hoverPerformance[1] = (headIndex + 1) % rooms[index].frame.count;
+      Room.setHighlight(hoverPerformance);
+    }
+  };
+
   window.addEventListener('vrdisplaypresentchange', clearHighlights, false);
+
+  audio.on('loop', onLoop);
 
   const POV = {
     update: (progress = 0, fixedControllers = false) => {
@@ -106,6 +122,7 @@ export default function create({ rooms, orb, offset = 0 }) {
       window.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mouseup', onMouseUp);
       window.removeEventListener('vrdisplaypresentchange', clearHighlights);
+      audio.off('loop', onLoop);
     },
 
     clearHighlights,
