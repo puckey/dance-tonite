@@ -7,7 +7,7 @@ import layout from './room/layout';
 import settings from './settings';
 import controllers from './controllers';
 
-export default function create({ rooms, orb }) {
+export default function create({ rooms, orb, offset = 0 }) {
   const { holeHeight } = settings;
   let pointerX;
   let pointerY;
@@ -74,7 +74,7 @@ export default function create({ rooms, orb }) {
         }
       }
 
-      const position = layout.getPosition(progress + 0.5);
+      const position = layout.getPosition(progress + offset + 0.5);
       position.y += holeHeight;
       position.z *= -1;
 
