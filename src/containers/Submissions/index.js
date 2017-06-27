@@ -18,7 +18,7 @@ import Overlay from '../../components/Overlay';
 
 import router from '../../router';
 
-export default class Choose extends Component {
+export default class Submissions extends Component {
   constructor() {
     super();
     this.state = { };
