@@ -5,8 +5,8 @@ import InstancedItem from './instanced-item';
 import Room from './room';
 import layout from './room/layout';
 import settings from './settings';
-import controllers from './controllers';
 import audio from './audio';
+import deps from './deps';
 
 export default function create({ rooms, orb, offset = 0 }) {
   const { holeHeight } = settings;
@@ -95,7 +95,7 @@ export default function create({ rooms, orb, offset = 0 }) {
       position.z *= -1;
 
       if (fixedControllers) {
-        controllers.fixToPosition(position);
+        deps.controllers.fixToPosition(position);
       }
       viewer.camera.position.copy(position);
       if (hoverOrb) {

@@ -2,55 +2,25 @@ import tween from './utils/tween';
 import Orb from './orb';
 import viewer from './viewer';
 import props from './props';
-import * as SDFText from './sdftext';
 import * as THREE from './lib/three';
 import { offsetFrom } from './utils/three';
 import { textColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
+import deps from './deps';
 
 let transitionVersion = 0;
-
-const transitionScene = new THREE.Scene();
-
-// Set up stage
-const textCreator = SDFText.creator();
-const textItem = textCreator.create('', {
-  wrapWidth: 4000,
-  scale: 15,
-  align: 'center',
-  color: textColor.getHex(),
-});
-
-const pivot = new THREE.Object3D();
-pivot.add(textItem);
-textItem.position.z = -20;
-textItem.position.y = 3;
-
-transitionScene.add(pivot);
-transitionScene.add(props.grid);
-
-const debugMesh = new THREE.Mesh(
-  new THREE.BoxGeometry(0, 0, 0),
-  new THREE.MeshBasicMaterial({
-    map: new THREE.TextureLoader().load(dummyTextureUrl),
-  })
-);
-debugMesh.frustumCulled = false;
-// Move an extra invisible object3d with a texture to the end of scene's children
-// array in order to solve a texture glitch as described in:
-// https://github.com/puckey/you-move-me/issues/129
-transitionScene.add(debugMesh);
-
-const floatingOrb = new Orb(transitionScene);
-
+let transitionScene;
+let textItem;
+let pivot;
 let time = 0;
 let fadedOut = false;
 let insideTransition = false;
+let floatingOrb;
 
-const Y_AXIS = new THREE.Vector3(0, 1, 0);
-const Z_AXIS = new THREE.Vector3(0, 0, 1);
-const TEMP_VECTOR = new THREE.Vector3();
-const TEMP_VECTOR_2 = new THREE.Vector3();
+let Y_AXIS;
+let Z_AXIS;
+let TEMP_VECTOR;
+let TEMP_VECTOR_2;
 
 const tick = (dt) => {
   time += dt;
@@ -109,6 +79,46 @@ const revealFar = 300;
 const transitionSpaceFar = 25;
 
 const transition = {
+  prepare: () => {
+    transitionScene = new THREE.Scene();
+
+    // Set up stage
+    const textCreator = deps.SDFText.creator();
+    textItem = textCreator.create('', {
+      wrapWidth: 4000,
+      scale: 15,
+      align: 'center',
+      color: textColor.getHex(),
+    });
+
+    pivot = new THREE.Object3D();
+    pivot.add(textItem);
+    textItem.position.z = -20;
+    textItem.position.y = 3;
+
+    transitionScene.add(pivot);
+    transitionScene.add(props.grid);
+
+    const debugMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(0, 0, 0),
+      new THREE.MeshBasicMaterial({
+        map: new THREE.TextureLoader().load(dummyTextureUrl),
+      })
+    );
+    debugMesh.frustumCulled = false;
+    // Move an extra invisible object3d with a texture to the end of scene's children
+    // array in order to solve a texture glitch as described in:
+    // https://github.com/puckey/you-move-me/issues/129
+    transitionScene.add(debugMesh);
+
+    floatingOrb = new Orb(transitionScene);
+
+    Y_AXIS = new THREE.Vector3(0, 1, 0);
+    Z_AXIS = new THREE.Vector3(0, 0, 1);
+    TEMP_VECTOR = new THREE.Vector3();
+    TEMP_VECTOR_2 = new THREE.Vector3();
+  },
+
   fadeOut,
 
   isInside() {

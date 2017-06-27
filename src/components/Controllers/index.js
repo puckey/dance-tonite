@@ -1,24 +1,24 @@
 /** @jsx h */
 import { Component } from 'preact';
 
-import controllers from '../../controllers';
+import deps from '../../deps';
 
 export default class Controllers extends Component {
   componentDidMount() {
     this.mounted = true;
-    controllers.add();
-    controllers.update(this.props.settings);
+    deps.controllers.add();
+    deps.controllers.update(this.props.settings);
   }
 
   shouldComponentUpdate({ settings }) {
     if (settings !== this.props.settings) {
-      controllers.update(settings);
+      deps.controllers.update(settings);
     }
   }
 
   componentWillUnmount() {
     this.mounted = false;
-    controllers.update(null);
-    controllers.remove();
+    deps.controllers.update(null);
+    deps.controllers.remove();
   }
 }

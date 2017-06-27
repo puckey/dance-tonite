@@ -9,6 +9,8 @@ import props from './props';
 import feature from './utils/feature';
 import Router from './containers/Router';
 import viewer from './viewer';
+import transition from './transition';
+import deps from './deps';
 
 window.THREE = THREE;
 
@@ -39,6 +41,10 @@ if (process.env.FLAVOR === 'cms') {
     }),
   ]);
   await feature.prepare();
+  await deps.prepare();
+  if (feature.has6DOF) {
+    transition.prepare();
+  }
   viewer.prepare();
   if (feature.isMobile) {
     document.body.classList.add('mod-mobile');

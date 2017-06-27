@@ -1,8 +1,8 @@
 /** @jsx h */
 import { h, Component } from 'preact';
 
-import controllers from '../../controllers';
 import viewer from '../../viewer';
+import deps from '../../deps';
 
 import RoomInstructions from '../RoomInstructions';
 
@@ -23,7 +23,7 @@ export default class ConnectControllers extends Component {
   }
 
   tick() {
-    const count = controllers.countActiveControllers();
+    const count = deps.controllers.countActiveControllers();
     if (count === this.state.count) return;
     this.setState({ count });
     if (count === 2) {

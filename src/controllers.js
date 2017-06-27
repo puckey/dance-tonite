@@ -1,10 +1,9 @@
 import emitter from 'mitt';
-import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
 import * as THREE from './lib/three';
 import { textColor } from './theme/colors';
-
+import deps from './deps';
 
 //  These are empty objects -- but we'll fill them soon.
 let [leftController, rightController] = viewer.controllers;
@@ -136,7 +135,7 @@ window.addEventListener('vr controller connected', ({ detail: controller }) => {
 // window.kids = viewer.scene.children;
 
 
-const textCreator = SDFText.creator();
+const textCreator = deps.SDFText.creator();
 
 const rhand = Props.controller.clone();
 const lhand = Props.controller.clone();
