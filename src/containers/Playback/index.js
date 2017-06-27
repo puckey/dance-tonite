@@ -87,14 +87,10 @@ export default class Playback extends Component {
     if (!this.mounted) return;
 
     if (inContextOfRecording) {
-      // Start at 3 rooms before the recording, or 60 seconds before
-      // the end of the track – whichever comes first.
+      // Start at 3 rooms before the recording:
       const watchTime = 30;
       const roomOffset = 2;
-      const startTime = Math.min(
-        (roomId - 2 + roomOffset) * audio.loopDuration,
-        audio.duration - watchTime
-      );
+      const startTime = (roomId - 2 + roomOffset) * audio.loopDuration;
       audio.gotoTime(startTime);
       setTimeout(() => {
         if (!this.mounted) return;
