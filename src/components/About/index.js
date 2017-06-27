@@ -6,6 +6,7 @@ import './style.scss';
 
 import Align from '../Align';
 import ButtonClose from '../ButtonClose';
+import Colophon from '../Colophon';
 import feature from '../../utils/feature';
 import audio from '../../audio';
 import aboutSrc from './content.md';
@@ -48,6 +49,7 @@ export default class About extends Component {
     if (!content) {
       const response = await fetch(aboutSrc);
       content = await response.text();
+      content = content.replace(/<a\s+href=/gi, '<a target="_blank" href=');
     }
     if (!this.mounted) return;
     this.setState({ content });
@@ -64,9 +66,14 @@ export default class About extends Component {
             className="about-content"
             dangerouslySetInnerHTML={{ __html: content }}
           />
+          <div className="about-content">
+            <Colophon />
+            <div className="privacy-and-terms">
+              <a href="https://www.google.com/policies/privacy/" target="_blank" rel="noreferrer noopener">Privacy</a> | <a href="https://www.google.com/policies/terms/" target="_blank" rel="noreferrer noopener">Terms</a>
+            </div>
+          </div>
         </div>
       </Portal>
     );
   }
 }
-
