@@ -66,7 +66,7 @@ export default class Playlist extends Component {
   }
 
   async asyncMount() {
-    const { pathRecording, pathRoomIndex, recording } = this.props;
+    const { pathRecordingId, pathRoomId, recording } = this.props;
     if (recording) return;
     const entries = this.entries = await storage.loadPlaylist();
 
@@ -75,12 +75,12 @@ export default class Playlist extends Component {
     const rooms = this.state.rooms;
 
     for (let i = 0; i < entries.length; i++) {
-      const isPathRecording = i === pathRoomIndex - 1;
+      const isPathRecording = i === pathRoomId - 1;
       const entry = entries[i];
       rooms.push(
         new Room({
           id: isPathRecording
-            ? `${pathRecording}`
+            ? pathRecordingId
             : process.env.FLAVOR === 'cms'
               ? entry.id
               : entry,

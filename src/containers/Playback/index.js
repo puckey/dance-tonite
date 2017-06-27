@@ -128,8 +128,8 @@ export default class Playback extends Component {
 
   render(
     {
-      roomIndex,
-      recordingId,
+      roomId,
+      id,
       inContextOfRecording,
       onGotoSubmission,
     },
@@ -148,8 +148,8 @@ export default class Playback extends Component {
       return (
         <Container>
           <Playlist
-            pathRecording={recordingId}
-            pathRoomIndex={roomIndex}
+            pathRecordingId={id}
+            pathRoomId={roomId}
             orb={orb}
           />
           <Menu
@@ -182,8 +182,8 @@ export default class Playback extends Component {
           <Colophon hide={!loading && !colophon} />
         }
         <Playlist
-          pathRecording={recordingId}
-          pathRoomIndex={roomIndex}
+          pathRecordingId={id}
+          pathRoomId={roomId}
           orb={orb}
         />
         { process.env.FLAVOR !== 'cms'
