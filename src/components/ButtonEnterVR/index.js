@@ -7,6 +7,7 @@ import enterIconDisabledSvg from './icons/x_entervr.svg';
 
 import { sleep } from '../../utils/async';
 import feature from '../../utils/feature';
+import analytics from '../../utils/analytics';
 import viewer from '../../viewer';
 import audio from '../../audio';
 import pov from '../../pov';
@@ -31,6 +32,8 @@ export default class ButtonEnterVR extends Component {
 
   updateVRStatus(presenting) {
     this.setState({ presenting });
+    if (presenting) analytics.recordVREntryAttempt();
+    else analytics.recordVRExitAttempt();
   }
 
   render({ label, onClick }, { presenting }) {
