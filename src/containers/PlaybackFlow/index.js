@@ -9,7 +9,8 @@ import Submission from '../Submission';
 
 import recording from '../../recording';
 import router from '../../router';
-import transition from '../../transition';
+import viewer from '../../viewer';
+import feature from '../../utils/feature';
 
 export default class PlaybackFlow extends Component {
   constructor({ roomId }) {
@@ -26,6 +27,23 @@ export default class PlaybackFlow extends Component {
     };
     this.performGotoFullExperience = this.performGotoFullExperience.bind(this);
     this.performGotoSubmission = this.performGotoSubmission.bind(this);
+    this.onVRPresentChange = this.onVRPresentChange.bind(this);
+  }
+
+  componentDidMount() {
+    viewer.on('vr-present-change', this.onVRPresentChange);
+  }
+
+  componentWillUnmount() {
+    viewer.off('vr-present-change', this.onVRPresentChange);
+  }
+
+  onVRPresentChange(presenting) {
+    if (feature.vrPolyfill) {
+      this.setState({
+        polyfillPresenting: presenting,
+      });
+    }
   }
 
   goto(mode) {
@@ -57,16 +75,18 @@ export default class PlaybackFlow extends Component {
   }
 
   renderMenu() {
-    const { fromRecording, mode } = this.state;
+    const { fromRecording, mode, polyfillPresenting } = this.state;
     return process.env.FLAVOR === 'cms'
       ? <CMSMenu
         vr audio mute
         submissions inbox publish
       />
-      : (
-        fromRecording || mode === 'submission'
-          ? <Menu about mute />
-          : <Menu vr addRoom about mute />
+      : polyfillPresenting
+        ? <Menu />
+        : (
+          fromRecording || mode === 'submission'
+            ? <Menu about mute />
+            : <Menu vr addRoom about mute />
       );
   }
 
