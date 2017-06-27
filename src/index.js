@@ -7,6 +7,7 @@ import * as THREE from './lib/three';
 import router from './router';
 import props from './props';
 import feature from './utils/feature';
+import analytics from './utils/analytics';
 import Router from './containers/Router';
 
 window.THREE = THREE;
@@ -32,4 +33,5 @@ if (process.env.FLAVOR === 'cms') {
   }
   document.getElementById('initial').remove();
   render(<Router />, document.body, root);
+  analytics.mount();
 })();
