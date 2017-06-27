@@ -2,8 +2,6 @@
 import { h, Component } from 'preact';
 import './style.scss';
 
-import router from '../../router';
-
 import Align from '../../components/Align';
 import ButtonMute from '../../components/ButtonMute';
 import ButtonEnterVR from '../../components/ButtonEnterVR';
