@@ -22,6 +22,7 @@ Password to access deployments: CYtTx8gMi7qyPJZ
 
 - __Staging__: Commits on [master](https://github.com/puckey/you-move-me/tree/master) branch are automatically deployed to staging: http://staging-tonite-dance.puckey.studio
 - __Production__: Commits on [deploy-dance-tonite](https://github.com/puckey/you-move-me/tree/deploy-dance-tonite) branch are automatically deployed to production: http://dance-tonite.puckey.studio
+- __CMS__: The CMS version of the latest master branch: http://dance-tonite-cms.puckey.studio
 - __Branches__: Builds of all branches can be accessed through: `https://{branch-name}--dance-tonite.netlify.com/`
 
 ### __App Engine__
