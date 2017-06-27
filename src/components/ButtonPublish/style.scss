@@ -1,6 +1,8 @@
+@import '../../theme/theme';
+
 .cms-button-item--wide {
   width: auto;
-  padding: 0.6rem;
-  padding-left: 0;
-  margin-right: 0.25rem;
+  padding: 0.7rem 1rem;
+  margin: -0.7rem -1rem !important;
+  z-index: $cms-layer;
 }

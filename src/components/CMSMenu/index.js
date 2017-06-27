@@ -38,7 +38,7 @@ export default class CMSMenu extends Component {
     publish,
   }) {
     return (
-      <div class="cms-menu">
+      <div className="cms-menu">
         { this.state.vrOverlay
           ? <EnterVROverlay />
           : null
