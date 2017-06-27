@@ -7,12 +7,14 @@ import feature from './utils/feature';
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-window.ga('create', 'UA-97851584-1', 'auto');
+window.ga('create', 'UA-101720844-1', 'auto');
 window.ga('send', 'pageview');
 
 
 //  Custom Analytics
 //  https://github.com/puckey/you-move-me/issues/315
+//  requestIdleCallback:
+//  https://developers.google.com/web/updates/2015/08/using-requestidlecallback
 
 const verbosity = 1;
 
@@ -22,8 +24,15 @@ const analytics = {
   record: (obj) => {
     if (verbosity >= 0.5) console.log('Note:', obj);
     if (window.ga !== undefined && typeof window.ga === 'function') {
-      window.ga('send', obj);
-      if (verbosity >= 0.5) console.log('Noted.');
+      const callback = () => {
+        window.ga('send', obj);
+        if (verbosity >= 0.5) console.log('Noted.');
+      };
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(callback);
+      } else {
+        callback();
+      }
     }
   },
   //  This is basically a “bounce” event recording.
@@ -31,11 +40,18 @@ const analytics = {
     const url = a.getAttribute('href');
     if (verbosity >= 0.5) console.log('Note:', url);
     if (window.ga !== undefined && typeof window.ga === 'function') {
-      window.ga('send', 'event', 'outbound', 'click', url, {
-        transport: 'beacon',
-        hitCallback: function () {},
-        //hitCallback: function(){ document.location = url }
-      });
+      const callback = () => {
+        window.ga('send', 'event', 'outbound', 'click', url, {
+          transport: 'beacon',
+          hitCallback: function () {},
+          //hitCallback: function(){ document.location = url }
+        });
+      };
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(callback);
+      } else {
+        callback();
+      }
     }
     return true;
   },
@@ -46,11 +62,18 @@ const analytics = {
   recordSectionChange: (label) => {
     if (verbosity >= 0.5) console.log('Note:', label);
     if (window.ga !== undefined && typeof window.ga === 'function') {
-      window.ga('set', {
-        page: document.location.href,
-        title: label,
-      });
-      window.ga('send', 'pageview');
+      const callback = () => {
+        window.ga('set', {
+          page: document.location.href,
+          title: label,
+        });
+        window.ga('send', 'pageview');
+      };
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(callback);
+      } else {
+        callback();
+      }
     }
   },
   recordInternalLink: (a) => { // ****** HOW IS THIS DIF THAN ABOVE?????????
@@ -84,7 +107,7 @@ const analytics = {
     analytics.timeables[label] = Date.now();
   },
   recordTimeableStop: (label) => {
-    if (analytics.timeables[label] !== undefined) {
+    if (typeof analytics.timeables[label] === 'number') {
       const duration = Date.now() - analytics.timeables[label];
       analytics.record({
         hitType: 'event',

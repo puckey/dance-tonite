@@ -5,6 +5,7 @@ import * as THREE from './lib/three';
 import { installRouter } from './routes';
 import props from './props';
 import feature from './utils/feature';
+import analytics from './utils/analytics';
 import Room from './room';
 import hud from './hud';
 import viewer from './viewer';
