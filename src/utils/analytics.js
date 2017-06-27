@@ -97,7 +97,7 @@ const analytics = {
       hitType: 'event',
       eventCategory: 'Countables',
       eventAction: label,
-      value: analytics.countables[label],
+      eventValue: analytics.countables[label],
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
@@ -113,7 +113,7 @@ const analytics = {
         hitType: 'event',
         eventCategory: 'Timeables',
         eventAction: label,
-        value: duration / 1000, //  Unit is seconds, accurate to milliseconds.
+        eventValue: duration / 1000, //  Unit is seconds, accurate to milliseconds.
         nonInteraction: true,   //  Don’t count this as separate “page.”
       });
     }
@@ -149,7 +149,7 @@ const analytics = {
       eventCategory: 'VR Session',
       eventAction: 'Milestones',
       eventLabel: 'Orb select',
-      value: analytics.orbSelects,
+      eventValue: analytics.orbSelects,
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
@@ -162,7 +162,7 @@ const analytics = {
       eventCategory: 'VR Session',
       eventAction: 'Milestones',
       eventLabel: 'Head clicks',
-      value: analytics.headSelects,
+      eventValue: analytics.headSelects,
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
@@ -175,7 +175,7 @@ const analytics = {
       eventCategory: 'VR Session',
       eventAction: 'Milestones',
       eventLabel: 'Credits',
-      value: analytics.creditViews,
+      eventValue: analytics.creditViews,
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
@@ -239,7 +239,7 @@ const analytics = {
         eventCategory: 'Capabilities',
         eventAction: 'VR Displays Detect',
         eventLabel: 'VR Displays are present',
-        value: feature.vrDisplays, // .length,
+        eventValue: feature.vrDisplays, // .length,
         nonInteraction: true,
       });
     } else {
@@ -317,7 +317,7 @@ const analytics = {
             eventCategory: 'VR Session',
             eventAction: 'VR Exit',
             eventLabel: 'VR exit successful',
-            value: analytics.vrSessionDuration, //  Unit here is seconds, accurate to milliseconds.
+            eventValue: analytics.vrSessionDuration, //  Unit here is seconds, accurate to milliseconds.
             nonInteraction: true, //  The ATTEMPT is an interaction. Its SUCCESS is not.
           });
         }
@@ -338,7 +338,7 @@ const analytics = {
       eventCategory: 'Dance Session',
       eventAction: 'Tutorial',
       eventLabel: 'Skip',
-      value: analytics.tutorialSkips,
+      eventValue: analytics.tutorialSkips,
       nonInteraction: true,
     });
   },
@@ -358,7 +358,7 @@ const analytics = {
         eventCategory: 'Dance Session',
         eventAction: 'Recording',
         eventLabel: 'Completed',
-        value: analytics.danceSessionsRecorded,
+        eventValue: analytics.danceSessionsRecorded,
         nonInteraction: true,
       });
     }
@@ -370,7 +370,7 @@ const analytics = {
         eventCategory: 'Dance Session',
         eventAction: 'Recording',
         eventLabel: 'Duration',
-        value: duration / 1000,
+        eventValue: duration / 1000,
         nonInteraction: true,
       });
     }
@@ -381,7 +381,7 @@ const analytics = {
         eventCategory: 'Dance Session',
         eventAction: 'Recording',
         eventLabel: 'Rounds',
-        value: rounds,
+        eventValue: rounds,
         nonInteraction: true,
       });
     }
