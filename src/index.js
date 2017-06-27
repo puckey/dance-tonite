@@ -33,4 +33,5 @@ if (process.env.FLAVOR === 'cms') {
   }
   document.getElementById('initial').remove();
   render(<Router />, document.body, root);
+  analytics.mount();
 })();
