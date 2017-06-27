@@ -11,28 +11,30 @@
     "build-cms": "cross-env NODE_ENV=production FLAVOR=cms webpack --progress --colors",
     "deploy": "npm run build && npm run deploy-app-engine",
     "deploy-app-engine": "appcfg.py update -A you-move-me -V master .",
-    "analyze": "cross-env NODE_ENV=production webpack --profile --json > stats.json && webpack-bundle-analyzer stats.json"
+    "analyze": "cross-env NODE_ENV=production ANALYZE_BUNDLE=true webpack --progress --colors"
   },
   "dependencies": {
     "async": "^2.3.0",
     "babel-polyfill": "^6.23.0",
+    "ccapture.js": "1.0.6",
     "classnames": "^2.2.5",
+    "downloadjs": "^1.4.7",
     "eases": "^1.0.8",
     "firebase": "^4.1.1",
+    "gif.js": "0.2.0",
     "grapnel": "^0.6.4",
-    "hyperscript": "^2.0.2",
+    "just-shuffle": "^1.0.0",
     "mitt": "^1.1.0",
     "pad-number": "0.0.4",
     "parse-bmfont-ascii": "^1.0.6",
     "preact": "^8.1.0",
+    "preact-portal": "^1.1.2",
     "three-bmfont-text": "^2.2.1",
     "three-effectcomposer-es6": "0.0.4",
     "throttle-debounce": "^1.0.1",
     "tween-ticker": "^3.3.2",
     "unfetch": "^2.1.2",
     "unique-s3-uploader": "0.0.2",
-    "ccapture.js": "1.0.6",
-    "gif.js": "0.2.0",
     "webvr-polyfill": "^0.9.34"
   },
   "devDependencies": {
@@ -68,6 +70,7 @@
     "style-loader": "^0.16.1",
     "svgo-loader": "^1.2.1",
     "webpack": "^1.13.3",
+    "webpack-bundle-analyzer": "^2.8.2",
     "webpack-dev-server": "^1.14.1",
     "webpack-hot-middleware": "^2.7.1"
   }

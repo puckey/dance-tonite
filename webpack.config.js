@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const FLAVOR = process.env.FLAVOR || 'website';
@@ -36,7 +37,7 @@ const config = {
         loader: ExtractTextPlugin.extract('style', [
           'css-loader?minimize',
           'autoprefixer',
-          'sass',
+          'sass?sourceMap',
         ]),
       },
       {
@@ -92,6 +93,7 @@ const config = {
     new CopyWebpackPlugin([
       { from: 'public', to: '../dist/public' },
       { from: 'templates/_redirects', to: '../dist/' },
+      { from: 'templates/no-webgl.html', to: '../dist' },
     ]),
     new webpack.DefinePlugin({
       'process.env': {
@@ -102,7 +104,7 @@ const config = {
     new HtmlWebpackPlugin({
       inject: true,
       cache: false,
-      template: 'templates/index.html',
+      template: `templates/${FLAVOR === 'cms' ? 'cms' : 'index'}.html`,
       title: 'You Move Me',
       favicon: './public/favico.png',
     }),
@@ -134,6 +136,14 @@ if (process.env.NODE_ENV === 'production' && process.env.RG_ENV !== 'dev') {
       output: {
         comments: false,
       },
+    })
+  );
+}
+
+if (process.env.ANALYZE_BUNDLE) {
+  config.plugins = config.plugins.concat(
+    new BundleAnalyzerPlugin({
+      defaultSizes: 'gzip',
     })
   );
 }

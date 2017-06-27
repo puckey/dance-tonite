@@ -50,8 +50,9 @@ const checkHasVR = () => (
     }
     navigator
       .getVRDisplays()
-      .then(() => {
-        resolve(true);
+      .then((displays) => {
+        if (displays.length === 0) resolve(false);
+        else resolve(true);
       })
       .catch((error) => {
         console.log(error);
@@ -100,13 +101,18 @@ const getVRDisplayName = () => (
   })
 );
 const isAndroid = /android/i.test(userAgent);
+const isMobile = /android|ipad|iphone|iemobile/i.test(userAgent);
+const isTablet = (isAndroid && !/mobile/i.test(userAgent)) // https://stackoverflow.com/questions/5341637/how-do-detect-android-tablets-in-general-useragent
+  || /ipad/i.test(userAgent);
+const vrPolyfill = isMobile && !isTablet && (navigator.getVRDisplays === undefined);
+
 const feature = {
-  isMobile: /android|ipad|iphone|iemobile/i.test(userAgent),
-  isTablet: (isAndroid && !/mobile/i.test(userAgent)) // https://stackoverflow.com/questions/5341637/how-do-detect-android-tablets-in-general-useragent
-    || /ipad/i.test(userAgent),
+  isMobile,
+  isTablet,
   isAndroid,
   isChrome: /chrome/i.test(userAgent),
   stats: /fps/.test(window.location.hash),
+  vrPolyfill,
   prepare: () => (
     Promise.all([
       hasWebGL,

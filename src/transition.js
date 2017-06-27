@@ -5,7 +5,7 @@ import props from './props';
 import * as SDFText from './sdftext';
 import * as THREE from './lib/three';
 import { offsetFrom } from './utils/three';
-import settings from './settings';
+import { textColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
 
 let transitionVersion = 0;
@@ -18,7 +18,7 @@ const textItem = textCreator.create('', {
   wrapWidth: 4000,
   scale: 15,
   align: 'center',
-  color: settings.textColor,
+  color: textColor.getHex(),
 });
 
 const pivot = new THREE.Object3D();
@@ -90,6 +90,12 @@ const tweenFog = (from, to, duration = 2) => {
 };
 
 const fadeOut = (duration) => {
+  const version = transitionVersion;
+  setTimeout(() => {
+    if (version === transitionVersion) {
+      textItem.updateLabel('');
+    }
+  }, duration * 0.5);
   fadedOut = true;
   return tweenFog(25, 0, duration);
 };
@@ -123,7 +129,7 @@ const transition = {
     transitionScene.fog = new THREE.Fog(0x000000, 0, 0);
 
     floatingOrb.fadeIn();
-    viewer.events.on('tick', tick);
+    viewer.on('tick', tick);
     textItem.updateLabel(param.text);
     floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
     floatingOrb.mesh.scale.set(4, 4, 4);
@@ -135,6 +141,7 @@ const transition = {
   },
 
   async exit() {
+    if (!insideTransition) return;
     transitionVersion += 1;
     const version = transitionVersion;
     if (!fadedOut) {
@@ -149,7 +156,7 @@ const transition = {
   reset(soft) {
     insideTransition = false;
     fadedOut = false;
-    viewer.events.off('tick', tick);
+    viewer.off('tick', tick);
     viewer.renderScene = viewer.scene;
     if (tweener) tweener.cancel();
     insideTransition = false;

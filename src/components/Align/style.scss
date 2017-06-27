@@ -1,0 +1,108 @@
+@import '../../theme/theme';
+
+$horizontal-margin: 1rem;
+$vertical-margin: 1rem;
+
+.aligner {
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  position: fixed;
+
+  * {
+    pointer-events: all;
+  }
+
+  &.mod-center {
+    top: 0;
+    left: 0;
+
+    align-items: center;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+
+    &.mod-margin {
+      &:not(.mod-rows) > * {
+        margin-bottom: .4rem;
+      }
+
+      &.mod-rows > * {
+        margin-right: .4rem;
+      }
+    }
+  }
+
+  &.mod-top-left {
+    top: $vertical-margin;
+    left: $horizontal-margin;
+
+    &:not(.mod-rows) > * {
+      margin-bottom: .4rem;
+    }
+    &.mod-margin {
+      &:not(.mod-rows) > * {
+        margin-bottom: .4rem;
+      }
+
+      &.mod-rows > * {
+        margin-right: .4rem;
+      }
+    }
+  }
+
+  &.mod-bottom-left {
+    bottom: $vertical-margin;
+    left: $horizontal-margin;
+
+    &.mod-margin {
+      &:not(.mod-rows) > * {
+        margin-top: .4rem;
+      }
+
+      &.mod-rows > * {
+        margin-right: .4rem;
+      }
+    }
+  }
+
+  &.mod-top-right {
+    align-items: flex-end;
+    right: $horizontal-margin;
+    top: $vertical-margin;
+
+    &.mod-margin {
+      &:not(.mod-rows) > * {
+        margin-bottom: .4rem;
+      }
+
+      &.mod-rows > * {
+        margin-left: .4rem;
+      }
+    }
+  }
+
+  &.mod-bottom-right {
+    align-items: flex-end;
+    bottom: $vertical-margin;
+    right: $horizontal-margin;
+
+    &.mod-margin {
+      &:not(.mod-rows) > * {
+        margin-bottom: .4rem;
+      }
+
+      &.mod-rows > * {
+        margin-left: .4rem;
+      }
+    }
+  }
+
+  &.mod-inline {
+    position: relative;
+  }
+
+  &.mod-rows {
+    flex-direction: row;
+  }
+}

@@ -1,0 +1,58 @@
+@import '../../theme/theme';
+
+.vr-info-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  border-radius: 100%;
+  box-sizing: border-box;
+  z-index: $popover-layer;
+  background: $text-color;
+
+  width: 150vw;
+  height: 150vw;
+  margin: -75vw;
+  transform: scale(0);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.mod-entering-vr {
+    animation: splash 5s ease-in;
+  }
+
+  @media screen and (max-aspect-ratio: 1/1) {
+    width: 150vh;
+    height: 150vh;
+    margin: -75vh;
+  }
+}
+
+.vr-info-overlay-text {
+  width: 100vw;
+  font-size: 2rem;
+  text-align: center;
+  text-transform: uppercase;
+  font-feature-settings: 'ss01';
+  color: $background-color;
+  opacity: 0;
+}
+
+.mod-entering-vr .vr-info-overlay-text {
+  animation: textFade 6s 1s;
+}
+
+@keyframes textFade {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes splash {
+  0% { transform: scale(0); }
+  8% { transform: scale(1); }
+  95% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
+}

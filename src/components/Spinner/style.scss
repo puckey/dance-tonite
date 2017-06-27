@@ -1,0 +1,48 @@
+@import '../../theme/theme';
+
+.spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 100%;
+  box-sizing: border-box;
+  z-index: $popover-layer;
+  background: $text-color;
+  margin-bottom: 0 !important;
+}
+
+.spinner-inner {
+  position: absolute;
+  border-radius: 100%;
+  background: $text-color;
+  width: 1.5rem;
+  height: 1.5rem;
+  animation: grow1 2s infinite;
+}
+
+.spinner-inner-negative {
+  width: 1.5rem;
+  height: 1.5rem;
+  background: $background-color;
+  animation: grow2 2s infinite;
+}
+
+.spinner-text {
+  position: relative;
+  text-align: center;
+  left: .75rem;
+  transform: translateY(2rem) translateX(-50%);
+  width: 50vw;
+  top: 1rem;
+}
+
+@keyframes grow1 {
+  0% { transform: scale(0); }
+  50% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+@keyframes grow2 {
+  0% { transform: scale(0); }
+  50% { transform: scale(.85); }
+  100% { transform: scale(.85); }
+}

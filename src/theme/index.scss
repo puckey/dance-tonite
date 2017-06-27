@@ -1,12 +1,8 @@
 @import './theme';
 @import './util';
 
-@import './components/about';@import './components/close-button';@import './components/colophon';@import './components/menu';@import './components/play-button';@import './components/room';@import './components/skip-button';@import './components/spinner';@import './components/splash';@import './components/tutorial';@import './components/vr-info';
-@font-face {
-  font-family: 'Lars';
-  src: url('../public/type/LarsVRC-Light.otf') format('otf'),
-       url('../public/type/LarsVRC-Light.woff2') format('woff2'),
-       url('../public/type/LarsVRC-Light.woff') format('woff');
+@font-face {  font-family: 'Lars';
+  src: url('./resources/LarsVRC-Light.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
@@ -21,19 +17,30 @@ body {
   color: $text-color;
   font-family: 'Lars';
   margin: 0;
+  user-select: none;
 }
 
 body,
 html {
   height: 100%;
+  padding-bottom: 1px;
+}
+
+body:not(.mod-mobile) a:hover {
+  color: $white-color;
 }
 
 a {
   color: $text-color;
   cursor: pointer;
+  text-decoration: none;
+}
+
+a span {
+  border-bottom: solid $line-width * 1.2 $text-color;
 
   &:hover {
-    color: $white-color;
+    border-bottom-color: $white-color;
   }
 }
 
@@ -62,4 +69,3 @@ svg {
     font-size: $min-base-factor;
   }
 }
-

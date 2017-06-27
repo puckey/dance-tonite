@@ -2,13 +2,13 @@ import emitter from 'mitt';
 import * as SDFText from './sdftext';
 import Props from './props';
 import viewer from './viewer';
-import settings from './settings';
-import { Group } from './lib/three';
+import * as THREE from './lib/three';
+import { textColor } from './theme/colors';
 
 
 //  These are empty objects -- but we'll fill them soon.
 let [leftController, rightController] = viewer.controllers;
-const controllerGroup = new Group();
+const controllerGroup = new THREE.Group();
 
 function handleLeftPress() {
   if (leftPress) leftPress();
@@ -146,13 +146,13 @@ const rText = textCreator.create('', {
   wrapWidth: 1600,
   scale: 0.25,
   align: 'left',
-  color: settings.textColor,
+  color: textColor.getHex(),
 });
 const lText = textCreator.create('', {
   wrapWidth: 1980, // was originally 1600.
   scale: 0.25,
   align: 'right',
-  color: settings.textColor,
+  color: textColor.getHex(),
 });
 rhand.add(rText);
 lhand.add(lText);
@@ -248,5 +248,20 @@ const controllers = Object.assign(
 );
 
 controllers.countActiveControllers = () => +!!leftController.gamepad + +!!rightController.gamepad;
+
+controllers.fixToPosition = (function () {
+  const MATRIX = new THREE.Matrix4();
+  const POSITION = new THREE.Vector3();
+  const ROTATION = new THREE.Quaternion();
+  const SCALE = new THREE.Vector3();
+  return (position) => {
+    for (let i = 0; i < viewer.controllers.length; i++) {
+      const controller = viewer.controllers[i];
+      controller.matrix.decompose(POSITION, ROTATION, SCALE);
+      const { x, y, z } = POSITION.add(position).sub(viewer.camera.position);
+      controller.matrix.copyPosition(MATRIX.makeTranslation(x, y, z));
+    }
+  };
+}());
 
 export default controllers;

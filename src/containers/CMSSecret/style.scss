@@ -1,0 +1,17 @@
+@import '../../theme/theme';
+
+.secret-input {
+  max-width: 60vw;
+  height: 1rem;
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  border-bottom: 1px solid $text-color;
+  padding-bottom: 10px;
+  color: $text-color;
+  font-size: 1rem;
+}
+
+.secret-go-home {
+  margin-top: 1rem;
+}

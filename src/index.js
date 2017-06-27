@@ -1,57 +1,36 @@
+/** @jsx h */
 import 'babel-polyfill';
+import { h, render } from 'preact';
 
 import './theme/index.scss';
 import * as THREE from './lib/three';
-import { installRouter } from './routes';
+import router from './router';
 import props from './props';
 import feature from './utils/feature';
 import analytics from './utils/analytics';
-import Room from './room';
-import hud from './hud';
-import viewer from './viewer';
-import audioPool from './utils/audio-pool';
-import playIconSvg from './hud/icons/play.svg';
+import Router from './containers/Router';
 
 window.THREE = THREE;
 
+if (process.env.NODE_ENV === 'development') {
+  require('preact/devtools');
+}
+
+if (process.env.FLAVOR === 'cms') {
+  if (!localStorage.getItem('secret')) {
+    router.navigate('/secret');
+  }
+}
 
 (async () => {
+  let root;
   await Promise.all([
     props.prepare(),
-    feature.prepare().then(hud.prepare),
+    feature.prepare(),
   ]);
-
-  // If we are on a mobile device, we need a touch event in order
-  // to play the audio:
   if (feature.isMobile) {
-    hud.hideLoader();
-    Room.reset();
-    viewer.switchCamera('orthographic');
-    await new Promise((resolve) => {
-      const onPressPlay = function () {
-        play.classList.add('mod-hidden');
-        audioPool.fill();
-        resolve();
-      };
-      const play = hud.create(
-        'div.spinner-overlay',
-        hud.create(
-          'div.play-button.mod-fill',
-          { onclick: onPressPlay }
-        ),
-        hud.create(
-          'div.play-button-text',
-          { onclick: onPressPlay },
-          'Press play to Dance Tonite'
-        )
-      );
-      document.querySelector('.play-button').innerHTML = playIconSvg;
-    });
+    document.body.classList.add('mod-mobile');
   }
-
-  const { aboutButton, muteButton } = hud.elements;
-  aboutButton.classList.remove('mod-hidden');
-  muteButton.classList.remove('mod-hidden');
-
-  installRouter();
+  document.getElementById('initial').remove();
+  render(<Router />, document.body, root);
 })();

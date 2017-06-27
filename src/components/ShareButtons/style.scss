@@ -1,0 +1,10 @@
+@import '../../theme/theme';
+
+.share-icons {
+  display: flex;
+  flex-direction: row;
+
+  * {
+    margin-right: 0.1rem;
+  }
+}

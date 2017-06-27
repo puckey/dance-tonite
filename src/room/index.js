@@ -5,7 +5,9 @@ import {
   tempVector,
   setIdentityMatrix,
   set180RotationMatrix,
+  worldToScreen,
 } from '../utils/three';
+import windowSize from '../utils/windowSize';
 import viewer from '../viewer';
 import settings from '../settings';
 import {
@@ -17,7 +19,7 @@ import {
 import layout from './layout';
 import dummyTextureUrl from '../public/dummy.png';
 import InstancedItem from '../instanced-item';
-import Frames from '../frames';
+import Frames from './frames';
 import { createPose } from '../utils/serializer';
 import audio from '../audio';
 
@@ -46,15 +48,24 @@ const lerpPose = (
 };
 
 export default class Room {
-  constructor({ id, recording, index, single = false, wall = false, isGiffing = false }) {
+  constructor(params) {
+    const {
+      id,
+      recording,
+      index,
+      colorIndex = params.index,
+      single = false,
+      wall = false,
+      isGiffing = false,
+    } = params;
     this._worldPosition = new THREE.Vector3();
-    this.index = recording ? recording.roomIndex : index;
+    this.index = index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
     this.single = single;
     const frames = this.frames = new Frames(id, recording);
     this.firstFrame = frames.getFrame(0);
     this.frame = frames.getFrame();
-    this.costumeColor = getCostumeColor(this.index);
+    this.costumeColor = getCostumeColor(colorIndex);
     this.position = layout.getPosition(
       index,
       new THREE.Vector3(),
@@ -67,9 +78,10 @@ export default class Room {
     position.y -= 1;
     const type = layout.getType(index);
     if (type === 'PLANE') return;
-    items.room.add([position, null], getRoomColor(this.index));
+    const roomColor = getRoomColor(colorIndex);
+    items.room.add([position, null], roomColor);
     if (single || wall || layout.hasWall(index)) {
-      items.wall.add([position, null], getRoomColor(this.index));
+      items.wall.add([position, null], roomColor);
     }
     Room.isGiffing = isGiffing;
   }
@@ -114,6 +126,16 @@ export default class Room {
     );
     object.position.copy(position);
     object.quaternion.copy(rotation);
+  }
+
+  // To be used in orthographic mode:
+  isVisibleOnScreen() {
+    const coords = this.getScreenCoordinates();
+    return coords.x > 0 && coords.x < windowSize.width;
+  }
+
+  getScreenCoordinates() {
+    return worldToScreen(viewer.camera, this.worldPosition);
   }
 
   gotoTime(seconds, maxLayers) {
@@ -162,6 +184,7 @@ export default class Room {
 }
 
 Room.clear = () => {
+  if (!items) return;
   items.hand.empty();
   items.head.empty();
 };
@@ -207,9 +230,15 @@ Room.rotate180 = () => {
 
 Room.highlight = {};
 
-Room.setHighlight = ([room, performance] = []) => {
-  Room.highlight.roomIndex = room;
-  Room.highlight.performanceIndex = performance;
+Room.setHighlight = (highlight) => {
+  if (highlight) {
+    const [room, performance] = highlight;
+    Room.highlight.roomIndex = room;
+    Room.highlight.performanceIndex = performance;
+  } else {
+    Room.highlight.roomIndex = null;
+    Room.highlight.performanceIndex = null;
+  }
 };
 
 Room.getGroup = () => InstancedItem.group;

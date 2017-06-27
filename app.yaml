@@ -7,10 +7,12 @@ handlers:
   static_files: dist/index.html
   upload: dist/index.html
   login: admin
+  secure: always
 
 - url: /(.*)
   static_files: dist/\1
   upload: dist/(.*)
+  secure: always
 
 skip_files:
 - ^(.*/)?\..*$

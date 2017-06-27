@@ -1,0 +1,16 @@
+@import '../../theme/theme';
+
+.cms-menu {
+  .aligner.mod-top-left {
+    margin: -.5rem 0;
+  }
+
+  .aligner.mod-top-right {
+    margin: -.5rem;
+  }
+
+  .aligner.mod-bottom-right,
+  .aligner.mod-bottom-left {
+    z-index: $cms-layer;
+  }
+}

@@ -10,12 +10,15 @@
  */
 module.exports = function( THREE ){
 
-	THREE.VREffect = function( renderer, onError ) {
+	THREE.VREffect = function ( renderer, onError ) {
 
 		var vrDisplay, vrDisplays;
 		var eyeTranslationL = new THREE.Vector3();
 		var eyeTranslationR = new THREE.Vector3();
 		var renderRectL, renderRectR;
+		var headMatrix = new THREE.Matrix4();
+		var eyeMatrixL = new THREE.Matrix4();
+		var eyeMatrixR = new THREE.Matrix4();
 
 		var frameData = null;
 
@@ -43,7 +46,7 @@ module.exports = function( THREE ){
 
 		if ( navigator.getVRDisplays ) {
 
-			navigator.getVRDisplays().then( gotVRDisplays ).catch( function() {
+			navigator.getVRDisplays().then( gotVRDisplays ).catch( function () {
 
 				console.warn( 'THREE.VREffect: Unable to get VR Displays' );
 
@@ -54,7 +57,6 @@ module.exports = function( THREE ){
 		//
 
 		this.isPresenting = false;
-		this.scale = 1;
 
 		var scope = this;
 
@@ -62,26 +64,26 @@ module.exports = function( THREE ){
 		var rendererUpdateStyle = false;
 		var rendererPixelRatio = renderer.getPixelRatio();
 
-		this.getVRDisplay = function() {
+		this.getVRDisplay = function () {
 
 			return vrDisplay;
 
 		};
 
-		this.setVRDisplay = function( value ) {
+		this.setVRDisplay = function ( value ) {
 
 			vrDisplay = value;
 
 		};
 
-		this.getVRDisplays = function() {
+		this.getVRDisplays = function () {
 
 			console.warn( 'THREE.VREffect: getVRDisplays() is being deprecated.' );
 			return vrDisplays;
 
 		};
 
-		this.setSize = function( width, height, updateStyle ) {
+		this.setSize = function ( width, height, updateStyle ) {
 
 			rendererSize = { width: width, height: height };
 			rendererUpdateStyle = updateStyle;
@@ -106,7 +108,6 @@ module.exports = function( THREE ){
 		var canvas = renderer.domElement;
 		var defaultLeftBounds = [ 0.0, 0.0, 0.5, 1.0 ];
 		var defaultRightBounds = [ 0.5, 0.0, 0.5, 1.0 ];
-		var VRResolutionRatio = 1.0;
 
 		function onVRDisplayPresentChange() {
 
@@ -116,6 +117,8 @@ module.exports = function( THREE ){
 			if ( scope.isPresenting ) {
 
 				var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
+				var eyeWidth = eyeParamsL.renderWidth;
+				var eyeHeight = eyeParamsL.renderHeight;
 
 				if ( ! wasPresenting ) {
 
@@ -123,9 +126,8 @@ module.exports = function( THREE ){
 					rendererSize = renderer.getSize();
 
 					renderer.setPixelRatio( 1 );
-					renderer.setSize( eyeParamsL.renderWidth * 2, eyeParamsL.renderHeight, false );
+					renderer.setSize( eyeWidth * 2, eyeHeight, false );
 
-					scope.setVRResolutionRatio(VRResolutionRatio)
 				}
 
 			} else if ( wasPresenting ) {
@@ -133,60 +135,15 @@ module.exports = function( THREE ){
 				renderer.setPixelRatio( rendererPixelRatio );
 				renderer.setSize( rendererSize.width, rendererSize.height, rendererUpdateStyle );
 
-				// return the mirrored content to full size
-		        //canvas.style.width = 100 + "%";
-		        //canvas.style.height = 100 + "%";
-
 			}
-  			
-  			renderer.domElement.style.width = rendererSize.width + "px";
-  			renderer.domElement.style.height = rendererSize.height + "px";
+
 		}
 
 		window.addEventListener( 'vrdisplaypresentchange', onVRDisplayPresentChange, false );
 
-		// Set the resolution draw and presented in VR. This ratio only affects the area of the
-		// canvas we render to and submit to VRDisplay (no canvas resizing required), so 
-		// this function is fast enough to call every frame
-		this.setVRResolutionRatio = function (ratio) {
-			VRResolutionRatio = THREE.Math.clamp(ratio, 0, 1.0);
+		this.setFullScreen = function ( boolean ) {
 
-			if ( vrDisplay !== undefined && vrDisplay.isPresenting ) {
-
-				// since we're already presenting, this doesn't need to be initiated by user interaction
-				requestPresentToVRDisplay();
-
-		        if (vrDisplay.capabilities.hasExternalDisplay) {
-
-		          // scale mirrored content up to fill the screen (even if we're just drawing to 
-		          // a small part of it)
-		          canvas.style.width = (1.0/VRResolutionRatio) * 100 + "%";
-		          canvas.style.height = (1.0/VRResolutionRatio) * 100 + "%";
-		        }
-			}
-
-		}
-
-		function requestPresentToVRDisplay() {
-			var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
-
-			// render size of each divided by total canvas size 
-			var boundsWidth = Math.floor(eyeParamsL.renderWidth * VRResolutionRatio) / canvas.width;
-			var boundsHeight = Math.floor(eyeParamsL.renderHeight * VRResolutionRatio) / canvas.height;
-
-			console.log("VR Effect VRResolutionRatio: ", VRResolutionRatio, " ", eyeParamsL.renderWidth * VRResolutionRatio, "x", eyeParamsL.renderHeight * VRResolutionRatio);
-
-			return vrDisplay.requestPresent([{
-	         	source: canvas,
-	      	 	leftBounds: [0.0, 0.0, boundsWidth, boundsHeight],
-	      	 	rightBounds: [boundsWidth, 0.0, boundsWidth, boundsHeight]
-	        }]);
-		}
-
-
-		this.setFullScreen = function( boolean ) {
-
-			return new Promise( function( resolve, reject ) {
+			return new Promise( function ( resolve, reject ) {
 
 				if ( vrDisplay === undefined ) {
 
@@ -204,7 +161,7 @@ module.exports = function( THREE ){
 
 				if ( boolean ) {
 
-					resolve( requestPresentToVRDisplay() );
+					resolve( vrDisplay.requestPresent( [ { source: canvas } ] ) );
 
 				} else {
 
@@ -216,19 +173,19 @@ module.exports = function( THREE ){
 
 		};
 
-		this.requestPresent = function() {
+		this.requestPresent = function () {
 
 			return this.setFullScreen( true );
 
 		};
 
-		this.exitPresent = function() {
+		this.exitPresent = function () {
 
 			return this.setFullScreen( false );
 
 		};
 
-		this.requestAnimationFrame = function( f ) {
+		this.requestAnimationFrame = function ( f ) {
 
 			if ( vrDisplay !== undefined ) {
 
@@ -242,7 +199,7 @@ module.exports = function( THREE ){
 
 		};
 
-		this.cancelAnimationFrame = function( h ) {
+		this.cancelAnimationFrame = function ( h ) {
 
 			if ( vrDisplay !== undefined ) {
 
@@ -256,7 +213,7 @@ module.exports = function( THREE ){
 
 		};
 
-		this.submitFrame = function() {
+		this.submitFrame = function () {
 
 			if ( vrDisplay !== undefined && scope.isPresenting ) {
 
@@ -276,7 +233,7 @@ module.exports = function( THREE ){
 		var cameraR = new THREE.PerspectiveCamera();
 		cameraR.layers.enable( 2 );
 
-		this.render = function( scene, camera, renderTarget, forceClear ) {
+		this.render = function ( scene, camera, renderTarget, forceClear ) {
 
 			if ( vrDisplay && scope.isPresenting ) {
 
@@ -288,12 +245,6 @@ module.exports = function( THREE ){
 					scene.autoUpdate = false;
 
 				}
-
-				var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
-				var eyeParamsR = vrDisplay.getEyeParameters( 'right' );
-
-				eyeTranslationL.fromArray( eyeParamsL.offset );
-				eyeTranslationR.fromArray( eyeParamsR.offset );
 
 				if ( Array.isArray( scene ) ) {
 
@@ -351,12 +302,12 @@ module.exports = function( THREE ){
 				if ( renderer.autoClear || forceClear ) renderer.clear();
 
 				if ( camera.parent === null ) camera.updateMatrixWorld();
-				camera.matrixWorld.decompose( cameraL.position, cameraL.quaternion, cameraL.scale );
-				camera.matrixWorld.decompose( cameraR.position, cameraR.quaternion, cameraR.scale );
 
-				var scale = this.scale;
-				cameraL.translateOnAxis( eyeTranslationL, scale );
-				cameraR.translateOnAxis( eyeTranslationR, scale );
+				camera.matrixWorld.decompose( cameraL.position, cameraL.quaternion, cameraL.scale );
+
+				cameraR.position.copy( cameraL.position );
+				cameraR.quaternion.copy( cameraL.quaternion );
+				cameraR.scale.copy( cameraL.scale );
 
 				if ( vrDisplay.getFrameData ) {
 
@@ -368,10 +319,29 @@ module.exports = function( THREE ){
 					cameraL.projectionMatrix.elements = frameData.leftProjectionMatrix;
 					cameraR.projectionMatrix.elements = frameData.rightProjectionMatrix;
 
+					getEyeMatrices( frameData );
+
+					cameraL.updateMatrix();
+					cameraL.matrix.multiply( eyeMatrixL );
+					cameraL.matrix.decompose( cameraL.position, cameraL.quaternion, cameraL.scale );
+
+					cameraR.updateMatrix();
+					cameraR.matrix.multiply( eyeMatrixR );
+					cameraR.matrix.decompose( cameraR.position, cameraR.quaternion, cameraR.scale );
+
 				} else {
+
+					var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
+					var eyeParamsR = vrDisplay.getEyeParameters( 'right' );
 
 					cameraL.projectionMatrix = fovToProjection( eyeParamsL.fieldOfView, true, camera.near, camera.far );
 					cameraR.projectionMatrix = fovToProjection( eyeParamsR.fieldOfView, true, camera.near, camera.far );
+
+					eyeTranslationL.fromArray( eyeParamsL.offset );
+					eyeTranslationR.fromArray( eyeParamsR.offset );
+
+					cameraL.translateOnAxis( eyeTranslationL, cameraL.scale.x );
+					cameraR.translateOnAxis( eyeTranslationR, cameraR.scale.x );
 
 				}
 
@@ -383,8 +353,8 @@ module.exports = function( THREE ){
 
 				} else {
 
-					renderer.setViewport( renderRectL.x, renderRectL.y + (size.height - renderRectL.height), renderRectL.width, renderRectL.height );
-					renderer.setScissor( renderRectL.x, renderRectL.y + (size.height - renderRectL.height), renderRectL.width, renderRectL.height );
+					renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
+					renderer.setScissor( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
 
 				}
 				renderer.render( scene, cameraL, renderTarget, forceClear );
@@ -397,8 +367,8 @@ module.exports = function( THREE ){
 
 				} else {
 
-					renderer.setViewport( renderRectR.x, renderRectR.y + (size.height - renderRectR.height), renderRectR.width, renderRectR.height );
-					renderer.setScissor( renderRectR.x, renderRectR.y + (size.height - renderRectR.height), renderRectR.width, renderRectR.height );
+					renderer.setViewport( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
+					renderer.setScissor( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
 
 				}
 				renderer.render( scene, cameraR, renderTarget, forceClear );
@@ -439,13 +409,57 @@ module.exports = function( THREE ){
 
 		};
 
-		this.dispose = function() {
+		this.dispose = function () {
 
 			window.removeEventListener( 'vrdisplaypresentchange', onVRDisplayPresentChange, false );
 
 		};
 
 		//
+
+		var poseOrientation = new THREE.Quaternion();
+		var posePosition = new THREE.Vector3();
+
+		// Compute model matrices of the eyes with respect to the head.
+		function getEyeMatrices( frameData ) {
+
+			// Compute the matrix for the position of the head based on the pose
+			if ( frameData.pose.orientation ) {
+
+				poseOrientation.fromArray( frameData.pose.orientation );
+				headMatrix.makeRotationFromQuaternion( poseOrientation );
+
+			}	else {
+
+				headMatrix.identity();
+
+			}
+
+			if ( frameData.pose.position ) {
+
+				posePosition.fromArray( frameData.pose.position );
+				headMatrix.setPosition( posePosition );
+
+			}
+
+			// The view matrix transforms vertices from sitting space to eye space. As such, the view matrix can be thought of as a product of two matrices:
+			// headToEyeMatrix * sittingToHeadMatrix
+
+			// The headMatrix that we've calculated above is the model matrix of the head in sitting space, which is the inverse of sittingToHeadMatrix.
+			// So when we multiply the view matrix with headMatrix, we're left with headToEyeMatrix:
+			// viewMatrix * headMatrix = headToEyeMatrix * sittingToHeadMatrix * headMatrix = headToEyeMatrix
+
+			eyeMatrixL.fromArray( frameData.leftViewMatrix );
+			eyeMatrixL.multiply( headMatrix );
+			eyeMatrixR.fromArray( frameData.rightViewMatrix );
+			eyeMatrixR.multiply( headMatrix );
+
+			// The eye's model matrix in head space is the inverse of headToEyeMatrix we calculated above.
+
+			eyeMatrixL.getInverse( eyeMatrixL );
+			eyeMatrixR.getInverse( eyeMatrixR );
+
+		}
 
 		function fovToNDCScaleOffset( fov ) {
 
@@ -499,7 +513,6 @@ module.exports = function( THREE ){
 			m[ 3 * 4 + 3 ] = 0.0;
 
 			mobj.transpose();
-
 			return mobj;
 
 		}

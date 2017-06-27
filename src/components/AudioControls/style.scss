@@ -1,0 +1,10 @@
+@import '../../theme/theme';
+
+.audio-controls {
+  display: flex;
+
+  .button-item-icon {
+    cursor: pointer;
+    width: 1.2rem;
+  }
+}

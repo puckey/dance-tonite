@@ -1,0 +1,42 @@
+@import '../../theme/theme';
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: $overlay-background-color;
+  opacity: 1;
+  transition: 1s opacity ease-in-out;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $popover-layer;
+}
+
+body:not(.mod-mobile) .overlay-text {
+  a:hover {
+    border-color: $white-color;
+  }
+}
+
+.overlay-text {
+  position: relative;
+  top: -1rem;
+  padding: 0 1rem;
+  font-size: 1.5rem;
+  max-width: 70vw;
+  line-height: 1.7rem;
+
+  h1 {
+    font-size: 1.7rem;
+    line-height: 1.7rem;
+  }
+
+  @media (max-width: $min-width) {
+    font-size: 1.3rem;
+    max-width: 90vw;
+  }
+}

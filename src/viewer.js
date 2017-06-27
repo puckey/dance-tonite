@@ -4,7 +4,6 @@
  */
 import 'webvr-polyfill';
 
-import h from 'hyperscript';
 import emitter from 'mitt';
 
 import * as THREE from './lib/three';
@@ -16,9 +15,11 @@ import feature from './utils/feature';
 import windowSize from './utils/windowSize';
 import audio from './audio';
 import postprocessing from './postprocessing';
+import Room from './room';
+import { sleep } from './utils/async';
 
 // if we're on a mobile phone that doesn't support WebVR, use polyfill
-if (feature.isMobile && !feature.isTablet && (navigator.getVRDisplays === undefined)) {
+if (feature.vrPolyfill) {
   window.WebVRConfig.BUFFER_SCALE = 0.75;
   window.polyfill = new window.WebVRPolyfill();
   console.log('WebVR polyfill');
@@ -28,7 +29,6 @@ require('./lib/VREffect')(THREE);
 require('./lib/VRControls')(THREE);
 require('./lib/VRController')(THREE);
 
-const events = emitter();
 const orthographicDistance = 4;
 
 // TODO: remove me:
@@ -84,7 +84,9 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(windowSize.width, windowSize.height);
 renderer.sortObjects = false;
 
-const containerEl = h('div.viewer', renderer.domElement);
+const containerEl = document.createElement('div');
+containerEl.className = 'viewer';
+containerEl.appendChild(renderer.domElement);
 document.body.appendChild(containerEl);
 
 const vrEffect = new THREE.VREffect(renderer);
@@ -135,7 +137,7 @@ const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
 
 const scene = createScene();
 
-const viewer = {
+const viewer = Object.assign(emitter(), {
   camera: cameras.orthographic,
   cameras,
   scene,
@@ -143,8 +145,27 @@ const viewer = {
   controllers: [{}, {}],
   controls,
   createScene,
-  events,
   renderer,
+  toggleVR: async (isStillMounted) => {
+    if (vrEffect.isPresenting) {
+      vrEffect.exitPresent();
+      viewer.switchCamera('orthographic');
+      audio.play();
+    } else {
+      vrEffect.requestPresent();
+      await audio.fadeOut();
+      if (!isStillMounted()) return;
+      audio.pause();
+
+      viewer.switchCamera('default');
+      await sleep(5000);
+      if (!isStillMounted()) return;
+
+      audio.play();
+      audio.unmute();
+      scene.add(viewer.camera);
+    }
+  },
   switchCamera: (name) => {
     InstancedItem.switch(
       name === 'orthographic'
@@ -154,7 +175,11 @@ const viewer = {
     viewer.camera = cameras[name];
   },
   vrEffect,
-};
+});
+
+window.addEventListener('vrdisplaypresentchange', () => {
+  viewer.emit('vr-present-change', vrEffect.isPresenting);
+}, false);
 
 const clock = new THREE.Clock();
 clock.start();
@@ -175,7 +200,9 @@ const animate = () => {
   }
 
   controls.update();
-  events.emit('tick', dt);
+  audio.tick();
+  Room.clear();
+  viewer.emit('tick', dt);
   zoomCamera(
     audio.progress > 21
       ? Math.min(2, audio.progress - 21) * 0.5
@@ -192,7 +219,7 @@ const animate = () => {
     renderer.render(viewer.renderScene, viewer.camera);
   }
 
-  events.emit('render', dt);
+  viewer.emit('render', dt);
   if (feature.stats) stats();
 };
 

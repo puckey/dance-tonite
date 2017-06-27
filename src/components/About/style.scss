@@ -1,0 +1,171 @@
+@import '../../theme/theme';
+
+.about {
+  position: relative;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $text-color;
+  color: $background-color;
+  width: 100%;
+  min-height: 100%;
+  padding-bottom: 3rem;
+  box-sizing: border-box;
+  z-index: $popover-layer;
+
+  h1,
+  h2,
+  h3 {
+    font-weight: normal;
+  }
+
+  h1,
+  h2 {
+    font-size: 1.75rem;
+    font-feature-settings: 'ss01';
+    line-height: 1.75rem;
+    padding-top: 3rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: bold;
+    padding-bottom: 0 !important;
+    margin: 0 auto;
+  }
+
+  h2 + h3 {
+    padding-top: 0;
+  }
+
+  p {
+    padding: 1rem 0;
+  }
+
+  a {
+    color: $background-color;
+    text-decoration: none;
+    border-bottom: solid $line-width * 1.2 $background-color;
+    padding-bottom: 0;
+
+    &:hover {
+      color: $background-color !important;
+      border: 0;
+    }
+  }
+
+  .column-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+
+    div {
+      flex: 1;
+      padding: 0;
+      margin-right: 2rem;
+      min-width: 15rem;
+
+      h3 {
+        margin: 0;
+      }
+
+      &:nth-of-type(even) {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .credits-intro {
+    width: 100%;
+    padding: 0;
+
+    h2 {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .credits {
+    padding: 0;
+
+    a {
+      border: 0;
+      padding: 0;
+    }
+  }
+
+  svg * {
+    fill: $background-color;
+    stroke: $background-color;
+  }
+
+  .colophon {
+    position: relative;
+    margin-top: 2rem;
+    pointer-events: none;
+
+    &, * {
+      padding: 0;
+    }
+  }
+
+  .colophon a {
+    border: 0;
+    pointer-events: all;
+  }
+
+  .colophon-divider {
+    border-color: $background-color;
+    width: 0;
+    height: 2.5rem;
+  }
+
+  .privacy-and-terms {
+    font-size: 0.5rem;
+    text-align: right;
+    margin-top: -3rem;
+
+    a {
+      border-bottom-width: $line-width * 0.5;
+    }
+  }
+}
+
+.about-content * {
+  width: 66.666%;
+  margin: 0 auto;
+  padding-bottom: 1rem;
+  line-height: 1.25;
+  padding-top: 2rem;
+  user-select: text;
+
+  @media screen and (max-width: $min-width) {
+    width: 90vw;
+    max-width: $mobile-wrapper-width;
+  }
+}
+
+.about-video-container {
+  position: relative;
+  width: 50%;
+  padding-top: 25px;
+  padding-bottom: 28.125%;
+  height: 0;
+  margin: 1rem auto 5rem;
+
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+  }
+
+
+  @media screen and (max-width: $min-width) {
+    width: 90vw;
+    max-width: $mobile-wrapper-width;
+    padding-bottom: 50.625%;
+  }
+}

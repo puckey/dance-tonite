@@ -1,11 +1,10 @@
 import mitt from 'mitt';
 
-export default (initialEvents = []) => {
+export default function createTimeline(initialEvents = [], callback) {
   const timeline = mitt();
   let lastIndex = 0;
   let lastTime;
   let events;
-
   Object.assign(timeline, {
     add(event) {
       events.push(event);
@@ -29,7 +28,6 @@ export default (initialEvents = []) => {
       if (time < lastTime) {
         lastIndex = 0;
       }
-
       for (let i = lastIndex; i < events.length; i++) {
         const event = events[i];
         if (time < event.time) break;
@@ -38,6 +36,11 @@ export default (initialEvents = []) => {
         // call optional callback
         if (event.callback) {
           event.callback(event);
+        }
+
+        // call optional callback passed to createTimeline
+        if (callback) {
+          callback(event);
         }
 
         lastIndex += 1;
@@ -52,4 +55,4 @@ export default (initialEvents = []) => {
   timeline.replace(initialEvents);
 
   return timeline;
-};
+}

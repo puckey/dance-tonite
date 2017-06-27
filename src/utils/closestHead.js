@@ -51,6 +51,8 @@ export default (screenX, screenY, rooms) => {
       }
     }
   }
+  if (roomIndex === undefined) return null;
+
   CLOSEST_ARRAY[0] = roomIndex;
   CLOSEST_ARRAY[1] = headIndex;
   return CLOSEST_ARRAY;

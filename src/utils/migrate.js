@@ -70,7 +70,7 @@ function loadPlaylistAndMigrate(filename) {
   request.send();
 }
 
-function migrateJSON(filename, roomID) {
+function migrateJSON(filename, forceRoomID) {
   const promise = new Promise((resolve, reject) => {
     const request = new XMLHttpRequest();
     request.open('GET', `https://d1nylz9ljdxzkb.cloudfront.net/${filename}`, true);
@@ -79,8 +79,13 @@ function migrateJSON(filename, roomID) {
       if (request.status >= 200 && request.status < 400) {
         const jsonString = request.responseText;
 
+        // get roomID from json (unless specified in parameter)
+        const dataLines = jsonString.split('\n');
+        const headerData = JSON.parse(dataLines[0]);
+        const roomID = (forceRoomID !== undefined) ? forceRoomID : headerData.loopIndex;
+
         firebaseUploader.upload(
-          jsonString.split('\n').map(JSON.parse),
+          dataLines.map(JSON.parse),
           roomID,
           (error, data) => {
             if (error) console.log('ERROR!', error);

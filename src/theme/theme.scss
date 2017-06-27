@@ -12,6 +12,7 @@ $background-color: #000;
 $text-color: #ff0;
 $inactive-color: transparentize($text-color, .5);
 $white-color: #fff;
+$black-color: #000;
 $overlay-background-color: rgba(0, 0, 0, .7);
 $transparent-color: rgba(0, 0, 0, 0);
 
@@ -20,3 +21,4 @@ $scene-layer: 10;
 $cms-layer: 19;
 $interface-layer: 20;
 $popover-layer: 30;
+$overlay-button-layer: 40;

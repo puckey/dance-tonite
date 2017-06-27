@@ -1,0 +1,29 @@
+@import '../../theme/theme';
+
+.colophon {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  padding: 1rem;
+  z-index: $interface-layer;
+  transition: opacity 1s ease-out;
+
+  svg {
+    width: 5rem;
+    height: 2.5rem;
+  }
+}
+
+@media (max-width: $min-width) {
+  .mod-mobile .colophon {
+    display: none;
+  }
+}
+
+.colophon-divider {
+  border-left: 1px solid $text-color;
+  margin: 0 .25rem 0 .75rem;
+  width: 0;
+  height: 2.5rem;
+  display: inline-block;
+}
