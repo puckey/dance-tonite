@@ -324,6 +324,76 @@ const analytics = {
     }
     //  -------------------------------------------------- VR controller info?!?!?!
   },
+  //  -------------------------------------------------- Dance Session: Tutorial
+  //  Do these still make sense??
+  // - No. of users who close the tutorial
+  // - No. of users who add performance (after tutorial)
+  // - No. of users who see error (after tutorial) [Need some more info on this.]
+  tutorialSkips: 0,
+  recordTutorialSkip: () => {
+    analytics.tutorialSkips++;
+    analytics.record({
+      hitType: 'event',
+      eventCategory: 'Dance Session',
+      eventAction: 'Tutorial',
+      eventLabel: 'Skip',
+      value: analytics.tutorialSkips,
+      nonInteraction: true,
+    });
+  },
+  //  -------------------------------------------------- Dance Session: Recording
+  danceSessionsRecorded: 0,
+  recordDanceSessionStart: () => {
+    analytics.danceTimeStart = Date.now();
+  },
+  //  Call this when user enters Review mode.
+  //  ie. prior to submission.
+  recordDanceSessionStop: (rounds) => {
+    //  How many sessions?
+    if (typeof analytics.danceSessionsRecorded === 'number') {
+      analytics.danceSessionsRecorded++;
+      analytics.record({
+        hitType: 'event',
+        eventCategory: 'Dance Session',
+        eventAction: 'Recording',
+        eventLabel: 'Completed',
+        value: analytics.danceSessionsRecorded,
+        nonInteraction: true,
+      });
+    }
+    //  How long was this session?
+    if (typeof analytics.danceTimeStart === 'number') {
+      const duration = Date.now() - analytics.danceTimeStart;
+      analytics.record({
+        hitType: 'event',
+        eventCategory: 'Dance Session',
+        eventAction: 'Recording',
+        eventLabel: 'Duration',
+        value: duration / 1000,
+        nonInteraction: true,
+      });
+    }
+    //  How many rounds in this session?
+    if (typeof rounds === 'number') {
+      analytics.record({
+        hitType: 'event',
+        eventCategory: 'Dance Session',
+        eventAction: 'Recording',
+        eventLabel: 'Rounds',
+        value: rounds,
+        nonInteraction: true,
+      });
+    }
+  },
+  recordDanceSessionSubmit: () => {
+    analytics.record({
+      hitType: 'event',
+      eventCategory: 'Dance',
+      eventAction: 'Recording',
+      eventLabel: 'Submit',
+      nonInteraction: true,
+    });
+  },
   //  -------------------------------------------------- Social shares
   //  Examples:
   //  analytics.recordSocialShare('Google+');
