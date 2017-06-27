@@ -99,7 +99,7 @@ export default class Review extends Component {
     this.props.goto('record');
   }
 
-  render(props, { visible }) {
+  render({ id, roomId }, { visible }) {
     return visible ? (
       <div>
         <Controllers
@@ -121,6 +121,8 @@ export default class Review extends Component {
           totalProgress
           fixedControllers
           recording={recording}
+          pathRecordingId={id}
+          pathRoomId={roomId}
         />
       </div>
     )

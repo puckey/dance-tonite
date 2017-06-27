@@ -35,12 +35,17 @@ export default class Playlist extends Component {
     Room.reset();
     Room.rotate180();
 
-    const { recording } = this.props;
+    const { recording, pathRoomId } = this.props;
     const { rooms } = this.state;
 
     if (recording) {
       for (let index = 1; index < 18; index += 2) {
-        const room = new Room({ recording, index, wall: true });
+        const room = new Room({
+          recording,
+          index,
+          colorIndex: pathRoomId - 1,
+          wall: true,
+        });
         rooms.push(room);
       }
     }
