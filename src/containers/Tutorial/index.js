@@ -104,10 +104,12 @@ export default class Tutorial extends Component {
           orbs
           tutorialLayers={layers}
         >
-          <TutorialTimeline
-            onUpdateLayers={this.setLayers}
-            onEnd={this.performShowOverlay}
-          />
+          { !overlay &&
+            <TutorialTimeline
+              onUpdateLayers={this.setLayers}
+              onEnd={this.performShowOverlay}
+            />
+          }
         </Room>
         { skipButton && (
           <Align type="bottom-right">
