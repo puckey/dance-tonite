@@ -97,7 +97,7 @@ const isAndroid = /android/i.test(userAgent);
 const isMobile = /android|ipad|iphone|iemobile/i.test(userAgent);
 const isTablet = (isAndroid && !/mobile/i.test(userAgent)) // https://stackoverflow.com/questions/5341637/how-do-detect-android-tablets-in-general-useragent
   || /ipad/i.test(userAgent);
-const vrPolyfill = isMobile && !isTablet && (navigator.getVRDisplays === undefined);
+const vrPolyfill = isMobile && !isTablet && !isAndroid && (navigator.getVRDisplays === undefined);
 
 
 const feature = {
