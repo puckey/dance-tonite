@@ -19,7 +19,7 @@ To learn more, watch this video or read the technical deep dive.
   <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
 </div>
 
-## Technologies used in this project
+## Technologies used in Dance Tonite
 
 <div class="column-wrapper">
   <div>
