@@ -15,8 +15,18 @@ const getVRDisplays = () => (
       resolve(false);
       return;
     }
-    navigator
-      .getVRDisplays()
+
+    // On Android chrome, there is a bug where getVRDisplays is never resolved.
+    // Set a 1 second timeout in that case
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=727969
+    const vrDisplayPromise = navigator.getVRDisplays();
+    const timeoutPromise = new Promise((timeOutResolve) => {
+      setTimeout(() => {
+        timeOutResolve([]);
+      }, 1000);
+    });
+
+    Promise.race([vrDisplayPromise, timeoutPromise])
       .then((displays) => {
         resolve(displays);
       })
@@ -33,8 +43,7 @@ const checkHasExternalDisplay = () => (
       resolve(false);
       return;
     }
-    navigator
-      .getVRDisplays()
+    getVRDisplays()
       .then(
         (displays) => {
           resolve(
@@ -57,8 +66,7 @@ const checkHasVR = () => (
       resolve(false);
       return;
     }
-    navigator
-      .getVRDisplays()
+    getVRDisplays()
       .then((displays) => {
         if (displays.length === 0) resolve(false);
         else resolve(true);
@@ -76,8 +84,7 @@ const checkHas6DOF = () => (
       resolve(false);
       return;
     }
-    navigator
-      .getVRDisplays()
+    getVRDisplays()
       .then((displays) => {
         resolve(
           !!displays[0] &&
