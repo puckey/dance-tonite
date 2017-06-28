@@ -20,6 +20,7 @@ export default class RoomComponent extends Component {
     this.performOrbEnteredRoom = this.performOrbEnteredRoom.bind(this);
     this.receiveOrb = this.receiveOrb.bind(this);
     this.tick = this.tick.bind(this);
+    this.onRoomLoaded = this.onRoomLoaded.bind(this);
   }
 
   getChildContext() {
@@ -48,6 +49,12 @@ export default class RoomComponent extends Component {
     viewer.off('tick', this.tick);
   }
 
+  onRoomLoaded(err) {
+    if (err && this.props.onRoomLoadError) {
+      this.props.onRoomLoadError(err);
+    }
+  }
+
   async asyncMount({ roomId, id, record }) {
     Room.reset();
     state.originalCameraPosition = viewer.camera.position.clone();
@@ -74,7 +81,7 @@ export default class RoomComponent extends Component {
     });
     if (id) {
       audio.play();
-      room.load(this.props.onRoomLoadError);
+      room.load(this.onRoomLoaded);
     }
     this.setState({ room });
     viewer.on('tick', this.tick);
