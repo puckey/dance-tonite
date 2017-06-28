@@ -35,6 +35,10 @@ export default class Inbox extends Component {
     this.asyncMount();
   }
 
+  componentWillReceiveProps() {
+    this.asyncMount();
+  }
+
   componentWillUnmount() {
     this.mounted = false;
   }
