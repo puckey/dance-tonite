@@ -13,7 +13,7 @@ import Container from '../../components/Container';
 import router from '../../router';
 import { sleep } from '../../utils/async';
 
-export default class Choose extends Component {
+export default class Publish extends Component {
   componentDidMount() {
     this.mounted = true;
     this.asyncMount();
