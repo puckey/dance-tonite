@@ -19,6 +19,10 @@ body {
   font-feature-settings: 'tnum';
   margin: 0;
   user-select: none;
+
+  &.mod-about {
+    background: $text-color;
+  }
 }
 
 body,

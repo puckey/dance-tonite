@@ -21,7 +21,9 @@ export default class About extends Component {
 
   componentWillMount() {
     this.mounted = true;
-    document.body.classList.remove('mod-overflow-hidden');
+    const classList = document.body.classList;
+    classList.remove('mod-overflow-hidden');
+    classList.add('mod-about');
     if (feature.isMobile) {
       audio.pause();
     } else {
@@ -40,7 +42,9 @@ export default class About extends Component {
 
   componentWillUnmount() {
     this.mounted = false;
-    document.body.classList.add('mod-overflow-hidden');
+    const classList = document.body.classList;
+    classList.add('mod-overflow-hidden');
+    classList.remove('mod-about');
     audio.play();
     audio.fadeIn(0.5);
   }
