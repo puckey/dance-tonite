@@ -9,7 +9,7 @@ _Dance Tonite_ features VR motion capture recordings of users dancing to the son
 Each room is made from a single person’s choreography. The entire experience evolves over time with every new user contribution.  
 
 ## Technology
-_Dance Tonite_ previews one of the most exciting developments in Chrome, WebVR, letting anyone can take part in the experience. Built for the web, no apps or downloads are required.
+Dance Tonite previews one of the most exciting developments in Chrome, WebVR, letting anyone can take part in the experience. Built for the web, no apps or downloads are required.
 
 This project is released open source. [View source code](https://github.com/puckey/you-move-me).
 
@@ -19,7 +19,7 @@ To learn more, watch this video or read the technical deep dive.
   <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
 </div>
 
-### Technologies used in this project
+## Technologies used in this project
 
 <div class="column-wrapper">
   <div>
@@ -86,10 +86,12 @@ Choreography on the website is curated by hand. Please be patient as we review a
 
   <h3>Music by <a href="http://lcdsoundsystem.com">LCD Soundsystem</a></h3>
 
-  <h3>Created by <a href="http://puckey.studio">Studio Puckey</a>, <a href="http://studiomoniker.com">Moniker</a>, and <a href="http://workshop.chromeexperiments.com/">Google’s Data Arts Team</a></h3>
+  <h3>Directed by <a href="http://puckey.studio">Jonathan Puckey</a>, <a href="http://studiomoniker.com">Moniker</a>, and <a href="http://workshop.chromeexperiments.com/">Google’s Data Arts Team</a></h3>
 
-</div><div class="credits">
-  <h3>Studio Puckey</h3>
+</div>
+<div class="column-wrapper credits">
+<div>
+  <h3><a href="http://puckey.studio">Studio Puckey</a></h3>
   <a href="http://puckey.studio">
     Jonathan Puckey</a>,
   <a href="http://neufv.website">
@@ -97,13 +99,16 @@ Choreography on the website is curated by hand. Please be patient as we review a
   <a href="http://mariusschwarz.com">
     Marius Schwarz
   </a>
-
-  <h3>Studio Moniker</h3>
+</div>
+<div>
+  <h3><a href="http://studiomoniker.com">Studio Moniker</a></h3>
   <a href="http://studiomoniker.com">
     Roel Wouters
   </a>
+  </div>
+  <div>
 
-  <h3>Data Arts Team</h3>
+  <h3><a href="https://github.com/dataarts">Data Arts Team</a></h3>
   <a href="http://custom-logic.com">
     Jeff Nusz</a>,
   <a href="http://sabahme.com">
@@ -116,17 +121,23 @@ Choreography on the website is curated by hand. Please be patient as we review a
   <a href="http://stewartsmith.io/">
     Stewart Smith
   </a>
+  </div>
+  <div>
 
-  <h3>Grainey Pictures</h3>
+  <h3><a href="http://gpixer.com">Grainey Pictures</a></h3>
   <a href="http://gpixer.com">
     Colin Gray, Megan Raney Aarons, Sherry Daniel, Nathan McGuire, Will Henderson-Nold, Nicholas Lee, Nicole Ryan
   </a>
-
-  <h3>Special thanks to the following folks at Google</h3>
+  </div>
+</div>
+<div class="credits mod-thanks">
+  <p>Special thanks to the following folks at Google<br/>
   <a href="http://haasmade.com/">
     Christian Haas</a>,
   <a href="http://takashikawashima.com/">
     Takashi Kawashima</a>,
   <a href="http://grow.io">
     Jeremy Weinstein</a>
+  </p>
+  <h3>Typeface<br/><a href="https://bold-decisions.biz/typefaces/lars">Lars</a> by <a href="https://bold-decisions.biz">Bold Decisions</a></h3>
 </div>

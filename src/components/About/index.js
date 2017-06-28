@@ -66,7 +66,7 @@ export default class About extends Component {
             className="about-content"
             dangerouslySetInnerHTML={{ __html: content }}
           />
-          <div className="about-content">
+          <div className="about-content mod-colophon">
             <Colophon />
             <div className="privacy-and-terms">
               <a href="https://www.google.com/policies/privacy/" target="_blank" rel="noreferrer noopener">Privacy</a> | <a href="https://www.google.com/policies/terms/" target="_blank" rel="noreferrer noopener">Terms</a>
