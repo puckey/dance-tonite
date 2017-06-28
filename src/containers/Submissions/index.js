@@ -125,7 +125,7 @@ export default class Submissions extends Component {
     const items = recordings
       .map((recording, index) => Object.assign({
         index,
-        title: `${recording.is_universal ? '🌎' : padNumber(recording.room, 2)} - ${
+        title: `${recording.is_universal ? '🌎' : padNumber(recording.room, 2)} – ${
           recording.title === '' ? 'Unnamed' : recording.title} ${
           recording.rating !== 0
             ? recording.rating === -1
