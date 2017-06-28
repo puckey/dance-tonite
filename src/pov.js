@@ -38,13 +38,15 @@ export default function create({ rooms, orb, offset = 0 }) {
     if (hoverPerformance || hoverOrb) {
       viewer.switchCamera('default');
       InstancedItem.group.add(viewer.camera);
-      analytics.recordHeadSelectStart();
+      if (hoverPerformance) analytics.recordHeadSelectStart();
+      else if (hoverOrb) analytics.recordOrbSelectStart();
     }
   };
 
   const onMouseUp = () => {
     if (viewer.vrEffect.isPresenting) return;
     if (hoverPerformance) analytics.recordHeadSelectStop();
+    else if (hoverOrb) analytics.recordOrbSelectStop();
     hoverPerformance = null;
     hoverOrb = false;
     viewer.switchCamera('orthographic');

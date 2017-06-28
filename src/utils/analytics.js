@@ -141,15 +141,20 @@ const analytics = {
     });
   },
   //  -------------------------------------------------- Playback Session: Orb select
-  orbSelects: 0,
-  recordOrbSelect: () => {
-    analytics.orbSelects++;
+  recordOrbSelectStart: () => {
+    analytics.orbSelectBeganAt = Date.now();
+  },
+  recordOrbSelectStop: () => {
+    let duration = 0;
+    if (analytics.orbSelectBeganAt !== undefined) {
+      duration = Math.round((Date.now() - analytics.orbSelectBeganAt) / 1000);
+    }
     analytics.record({
       hitType: 'event',
       eventCategory: 'Playback Session',
       eventAction: 'Milestones',
       eventLabel: 'Orb select',
-      eventValue: analytics.orbSelects,
+      eventValue: duration,
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
