@@ -139,5 +139,5 @@ Choreography on the website is curated by hand. Please be patient as we review a
   <a href="http://grow.io">
     Jeremy Weinstein</a>
   </p>
-  <h3>Typeface<br/><a href="https://bold-decisions.biz/typefaces/lars">Lars</a> by <a href="https://bold-decisions.biz">Bold Decisions</a></h3>
+  <h3>Typeface<br/><a href="https://bold-decisions.biz/typefaces/lars">Lars by Bold Decisions</a></h3>
 </div>
