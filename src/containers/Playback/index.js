@@ -35,6 +35,7 @@ export default class Playback extends Component {
     };
     this.onTitlesChanged = this.onTitlesChanged.bind(this);
     this.performExitPresent = this.performExitPresent.bind(this);
+    this.gotoSubmission = this.gotoSubmission.bind(this);
   }
 
   componentDidMount() {
@@ -122,6 +123,10 @@ export default class Playback extends Component {
     });
   }
 
+  gotoSubmission() {
+    this.props.goto('submission');
+  }
+
   render(
     {
       roomId,
@@ -162,14 +167,14 @@ export default class Playback extends Component {
             takeOffHeadset
               ? (
                 <Overlay>
-                  <a onClick={onGotoSubmission}>
+                  <a onClick={this.gotoSubmission}>
                     <span>I took off my headset</span>
                   </a>
                 </Overlay>
               )
               : (
                 <Align type="bottom-right">
-                  <ButtonItem text="Skip Preview" onClick={onGotoSubmission} />
+                  <ButtonItem text="Skip Preview" onClick={this.gotoSubmission} />
                 </Align>
               )
           )

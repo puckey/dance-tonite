@@ -214,7 +214,7 @@ const animate = () => {
   } else {
     vrEffect.render(viewer.renderScene, viewer.camera);
   }
-
+  viewer.emit('render');
   if (vrEffect.isPresenting && feature.hasExternalDisplay) {
     renderer.render(viewer.renderScene, viewer.camera);
   }

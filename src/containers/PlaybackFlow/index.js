@@ -6,6 +6,7 @@ import CMSMenu from '../../components/CMSMenu';
 import Container from '../../components/Container';
 import Playback from '../Playback';
 import Submission from '../Submission';
+import CreateGIF from '../CreateGIF';
 
 import recording from '../../recording';
 import router from '../../router';
@@ -25,8 +26,7 @@ export default class PlaybackFlow extends Component {
       fromRecording,
       count: 0,
     };
-    this.performGotoFullExperience = this.performGotoFullExperience.bind(this);
-    this.performGotoSubmission = this.performGotoSubmission.bind(this);
+    this.goto = this.goto.bind(this);
     this.onVRPresentChange = this.onVRPresentChange.bind(this);
   }
 
@@ -58,20 +58,14 @@ export default class PlaybackFlow extends Component {
     });
   }
 
-  performGotoFullExperience() {
-    if (recording.exists()) {
-      recording.destroy();
+  goto(mode) {
+    if (mode === 'playback') {
+      if (recording.exists()) {
+        recording.destroy();
+      }
+      this.setState({ fromRecording: false });
     }
-    this.setState({
-      mode: 'playback',
-      fromRecording: false,
-    });
-  }
-
-  performGotoSubmission() {
-    this.setState({
-      mode: 'submission',
-    });
+    this.setState({ mode });
   }
 
   renderMenu() {
@@ -98,17 +92,23 @@ export default class PlaybackFlow extends Component {
       <Container>
         { this.renderMenu() }
         {
-          mode === 'playback'
-            ? <Playback
+          mode === 'gif'
+            ? <CreateGIF
               {...props}
               inContextOfRecording={fromRecording}
-              onGotoSubmission={this.performGotoSubmission}
+              goto={this.goto}
             />
-            : <Submission
-              {...props}
-              fromRecording={fromRecording}
-              onGotoFullExperience={this.performGotoFullExperience}
-            />
+            : mode === 'playback'
+              ? <Playback
+                {...props}
+                inContextOfRecording={fromRecording}
+                goto={this.goto}
+              />
+              : <Submission
+                {...props}
+                fromRecording={fromRecording}
+                goto={this.goto}
+              />
         }
       </Container>
     );
