@@ -6,6 +6,7 @@ import Align from '../../components/Align';
 import ButtonTwitter from '../../components/ButtonTwitter';
 import ButtonFacebook from '../../components/ButtonFacebook';
 import ButtonGooglePlus from '../../components/ButtonGooglePlus';
+import analytics from '../../utils/analytics';
 
 export default class Submission extends Component {
   constructor() {
@@ -32,6 +33,9 @@ export default class Submission extends Component {
       '',
       'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600'
     );
+    if (service === 'googlePlus') analytics.recordSocialShare('Google+');
+    else if (service === 'facebook') analytics.recordSocialShare('Facebook');
+    else if (service === 'twitter') analytics.recordSocialShare('Twitter');
   }
 
   render({ roomId, id }) {

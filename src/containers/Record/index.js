@@ -16,6 +16,8 @@ import recording from '../../recording';
 import transition from '../../transition';
 import { sleep } from '../../utils/async';
 
+import analytics from '../../utils/analytics';
+
 export default class Record extends Component {
   constructor() {
     super();
@@ -69,6 +71,7 @@ export default class Record extends Component {
       transition.fadeOut(),
     ]);
     viewer.off('tick', this.tick);
+    analytics.recordDanceSessionStop(this.state.round);
     if (!this.mounted) return;
 
     this.props.goto('review');
@@ -112,6 +115,7 @@ export default class Record extends Component {
     audio.mute();
     audio.fadeIn();
     viewer.on('tick', this.tick);
+    analytics.recordDanceSessionStart();
   }
 
   async performRetry() {

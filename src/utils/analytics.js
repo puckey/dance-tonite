@@ -76,20 +76,8 @@ const analytics = {
       }
     }
   },
-  recordInternalLink: (a) => { // ****** HOW IS THIS DIF THAN ABOVE?????????
-    // const url = a.getAttribute('href');
-    // if (verbosity >= 0.5) console.log('Note:', url);
-    // if (window.ga !== undefined && typeof window.ga === 'function') {
-    //   window.ga('send', 'event', 'outbound', 'click', url, {
-    //     transport: 'beacon',
-    //     hitCallback: function () {},
-    //     //hitCallback: function(){ document.location = url }
-    //   });
-    // }
-    // return true;
-  },
   //  -------------------------------------------------- Countables
-  countables: [],
+  countables: {},
   recordCountable: (label) => {
     if (typeof analytics.countables[label] !== 'number') analytics.countables[label] = 0;
     analytics.countables[label]++;
@@ -97,24 +85,24 @@ const analytics = {
       hitType: 'event',
       eventCategory: 'Countables',
       eventAction: label,
-      value: analytics.countables[label],
+      eventValue: analytics.countables[label],
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
   //  -------------------------------------------------- Timeables
-  timeables: [],
+  timeables: {},
   recordTimeableStart: (label) => {
     analytics.timeables[label] = Date.now();
   },
   recordTimeableStop: (label) => {
     if (typeof analytics.timeables[label] === 'number') {
-      const duration = Date.now() - analytics.timeables[label];
+      const duration = Math.round((Date.now() - analytics.timeables[label]) / 1000);
       analytics.record({
         hitType: 'event',
         eventCategory: 'Timeables',
         eventAction: label,
-        value: duration / 1000, //  Unit is seconds, accurate to milliseconds.
-        nonInteraction: true,   //  Don’t count this as separate “page.”
+        eventValue: duration, //  Unit here is seconds (rounded).
+        nonInteraction: true, //  Don’t count this as separate “page.”
       });
     }
   },
@@ -140,45 +128,55 @@ const analytics = {
       eventLabel: 'VR exit attempted',
     });
   },
-  //  -------------------------------------------------- VR Session: Orb select
-  orbSelects: 0,
-  recordOrbSelect: () => {
-    analytics.orbSelects++;
+  //  -------------------------------------------------- Playback Session: Orb select
+  recordOrbSelectStart: () => {
+    analytics.orbSelectBeganAt = Date.now();
+  },
+  recordOrbSelectStop: () => {
+    let duration = 0;
+    if (typeof analytics.orbSelectBeganAt === 'number') {
+      duration = Math.round((Date.now() - analytics.orbSelectBeganAt) / 1000);
+    }
     analytics.record({
       hitType: 'event',
-      eventCategory: 'VR Session',
+      eventCategory: 'Playback Session',
       eventAction: 'Milestones',
       eventLabel: 'Orb select',
-      value: analytics.orbSelects,
+      eventValue: duration, //  Unit here is seconds (rounded).
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
-  //  -------------------------------------------------- VR Session: Clicks on Heads
-  headSelects: 0,
-  recordHeadSelect: () => {
-    analytics.headSelects++;
+  //  -------------------------------------------------- Playback Session: Head select
+  recordHeadSelectStart: () => {
+    analytics.headSelectBeganAt = Date.now();
+  },
+  recordHeadSelectStop: () => {
+    let duration = 0;
+    if (typeof analytics.headSelectBeganAt === 'number') {
+      duration = Math.round((Date.now() - analytics.headSelectBeganAt) / 1000);
+    }
     analytics.record({
       hitType: 'event',
-      eventCategory: 'VR Session',
+      eventCategory: 'Playback Session',
       eventAction: 'Milestones',
-      eventLabel: 'Head clicks',
-      value: analytics.headSelects,
+      eventLabel: 'Head select',
+      eventValue: duration, //  Unit here is seconds (rounded).
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
   //  -------------------------------------------------- VR Session: Made it to credits
-  creditViews: 0,
-  recordCreditsView: () => {
-    analytics.creditViews++;
-    analytics.record({
-      hitType: 'event',
-      eventCategory: 'VR Session',
-      eventAction: 'Milestones',
-      eventLabel: 'Credits',
-      value: analytics.creditViews,
-      nonInteraction: true, // Don’t count this as separate “page.”
-    });
-  },
+  // creditViews: 0,
+  // recordCreditsView: () => {
+  //   analytics.creditViews++;
+  //   analytics.record({
+  //     hitType: 'event',
+  //     eventCategory: 'VR Session',
+  //     eventAction: 'Milestones',
+  //     eventLabel: 'Credits',
+  //     eventValue: analytics.creditViews,
+  //     nonInteraction: true, // Don’t count this as separate “page.”
+  //   });
+  // },
 
 
   mount: () => {
@@ -239,7 +237,7 @@ const analytics = {
         eventCategory: 'Capabilities',
         eventAction: 'VR Displays Detect',
         eventLabel: 'VR Displays are present',
-        value: feature.vrDisplays, // .length,
+        eventValue: feature.vrDisplays, // .length,
         nonInteraction: true,
       });
     } else {
@@ -309,15 +307,16 @@ const analytics = {
           analytics.vrSessionEndedAt = Date.now();
           analytics.vrSessionDuration = null;
           if (analytics.vrSessionBeganAt !== undefined) {
-            analytics.vrSessionDuration = (analytics.vrSessionEndedAt -
-              analytics.vrSessionBeganAt) / 1000;
+            analytics.vrSessionDuration = Math.round(
+              (analytics.vrSessionEndedAt - analytics.vrSessionBeganAt) / 1000
+            );
           }
           analytics.record({
             hitType: 'event',
             eventCategory: 'VR Session',
             eventAction: 'VR Exit',
             eventLabel: 'VR exit successful',
-            value: analytics.vrSessionDuration, //  Unit here is seconds, accurate to milliseconds.
+            eventValue: analytics.vrSessionDuration, //  Unit here is seconds (rounded).
             nonInteraction: true, //  The ATTEMPT is an interaction. Its SUCCESS is not.
           });
         }
@@ -338,7 +337,7 @@ const analytics = {
       eventCategory: 'Dance Session',
       eventAction: 'Tutorial',
       eventLabel: 'Skip',
-      value: analytics.tutorialSkips,
+      eventValue: analytics.tutorialSkips,
       nonInteraction: true,
     });
   },
@@ -351,26 +350,24 @@ const analytics = {
   //  ie. prior to submission.
   recordDanceSessionStop: (rounds) => {
     //  How many sessions?
-    if (typeof analytics.danceSessionsRecorded === 'number') {
-      analytics.danceSessionsRecorded++;
-      analytics.record({
-        hitType: 'event',
-        eventCategory: 'Dance Session',
-        eventAction: 'Recording',
-        eventLabel: 'Completed',
-        value: analytics.danceSessionsRecorded,
-        nonInteraction: true,
-      });
-    }
+    analytics.danceSessionsRecorded++;
+    analytics.record({
+      hitType: 'event',
+      eventCategory: 'Dance Session',
+      eventAction: 'Recording',
+      eventLabel: 'Completed',
+      eventValue: analytics.danceSessionsRecorded,
+      nonInteraction: true,
+    });
     //  How long was this session?
     if (typeof analytics.danceTimeStart === 'number') {
-      const duration = Date.now() - analytics.danceTimeStart;
+      const duration = Math.round((Date.now() - analytics.danceTimeStart) / 1000);
       analytics.record({
         hitType: 'event',
         eventCategory: 'Dance Session',
         eventAction: 'Recording',
         eventLabel: 'Duration',
-        value: duration / 1000,
+        eventValue: duration, //  Unit here is seconds (rounded).
         nonInteraction: true,
       });
     }
@@ -381,7 +378,7 @@ const analytics = {
         eventCategory: 'Dance Session',
         eventAction: 'Recording',
         eventLabel: 'Rounds',
-        value: rounds,
+        eventValue: rounds,
         nonInteraction: true,
       });
     }
