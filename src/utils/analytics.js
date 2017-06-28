@@ -140,45 +140,50 @@ const analytics = {
       eventLabel: 'VR exit attempted',
     });
   },
-  //  -------------------------------------------------- VR Session: Orb select
+  //  -------------------------------------------------- Playback Session: Orb select
   orbSelects: 0,
   recordOrbSelect: () => {
     analytics.orbSelects++;
     analytics.record({
       hitType: 'event',
-      eventCategory: 'VR Session',
+      eventCategory: 'Playback Session',
       eventAction: 'Milestones',
       eventLabel: 'Orb select',
       eventValue: analytics.orbSelects,
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
-  //  -------------------------------------------------- VR Session: Clicks on Heads
-  headSelects: 0,
-  recordHeadSelect: () => {
-    analytics.headSelects++;
+  //  -------------------------------------------------- Playback Session: Head select
+  recordHeadSelectStart: () => {
+    analytics.headSelectBeganAt = Date.now();
+  },
+  recordHeadSelectStop: () => {
+    let duration = 0;
+    if (analytics.headSelectBeganAt !== undefined) {
+      duration = Math.round((Date.now() - analytics.headSelectBeganAt) / 1000);
+    }
     analytics.record({
       hitType: 'event',
-      eventCategory: 'VR Session',
+      eventCategory: 'Playback Session',
       eventAction: 'Milestones',
-      eventLabel: 'Head clicks',
-      eventValue: analytics.headSelects,
+      eventLabel: 'Head select',
+      eventValue: duration,
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
   //  -------------------------------------------------- VR Session: Made it to credits
-  creditViews: 0,
-  recordCreditsView: () => {
-    analytics.creditViews++;
-    analytics.record({
-      hitType: 'event',
-      eventCategory: 'VR Session',
-      eventAction: 'Milestones',
-      eventLabel: 'Credits',
-      eventValue: analytics.creditViews,
-      nonInteraction: true, // Don’t count this as separate “page.”
-    });
-  },
+  // creditViews: 0,
+  // recordCreditsView: () => {
+  //   analytics.creditViews++;
+  //   analytics.record({
+  //     hitType: 'event',
+  //     eventCategory: 'VR Session',
+  //     eventAction: 'Milestones',
+  //     eventLabel: 'Credits',
+  //     eventValue: analytics.creditViews,
+  //     nonInteraction: true, // Don’t count this as separate “page.”
+  //   });
+  // },
 
 
   mount: () => {
