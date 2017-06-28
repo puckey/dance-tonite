@@ -108,12 +108,12 @@ const analytics = {
   },
   recordTimeableStop: (label) => {
     if (typeof analytics.timeables[label] === 'number') {
-      const duration = Date.now() - analytics.timeables[label];
+      const duration = Math.round((Date.now() - analytics.timeables[label]) / 1000);
       analytics.record({
         hitType: 'event',
         eventCategory: 'Timeables',
         eventAction: label,
-        eventValue: duration / 1000, //  Unit is seconds, accurate to milliseconds.
+        eventValue: duration, //  Unit here is seconds (rounded).
         nonInteraction: true,   //  Don’t count this as separate “page.”
       });
     }
@@ -309,15 +309,16 @@ const analytics = {
           analytics.vrSessionEndedAt = Date.now();
           analytics.vrSessionDuration = null;
           if (analytics.vrSessionBeganAt !== undefined) {
-            analytics.vrSessionDuration = (analytics.vrSessionEndedAt -
-              analytics.vrSessionBeganAt) / 1000;
+            analytics.vrSessionDuration = Math.round(
+              (analytics.vrSessionEndedAt - analytics.vrSessionBeganAt) / 1000
+            );
           }
           analytics.record({
             hitType: 'event',
             eventCategory: 'VR Session',
             eventAction: 'VR Exit',
             eventLabel: 'VR exit successful',
-            eventValue: analytics.vrSessionDuration, //  Unit here is seconds, accurate to milliseconds.
+            eventValue: analytics.vrSessionDuration, //  Unit here is seconds (rounded).
             nonInteraction: true, //  The ATTEMPT is an interaction. Its SUCCESS is not.
           });
         }
@@ -364,13 +365,13 @@ const analytics = {
     }
     //  How long was this session?
     if (typeof analytics.danceTimeStart === 'number') {
-      const duration = Date.now() - analytics.danceTimeStart;
+      const duration = Math.round((Date.now() - analytics.danceTimeStart) / 1000);
       analytics.record({
         hitType: 'event',
         eventCategory: 'Dance Session',
         eventAction: 'Recording',
         eventLabel: 'Duration',
-        eventValue: duration / 1000,
+        eventValue: duration, //  Unit here is seconds (rounded).
         nonInteraction: true,
       });
     }
