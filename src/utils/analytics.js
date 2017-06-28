@@ -16,7 +16,7 @@ window.ga('send', 'pageview');
 //  requestIdleCallback:
 //  https://developers.google.com/web/updates/2015/08/using-requestidlecallback
 
-const verbosity = 1;
+const verbosity = 0;
 
 
 const analytics = {
