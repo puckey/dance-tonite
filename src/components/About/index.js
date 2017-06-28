@@ -47,7 +47,9 @@ export default class About extends Component {
 
   async asyncMount() {
     if (!content) {
-      const response = await fetch(aboutSrc);
+      const response = await fetch(aboutSrc, {
+        credentials: 'same-origin',
+      });
       content = await response.text();
       content = content.replace(/<a\s+href=/gi, '<a target="_blank" href=');
     }
