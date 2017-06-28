@@ -76,20 +76,8 @@ const analytics = {
       }
     }
   },
-  recordInternalLink: (a) => { // ****** HOW IS THIS DIF THAN ABOVE?????????
-    // const url = a.getAttribute('href');
-    // if (verbosity >= 0.5) console.log('Note:', url);
-    // if (window.ga !== undefined && typeof window.ga === 'function') {
-    //   window.ga('send', 'event', 'outbound', 'click', url, {
-    //     transport: 'beacon',
-    //     hitCallback: function () {},
-    //     //hitCallback: function(){ document.location = url }
-    //   });
-    // }
-    // return true;
-  },
   //  -------------------------------------------------- Countables
-  countables: [],
+  countables: {},
   recordCountable: (label) => {
     if (typeof analytics.countables[label] !== 'number') analytics.countables[label] = 0;
     analytics.countables[label]++;
@@ -102,7 +90,7 @@ const analytics = {
     });
   },
   //  -------------------------------------------------- Timeables
-  timeables: [],
+  timeables: {},
   recordTimeableStart: (label) => {
     analytics.timeables[label] = Date.now();
   },
@@ -114,7 +102,7 @@ const analytics = {
         eventCategory: 'Timeables',
         eventAction: label,
         eventValue: duration, //  Unit here is seconds (rounded).
-        nonInteraction: true,   //  Don’t count this as separate “page.”
+        nonInteraction: true, //  Don’t count this as separate “page.”
       });
     }
   },
@@ -146,7 +134,7 @@ const analytics = {
   },
   recordOrbSelectStop: () => {
     let duration = 0;
-    if (analytics.orbSelectBeganAt !== undefined) {
+    if (typeof analytics.orbSelectBeganAt === 'number') {
       duration = Math.round((Date.now() - analytics.orbSelectBeganAt) / 1000);
     }
     analytics.record({
@@ -154,7 +142,7 @@ const analytics = {
       eventCategory: 'Playback Session',
       eventAction: 'Milestones',
       eventLabel: 'Orb select',
-      eventValue: duration,
+      eventValue: duration, //  Unit here is seconds (rounded).
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
@@ -164,7 +152,7 @@ const analytics = {
   },
   recordHeadSelectStop: () => {
     let duration = 0;
-    if (analytics.headSelectBeganAt !== undefined) {
+    if (typeof analytics.headSelectBeganAt === 'number') {
       duration = Math.round((Date.now() - analytics.headSelectBeganAt) / 1000);
     }
     analytics.record({
@@ -172,7 +160,7 @@ const analytics = {
       eventCategory: 'Playback Session',
       eventAction: 'Milestones',
       eventLabel: 'Head select',
-      eventValue: duration,
+      eventValue: duration, //  Unit here is seconds (rounded).
       nonInteraction: true, // Don’t count this as separate “page.”
     });
   },
@@ -362,17 +350,15 @@ const analytics = {
   //  ie. prior to submission.
   recordDanceSessionStop: (rounds) => {
     //  How many sessions?
-    if (typeof analytics.danceSessionsRecorded === 'number') {
-      analytics.danceSessionsRecorded++;
-      analytics.record({
-        hitType: 'event',
-        eventCategory: 'Dance Session',
-        eventAction: 'Recording',
-        eventLabel: 'Completed',
-        eventValue: analytics.danceSessionsRecorded,
-        nonInteraction: true,
-      });
-    }
+    analytics.danceSessionsRecorded++;
+    analytics.record({
+      hitType: 'event',
+      eventCategory: 'Dance Session',
+      eventAction: 'Recording',
+      eventLabel: 'Completed',
+      eventValue: analytics.danceSessionsRecorded,
+      nonInteraction: true,
+    });
     //  How long was this session?
     if (typeof analytics.danceTimeStart === 'number') {
       const duration = Math.round((Date.now() - analytics.danceTimeStart) / 1000);
