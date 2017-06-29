@@ -87,6 +87,7 @@ export default class Submissions extends Component {
             item={item}
             items={items}
             performChange={this.performChangeItem}
+            itemsPerPage={Math.floor((windowSize.height * 0.3) / getFontSize())}
           />
         </Align>
         {
