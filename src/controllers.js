@@ -80,8 +80,10 @@ function addController(controller) {
 
   //  For Oculus we need to add a little more flexibility...
   controller.addEventListener('thumbstick press began', handlePress);
-  controller.addEventListener('A press began', handlePress);
-  controller.addEventListener('B press began', handlePress);
+  controller.addEventListener('A press began', handlePress);//  RIGHT controller.
+  controller.addEventListener('B press began', handlePress);//  RIGHT controller.
+  controller.addEventListener('X press began', handlePress);//  LEFT controller.
+  controller.addEventListener('Y press began', handlePress);//  LEFT controller.
 
   // On vive also listen for menu presses, since the menu button is also on the
   // front of the controller:

@@ -21,7 +21,9 @@ export default class About extends Component {
 
   componentWillMount() {
     this.mounted = true;
-    document.body.classList.remove('mod-overflow-hidden');
+    const classList = document.body.classList;
+    classList.remove('mod-overflow-hidden');
+    classList.add('mod-about');
     if (feature.isMobile) {
       audio.pause();
     } else {
@@ -40,14 +42,18 @@ export default class About extends Component {
 
   componentWillUnmount() {
     this.mounted = false;
-    document.body.classList.add('mod-overflow-hidden');
+    const classList = document.body.classList;
+    classList.add('mod-overflow-hidden');
+    classList.remove('mod-about');
     audio.play();
     audio.fadeIn(0.5);
   }
 
   async asyncMount() {
     if (!content) {
-      const response = await fetch(aboutSrc);
+      const response = await fetch(aboutSrc, {
+        credentials: 'same-origin',
+      });
       content = await response.text();
       content = content.replace(/<a\s+href=/gi, '<a target="_blank" href=');
     }
@@ -62,16 +68,21 @@ export default class About extends Component {
           <Align type="top-right">
             <ButtonClose onClick={this.props.onClose} dark />
           </Align>
-          <div
-            className="about-content"
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
-          <div className="about-content">
-            <Colophon />
-            <div className="privacy-and-terms">
-              <a href="https://www.google.com/policies/privacy/" target="_blank" rel="noreferrer noopener">Privacy</a> | <a href="https://www.google.com/policies/terms/" target="_blank" rel="noreferrer noopener">Terms</a>
+          { content && (
+            <div
+              className="about-content"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          )}
+          { content && (
+            <div className="about-content mod-colophon">
+              <Colophon />
+              <div className="privacy-and-terms">
+                <a href="https://www.google.com/policies/privacy/" target="_blank" rel="noreferrer noopener">Privacy</a> | <a href="https://www.google.com/policies/terms/" target="_blank" rel="noreferrer noopener">Terms</a>
+              </div>
             </div>
-          </div>
+          )
+          }
         </div>
       </Portal>
     );

@@ -38,17 +38,19 @@ export default class Submission extends Component {
     else if (service === 'twitter') analytics.recordSocialShare('Twitter');
   }
 
-  render({ roomId, id }) {
-    const deepLink = `https://tonite.dance/${roomId}/${id}`;
+  render({ roomId, id, children }) {
+    const link = `/${roomId}/${id}/`;
+    const deepLink = `https://tonite.dance${link}`;
     return (
       <Align type="bottom-left" margin>
-        <div>Share</div>
+        <div>Share your performance:</div>
         <div className="share-icons">
           <ButtonGooglePlus onClick={this.shareToGooglePlus} />
           <ButtonTwitter onClick={this.shareToTwitter} />
           <ButtonFacebook onClick={this.shareToFacebook} />
         </div>
-        <a href={deepLink}><span>{deepLink}</span></a>
+        <a href={link}><span>{deepLink}</span></a>
+        { children }
       </Align>
     );
   }

@@ -3,9 +3,9 @@ import { h, Component } from 'preact';
 
 import './style.scss';
 
-import Container from '../../components/Container';
+import router from '../../router';
 
-import CMSMenu from '../../components/CMSMenu';
+import Container from '../../components/Container';
 import Align from '../../components/Align';
 
 export default class FirebaseKey extends Component {
@@ -23,7 +23,7 @@ export default class FirebaseKey extends Component {
     this.setState({
       secretChanged: false,
     });
-    this.forceUpdate();
+    router.navigate('/');
   }
 
   keyInputChanged(event) {

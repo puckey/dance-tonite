@@ -3,6 +3,10 @@
 .cms-menu {
   .aligner.mod-top-left {
     margin: -.5rem 0;
+
+    .button-item.mod-text a {
+      padding-bottom: 0.2rem;
+    }
   }
 
   .aligner.mod-top-right {

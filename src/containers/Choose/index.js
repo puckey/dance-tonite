@@ -33,8 +33,8 @@ export default class Choose extends Component {
   }
 
   async asyncMount() {
-    const { room } = this.props;
-    const { data, error } = await cms.getAvailableRecordings(room);
+    const { roomId } = this.props;
+    const { data, error } = await cms.getAvailableRecordings(roomId);
     if (!this.mounted) return;
     if (error) {
       this.setState({ error });
@@ -42,19 +42,19 @@ export default class Choose extends Component {
     }
     const { universal, forRoom } = data;
     universal.forEach(recording => {
-      recording.room = room;
+      recording.room = roomId;
       recording.title = `${recording.title} - U`;
     });
     this.setState({
       loading: 'draft playlist',
     });
-    const { data: playlistData, error: playlistError } = await cms.getDraftPlaylist(room);
+    const { data: playlistData, error: playlistError } = await cms.getDraftPlaylist(roomId);
     if (!this.mounted) return;
     if (playlistError) {
       this.setState({ error: playlistError });
       return;
     }
-    const activeId = playlistData.playlist[room - 1].id;
+    const activeId = playlistData.playlist[roomId - 1].id;
 
     const items = []
       .concat(forRoom)
@@ -102,7 +102,7 @@ export default class Choose extends Component {
       this.setState({ error });
       return;
     }
-    router.navigate(`/${item.room}`);
+    router.navigate('/');
   }
 
   render({ room }, { items, item, error, loading }) {

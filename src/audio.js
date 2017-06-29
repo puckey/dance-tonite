@@ -2,6 +2,7 @@ import emitter from 'mitt';
 import audioPool from './utils/audio-pool';
 import feature from './utils/feature';
 import { sleep } from './utils/async';
+import pageVisibility from './utils/page-visibility';
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -268,6 +269,10 @@ const audio = Object.assign(emitter(), {
 
   time: 0,
   loopIndex: 0,
+});
+
+pageVisibility.on('change', (visible) => {
+  audio[visible ? 'play' : 'pause']();
 });
 
 export default audio;
