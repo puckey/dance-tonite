@@ -28,13 +28,16 @@ export default class Playback extends Component {
   constructor() {
     super();
 
-    this.state = {
-      hoverHead: null,
-      orb: true,
-      colophon: true,
-    };
     this.onTitlesChanged = this.onTitlesChanged.bind(this);
     this.performExitPresent = this.performExitPresent.bind(this);
+  }
+
+  componentWillMount() {
+    this.setState({
+      hoverHead: null,
+      orb: true,
+      colophon: this.props.colophon !== false,
+    });
   }
 
   componentDidMount() {

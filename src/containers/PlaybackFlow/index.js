@@ -103,6 +103,7 @@ export default class PlaybackFlow extends Component {
               {...props}
               inContextOfRecording={fromRecording}
               onGotoSubmission={this.performGotoSubmission}
+              colophon={!fromRecording}
             />
             : <Submission
               {...props}
