@@ -44,10 +44,6 @@ export default class Submission extends Component {
   }
 
   async asyncMount() {
-    if (transition.isInside()) {
-      await transition.fadeOut();
-    }
-    if (!this.mounted) return;
     if (viewer.vrEffect.isPresenting) {
       viewer.vrEffect.exitPresent();
     }

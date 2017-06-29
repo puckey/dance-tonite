@@ -77,6 +77,9 @@ export default class Review extends Component {
     ]);
     if (!this.mounted) return;
 
+    await transition.fadeOut();
+    if (!this.mounted) return;
+
     const id = recordingSrc.replace('.json', '');
     this.props.goto(`/${recording.roomIndex + 1}/${id}`);
   }
