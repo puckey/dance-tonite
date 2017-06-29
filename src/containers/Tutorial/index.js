@@ -103,6 +103,7 @@ export default class Tutorial extends Component {
           id="hIR_Tw"
           orbs
           tutorialLayers={layers}
+          highlightLast={layers < 6}
         >
           { !overlay &&
             <TutorialTimeline

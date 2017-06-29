@@ -138,7 +138,7 @@ export default class Room {
     return worldToScreen(viewer.camera, this.worldPosition);
   }
 
-  gotoTime(seconds, maxLayers) {
+  gotoTime(seconds, maxLayers, highlightLast = false) {
     this.currentTime = seconds;
     // In orthographic mode, scale up the meshes:
     const scale = InstancedItem.perspectiveMode ? 1 : 1.3;
@@ -147,7 +147,10 @@ export default class Room {
     frame.gotoTime(seconds, maxLayers);
     const { hideHead } = this.frames;
     for (let i = 0; i < frame.count; i++) {
-      const color = this.isHighlighted(i) ? highlightColor : costumeColor;
+      const isLast = i === frame.count - 1;
+      const color = ((highlightLast && isLast) || this.isHighlighted(i))
+        ? highlightColor
+        : costumeColor;
       if (!hideHead) {
         const pose = this.getPose(i, 0, position);
         items.head.add(pose, color, scale);
