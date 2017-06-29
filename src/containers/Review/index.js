@@ -58,7 +58,7 @@ export default class Review extends Component {
   async performSubmit() {
     const persisting = storage.persist(
       recording.serialize(),
-      recording.roomIndex
+      recording.roomIndex + 1
     );
     audio.fadeOut();
 
