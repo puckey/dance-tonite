@@ -18,6 +18,7 @@ body:not(.mod-mobile) .paginated-list-item-name:hover {
   white-space: nowrap;
   text-overflow: ellipsis;
   max-width: 33vw;
+  line-height: 1.1rem;
   cursor: pointer;
 }
 
@@ -44,6 +45,7 @@ body:not(.mod-mobile) .paginated-list-item-name:hover {
 
   .item-list-navigation {
     text-align: right;
+    margin-top: .3rem;
   }
 }
 
