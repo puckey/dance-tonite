@@ -69,12 +69,14 @@ export default class PlaybackFlow extends Component {
       mode: 'playback',
       fromRecording: false,
     });
+    analytics.recordSectionChange('Playback');
   }
 
   performGotoSubmission() {
     this.setState({
       mode: 'submission',
     });
+    analytics.recordSectionChange('Submission');
   }
 
   renderMenu() {
