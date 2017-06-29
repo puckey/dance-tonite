@@ -1,12 +1,15 @@
 @import '../../theme/theme';
 
+$semi-opaque-color: rgba(0, 0, 0, .7);
+$opaque-color: $background-color;
+
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: $overlay-background-color;
+  background: $semi-opaque-color;
   opacity: 1;
   transition: 1s opacity ease-in-out;
   text-align: center;
@@ -14,6 +17,10 @@
   align-items: center;
   justify-content: center;
   z-index: $popover-layer;
+
+  &.mod-opaque {
+    background: $opaque-color;
+  }
 }
 
 body:not(.mod-mobile) .overlay-text {

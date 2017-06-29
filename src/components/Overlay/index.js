@@ -1,12 +1,17 @@
 /** @jsx h */
 import { h } from 'preact';
+import classNames from 'classnames';
+
 import './style.scss';
 import Align from '../../components/Align';
 import ButtonClose from '../../components/ButtonClose';
 
-export default function Overlay({ children, onClose }) {
+export default function Overlay({ children, onClose, opaque }) {
   return (
-    <div className="overlay" onClick={onClose}>
+    <div
+      className={classNames('overlay', opaque && 'mod-opaque')}
+      onClick={onClose}
+    >
       <Align type="top-right">
         <ButtonClose onClick={onClose} />
       </Align>
