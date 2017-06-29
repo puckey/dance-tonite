@@ -23,43 +23,43 @@ To learn more, watch this video or read the technical deep dive.
 
 <div class="column-wrapper">
   <div>
-    <h3><a href="http://webvr.info">WebVR</a></h3>
-    An open web standard that brings VR to the web. It lets anyone access the same VR experience regardless of their device without the need for apps or downloads.
+    <h3><a href="http://webvr.info">WebVR API</a></h3>
+    Open standard that brings virtual reality to the Web. Allows anyone access to the same VR experience, regardless of their device, without the need for apps or downloads.
   </div>
 
   <div>
     <h3><a href="https://github.com/googlevr/webvr-polyfill">WebVR Polyfill</a></h3>
-    An open-source JavaScript implementation of the WebVR spec. This project lets you use WebVR without requiring a special browser build, and view that same content without a VR headset.
+    Open-source JavaScript implementation of the WebVR spec. Emulates the WebVR API without requiring a special browser build, and allows users to view that same content as a “magic window” or first-person experience if no VR headset is present.
   </div>
 
   <div>
     <h3><a href="https://w3c.github.io/gamepad/">Gamepad API</a></h3>
-    An open API that lets the browser detect external controllers that are plugged into the computer. Tied into WebVR, it allows the browser to detect room-scale VR controllers.
+    Open standard that allows the browser to communicate with external game controllers. When paired with WebVR, allows the browser to use room-scale VR controllers to directly interact with the virtual world.
   </div>
 
   <div>
-    <h3>ControllerView</h3>
-    An open-source Javascript library built upon the Gamepad API and WebVR API that standardizes outgoing event data from various VR controllers.
+    <h3><a href="https://github.com/stewdio/THREE.VRController">VRController</a></h3>
+    Open-source Javascript library that extends Three.js and wraps the Gamepad API to handle controller discovery, tracking, and button events for all conforming VR controller models.
   </div>
 
   <div>
     <h3><a href="http://threejs.org">Three.js</a></h3>
-    A Javascript library built upon WebGL that lets you create 3D graphics using the computer’s graphics card.
+    Open-source Javascript 3D library for rendering content as WebGL, SVG, and CSS3D. Through WebGL, allows developers to harness the power of a user’s graphics card for high frame rate, hardware-accelerated performance.
   </div>
 
   <div>
     <h3><a href="https://firebase.google.com/">Firebase</a></h3>
-    A mobile and web application development platform made by Google that lets you build scalable content such as databases
+    Mobile and Web application development platform from Google that makes creating and maintaining highly scalable backends a snap.
   </div>
 
   <div>
     <h3><a href="https://cloud.google.com/storage/">Cloud Storage</a></h3>
-    A geo-redundant storage solution made by Google that stores data and media in the cloud.
+    Geo-redundant storage solution from Google that stores data and media in the cloud.
   </div>
 
   <div>
     <h3><a href="https://cloud.google.com/appengine/">App Engine</a></h3>
-    A fully managed platform that abstracts away infrastructure made by Google.
+    Fully managed cloud platform from Google that abstracts away backend infrastructure.
   </div>
 </div>
 
