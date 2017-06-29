@@ -67,7 +67,6 @@ export default class Playback extends Component {
     if (viewer.vrEffect.isPresenting) {
       viewer.vrEffect.exitPresent();
     }
-    viewer.switchCamera('default');
     this.forceUpdate();
   }
 
