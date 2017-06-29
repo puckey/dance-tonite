@@ -9,7 +9,7 @@ const blue = new Color(0x40a598);
 const pink = new Color(0xc95fbf);
 const white = new Color(0xffffff);
 const yellow = new Color(0xffff00);
-const gray = new Color(0x838181);
+const gray = new Color(0x646262);
 
 const pairs = ([
   [green, red],
