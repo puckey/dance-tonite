@@ -123,7 +123,7 @@ export default class Submissions extends Component {
       .filter(recording => recording.room !== -1)
       .sort((a, b) => b.timestamp - a.timestamp);
     const items = recordings
-      .map((recording, index) => Object.assign({
+      .map((recording, index) => ({
         index,
         title: `${recording.is_universal ? '🌎' : padNumber(recording.room, 2)} – ${
           recording.title === '' ? 'Unnamed' : recording.title} ${
