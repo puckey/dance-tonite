@@ -39,11 +39,10 @@ export default class PlaybackFlow extends Component {
   }
 
   onVRPresentChange(presenting) {
-    if (feature.vrPolyfill) {
-      this.setState({
-        polyfillPresenting: presenting,
-      });
+    if (!presenting) {
+      viewer.switchCamera('orthographic');
     }
+    this.setState({ presenting });
   }
 
   goto(mode) {
@@ -75,13 +74,13 @@ export default class PlaybackFlow extends Component {
   }
 
   renderMenu() {
-    const { fromRecording, mode, polyfillPresenting } = this.state;
+    const { fromRecording, mode, presenting } = this.state;
     return process.env.FLAVOR === 'cms'
       ? <CMSMenu
         vr audio mute
         submissions inbox publish
       />
-      : polyfillPresenting
+      : (presenting && feature.vrPolyfill)
         ? <Menu />
         : (
           fromRecording || mode === 'submission'
