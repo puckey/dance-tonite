@@ -12,9 +12,11 @@ export default function Overlay({ children, onClose, opaque }) {
       className={classNames('overlay', opaque && 'mod-opaque')}
       onClick={onClose}
     >
-      <Align type="top-right">
-        <ButtonClose onClick={onClose} />
-      </Align>
+      {onClose && (
+        <Align type="top-right">
+          <ButtonClose onClick={onClose} />
+        </Align>
+      )}
       <div className="overlay-text">
         {children}
       </div>
