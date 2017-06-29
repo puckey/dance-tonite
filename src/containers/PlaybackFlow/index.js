@@ -12,6 +12,8 @@ import router from '../../router';
 import viewer from '../../viewer';
 import feature from '../../utils/feature';
 
+import analytics from '../../utils/analytics';
+
 export default class PlaybackFlow extends Component {
   constructor({ roomId }) {
     super();
@@ -49,6 +51,7 @@ export default class PlaybackFlow extends Component {
   goto(mode) {
     const count = this.state.count + 1;
     this.setState({ count });
+    analytics.recordSectionChange(mode.charAt(0).toUpperCase() + mode.slice(1));
     router.navigate(mode);
   }
 
