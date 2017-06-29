@@ -57,7 +57,7 @@ const props = {
     cylinder.updateMatrix();
 
     const thumbpadRadius = 0.015;
-    const thumbpadHeight = 0.02;
+    const thumbpadHeight = 0.0225;
     const thumbpad = new THREE.Mesh(
       new CylinderBufferGeometry(thumbpadRadius, thumbpadRadius, thumbpadHeight, segments),
       new MeshLambertMaterial({ color: textColor.getHex() })
