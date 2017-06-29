@@ -7,6 +7,9 @@ const orange = new Color(0xd19c20);
 const purple = new Color(0xcc44b9);
 const blue = new Color(0x40a598);
 const pink = new Color(0xc95fbf);
+const white = new Color(0xffffff);
+const yellow = new Color(0xffff00);
+const gray = new Color(0x838181);
 
 const pairs = ([
   [green, red],
@@ -32,19 +35,11 @@ const pairByRoomIndex = (roomIndex) => {
 
 export const getRoomColor = roomIndex => pairByRoomIndex(roomIndex)[0];
 export const getRoomColorByIndex = index => pairs[index % pairs.length][0];
-
 export const getCostumeColor = roomIndex => pairByRoomIndex(roomIndex)[1];
-export const namedColors = { green, red, orange, purple, blue, pink };
-export const roomColors = { green, red, orange, blue, pink };
 
-const pairColor = (color) => pairs.filter(
-  ([controllerColor]) => controllerColor === color
-)[0][1];
-
-export const recordRoomColor = namedColors[window.localStorage.getItem('color')] || namedColors.green;
-export const recordCostumeColor = window.localStorage.getItem('color') ? pairColor(recordRoomColor) : namedColors.red;
-export const waitRoomColor = new Color(0x838181);
-export const orbColor = new Color(0xffff00);
-export const highlightColor = new Color(0xffffff);
-
-export const textColor = new Color(0xffff07);
+export const recordCostumeColor = white;
+export const waitRoomColor = gray;
+export const orbColor = yellow;
+export const highlightColor = white;
+export const textColor = yellow;
+export const controllerButtonColor = yellow;
