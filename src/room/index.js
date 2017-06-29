@@ -14,6 +14,7 @@ import {
   getCostumeColor,
   getRoomColor,
   highlightColor,
+  waitRoomColor,
 } from '../theme/colors';
 
 import layout from './layout';
@@ -59,13 +60,14 @@ export default class Room {
       isGiffing = false,
     } = params;
     this._worldPosition = new THREE.Vector3();
-    this.index = index;
+    this.index = params.single ? 0 : index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
     this.single = single;
     const frames = this.frames = new Frames(id, recording);
     this.firstFrame = frames.getFrame(0);
     this.frame = frames.getFrame();
     this.costumeColor = getCostumeColor(colorIndex);
+    const roomColor = this.roomColor = getRoomColor(colorIndex);
     this.position = layout.getPosition(
       index,
       new THREE.Vector3(),
@@ -78,7 +80,6 @@ export default class Room {
     position.y -= 1;
     const type = layout.getType(index);
     if (type === 'PLANE') return;
-    const roomColor = getRoomColor(colorIndex);
     items.room.add([position, null], roomColor);
     if (single || wall || layout.hasWall(index)) {
       items.wall.add([position, null], roomColor);
@@ -99,6 +100,14 @@ export default class Room {
   isHighlighted(performance) {
     return Room.highlight.roomIndex === this.index
       && Room.highlight.performanceIndex === performance;
+  }
+
+  changeColorToWaiting() {
+    this.changeColor(waitRoomColor);
+  }
+
+  changeColorToRecording() {
+    this.changeColor(this.roomColor);
   }
 
   changeColor(color) {
