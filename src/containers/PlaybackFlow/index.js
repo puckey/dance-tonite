@@ -51,7 +51,7 @@ export default class PlaybackFlow extends Component {
   goto(mode) {
     const count = this.state.count + 1;
     this.setState({ count });
-    analytics.recordSectionChange(mode.charAt(0).toUpperCase() + mode.slice(1));
+    analytics.recordSectionChange(mode);
     router.navigate(mode);
   }
 

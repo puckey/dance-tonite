@@ -119,6 +119,7 @@ export default class Record extends Component {
   }
 
   async performRetry() {
+    analytics.recordSectionChange('retry');
     this.setState({
       mode: 'retry',
     });

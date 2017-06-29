@@ -60,12 +60,13 @@ const analytics = {
   // right now this must be called manually
   //  but can we make a location.href event listener instead? would that make sense??????
   recordSectionChange: (label) => {
-    if (verbosity >= 0.5) console.log('Note:', label);
+    const labelProper = label.charAt(0).toUpperCase() + label.slice(1);
+    if (verbosity >= 0.5) console.log('Note:', labelProper);
     if (window.ga !== undefined && typeof window.ga === 'function') {
       const callback = () => {
         window.ga('set', {
           page: document.location.href,
-          title: label,
+          title: labelProper,
         });
         window.ga('send', 'pageview');
       };
