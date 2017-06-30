@@ -6,6 +6,9 @@
 import emitter from 'mitt';
 
 import * as THREE from './lib/three';
+import installVREffect from './lib/VREffect';
+import installVRControls from './lib/VRControls';
+import installVRController from './lib/VRController';
 import stats from './lib/stats';
 import { tempVector } from './utils/three';
 import settings from './settings';
@@ -124,9 +127,9 @@ const viewer = Object.assign(emitter(), {
   prepare: () => {
     clock = new THREE.Clock();
     clock.start();
-    require('./lib/VREffect')(THREE);
-    require('./lib/VRControls')(THREE);
-    require('./lib/VRController')(THREE);
+    installVREffect(THREE);
+    installVRControls(THREE);
+    installVRController(THREE);
     viewer.renderer = renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor(0x000000);
     renderer.setPixelRatio(window.devicePixelRatio);
