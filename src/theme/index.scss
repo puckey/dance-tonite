@@ -16,8 +16,13 @@ body {
   background: $background-color;
   color: $text-color;
   font-family: 'Lars';
+  font-feature-settings: 'tnum';
   margin: 0;
   user-select: none;
+
+  &.mod-about {
+    background: $text-color;
+  }
 }
 
 body,

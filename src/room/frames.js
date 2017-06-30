@@ -37,6 +37,7 @@ export default class Frames {
           if (callback) {
             callback(error);
           }
+
           return;
         }
         if (!meta) {

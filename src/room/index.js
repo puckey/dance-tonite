@@ -14,6 +14,7 @@ import {
   getCostumeColor,
   getRoomColor,
   highlightColor,
+  waitRoomColor,
 } from '../theme/colors';
 
 import layout from './layout';
@@ -22,10 +23,12 @@ import InstancedItem from '../instanced-item';
 import Frames from './frames';
 import { createPose } from '../utils/serializer';
 import audio from '../audio';
+import { elasticIn } from '../utils/easing';
 
 let items;
 
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
+const X_AXIS = new THREE.Vector3(1, 0, 0);
 
 const debugMesh = new THREE.Mesh(
   new THREE.BoxGeometry(0, 0, 0),
@@ -59,13 +62,14 @@ export default class Room {
       isGiffing = false,
     } = params;
     this._worldPosition = new THREE.Vector3();
-    this.index = index;
+    this.index = params.single ? 0 : index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
     this.single = single;
     const frames = this.frames = new Frames(id, recording);
     this.firstFrame = frames.getFrame(0);
     this.frame = frames.getFrame();
     this.costumeColor = getCostumeColor(colorIndex);
+    const roomColor = this.roomColor = getRoomColor(colorIndex);
     this.position = layout.getPosition(
       index,
       new THREE.Vector3(),
@@ -78,7 +82,6 @@ export default class Room {
     position.y -= 1;
     const type = layout.getType(index);
     if (type === 'PLANE') return;
-    const roomColor = getRoomColor(colorIndex);
     items.room.add([position, null], roomColor);
     if (single || wall || layout.hasWall(index)) {
       items.wall.add([position, null], roomColor);
@@ -101,26 +104,23 @@ export default class Room {
       && Room.highlight.performanceIndex === performance;
   }
 
+  changeColorToWaiting() {
+    this.changeColor(waitRoomColor);
+  }
+
+  changeColorToRecording() {
+    this.changeColor(this.roomColor);
+  }
+
   changeColor(color) {
     items.room.changeColor(this.index, color);
     items.wall.changeColor(this.index, color);
   }
 
-  getHeadPosition(index, applyMatrix = true) {
-    return this.frame.getHeadPose(index, this.position, applyMatrix)[0];
-  }
-
-  getRHandPosition(index, applyMatrix = true) {
-    return this.frame.getRHandPose(index, this.position, applyMatrix)[0];
-  }
-
-  getLHandPosition(index, applyMatrix = true) {
-    return this.frame.getLHandPose(index, this.position, applyMatrix)[0];
-  }
-
   transformToHead(object, layerIndex) {
-    const [position, rotation] = this.frame.getHeadPose(
+    const [position, rotation] = this.getPose(
       layerIndex,
+      0,
       this.position,
       false
     );
@@ -138,7 +138,7 @@ export default class Room {
     return worldToScreen(viewer.camera, this.worldPosition);
   }
 
-  gotoTime(seconds, maxLayers) {
+  gotoTime(seconds, maxLayers, highlightLast = false) {
     this.currentTime = seconds;
     // In orthographic mode, scale up the meshes:
     const scale = InstancedItem.perspectiveMode ? 1 : 1.3;
@@ -147,7 +147,10 @@ export default class Room {
     frame.gotoTime(seconds, maxLayers);
     const { hideHead } = this.frames;
     for (let i = 0; i < frame.count; i++) {
-      const color = this.isHighlighted(i) ? highlightColor : costumeColor;
+      const isLast = i === frame.count - 1;
+      const color = ((highlightLast && isLast) || this.isHighlighted(i))
+        ? highlightColor
+        : costumeColor;
       if (!hideHead) {
         const pose = this.getPose(i, 0, position);
         items.head.add(pose, color, scale);
@@ -157,20 +160,20 @@ export default class Room {
     }
   }
 
-  getPose(performanceIndex, limbIndex, offset) {
-    this.frame.getPose(performanceIndex, limbIndex, offset, false, POSE);
+  getPose(performanceIndex, limbIndex, offset, applyMatrix = false) {
+    this.frame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
     if (this.insideMegaGrid && !this.single) {
       const RISE_TIME = 184.734288;
-      const ratio = Math.max(0, Math.min(2, audio.time - RISE_TIME)) * 0.5;
-      this.firstFrame.getPose(
-        performanceIndex,
-        limbIndex,
-        offset,
-        false,
-        FIRST_POSE
-      );
-      FIRST_POSE[0].y *= ratio;
-      lerpPose(POSE, FIRST_POSE, 1 - ratio);
+      const ratio = Math.max(0,
+        Math.min(5,
+          audio.time - RISE_TIME - this.index * -0.005
+        )
+      ) * 0.2;
+      this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, FIRST_POSE);
+      const [position, quaternion] = FIRST_POSE;
+      position.y *= ratio;
+      quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
+      lerpPose(POSE, FIRST_POSE, elasticIn(1 - ratio));
     }
     return POSE;
   }

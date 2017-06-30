@@ -38,7 +38,7 @@ export default class Router extends Component {
     this.onRouteChanged = this.onRouteChanged.bind(this);
   }
 
-  componentDidMount() {
+  componentWillMount() {
     Object
       .keys(componentByRoute)
       .forEach((route) => router.get(route, this.onRouteChanged));

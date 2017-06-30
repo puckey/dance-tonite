@@ -7,6 +7,7 @@ import Room from '../../components/Room';
 import Align from '../../components/Align';
 import ButtonItem from '../../components/ButtonItem';
 import ShareButtons from '../../components/ShareButtons';
+import ThanksTimeline from '../../components/ThanksTimeline';
 import audio from '../../audio';
 import viewer from '../../viewer';
 
@@ -24,6 +25,8 @@ export default class Submission extends Component {
       twitter: 'https://twitter.com/intent/tweet?text=',
       facebook: 'https://www.facebook.com/sharer/sharer.php?u=',
     };
+
+    this.onRoomLoadError = this.onRoomLoadError.bind(this);
   }
 
   componentDidMount() {
@@ -36,11 +39,11 @@ export default class Submission extends Component {
     audio.fadeOut();
   }
 
+  onRoomLoadError() {
+    window.location = '/'; // If the room was deleted, redirect to homepage
+  }
+
   async asyncMount() {
-    if (transition.isInside()) {
-      await transition.fadeOut();
-    }
-    if (!this.mounted) return;
     if (viewer.vrEffect.isPresenting) {
       viewer.vrEffect.exitPresent();
     }
@@ -55,7 +58,10 @@ export default class Submission extends Component {
           roomId={roomId}
           id={id}
           orbs
-        />
+          onRoomLoadError={this.onRoomLoadError}
+        >
+          <ThanksTimeline fromRecording={fromRecording} />
+        </Room>
         <Align type="bottom-right">
           <ButtonItem
             text={fromRecording

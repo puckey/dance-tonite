@@ -35,7 +35,7 @@
     "tween-ticker": "^3.3.2",
     "unfetch": "^2.1.2",
     "unique-s3-uploader": "0.0.2",
-    "webvr-polyfill": "^0.9.34"
+    "webvr-polyfill": "^0.9.35"
   },
   "devDependencies": {
     "autoprefixer-loader": "^3.2.0",

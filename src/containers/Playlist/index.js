@@ -56,11 +56,14 @@ export default class Playlist extends Component {
     viewer.on('tick', this.tick);
   }
 
-  componentWillReceiveProps({ orb }) {
+  componentWillReceiveProps({ orb, stopped }) {
     if (orb) {
       this.orb.show();
     } else {
       this.orb.hide();
+    }
+    if (stopped) {
+      viewer.off('tick', this.tick);
     }
   }
 
@@ -156,7 +159,7 @@ export default class Playlist extends Component {
     router.navigate(`/choose/${room.index}/`);
   }
 
-  render({ recording }, { rooms, entries }) {
+  render({ recording, stopped }, { rooms, entries }) {
     return (
       <div>
         <POV
@@ -176,7 +179,7 @@ export default class Playlist extends Component {
           />
           : null
         }
-        <BackgroundTimeline />
+        { !stopped && <BackgroundTimeline /> }
       </div>
     );
   }

@@ -25,14 +25,14 @@
     font-size: 1.75rem;
     font-feature-settings: 'ss01';
     line-height: 1.75rem;
-    padding-top: 3rem;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
   }
 
   h3 {
     font-size: 1rem;
-    font-weight: bold;
-    padding-bottom: 0 !important;
     margin: 0 auto;
+    padding-bottom: 1rem !important;
   }
 
   h2 + h3 {
@@ -40,13 +40,20 @@
   }
 
   p {
-    padding: 1rem 0;
+    padding-top: 0;
+    padding-bottom: 1rem;
+    + h3 {
+      padding-top: 1rem;
+    }
+    + h2 {
+      padding-top: 2rem;
+    }
   }
 
   a {
     color: $background-color;
     text-decoration: none;
-    border-bottom: solid $line-width * 1.2 $background-color;
+    border-bottom: solid $line-width * 1.1 $background-color;
     padding-bottom: 0;
 
     &:hover {
@@ -65,6 +72,7 @@
       padding: 0;
       margin-right: 2rem;
       min-width: 15rem;
+      padding-bottom: 2rem;
 
       h3 {
         margin: 0;
@@ -77,20 +85,52 @@
   }
 
   .credits-intro {
-    width: 100%;
-    padding: 0;
-
+    * {
+      width: 100%;
+    }
+    padding-top: 1rem;
+    
     h2 {
-      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+    }
+    
+    h3 {
+      padding-top: 1rem;
     }
   }
 
   .credits {
     padding: 0;
+    padding-top: 1rem;
+
+    * {
+      width: 100%;
+    }
 
     a {
       border: 0;
       padding: 0;
+    }
+
+    > h3 {
+      width: initial;
+    }
+
+    &.mod-thanks {
+      padding-top: 0;
+    }
+
+    &.column-wrapper {
+      h3 {
+        padding-bottom: 1rem !important;
+
+        a {
+          border-bottom: $line-width * 1.1 solid $black-color;
+          &:hover {
+            border-bottom: none;
+          }
+        }
+      }
     }
   }
 
@@ -131,18 +171,26 @@
   }
 }
 
-.about-content * {
-  width: 66.666%;
-  margin: 0 auto;
-  padding-bottom: 1rem;
-  line-height: 1.25;
-  padding-top: 2rem;
-  user-select: text;
-
-  @media screen and (max-width: $min-width) {
-    width: 90vw;
-    max-width: $mobile-wrapper-width;
+.about-content {
+  &.mod-colophon {
+    padding-top: 2rem;
   }
+
+  * {
+    width: 66.666%;
+    margin: 0 auto;
+    line-height: 1.25;
+    user-select: text;
+
+    @media screen and (max-width: $min-width) {
+      width: 90vw;
+      max-width: $mobile-wrapper-width;
+    }
+  }
+}
+
+p + .about-video-container {
+  margin-top: 1rem;
 }
 
 .about-video-container {
@@ -151,7 +199,8 @@
   padding-top: 25px;
   padding-bottom: 28.125%;
   height: 0;
-  margin: 1rem auto 5rem;
+  margin: 0 auto 2rem;
+  background: $background-color;
 
   iframe {
     position: absolute;

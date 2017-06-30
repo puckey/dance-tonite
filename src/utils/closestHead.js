@@ -30,20 +30,20 @@ export default (screenX, screenY, rooms) => {
     if (roomDistance > minRoomDistance) continue;
     for (let j = 0, l = room.frame.count; j < l; j++) {
       if (room.frames.hideHead === false) {
-        const distance = distanceToMouse(room.getHeadPosition(j));
+        const distance = distanceToMouse(room.getPose(j, 0, room.position, true)[0]);
         if (distance < closestDistance && distance < MIN_HEAD_DISTANCE) {
           roomIndex = i;
           headIndex = j;
           closestDistance = distance;
         }
       }
-      const rdistance = distanceToMouse(room.getRHandPosition(j));
+      const rdistance = distanceToMouse(room.getPose(j, 0, room.position, true)[0]);
       if (rdistance < closestDistance && rdistance < MIN_HEAD_DISTANCE) {
         roomIndex = i;
         headIndex = j;
         closestDistance = rdistance;
       }
-      const ldistance = distanceToMouse(room.getLHandPosition(j));
+      const ldistance = distanceToMouse(room.getPose(j, 0, room.position, true)[0]);
       if (ldistance < closestDistance && ldistance < MIN_HEAD_DISTANCE) {
         roomIndex = i;
         headIndex = j;

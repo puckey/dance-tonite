@@ -7,6 +7,7 @@ import * as THREE from './lib/three';
 import router from './router';
 import props from './props';
 import feature from './utils/feature';
+import analytics from './utils/analytics';
 import Router from './containers/Router';
 import viewer from './viewer';
 import transition from './transition';
@@ -48,7 +49,14 @@ if (process.env.FLAVOR === 'cms') {
   viewer.prepare();
   if (feature.isMobile) {
     document.body.classList.add('mod-mobile');
+
+    // Disable pinch to zoom on mobile:
+    // Source: https://stackoverflow.com/questions/37808180/disable-viewport-zooming-ios-10-safari/38573198#38573198
+    document.addEventListener('touchmove', (event) => {
+      if (event.scale !== 1) event.preventDefault();
+    }, false);
   }
   document.getElementById('initial').remove();
   render(<Router />, document.body, root);
+  analytics.mount();
 })();

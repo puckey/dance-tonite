@@ -12,6 +12,8 @@ import viewer from '../../viewer';
 import { sleep } from '../../utils/async';
 import router from '../../router';
 
+import analytics from '../../utils/analytics';
+
 export default class Tutorial extends Component {
   constructor() {
     super();
@@ -101,15 +103,22 @@ export default class Tutorial extends Component {
           id="hIR_Tw"
           orbs
           tutorialLayers={layers}
+          highlightLast={layers < 6}
         >
           <TutorialTimeline
             onUpdateLayers={this.setLayers}
             onEnd={this.performShowOverlay}
+            visible={!overlay}
           />
         </Room>
         { skipButton && (
           <Align type="bottom-right">
-            <a onClick={this.performShowOverlay}>Skip Tutorial</a>
+            <a
+              onClick={() => {
+                this.performShowOverlay();
+                analytics.recordTutorialSkip();
+              }}
+            >Skip Tutorial</a>
           </Align>
           )
         }

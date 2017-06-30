@@ -28,13 +28,16 @@ export default class Playback extends Component {
   constructor() {
     super();
 
-    this.state = {
-      hoverHead: null,
-      orb: true,
-      colophon: true,
-    };
     this.onTitlesChanged = this.onTitlesChanged.bind(this);
     this.performExitPresent = this.performExitPresent.bind(this);
+  }
+
+  componentWillMount() {
+    this.setState({
+      hoverHead: null,
+      orb: true,
+      colophon: this.props.colophon !== false,
+    });
   }
 
   componentDidMount() {
@@ -64,7 +67,6 @@ export default class Playback extends Component {
     if (viewer.vrEffect.isPresenting) {
       viewer.vrEffect.exitPresent();
     }
-    viewer.switchCamera('default');
     this.forceUpdate();
   }
 
@@ -92,14 +94,28 @@ export default class Playback extends Component {
       const roomOffset = 2;
       const startTime = (roomId - 2 + roomOffset) * audio.loopDuration;
       audio.gotoTime(startTime);
-      setTimeout(() => {
+      setTimeout(async () => {
+        // Return early if we unmounted in the meantime:
         if (!this.mounted) return;
-        audio.fadeOut();
-        transition.enter({
-          text: 'Please take off your headset',
-        });
+
+        // Fade to black from viewer scene
+        await Promise.all([
+          audio.fadeOut(),
+          transition.fadeOut(),
+        ]);
+        if (!this.mounted) return;
+
         this.setState({
           takeOffHeadset: true,
+        });
+
+        audio.pause();
+
+        // Removes background color if any and stops moving camera:
+        this.setState({ stopped: true });
+
+        await transition.enter({
+          text: 'Please take off your headset',
         });
       }, watchTime * 1000);
     }
@@ -135,6 +151,7 @@ export default class Playback extends Component {
       orb,
       colophon,
       takeOffHeadset,
+      stopped,
     }
   ) {
     const polyfillAndPresenting = feature.vrPolyfill
@@ -161,7 +178,7 @@ export default class Playback extends Component {
           inContextOfRecording && (
             takeOffHeadset
               ? (
-                <Overlay>
+                <Overlay opaque>
                   <a onClick={onGotoSubmission}>
                     <span>I took off my headset</span>
                   </a>
@@ -181,6 +198,7 @@ export default class Playback extends Component {
           pathRecordingId={id}
           pathRoomId={roomId}
           orb={orb}
+          stopped={stopped}
         />
         { process.env.FLAVOR !== 'cms'
           ? <Titles

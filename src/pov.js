@@ -8,6 +8,8 @@ import settings from './settings';
 import audio from './audio';
 import deps from './deps';
 
+import analytics from './utils/analytics';
+
 export default function create({ rooms, orb, offset = 0 }) {
   const { holeHeight } = settings;
   let pointerX;
@@ -23,6 +25,10 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const onMouseDown = ({ clientX, clientY, touches }) => {
     if (viewer.vrEffect.isPresenting) return;
+    if (hoverPerformance || hoverOrb) {
+      return;
+    }
+
     let x = clientX;
     let y = clientY;
     if (touches && touches.length > 0) {
@@ -36,11 +42,20 @@ export default function create({ rooms, orb, offset = 0 }) {
     if (hoverPerformance || hoverOrb) {
       viewer.switchCamera('default');
       InstancedItem.group.add(viewer.camera);
+      if (hoverPerformance) analytics.recordHeadSelectStart();
+      else if (hoverOrb) analytics.recordOrbSelectStart();
     }
   };
 
-  const onMouseUp = () => {
+  const onMouseUp = ({ touches }) => {
     if (viewer.vrEffect.isPresenting) return;
+
+    if (touches && touches.length >= 1) {
+      return;
+    }
+
+    if (hoverPerformance) analytics.recordHeadSelectStop();
+    else if (hoverOrb) analytics.recordOrbSelectStop();
     hoverPerformance = null;
     hoverOrb = false;
     viewer.switchCamera('orthographic');

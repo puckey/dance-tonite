@@ -18,7 +18,7 @@
 
 ### __Development Servers__
 
-Password to access deployments: CYtTx8gMi7qyPJZ
+Password to access deployments: dat
 
 - __Staging__: Commits on [master](https://github.com/puckey/you-move-me/tree/master) branch are automatically deployed to staging: http://staging-tonite-dance.puckey.studio
 - __Production__: Commits on [deploy-dance-tonite](https://github.com/puckey/you-move-me/tree/deploy-dance-tonite) branch are automatically deployed to production: http://dance-tonite.puckey.studio

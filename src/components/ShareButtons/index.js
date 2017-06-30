@@ -6,6 +6,7 @@ import Align from '../../components/Align';
 import ButtonTwitter from '../../components/ButtonTwitter';
 import ButtonFacebook from '../../components/ButtonFacebook';
 import ButtonGooglePlus from '../../components/ButtonGooglePlus';
+import analytics from '../../utils/analytics';
 
 export default class Submission extends Component {
   constructor() {
@@ -32,19 +33,24 @@ export default class Submission extends Component {
       '',
       'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600'
     );
+    if (service === 'googlePlus') analytics.recordSocialShare('Google+');
+    else if (service === 'facebook') analytics.recordSocialShare('Facebook');
+    else if (service === 'twitter') analytics.recordSocialShare('Twitter');
   }
 
-  render({ roomId, id }) {
-    const deepLink = `https://tonite.dance/${roomId}/${id}`;
+  render({ roomId, id, children }) {
+    const link = `/${roomId}/${id}/`;
+    const deepLink = `https://tonite.dance${link}`;
     return (
       <Align type="bottom-left" margin>
-        <div>Share</div>
+        <div>Share your killer moves:</div>
         <div className="share-icons">
           <ButtonGooglePlus onClick={this.shareToGooglePlus} />
           <ButtonTwitter onClick={this.shareToTwitter} />
           <ButtonFacebook onClick={this.shareToFacebook} />
         </div>
-        <a href={deepLink}><span>{deepLink}</span></a>
+        <a href={link}><span>{deepLink}</span></a>
+        { children }
       </Align>
     );
   }

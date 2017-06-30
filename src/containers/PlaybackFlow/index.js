@@ -12,6 +12,8 @@ import router from '../../router';
 import viewer from '../../viewer';
 import feature from '../../utils/feature';
 
+import analytics from '../../utils/analytics';
+
 export default class PlaybackFlow extends Component {
   constructor({ roomId }) {
     super();
@@ -39,16 +41,16 @@ export default class PlaybackFlow extends Component {
   }
 
   onVRPresentChange(presenting) {
-    if (feature.vrPolyfill) {
-      this.setState({
-        polyfillPresenting: presenting,
-      });
+    if (!presenting) {
+      viewer.switchCamera('orthographic');
     }
+    this.setState({ presenting });
   }
 
   goto(mode) {
     const count = this.state.count + 1;
     this.setState({ count });
+    analytics.recordSectionChange(mode);
     router.navigate(mode);
   }
 
@@ -66,22 +68,24 @@ export default class PlaybackFlow extends Component {
       mode: 'playback',
       fromRecording: false,
     });
+    analytics.recordSectionChange('Playback');
   }
 
   performGotoSubmission() {
     this.setState({
       mode: 'submission',
     });
+    analytics.recordSectionChange('Submission');
   }
 
   renderMenu() {
-    const { fromRecording, mode, polyfillPresenting } = this.state;
+    const { fromRecording, mode, presenting } = this.state;
     return process.env.FLAVOR === 'cms'
       ? <CMSMenu
         vr audio mute
         submissions inbox publish
       />
-      : polyfillPresenting
+      : (presenting && feature.vrPolyfill)
         ? <Menu />
         : (
           fromRecording || mode === 'submission'
@@ -103,6 +107,7 @@ export default class PlaybackFlow extends Component {
               {...props}
               inContextOfRecording={fromRecording}
               onGotoSubmission={this.performGotoSubmission}
+              colophon={!fromRecording}
             />
             : <Submission
               {...props}

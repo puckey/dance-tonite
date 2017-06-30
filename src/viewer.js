@@ -155,7 +155,6 @@ const viewer = Object.assign(emitter(), {
   toggleVR: async (isStillMounted) => {
     if (vrEffect.isPresenting) {
       vrEffect.exitPresent();
-      viewer.switchCamera('orthographic');
       audio.play();
     } else {
       vrEffect.requestPresent();

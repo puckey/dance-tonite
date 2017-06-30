@@ -6,7 +6,6 @@ import viewer from '../../viewer';
 import Room from '../../room';
 import layout from '../../room/layout';
 import feature from '../../utils/feature';
-import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import recording from '../../recording';
 
 import RecordOrbs from '../RecordOrbs';
@@ -20,6 +19,7 @@ export default class RoomComponent extends Component {
     this.performOrbEnteredRoom = this.performOrbEnteredRoom.bind(this);
     this.receiveOrb = this.receiveOrb.bind(this);
     this.tick = this.tick.bind(this);
+    this.onRoomLoaded = this.onRoomLoaded.bind(this);
   }
 
   getChildContext() {
@@ -29,8 +29,6 @@ export default class RoomComponent extends Component {
   componentDidMount() {
     this.mounted = true;
     this.asyncMount(this.props);
-    const { roomId } = this.props;
-    this.roomColor = getRoomColor(roomId);
   }
 
   componentWillUnmount() {
@@ -46,6 +44,12 @@ export default class RoomComponent extends Component {
     viewer.camera.position.y = 0;
     viewer.camera.updateProjectionMatrix();
     viewer.off('tick', this.tick);
+  }
+
+  onRoomLoaded(err) {
+    if (err && this.props.onRoomLoadError) {
+      this.props.onRoomLoadError(err);
+    }
   }
 
   async asyncMount({ roomId, id, record }) {
@@ -72,9 +76,10 @@ export default class RoomComponent extends Component {
       single: true,
       recording: record ? recording : null,
     });
+    room.changeColorToWaiting();
     if (id) {
       audio.play();
-      room.load();
+      room.load(this.onRoomLoaded);
     }
     this.setState({ room });
     viewer.on('tick', this.tick);
@@ -82,7 +87,7 @@ export default class RoomComponent extends Component {
 
   performOrbLeftRoom() {
     if (!this.state.room) return;
-    this.state.room.changeColor(waitRoomColor);
+    this.state.room.changeColorToWaiting();
 
     const { onOrbLeftRoom } = this.props;
     if (onOrbLeftRoom) {
@@ -93,9 +98,7 @@ export default class RoomComponent extends Component {
   performOrbEnteredRoom() {
     const { room } = this.state;
     if (!room) return;
-    if (room && this.roomColor) {
-      room.changeColor(this.roomColor);
-    }
+    room.changeColorToRecording();
 
     const { onOrbEnteredRoom } = this.props;
     if (onOrbEnteredRoom) {
@@ -112,7 +115,7 @@ export default class RoomComponent extends Component {
     const layers = tutorialLayers !== undefined
       ? Math.max(Math.floor((audio.totalProgress % 6) * 0.5) + 1, tutorialLayers)
       : null;
-    this.state.room.gotoTime(audio.time, layers);
+    this.state.room.gotoTime(audio.time, layers, this.props.highlightLast);
   }
 
   render() {

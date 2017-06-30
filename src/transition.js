@@ -8,6 +8,8 @@ import { textColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
 import deps from './deps';
 
+const logging = false;
+
 let transitionVersion = 0;
 let transitionScene;
 let textItem;
@@ -61,8 +63,14 @@ const tweenFog = (from, to, duration = 2) => {
 
 const fadeOut = (duration) => {
   const version = transitionVersion;
+  if (logging) {
+    console.log('fadeOut', { version, duration, time: new Date() });
+  }
   setTimeout(() => {
     if (version === transitionVersion) {
+      if (logging) {
+        console.log('removing label', { version, duration, time: new Date() });
+      }
       textItem.updateLabel('');
     }
   }, duration * 0.5);
@@ -71,6 +79,9 @@ const fadeOut = (duration) => {
 };
 
 const fadeIn = (maxFogDistance, duration) => {
+  if (logging) {
+    console.log('fadeIn', { transitionVersion, maxFogDistance, duration, time: new Date() });
+  }
   fadedOut = false;
   return tweenFog(0, maxFogDistance, duration);
 };
@@ -126,13 +137,26 @@ const transition = {
   },
 
   async enter(param = {}) {
+    if (logging) {
+      console.log('transition.enter', { transitionVersion, ...param, time: new Date() });
+    }
+
     const version = transitionVersion;
     // If fadeOut wasn't called before enter:
     if (!fadedOut) {
+      if (logging) {
+        console.log('transition.enter: fading out to black to hide viewer scene');
+      }
       await fadeOut();
     }
     insideTransition = true;
     if (version !== transitionVersion) {
+      if (logging) {
+        console.log('transition.enter returned early because of version difference',
+        {
+          time: new Date()
+        });
+      }
       return;
     }
     viewer.renderScene = transitionScene;
@@ -143,34 +167,63 @@ const transition = {
     textItem.updateLabel(param.text);
     floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
     floatingOrb.mesh.scale.set(4, 4, 4);
-    if (param.immediate) {
-      viewer.renderScene.fog.far = transitionSpaceFar;
-    } else {
-      await fadeIn(transitionSpaceFar);
-    }
+    await fadeIn(transitionSpaceFar);
   },
 
   async exit() {
-    if (!insideTransition) return;
+    if (logging) console.log('transition.exit');
+    if (!insideTransition) {
+      if (logging) {
+        console.log(
+          'transition.exit returned early because not inside transition',
+          { insideTransition, time: new Date() }
+        );
+      }
+      return;
+    }
     transitionVersion += 1;
     const version = transitionVersion;
     if (!fadedOut) {
+      if (logging) {
+        console.log(
+          'transition.exit: fading out to black to hide transition scene',
+          { version }
+        );
+      }
       await fadeOut();
     }
     transition.reset(true);
     if (version === transitionVersion) {
+      console.log(
+        'transition.exit: fadingIn viewer scene',
+        { version }
+      );
       await fadeIn(revealFar);
     }
   },
 
   reset(soft) {
+    if (logging) {
+      console.log(
+        'transition.reset',
+        { soft, time: new Date() }
+      );
+    }
     insideTransition = false;
     fadedOut = false;
     viewer.off('tick', tick);
     viewer.renderScene = viewer.scene;
-    if (tweener) tweener.cancel();
+    if (tweener) {
+      if (logging) {
+        console.log('transition.reset: cancelling tweener');
+      }
+      tweener.cancel();
+    }
     insideTransition = false;
     if (!soft) {
+      if (logging) {
+        console.log('transition.reset: hard reveal of viewer scene');
+      }
       viewer.renderScene.fog.far = revealFar;
       transitionVersion += 1;
     }
