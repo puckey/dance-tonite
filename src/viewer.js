@@ -145,6 +145,10 @@ const viewer = Object.assign(emitter(), {
     viewer.controls = controls = new THREE.VRControls(cameras.default);
     controls.standing = true;
 
+    window.addEventListener('vrdisplaypresentchange', () => {
+      viewer.emit('vr-present-change', vrEffect.isPresenting);
+    }, false);
+
     const { render, resize } = postprocessing({
       renderer,
       camera: cameras.default,
@@ -185,9 +189,7 @@ const viewer = Object.assign(emitter(), {
   vrEffect,
 });
 
-window.addEventListener('vrdisplaypresentchange', () => {
-  viewer.emit('vr-present-change', vrEffect.isPresenting);
-}, false);
+
 
 const animate = () => {
   const dt = clock.getDelta();
