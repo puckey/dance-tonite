@@ -80,7 +80,9 @@ const zoomCamera = (zoom) => {
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setClearColor(0x000000);
-renderer.setPixelRatio(window.devicePixelRatio);
+console.log("window.devicePixelRatio is ", window.devicePixelRatio);
+console.log("setting devicePixelRatio to ", 1.0);
+renderer.setPixelRatio(1.0);
 renderer.setSize(windowSize.width, windowSize.height);
 renderer.sortObjects = false;
 
