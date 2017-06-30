@@ -41,30 +41,38 @@ export default class LineTitle extends Component {
     });
   }
 
-  render({ x, y, text, children }, { originX, originY }) {
+  render({ x, y, text, children, visible }, { originX, originY }) {
     const hidden = x == null;
     return (
       <div className="line-title">
-        <div
-          className="line-title-text"
-          ref={this.receiveTextElement}
-        >
-          { text }
-        </div>
-        <div
-          className="line-title-line"
-          style={{
-            transform: !hidden
-              && getLineTransform(
-                originX,
-                originY,
-                x,
-                y,
-                windowSize.height * 0.04
-              ),
-            opacity: hidden ? 0 : 1,
-          }}
-        />
+        {
+          visible && (
+            <div
+              className="line-title-text"
+              ref={this.receiveTextElement}
+            >
+              { text }
+            </div>
+          )
+        }
+        {
+          visible && (
+            <div
+              className="line-title-line"
+              style={{
+                transform: !hidden
+                  && getLineTransform(
+                    originX,
+                    originY,
+                    x,
+                    y,
+                    windowSize.height * 0.04
+                  ),
+                opacity: hidden ? 0 : 1,
+              }}
+            />
+          )
+        }
         { children }
       </div>
     );

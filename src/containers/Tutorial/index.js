@@ -105,12 +105,11 @@ export default class Tutorial extends Component {
           tutorialLayers={layers}
           highlightLast={layers < 6}
         >
-          { !overlay &&
-            <TutorialTimeline
-              onUpdateLayers={this.setLayers}
-              onEnd={this.performShowOverlay}
-            />
-          }
+          <TutorialTimeline
+            onUpdateLayers={this.setLayers}
+            onEnd={this.performShowOverlay}
+            visible={!overlay}
+          />
         </Room>
         { skipButton && (
           <Align type="bottom-right">

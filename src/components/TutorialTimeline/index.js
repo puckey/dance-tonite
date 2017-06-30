@@ -87,7 +87,7 @@ export default class TutorialTimeline extends Component {
       {
         time: 38,
         text: '',
-        ended: true,
+        callback: this.props.onEnd,
       },
     ];
     viewer.on('tick', this.tick);
@@ -114,10 +114,7 @@ export default class TutorialTimeline extends Component {
     }
   }
 
-  performUpdateTutorial({ text, getPosition, layers, ended }) {
-    if (ended) {
-      this.props.onEnd();
-    }
+  performUpdateTutorial({ text, getPosition, layers }) {
     // just !text would return true on empty string, so:
     if (text !== undefined) {
       this.setState({ text });
@@ -128,10 +125,11 @@ export default class TutorialTimeline extends Component {
     }
   }
 
-  render({ children }, state) {
+  render({ children, visible }, state) {
     return (
       <LineTitle
         {...state}
+        visible={visible}
       >
         <AudioTimeline
           keyframes={this.keyframes}
