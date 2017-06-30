@@ -1,4 +1,9 @@
 const userAgent = navigator.userAgent;
+const verbosity = 1;
+
+const log = (...args) => {
+  console.log("Features:", ...args);
+}
 
 const checkHasWebGL = () => {
   const canvas = document.createElement('canvas');
@@ -16,17 +21,22 @@ const getVRDisplays = () => (
       return;
     }
 
-    // On Android chrome, there is a bug where getVRDisplays is never resolved.
-    // Set a 1 second timeout in that case
-    // https://bugs.chromium.org/p/chromium/issues/detail?id=727969
-    const vrDisplayPromise = navigator.getVRDisplays();
-    const timeoutPromise = new Promise((timeOutResolve) => {
-      setTimeout(() => {
-        timeOutResolve([]);
-      }, 1000);
-    });
+    const promises = [];
+    promises.push(navigator.getVRDisplays());
 
-    Promise.race([vrDisplayPromise, timeoutPromise])
+    // On Android chrome, there is a bug where getVRDisplays is never resolved.
+    // Set a 2 second timeout in that case
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=727969
+    if(isAndroid) {
+      const timeoutPromise = new Promise((timeOutResolve) => {
+        setTimeout(() => {
+          timeOutResolve([]);
+        }, 2000);
+      });
+      promises.push(timeoutPromise);
+    }
+
+    Promise.race(promises)
       .then((displays) => {
         resolve(displays);
       })
@@ -120,10 +130,12 @@ const feature = {
     Promise.all([
       checkHasVR()
         .then((hasVR) => {
-          feature.hasVR = !feature.isTablet && hasVR;
+          feature.hasVR = hasVR;
+          log("hasVR", feature.hasVR)
         }),
       getVRDisplays()
         .then((vrDisplays) => {
+          log("getVRDisplays", vrDisplays);
           feature.vrDisplays = vrDisplays.length;
           if (vrDisplays && vrDisplays.length > 0) {
             //  Yes, this must be the full vrDisplay instance
@@ -148,10 +160,12 @@ const feature = {
         }),
       checkHasExternalDisplay()
         .then((hasExternalDisplay) => {
+          log("hasExternalDisplay", hasExternalDisplay);
           feature.hasExternalDisplay = hasExternalDisplay;
         }),
       checkHas6DOF()
         .then((has6DOF) => {
+          log("has6DOF", has6DOF);
           feature.has6DOF = has6DOF;
         }),
     ])
