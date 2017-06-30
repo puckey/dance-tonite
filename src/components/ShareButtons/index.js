@@ -23,6 +23,15 @@ export default class Submission extends Component {
     this.shareToTwitter = this.share.bind(this, 'twitter');
   }
 
+  componentWillMount() {
+    const { roomId, id } = this.props;
+    const link = `/${roomId}/${id}/`;
+    this.setState({
+      link,
+      deepLink: `https://tonite.dance${link}`,
+    });
+  }
+
   componentWillUpdate() {
     return false;
   }
@@ -38,9 +47,7 @@ export default class Submission extends Component {
     else if (service === 'twitter') analytics.recordSocialShare('Twitter');
   }
 
-  render({ roomId, id, children }) {
-    const link = `/${roomId}/${id}/`;
-    const deepLink = `https://tonite.dance${link}`;
+  render({ children }, { link, deepLink }) {
     return (
       <Align type="bottom-left" margin>
         <div>Share your killer moves:</div>
