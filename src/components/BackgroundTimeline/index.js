@@ -6,8 +6,11 @@ import { getRoomColorByIndex } from '../../theme/colors';
 import { Color } from '../../lib/three';
 
 import AudioTimeline from '../AudioTimeline';
+import { createTweener } from '../../utils/tween';
 
+const tween = createTweener();
 const BLACK = new Color(0x000000);
+const EASE_COLOR = new Color();
 
 export default class BackgroundTimeline extends Component {
   constructor() {
@@ -41,7 +44,14 @@ export default class BackgroundTimeline extends Component {
   }
 
   performChangeBackground({ color }) {
-    viewer.renderer.setClearColor(color || BLACK);
+    tween(
+      EASE_COLOR.copy(color).multiplyScalar(0.7),
+      Object.assign({
+        ease: 'easeOutCubic',
+        duration: 2,
+        onUpdate: () => viewer.renderer.setClearColor(EASE_COLOR),
+      }, BLACK)
+    );
   }
 
   render() {
