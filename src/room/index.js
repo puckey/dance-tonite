@@ -117,6 +117,10 @@ export default class Room {
     items.wall.changeColor(this.index, color);
   }
 
+  getHeadPosition(index, applyMatrix = true) {
+    return this.frame.getHeadPose(index, this.position, applyMatrix)[0];
+  }
+
   transformToHead(object, layerIndex) {
     const [position, rotation] = this.getPose(
       layerIndex,

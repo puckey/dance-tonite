@@ -31,6 +31,10 @@ export default class Frame {
     return (seconds % (audio.loopDuration * 2)) * this.frames.fps;
   }
 
+  getHeadPose(index, offset, applyMatrix = true) {
+    return this.getPose(index, 0, offset, applyMatrix);
+  }
+
   get count() {
     if (this.needsUpdate) {
       this.update();
