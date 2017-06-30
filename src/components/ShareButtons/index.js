@@ -43,7 +43,7 @@ export default class Submission extends Component {
     const deepLink = `https://tonite.dance${link}`;
     return (
       <Align type="bottom-left" margin>
-        <div>Share your performance:</div>
+        <div>Share your killer moves:</div>
         <div className="share-icons">
           <ButtonGooglePlus onClick={this.shareToGooglePlus} />
           <ButtonTwitter onClick={this.shareToTwitter} />
