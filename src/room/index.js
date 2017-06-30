@@ -23,10 +23,12 @@ import InstancedItem from '../instanced-item';
 import Frames from './frames';
 import { createPose } from '../utils/serializer';
 import audio from '../audio';
+import { elasticIn } from '../utils/easing';
 
 let items;
 
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
+const X_AXIS = new THREE.Vector3(1, 0, 0);
 
 const debugMesh = new THREE.Mesh(
   new THREE.BoxGeometry(0, 0, 0),
@@ -170,19 +172,33 @@ export default class Room {
   }
 
   getPose(performanceIndex, limbIndex, offset) {
+    if (!this.randomPositions) {
+      const positions = this.randomPositions = [];
+      const count = this.frame.count * 3;
+      for (let i = 0; i < count; i++) {
+        positions.push(
+          new THREE.Vector3(
+            Math.random() - 0.5,
+            0,
+            Math.random() - 0.5,
+          ).multiplyScalar(5)
+        );
+      }
+    }
     this.frame.getPose(performanceIndex, limbIndex, offset, false, POSE);
     if (this.insideMegaGrid && !this.single) {
       const RISE_TIME = 184.734288;
-      const ratio = Math.max(0, Math.min(2, audio.time - RISE_TIME)) * 0.5;
-      this.firstFrame.getPose(
-        performanceIndex,
-        limbIndex,
-        offset,
-        false,
-        FIRST_POSE
-      );
-      FIRST_POSE[0].y *= ratio;
-      lerpPose(POSE, FIRST_POSE, 1 - ratio);
+      const ratio = Math.max(0,
+        Math.min(5,
+          audio.time - RISE_TIME - this.index * -0.005
+        )
+      ) * 0.2;
+      this.firstFrame.getPose(performanceIndex, limbIndex, null, false, FIRST_POSE);
+      const [position, quaternion] = FIRST_POSE;
+      position.add(offset);
+      position.y *= ratio;
+      quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
+      lerpPose(POSE, FIRST_POSE, elasticIn(1 - ratio));
     }
     return POSE;
   }
