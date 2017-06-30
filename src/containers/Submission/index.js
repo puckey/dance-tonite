@@ -7,8 +7,8 @@ import Room from '../../components/Room';
 import Align from '../../components/Align';
 import ButtonItem from '../../components/ButtonItem';
 import ShareButtons from '../../components/ShareButtons';
+import ThanksTimeline from '../../components/ThanksTimeline';
 import audio from '../../audio';
-import router from '../../router';
 import viewer from '../../viewer';
 
 import transition from '../../transition';
@@ -59,7 +59,9 @@ export default class Submission extends Component {
           id={id}
           orbs
           onRoomLoadError={this.onRoomLoadError}
-        />
+        >
+          <ThanksTimeline fromRecording={fromRecording} />
+        </Room>
         <Align type="bottom-right">
           <ButtonItem
             text={fromRecording
