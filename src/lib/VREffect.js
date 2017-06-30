@@ -164,6 +164,10 @@ module.exports = function( THREE ){
 					resolve( vrDisplay.requestPresent( [ { source: canvas } ] ) );
 
 				} else {
+					if (!vrDisplay.isPresenting) {
+						resolve();
+						return;
+					}
 
 					resolve( vrDisplay.exitPresent() );
 
@@ -214,8 +218,7 @@ module.exports = function( THREE ){
 		};
 
 		this.submitFrame = function () {
-
-			if ( vrDisplay !== undefined && scope.isPresenting ) {
+			if ( vrDisplay !== undefined && vrDisplay.isPresenting ) {
 
 				vrDisplay.submitFrame();
 
