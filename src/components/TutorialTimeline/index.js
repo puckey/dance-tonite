@@ -3,25 +3,18 @@ import { h, Component } from 'preact';
 import './style.scss';
 
 import viewer from '../../viewer';
-import windowSize from '../../utils/windowSize';
 
 import AudioTimeline from '../AudioTimeline';
+import LineTitle from '../LineTitle';
+
 import { worldToScreen } from '../../utils/three';
 import audio from '../../audio';
-
-const getLineTransform = (x1, y1, x2, y2, margin) => {
-  const length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) - margin;
-  const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-  return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
-};
 
 export default class TutorialTimeline extends Component {
   constructor() {
     super();
     this.performUpdateTutorial = this.performUpdateTutorial.bind(this);
     this.tick = this.tick.bind(this);
-    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-    this.receiveTextElement = this.receiveTextElement.bind(this);
     this.getTime = this.getTime.bind(this);
   }
 
@@ -98,12 +91,10 @@ export default class TutorialTimeline extends Component {
       },
     ];
     viewer.on('tick', this.tick);
-    windowSize.on('resize', this.updateWindowDimensions);
   }
 
   componentWillUnmount() {
     viewer.off('tick', this.tick);
-    windowSize.off('resize', this.updateWindowDimensions);
   }
 
   getTime() {
@@ -111,43 +102,16 @@ export default class TutorialTimeline extends Component {
   }
 
   tick() {
-    const { lineOriginX, lineOriginY } = this.state;
-    if (this.getLineTarget && lineOriginX !== undefined) {
+    if (this.getLineTarget) {
       const target = this.getLineTarget();
       if (!target) return;
-      const { x, y } = worldToScreen(viewer.camera, target);
-      this.setState({
-        lineStyle: {
-          transform: getLineTransform(
-            lineOriginX,
-            lineOriginY,
-            x,
-            y,
-            windowSize.height * 0.04
-          ),
-        },
-      });
+      this.setState(worldToScreen(viewer.camera, target));
     } else {
       this.setState({
-        lineStyle: {
-          opacity: 0,
-        },
+        x: null,
+        y: null,
       });
     }
-  }
-
-  receiveTextElement(textEl) {
-    this.setState({ textEl });
-    setTimeout(() => {
-      this.updateWindowDimensions(windowSize);
-    });
-  }
-
-  updateWindowDimensions({ width }) {
-    this.setState({
-      lineOriginX: width * 0.5,
-      lineOriginY: this.state.textEl && this.state.textEl.offsetHeight * 1.2,
-    });
   }
 
   performUpdateTutorial({ text, getPosition, layers, ended }) {
@@ -164,27 +128,17 @@ export default class TutorialTimeline extends Component {
     }
   }
 
-  render() {
+  render({ children }, state) {
     return (
-      <div className="tutorial">
-        <div
-          className="tutorial-text"
-          ref={this.receiveTextElement}
-        >
-          { this.state.text }
-        </div>
-        {
-          <div
-            className="tutorial-line"
-            style={this.state.lineStyle}
-          />
-        }
+      <LineTitle
+        {...state}
+      >
         <AudioTimeline
           keyframes={this.keyframes}
           getTime={this.getTime}
           callback={this.performUpdateTutorial}
         />
-      </div>
+      </LineTitle>
     );
   }
 }
