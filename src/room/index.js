@@ -117,21 +117,10 @@ export default class Room {
     items.wall.changeColor(this.index, color);
   }
 
-  getHeadPosition(index, applyMatrix = true) {
-    return this.frame.getHeadPose(index, this.position, applyMatrix)[0];
-  }
-
-  getRHandPosition(index, applyMatrix = true) {
-    return this.frame.getRHandPose(index, this.position, applyMatrix)[0];
-  }
-
-  getLHandPosition(index, applyMatrix = true) {
-    return this.frame.getLHandPose(index, this.position, applyMatrix)[0];
-  }
-
   transformToHead(object, layerIndex) {
-    const [position, rotation] = this.frame.getHeadPose(
+    const [position, rotation] = this.getPose(
       layerIndex,
+      0,
       this.position,
       false
     );
@@ -171,21 +160,8 @@ export default class Room {
     }
   }
 
-  getPose(performanceIndex, limbIndex, offset) {
-    if (!this.randomPositions) {
-      const positions = this.randomPositions = [];
-      const count = this.frame.count * 3;
-      for (let i = 0; i < count; i++) {
-        positions.push(
-          new THREE.Vector3(
-            Math.random() - 0.5,
-            0,
-            Math.random() - 0.5,
-          ).multiplyScalar(5)
-        );
-      }
-    }
-    this.frame.getPose(performanceIndex, limbIndex, offset, false, POSE);
+  getPose(performanceIndex, limbIndex, offset, applyMatrix = false) {
+    this.frame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
     if (this.insideMegaGrid && !this.single) {
       const RISE_TIME = 184.734288;
       const ratio = Math.max(0,
@@ -193,9 +169,8 @@ export default class Room {
           audio.time - RISE_TIME - this.index * -0.005
         )
       ) * 0.2;
-      this.firstFrame.getPose(performanceIndex, limbIndex, null, false, FIRST_POSE);
+      this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, FIRST_POSE);
       const [position, quaternion] = FIRST_POSE;
-      position.add(offset);
       position.y *= ratio;
       quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
       lerpPose(POSE, FIRST_POSE, elasticIn(1 - ratio));
