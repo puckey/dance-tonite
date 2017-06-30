@@ -105,12 +105,40 @@ export default class TutorialTimeline extends Component {
       ]
     : [
       {
+        duration: 2,
+        text: '',
+      },
+      {
+        duration: 2,
+        text: '…',
+      },
+      {
         duration: 6,
         text: 'Here’s your friend in Dance Tonite.',
       },
       {
-        duration: 6,
-        text: 'Didn’t they do a good job?',
+        duration: 1,
+        text: 'Pretty,',
+      },
+      {
+        duration: 1,
+        text: 'Pretty, pretty.',
+      },
+      {
+        duration: 1,
+        text: 'Pretty, pretty, good,',
+      },
+      {
+        duration: 4,
+        text: 'Pretty, pretty, good, right?',
+      },
+      {
+        duration: 4,
+        text: 'Be sure to watch them in the full experience.',
+      },
+      {
+        duration: 3,
+        text: 'But first…',
       },
       {
         duration: 4,
@@ -125,12 +153,12 @@ export default class TutorialTimeline extends Component {
     for (let i = 0, l = compliments.length; i < l; i++) {
       const text = compliments.pop();
       keyframes.push({
-        duration: text.length * 0.15,
+        duration: Math.max(2, text.length * 0.15),
         text,
         getPosition: getHeadPosition.bind(this, randomIndex()),
       });
       keyframes.push({
-        duration: Math.max(2, 2 + Math.random() * 8),
+        duration: 2 + Math.random() * 8,
         text: '',
       });
     }
