@@ -30,6 +30,12 @@ if (process.env.FLAVOR === 'cms') {
   ]);
   if (feature.isMobile) {
     document.body.classList.add('mod-mobile');
+
+    // Disable pinch to zoom on mobile:
+    // Source: https://stackoverflow.com/questions/37808180/disable-viewport-zooming-ios-10-safari/38573198#38573198
+    document.addEventListener('touchmove', (event) => {
+      if (event.scale !== 1) event.preventDefault();
+    }, false);
   }
   document.getElementById('initial').remove();
   render(<Router />, document.body, root);
