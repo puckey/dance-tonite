@@ -32,26 +32,14 @@ function addController(controller) {
   //  guess where the 3DOF controller is in relation to your head.
   controller.head = viewer.cameras.default;
 
-  //  Which hand is this? Unfortunately I've found the reporting of handedness
-  //  from the Gamepad API is not reliably available. Just have to compensate.
-  //  This logic is convoluted but the goal its "do the best you can".
-  //  NOTE: What was the "avoid non-handedness of oculus remote" issue??
+  //  Ok... Earlier efforts to outsmart the Gamepad API's (and Steam's)
+  //  reporting of handedness has failed. So we're giving up and only
+  //  allowing a controller to mount if it indeed contains a valid "left"
+  //  or "right" in the gamepad.hand property. And note that this CAN CHANGE!
+  //  So let's roll with it and store the gamepad's current handedness
+  //  right on the controller. And if the gamepad's handedness changes we'll
+  //  catch that through an event and swap them. But for now:
   if (controller.gamepad.hand === 'left') {
-    if (leftController.gamepad === undefined) {
-      controller.hand = 'left';
-    } else {
-      controller.hand = 'right';
-    }
-  } else if (controller.gamepad.hand === 'right') {
-    if (rightController.gamepad === undefined) {
-      controller.hand = 'right';
-    } else {
-      controller.hand = 'left';
-    }
-
-  //  Reaching this point means gamepad.hand has no usefull value
-  //  so we'll just assign this controller to whichever hand is available.
-  } else if (leftController.gamepad === undefined) {
     controller.hand = 'left';
   } else {
     controller.hand = 'right';
@@ -69,25 +57,25 @@ function addController(controller) {
   }
   controller.add(mesh);
 
+  //  Button events!
   const handlePress = () => {
     if (controller.hand === 'left') handleLeftPress();
     else handleRightPress();
   };
-
-  //  For Vive, it's so straight forward.
-  controller.addEventListener('thumbpad press began', handlePress);
-
-  //  For Oculus we need to add a little more flexibility...
-  controller.addEventListener('thumbstick press began', handlePress);
-  controller.addEventListener('A press began', handlePress);//  RIGHT controller.
-  controller.addEventListener('B press began', handlePress);//  RIGHT controller.
-  controller.addEventListener('X press began', handlePress);//  LEFT controller.
-  controller.addEventListener('Y press began', handlePress);//  LEFT controller.
-
-  // On vive also listen for menu presses, since the menu button is also on the
-  // front of the controller:
-  if (isVive) {
+  //  For Vive, it's pretty straight forward.
+  if (controller.gamepadStyle === 'vive') {
+    controller.addEventListener('thumbpad press began', handlePress);
+    //  And we'll also listen for the Menu button because it's on the front
+    //  and we're trying to be accomodating to inaccurate thumbs.
     controller.addEventListener('menu press began', handlePress);
+  }
+  //  For Oculus we need to add a little more flexibility...
+  if (controller.gamepadStyle === 'oculus') {
+    controller.addEventListener('thumbstick press began', handlePress);
+    controller.addEventListener('A press began', handlePress);//  RIGHT controller.
+    controller.addEventListener('B press began', handlePress);//  RIGHT controller.
+    controller.addEventListener('X press began', handlePress);//  LEFT controller.
+    controller.addEventListener('Y press began', handlePress);//  LEFT controller.
   }
 
   //  On disconnect we need to remove the mesh
@@ -104,6 +92,40 @@ function addController(controller) {
     }
   });
 
+  //  We're going to add this directly onto the controller which will yield
+  //  no harm in production, and for dev creates the benefit of being able to
+  //  directly test how this should work. We can now call things like:
+  //  THREE.VRController.controllers[0].onHandChanged("left");
+  //  THREE.VRController.controllers[1].onHandChanged("right");
+  //  THREE.VRController.controllers[0].onHandChanged("right");
+  //  THREE.VRController.controllers[1].onHandChanged("left");
+  //  Notice what we're NOT doing. We're NOT SWAPPING controllers. We are
+  //  relying entirely on the Gamepad API to report a "swap" by reporting a
+  //  change event on both controllers independently.
+  controller.onHandChanged = (forceHand) => {
+    let hand;
+    //  This forceHand is only for manual testing of this swap feature.
+    //  If doing manual swap tests send a 'left' or 'right' string only.
+    //  In "normal mode" this is just an event listener and will therefore
+    //  receive a full event object and so the following string comnpare
+    //  will fail and use the actual gamepad.hand value -- a good thing!
+    if (forceHand === 'left' || forceHand === 'right') {
+      hand = forceHand;
+    } else hand = controller.gamepad.hand;
+    // console.log('This controller has swapped hands!', controller, hand);
+    controller.remove(mesh);
+    controller.hand = hand;
+    if (hand === 'left') {
+      viewer.controllers[0] = leftController = controller;
+      mesh = lhand;
+    } else {
+      viewer.controllers[1] = rightController = controller;
+      mesh = rhand;
+    }
+    controller.add(mesh);
+  };
+  controller.addEventListener('hand changed', controller.onHandChanged);
+
   //  All our work here is done, let's add this controller to the scene!
   //  Well sort off... We’ll add it to our controllerGroup which has already
   //  been added to viewer.scene. This was we can more cleanly show and hide
@@ -111,6 +133,7 @@ function addController(controller) {
   // (And yes, Jonathan -- we will remove it on disconnect and destroy it.)
   controllerGroup.add(controller);
 }
+
 
 window.addEventListener('vr controller connected', ({ detail: controller }) => {
   //  If .hand is an empty String, null, or undefined...
@@ -124,8 +147,8 @@ window.addEventListener('vr controller connected', ({ detail: controller }) => {
     //  Unclear why... But if we believe this event WILL FIRE EVENTUALLY then
     //  this current setup is totally fine.
     const onHandChanged = () => {
-      addController(controller);
       controller.removeEventListener(onHandChanged);
+      addController(controller);
     };
     controller.addEventListener('hand changed', onHandChanged);
   } else addController(controller);
