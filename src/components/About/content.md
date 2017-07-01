@@ -9,9 +9,9 @@ _Dance Tonite_ features VR motion capture recordings of users dancing to the son
 Each room is made from a single person’s choreography. The entire experience evolves over time with every new user contribution.  
 
 ## Technology
-Dance Tonite previews one of the most exciting developments in Chrome, WebVR, letting anyone can take part in the experience. Built for the web, no apps or downloads are required.
+Dance Tonite previews one of the most exciting developments in Chrome, WebVR, allowing anyone to take part in the experience. It’s built for the Web—no apps or downloads required.
 
-This project is released open source. [View source code](https://github.com/puckey/you-move-me).
+This project is open-source. [View source code](https://github.com/puckey/you-move-me).
 
 To learn more, watch this video or read the technical deep dive.
 
@@ -70,7 +70,7 @@ To learn more, watch this video or read the technical deep dive.
 The cones and cylinders are VR motion capture recordings of actual users who’ve submitted their choreography to the project. VR headsets are represented as cones, controllers as cylinders. Each room is made by a single person dancing to a specific portion of the song. All submissions are made using the same recording tools provided by this project.
 
 ### How does the recording process work?
-Users choreograph specific segments of the song in layers. Each layer includes one round of dancing. Once a round is complete, the music loops and the next round begins. Similar to a loop pedal, this builds layers of choreography that results in complex patterns made from just VR headset and controller positional data. Watch the tutorial.
+Users choreograph specific segments of the song in layers. Each layer includes one round of dancing. Once a round is complete, the music loops and the next round begins. Similar to a loop pedal, this builds layers of choreography that results in complex patterns made from just headset and controller position data. Watch the tutorial.
 
 ### How can I add my own part?
 Anyone can add to the experience using the “Add performance” link on the homepage. Room-scale VR and a [WebVR](http://webvr.info) supported browser are required.
