@@ -96,13 +96,24 @@ function addController(controller) {
   //  We're going to add this directly onto the controller which will yield
   //  no harm in production, and for dev creates the benefit of being able to
   //  directly test how this should work. We can now call things like:
-  //  THREE.VRController.controllers[0].onHandChanged("left"); etc.
+  //  THREE.VRController.controllers[0].onHandChanged("left");
+  //  THREE.VRController.controllers[1].onHandChanged("right");
+  //  THREE.VRController.controllers[0].onHandChanged("right");
+  //  THREE.VRController.controllers[1].onHandChanged("left");
+  //  Notice what we're NOT doing. We're NOT SWAPPING controllers. We are
+  //  relying entirely on the Gamepad API to report a "swap" by reporting a
+  //  change event on both controllers independently.
   controller.onHandChanged = (forceHand) => {
     let hand;
+    //  This forceHand is only for manual testing of this swap feature.
+    //  If doing manual swap tests send a 'left' or 'right' string only.
+    //  In "normal mode" this is just an event listener and will therefore
+    //  receive a full event object and so the following string comnpare
+    //  will fail and use the actual gamepad.hand value -- a good thing!
     if (forceHand === 'left' || forceHand === 'right') {
       hand = forceHand;
     } else hand = controller.gamepad.hand;
-    console.log('holy shit hand changed!! to:::', controller, hand);
+    // console.log('This controller has swapped hands!', controller, hand);
     controller.remove(mesh);
     controller.hand = hand;
     if (hand === 'left') {
@@ -115,7 +126,6 @@ function addController(controller) {
     controller.add(mesh);
   };
   controller.addEventListener('hand changed', controller.onHandChanged);
-  window.changeHands = controller.onHandChanged;
 
   //  All our work here is done, let's add this controller to the scene!
   //  Well sort off... We’ll add it to our controllerGroup which has already
