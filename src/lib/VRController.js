@@ -302,7 +302,7 @@ THREE.VRController.prototype.update = function(){
 
 //  This makes inspecting through the console a little bit saner.
 
-THREE.VRController.verbosity = 0;//0.5;
+THREE.VRController.verbosity = 1;//0.5;
 
 
 //  We need to keep a record of found controllers
