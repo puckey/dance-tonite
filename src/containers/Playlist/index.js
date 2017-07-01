@@ -1,5 +1,6 @@
 /** @jsx h */
 import { h, Component } from 'preact';
+import shuffle from 'just-shuffle';
 import asyncEach from 'async/eachLimit';
 
 import quadOut from 'eases/quad-out';
@@ -82,17 +83,22 @@ export default class Playlist extends Component {
     for (let i = 0; i < entries.length; i++) {
       const isPathRecording = i === pathRoomId - 1;
       const entry = entries[i];
-      rooms.push(
-        new Room({
-          id: isPathRecording
-            ? pathRecordingId
-            : process.env.FLAVOR === 'cms'
-              ? entry.id
-              : entry,
-          index: i,
-          pathRecording: isPathRecording,
-        })
-      );
+      const room = new Room({
+        id: isPathRecording
+          ? pathRecordingId
+          : process.env.FLAVOR === 'cms'
+            ? entry.id
+            : entry,
+        index: i,
+        pathRecording: isPathRecording,
+      });
+      rooms.push(room);
+    }
+    const roomsToRise = shuffle(rooms.filter(room => room.insideMegaGrid));
+    for (let i = 0; i < roomsToRise.length; i++) {
+      const room = roomsToRise[i];
+      const riseIndex = Math.floor(i / 4);
+      room.riseTime = settings.colorTimes[riseIndex];
     }
 
     this.setState({ entries, rooms });

@@ -167,10 +167,9 @@ export default class Room {
   getPose(performanceIndex, limbIndex, offset, applyMatrix = false) {
     this.frame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
     if (this.insideMegaGrid && !this.single) {
-      const RISE_TIME = 184.734288;
       const ratio = Math.max(0,
         Math.min(5,
-          audio.time - RISE_TIME - this.index * -0.005
+          audio.time - this.riseTime - this.index * -0.005
         )
       ) * 0.2;
       this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, FIRST_POSE);
