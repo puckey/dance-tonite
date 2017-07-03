@@ -34,6 +34,13 @@ export default class Menu extends Component {
     this.mounted = true;
   }
 
+  componentWillReceiveProps(props, { presenting }) {
+    if (presenting === this.context.presenting) return;
+    this.setState({
+      enterVROVerlay: presenting,
+    });
+  }
+
   componentWillUnmount() {
     this.mounted = false;
   }
@@ -79,14 +86,13 @@ export default class Menu extends Component {
       about = false,
       close = false,
     },
-    state,
     {
-      presenting,
-    }
+      enterVROVerlay,
+    },
   ) {
     return (
       <div className="menu">
-        { presenting
+        { enterVROVerlay
           ? <EnterVROverlay />
           : null
         }
