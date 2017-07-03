@@ -35,8 +35,9 @@ export default class Playlist extends Component {
     Room.reset();
     Room.rotate180();
 
-    const { recording, pathRoomId } = this.props;
+    const { recording, pathRoomId, orb } = this.props;
     const { rooms } = this.state;
+    this.orb.visible = !!orb;
 
     if (recording) {
       for (let index = 1; index < 18; index += 2) {
@@ -57,11 +58,7 @@ export default class Playlist extends Component {
   }
 
   componentWillReceiveProps({ orb, stopped }) {
-    if (orb) {
-      this.orb.show();
-    } else {
-      this.orb.hide();
-    }
+    this.orb.visible = !!orb;
     if (stopped) {
       viewer.off('tick', this.tick);
     }

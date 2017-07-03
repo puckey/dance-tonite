@@ -31,12 +31,8 @@ export default class Orb {
     );
   }
 
-  hide() {
-    viewer.scene.remove(this.mesh);
-  }
-
-  show() {
-    viewer.scene.add(this.mesh);
+  set visible(visible) {
+    this.mesh.visible = visible;
   }
 
   fadeOut() {
