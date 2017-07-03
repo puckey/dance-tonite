@@ -1,5 +1,6 @@
 /** @jsx h */
 import { h, Component } from 'preact';
+import './style.scss';
 
 import Room from '../../components/Room';
 import Overlay from '../../components/Overlay';
@@ -111,6 +112,7 @@ export default class Tutorial extends Component {
         { skipButton && (
           <Align type="bottom-right">
             <a
+              className="skip-tutorial"
               onClick={() => {
                 this.performShowOverlay();
                 analytics.recordTutorialSkip();
