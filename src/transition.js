@@ -64,6 +64,7 @@ const tweenFog = (from, to, duration = 2) => {
 };
 
 const fadeOut = (duration) => {
+  fadedOut = true;
   const version = transitionVersion;
   if (logging) {
     console.log('fadeOut', { version, duration, time: new Date() });
