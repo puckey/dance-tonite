@@ -159,25 +159,28 @@ const viewer = Object.assign(emitter(), {
     windowSize.on('resize', onResize, false);
     animate();
   },
-  toggleVR: async (isStillMounted) => {
+
+  exitPresent() {
+    if (!vrEffect.isPresenting) return;
+    vrEffect.exitPresent();
+    viewer.switchCamera('orthographic');
+  },
+
+  enterPresent() {
+    if (vrEffect.isPresenting) return;
+    vrEffect.requestPresent();
+    viewer.switchCamera('default');
+    scene.add(viewer.camera);
+  },
+
+  toggleVR: async () => {
     if (vrEffect.isPresenting) {
-      vrEffect.exitPresent();
-      audio.play();
+      viewer.exitPresent();
     } else {
-      vrEffect.requestPresent();
-      await audio.fadeOut();
-      if (!isStillMounted()) return;
-      audio.pause();
-
-      viewer.switchCamera('default');
-      await sleep(5000);
-      if (!isStillMounted()) return;
-
-      audio.play();
-      audio.unmute();
-      scene.add(viewer.camera);
+      viewer.enterPresent();
     }
   },
+
   switchCamera: (name) => {
     InstancedItem.switch(
       name === 'orthographic'

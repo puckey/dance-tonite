@@ -28,7 +28,6 @@ export default class Menu extends Component {
     this.toggleVR = this.toggleVR.bind(this);
     this.toggleNoVROverlay = this.toggleNoVROverlay.bind(this);
     this.goHome = this.goHome.bind(this);
-    this.isMounted = this.isMounted.bind(this);
   }
 
   componentDidMount() {
@@ -59,15 +58,11 @@ export default class Menu extends Component {
     }
   }
 
-  isMounted() {
-    return this.mounted;
-  }
-
   toggleVR() {
     if (!feature.hasVR) {
       this.toggleNoVROverlay();
     } else {
-      viewer.toggleVR(this.isMounted);
+      viewer.toggleVR();
     }
   }
 
