@@ -55,10 +55,11 @@ export default class Gallery extends Component {
     });
     const { id: recordingId } = this.props;
     let recordings = await storage.loadGallery();
-    recordings = recordings.sort((a, b) => b.timestamp - a.timestamp);
+    recordings = recordings
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .filter(({ room }) => room > 0);
 
     const items = recordings
-      .filter(({ room }) => room > 0)
       .map(({ title, id }, index) => ({
         index,
         id,
