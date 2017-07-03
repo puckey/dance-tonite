@@ -169,7 +169,7 @@ export default class Record extends Component {
     return (
       <div>
         <Room
-          orbs
+          orbs={mode === 'recording'}
           reverseOrbs
           record
           roomId={roomId}
