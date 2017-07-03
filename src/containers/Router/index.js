@@ -61,9 +61,11 @@ export default class Router extends Component {
     }
 
     let notFound;
-    if (params.roomId &&
-        params.roomId > settings.roomCount ||
-        params.roomId < 1
+    const { roomId } = params;
+    if (roomId !== undefined &&
+        isNaN(roomId) ||
+        roomId > settings.roomCount ||
+        roomId < 1
     ) {
       notFound = 'The selected room id is invalid.';
     }
