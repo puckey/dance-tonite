@@ -65,7 +65,7 @@ export default class Router extends Component {
         params.roomId > settings.roomCount ||
         params.roomId < 1
     ) {
-      notFound = 'Sorry, but the room id provided is invalid.';
+      notFound = 'The selected room id is invalid.';
     }
 
     this.setState({

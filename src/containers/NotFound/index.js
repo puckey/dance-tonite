@@ -10,8 +10,8 @@ export default function NotFound({ error }) {
   return (
     <Container>
       <Align type="center" margin>
-        <Error>{error || 'Sorry, but the page you requested cannot be found.'}</Error>
-        <div style={{ marginTop: '1rem' }}><a href="/">Go home</a></div>
+        <Error>{error || 'The page you requested cannot be found.'}</Error>
+        <div style={{ marginTop: '1rem' }}><a href="/"><span>Go home</span></a></div>
       </Align>
     </Container>
   );
