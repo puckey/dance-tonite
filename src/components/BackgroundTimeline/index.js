@@ -45,7 +45,7 @@ export default class BackgroundTimeline extends Component {
       EASE_COLOR.copy(color).multiplyScalar(0.7),
       Object.assign({
         ease: 'easeOutCubic',
-        duration: 2,
+        duration: 1,
         onUpdate: () => viewer.renderer.setClearColor(EASE_COLOR),
       }, BLACK)
     );
