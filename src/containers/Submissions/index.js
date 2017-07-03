@@ -49,7 +49,7 @@ export default class Submissions extends Component {
 
   async submit() {
     this.setState({
-      loading: 'submitting',
+      loading: 'Submitting…',
     });
     const { error } = await cms.updateRecording(this.state.recording);
     if (!this.mounted) return;
