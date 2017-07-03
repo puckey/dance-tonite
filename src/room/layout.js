@@ -85,7 +85,7 @@ export default {
   },
 
   loopIndex(roomIndex) {
-    const [, y, z] = layout[roomIndex];
+    const [, y, z] = layout[roomIndex % layout.length];
     return (z + Math.abs(Math.round(y)));
   },
 
