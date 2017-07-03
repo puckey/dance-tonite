@@ -67,7 +67,8 @@ export default class Inbox extends Component {
 
     // Filter out faulty room with -1:
     unmoderated = unmoderated
-      .filter(recording => recording.room >= 0);
+      .filter(recording => recording.room >= 0)
+      .sort((a, b) => b.timestamp - a.timestamp);
     const { recordingId } = this.props;
     if (!recordingId && unmoderated.length) {
       const recording = unmoderated[0];
