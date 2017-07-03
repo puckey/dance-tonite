@@ -29,22 +29,12 @@ export default class PlaybackFlow extends Component {
     };
     this.performGotoFullExperience = this.performGotoFullExperience.bind(this);
     this.performGotoSubmission = this.performGotoSubmission.bind(this);
-    this.onVRPresentChange = this.onVRPresentChange.bind(this);
   }
 
-  componentDidMount() {
-    viewer.on('vr-present-change', this.onVRPresentChange);
-  }
-
-  componentWillUnmount() {
-    viewer.off('vr-present-change', this.onVRPresentChange);
-  }
-
-  onVRPresentChange(presenting) {
-    if (!presenting) {
+  componentWillReceiveProps(nextProps, { presenting }) {
+    if (!presenting && presenting !== this.context.presenting) {
       viewer.switchCamera('orthographic');
     }
-    this.setState({ presenting });
   }
 
   goto(mode) {
@@ -79,7 +69,8 @@ export default class PlaybackFlow extends Component {
   }
 
   renderMenu() {
-    const { fromRecording, mode, presenting } = this.state;
+    const { fromRecording, mode } = this.state;
+    const { presenting } = this.context;
     return process.env.FLAVOR === 'cms'
       ? <CMSMenu
         vr audio mute

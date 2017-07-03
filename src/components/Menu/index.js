@@ -27,27 +27,16 @@ export default class Menu extends Component {
     this.toggleAbout = this.toggleAbout.bind(this);
     this.toggleVR = this.toggleVR.bind(this);
     this.toggleNoVROverlay = this.toggleNoVROverlay.bind(this);
-    this.toggleEnteredVROverlay = this.toggleEnteredVROverlay.bind(this);
     this.goHome = this.goHome.bind(this);
     this.isMounted = this.isMounted.bind(this);
   }
 
   componentDidMount() {
     this.mounted = true;
-    viewer.on('vr-present-change', this.toggleEnteredVROverlay);
   }
 
   componentWillUnmount() {
     this.mounted = false;
-    viewer.off('vr-present-change', this.toggleEnteredVROverlay);
-  }
-
-  toggleEnteredVROverlay(isPresenting) {
-    this.setState({
-      enteredVROverlay: isPresenting === undefined
-        ? !this.state.enteredVROverlay
-        : isPresenting,
-    });
   }
 
   toggleAbout() {
@@ -95,13 +84,14 @@ export default class Menu extends Component {
       about = false,
       close = false,
     },
+    state,
     {
-      enteredVROverlay,
+      presenting,
     }
   ) {
     return (
       <div className="menu">
-        { enteredVROverlay
+        { presenting
           ? <EnterVROverlay />
           : null
         }

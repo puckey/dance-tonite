@@ -6,6 +6,7 @@ import audio from '../../audio';
 import settings from '../../settings';
 import feature from '../../utils/feature';
 import audioPool from '../../utils/audio-pool';
+import viewer from '../../viewer';
 
 import NotFound from '../NotFound';
 import PressPlayToStart from '../PressPlayToStart';
@@ -32,13 +33,20 @@ export default class Router extends Component {
     // to play the audio:
     this.state = {
       needsFillPool: feature.isMobile,
+      presenting: viewer.vrEffect.isPresenting,
     };
     this.setNotFound = this.setNotFound.bind(this);
     this.performFillPool = this.performFillPool.bind(this);
     this.onRouteChanged = this.onRouteChanged.bind(this);
+    this.setPresenting = this.setPresenting.bind(this);
+  }
+
+  getChildContext() {
+    return { presenting: this.state.presenting };
   }
 
   componentWillMount() {
+    viewer.on('vr-present-change', this.setPresenting);
     Object
       .keys(componentByRoute)
       .forEach((route) => router.get(route, this.onRouteChanged));
@@ -65,6 +73,10 @@ export default class Router extends Component {
       params,
       notFound,
     });
+  }
+
+  setPresenting(presenting) {
+    this.setState({ presenting });
   }
 
   setNotFound(notFound) {
