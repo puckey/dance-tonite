@@ -36,7 +36,6 @@ export default class RoomComponent extends Component {
     viewer.camera.position.copy(state.originalCameraPosition);
     viewer.camera.zoom = state.originalZoom;
     viewer.camera.updateProjectionMatrix();
-    audio.reset();
     audio.fadeOut();
     if (this.state.room) {
       this.state.room.destroy();

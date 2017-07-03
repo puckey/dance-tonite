@@ -29,15 +29,7 @@ const ALMOST_ZERO = 1e-4;
 let scheduledTime;
 const audio = Object.assign(emitter(), {
   tick() {
-    if ((!audioElement && !context) || !startTime) {
-      this.progress = 0;
-      this.time = 0;
-      this.totalTime = 0;
-      this.loopProgress = 0;
-      this.totalProgress = 0;
-      this.looped = false;
-      return;
-    }
+    if ((!audioElement && !context) || !startTime) return;
     const time = this.time = (audioElement
       ? (pauseTime || (Date.now() - startTime)) / 1000
       : context.currentTime - startTime) % duration;
@@ -70,7 +62,7 @@ const audio = Object.assign(emitter(), {
 
   load(param) {
     return new Promise(async (resolve, reject) => {
-      if (context) context.close();
+      audio.reset();
       context = new AudioContext();
       gainNode = context.createGain();
       // Reset time, set loop count
@@ -185,8 +177,20 @@ const audio = Object.assign(emitter(), {
     this.gotoTime(Math.max(0, Math.min(this.duration, time)));
   },
 
+  resetValues() {
+    this.progress = 0;
+    this.time = 0;
+    this.totalTime = 0;
+    this.loopProgress = 0;
+    this.totalProgress = 0;
+    this.looped = false;
+  },
+
   reset() {
-    audio.fadeOut();
+    if (context) {
+      context.close();
+    }
+    audio.resetValues();
     // Cancel loading of audioElement:
     if (audioElement) {
       audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
@@ -270,6 +274,8 @@ const audio = Object.assign(emitter(), {
   time: 0,
   loopIndex: 0,
 });
+
+audio.resetValues();
 
 pageVisibility.on('change', (visible) => {
   audio[visible ? 'play' : 'pause']();

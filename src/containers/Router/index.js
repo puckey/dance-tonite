@@ -57,7 +57,7 @@ export default class Router extends Component {
     if (event && event.parent()) return;
     convertParams(params);
     if (this.state.route) {
-      audio.reset();
+      audio.fadeOut();
     }
 
     let notFound;

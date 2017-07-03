@@ -26,7 +26,7 @@ export default class RecordFlow extends Component {
   }
 
   goto(mode) {
-    audio.reset();
+    audio.fadeOut();
     const count = this.state.count + 1;
     analytics.recordSectionChange(mode);
     if (modes.indexOf(mode) === -1) {
