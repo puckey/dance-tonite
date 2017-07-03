@@ -69,7 +69,7 @@ export default class TutorialTimeline extends Component {
       },
       {
         time: 32,
-        text: 'Add up to 10 copies of yourself.',
+        text: 'Add up to 20 copies of yourself.',
         layers: 3,
       },
       {
