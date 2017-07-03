@@ -132,6 +132,7 @@ export default class Choose extends Component {
                 id={item.id}
                 roomId={item.room}
                 key={item && item.id}
+                orbs
               />
             )
             : (
