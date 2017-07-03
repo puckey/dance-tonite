@@ -50,7 +50,6 @@ export default class Review extends Component {
     this.setState({
       visible: true,
     });
-    audio.fadeIn();
     audio.play();
     transition.exit();
   }

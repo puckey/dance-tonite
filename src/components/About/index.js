@@ -46,7 +46,6 @@ export default class About extends Component {
     classList.add('mod-overflow-hidden');
     classList.remove('mod-about');
     audio.play();
-    audio.fadeIn(0.5);
   }
 
   async asyncMount() {

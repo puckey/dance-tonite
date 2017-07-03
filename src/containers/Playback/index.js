@@ -131,7 +131,6 @@ export default class Playback extends Component {
     // Safari won't play unless we wait until next tick
     setTimeout(() => {
       audio.play();
-      audio.fadeIn();
     });
   }
 
