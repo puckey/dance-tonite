@@ -86,7 +86,7 @@ export default class Gallery extends Component {
   ) {
     return (
       <Container>
-        <Menu close mute />
+        <Menu close mute about />
         <Align type="bottom-left" margin>
           <PaginatedList
             item={item}
