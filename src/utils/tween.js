@@ -10,7 +10,7 @@ const tween = new Tween({
 
 viewer.on('tick', tween.tick.bind(tween));
 
-export const createTweener = () => {
+export default function createTweener() {
   let t;
   return (elements, param) => {
     if (t) {
@@ -25,6 +25,5 @@ export const createTweener = () => {
     });
     return t;
   };
-};
+}
 
-export default createTweener();

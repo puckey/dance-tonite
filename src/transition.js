@@ -1,4 +1,4 @@
-import tween from './utils/tween';
+import createTweener from './utils/tween';
 import Orb from './orb';
 import viewer from './viewer';
 import props from './props';
@@ -7,6 +7,8 @@ import { offsetFrom } from './utils/three';
 import { textColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
 import deps from './deps';
+
+const tween = createTweener();
 
 const logging = false;
 

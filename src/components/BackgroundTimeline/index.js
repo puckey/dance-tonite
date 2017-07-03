@@ -6,7 +6,7 @@ import { getRoomColorByIndex } from '../../theme/colors';
 import { Color } from '../../lib/three';
 
 import AudioTimeline from '../AudioTimeline';
-import { createTweener } from '../../utils/tween';
+import createTweener from '../../utils/tween';
 
 const tween = createTweener();
 const BLACK = new Color(0x000000);
