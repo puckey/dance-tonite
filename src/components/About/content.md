@@ -4,7 +4,7 @@
   <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
 </div>
 
-_Dance Tonite_ features VR motion capture recordings of users dancing to the song titled “Tonite” by LCD Soundsystem. Built in WebVR, the performance can be experienced in three different ways. Without VR, you are in the audience. On Daydream View, you are on stage watching the experience unfold around you. In room-scale VR, you are a performer.
+Dance Tonite features VR motion capture recordings of users dancing to the song titled “Tonite” by LCD Soundsystem. Built in WebVR, the performance can be experienced in three different ways. Without VR, you are in the audience. On Daydream View, you are on stage watching the experience unfold around you. In room-scale VR, you are a performer.
 
 Each room is made from a single person’s choreography. The entire experience evolves over time with every new user contribution.  
 
