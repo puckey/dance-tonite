@@ -67,7 +67,7 @@ export default class Menu extends Component {
   }
 
   goHome() {
-    viewer.switchCamera('orthographic');
+    viewer.exitPresent();
     router.navigate('/');
   }
 

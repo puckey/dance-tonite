@@ -72,9 +72,6 @@ export default class Playback extends Component {
 
   async asyncMount() {
     const { inContextOfRecording, roomId } = this.props;
-    if (!viewer.vrEffect.isPresenting) {
-      viewer.switchCamera('orthographic');
-    }
     if (!inContextOfRecording) {
       this.setLoading('Moving dancers into position…');
     }

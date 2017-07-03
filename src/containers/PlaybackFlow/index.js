@@ -31,12 +31,6 @@ export default class PlaybackFlow extends Component {
     this.performGotoSubmission = this.performGotoSubmission.bind(this);
   }
 
-  componentWillReceiveProps(nextProps, { presenting }) {
-    if (!presenting && presenting !== this.context.presenting) {
-      viewer.switchCamera('orthographic');
-    }
-  }
-
   goto(mode) {
     const count = this.state.count + 1;
     this.setState({ count });

@@ -44,10 +44,7 @@ export default class Submission extends Component {
   }
 
   async asyncMount() {
-    if (viewer.vrEffect.isPresenting) {
-      viewer.vrEffect.exitPresent();
-    }
-    viewer.switchCamera('orthographic');
+    viewer.exitPresent();
     transition.reset();
   }
 

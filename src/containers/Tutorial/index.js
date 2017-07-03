@@ -27,10 +27,7 @@ export default class Tutorial extends Component {
     this.performHideOverlay = this.performHideOverlay.bind(this);
     this.performAddPerformance = this.performAddPerformance.bind(this);
 
-    if (viewer.vrEffect.isPresenting) {
-      viewer.vrEffect.exitPresent();
-    }
-    viewer.switchCamera('orthographic');
+    viewer.exitPresent();
   }
 
   componentDidMount() {
