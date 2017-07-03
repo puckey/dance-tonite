@@ -31,6 +31,16 @@ export default class RoomComponent extends Component {
     this.asyncMount(this.props);
   }
 
+  componentWillReceiveProps(props, { presenting }) {
+    if (presenting !== this.context.presenting && !presenting) {
+      viewer.switchCamera('orthographic');
+      viewer.camera.position.y = 2;
+      viewer.camera.position.z = 1.3;
+      viewer.camera.updateProjectionMatrix();
+      Room.rotate180();
+    }
+  }
+
   componentWillUnmount() {
     this.mounted = false;
     viewer.camera.position.copy(state.originalCameraPosition);
@@ -51,11 +61,11 @@ export default class RoomComponent extends Component {
     }
   }
 
-  async asyncMount({ roomId, id, record }) {
+  async asyncMount({ roomId, id, record, presenting }) {
     Room.reset();
     state.originalCameraPosition = viewer.camera.position.clone();
     state.originalZoom = viewer.camera.zoom;
-    if (!record) {
+    if (!record && !presenting) {
       viewer.switchCamera('orthographic');
       viewer.camera.position.y = 2;
       viewer.camera.position.z = 1.3;

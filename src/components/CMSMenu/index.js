@@ -12,19 +12,29 @@ import ButtonClose from '../../components/ButtonClose';
 import EnterVROverlay from '../../components/EnterVROverlay';
 import AudioControls from '../../components/AudioControls';
 
+import viewer from '../../viewer';
+import feature from '../../utils/feature';
+
 export default class CMSMenu extends Component {
   constructor() {
     super();
     this.state = {
       vrOverlay: false,
     };
-    this.toggleVROverlay = this.toggleVROverlay.bind(this);
+    this.toggleVR = this.toggleVR.bind(this);
   }
 
-  toggleVROverlay() {
+  componentWillReceiveProps(props, { presenting }) {
+    if (presenting === this.context.presenting) return;
     this.setState({
-      vrOverlay: !this.state.vrOverlay,
+      enterVROVerlay: presenting,
     });
+  }
+
+  toggleVR() {
+    if (feature.hasVR) {
+      viewer.toggleVR();
+    }
   }
 
   render({
@@ -44,7 +54,7 @@ export default class CMSMenu extends Component {
           : null
         }
         <Align type="top-left" margin rows>
-          {vr ? <ButtonEnterVR toggleVROverlay={this.toggleVROverlay} /> : null}
+          {vr ? <ButtonEnterVR onClick={this.toggleVR} /> : null}
           {mute ? <ButtonMute /> : null}
           {submissions ? <ButtonSubmissions /> : null}
           {inbox ? <ButtonInbox unreadCount={unreadCount} /> : null}
