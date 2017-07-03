@@ -195,7 +195,7 @@ const transition = {
       await fadeOut();
     }
     transition.reset(true);
-    if (version === transitionVersion) {
+    if (logging && version === transitionVersion) {
       console.log(
         'transition.exit: fadingIn viewer scene',
         { version }
