@@ -8,6 +8,8 @@ _Dance Tonite_ features VR motion capture recordings of users dancing to the son
 
 Each room is made from a single person’s choreography. The entire experience evolves over time with every new user contribution.  
 
+Take a look at the [gallery of featured user contributions](/gallery/).
+
 ## Technology
 Dance Tonite previews one of the most exciting developments in Chrome, WebVR, allowing anyone to take part in the experience. It’s built for the Web—no apps or downloads required.
 

@@ -54,7 +54,7 @@ export default class About extends Component {
         credentials: 'same-origin',
       });
       content = await response.text();
-      content = content.replace(/<a\s+href=/gi, '<a target="_blank" href=');
+      content = content.replace(/<a\s+href="http(s)*:\/\//gi, '<a target="_blank" href="http://');
     }
     if (!this.mounted) return;
     this.setState({ content });
