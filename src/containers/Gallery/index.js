@@ -17,12 +17,11 @@ import getFontSize from '../../utils/font-size';
 import windowSize from '../../utils/windowSize';
 import settings from '../../settings';
 
-export default class Submissions extends Component {
+export default class Gallery extends Component {
   constructor() {
     super();
     this.state = { };
     this.performSelect = this.performSelect.bind(this);
-    this.performChangeItem = this.performChangeItem.bind(this);
     this.onWindowResize = this.onWindowResize.bind(this);
   }
 
@@ -30,6 +29,15 @@ export default class Submissions extends Component {
     this.mounted = true;
     this.asyncMount();
     windowSize.on('resize', this.onWindowResize);
+  }
+
+  componentWillReceiveProps({ id }) {
+    const { items, recordings } = this.state;
+    const item = items.find(it => it.id === id);
+    this.setState({
+      item,
+      recording: recordings[item.index],
+    });
   }
 
   componentWillUnmount() {
@@ -45,34 +53,30 @@ export default class Submissions extends Component {
     this.setState({
       loading: 'Loading recordings…',
     });
-    const { item } = this.state;
-    const recordings = await storage.loadGallery();
+    const { id: recordingId } = this.props;
+    let recordings = await storage.loadGallery();
+    recordings = recordings.sort((a, b) => b.timestamp - a.timestamp);
+
     const items = recordings
       .filter(({ room }) => room > 0)
-      .map(({ title }, index) => ({
+      .map(({ title, id }, index) => ({
         index,
+        id,
         title: `- ${title || 'Unnamed'}`,
       }));
     if (!this.mounted) return;
+    const item = recordingId ? items.find(it => it.id === recordingId) : items[0];
     this.setState({
       items,
       recordings,
-      item: items[item ? item.index : 0],
+      item,
       recording: recordings[item ? item.index : 0],
       loading: null,
     });
   }
 
-  performChangeItem(item) {
-    this.setState({
-      item,
-      recording: this.state.recordings[item.index],
-    });
-  }
-
-  async performSelect() {
-    const { item } = this.state;
-    router.navigate(`/gallery/${item.id}`);
+  async performSelect(item) {
+    router.navigate(`/gallery/${this.state.recordings[item.index].id}`);
   }
 
   render(
@@ -86,7 +90,7 @@ export default class Submissions extends Component {
           <PaginatedList
             item={item}
             items={items}
-            performChange={this.performChangeItem}
+            performChange={this.performSelect}
             itemsPerPage={Math.floor((windowSize.height * 0.3) / getFontSize())}
           />
         </Align>
