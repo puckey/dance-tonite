@@ -51,7 +51,7 @@ export default class LineTitle extends Component {
               className="line-title-text"
               ref={this.receiveTextElement}
             >
-              { text }
+              <span>{ text }</span>
             </div>
           )
         }
