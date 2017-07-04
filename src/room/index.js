@@ -1,3 +1,4 @@
+import ease from 'eases/back-in-out';
 import * as THREE from '../lib/three';
 
 import props from '../props';
@@ -39,15 +40,18 @@ const debugMesh = new THREE.Mesh(
 debugMesh.frustumCulled = false;
 
 const POSE = createPose();
+const LAST_POSE = createPose();
 const FIRST_POSE = createPose();
 
 const lerpPose = (
   [positionA, quaternionA],
   [positionB, quaternionB],
-  ratio
+  ratio,
+  quaternionRatio = ratio,
 ) => {
+  if (ratio === 0) return;
   positionA.lerp(positionB, ratio);
-  quaternionA.slerp(quaternionB, ratio);
+  quaternionA.slerp(quaternionB, quaternionRatio);
 };
 
 export default class Room {
@@ -59,14 +63,17 @@ export default class Room {
       colorIndex = params.index,
       single = false,
       wall = false,
+      morph = true,
       isGiffing = false,
     } = params;
+    this.morph = morph;
     this._worldPosition = new THREE.Vector3();
     this.index = params.single ? 0 : index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
     this.single = single;
     const frames = this.frames = new Frames(id, recording);
     this.firstFrame = frames.getFrame(0);
+    this.lastFrame = frames.getFrame((settings.loopDuration * 2) - 0.001);
     this.frame = frames.getFrame();
     this.costumeColor = getCostumeColor(colorIndex);
     const roomColor = this.roomColor = getRoomColor(colorIndex);
@@ -165,7 +172,17 @@ export default class Room {
   }
 
   getPose(performanceIndex, limbIndex, offset, applyMatrix = false) {
-    this.frame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
+    const { frame } = this;
+    frame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
+
+    // Morph the beginning of the first performance with the end of the last:
+    if (this.morph && performanceIndex === 0) {
+      this.lastFrame.getPose(frame.count - 1, limbIndex, offset, applyMatrix, LAST_POSE);
+      const overlapRatio = (Math.min(0.2, frame.loopRatio)) / 0.2;
+      const rotationRatio = (Math.min(0.05, frame.loopRatio)) / 0.05;
+      lerpPose(POSE, LAST_POSE, ease(1 - overlapRatio), ease(1 - rotationRatio));
+    }
+
     if (this.insideMegaGrid && !this.single) {
       const ratio = Math.max(0,
         Math.min(5,

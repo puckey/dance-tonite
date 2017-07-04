@@ -102,6 +102,7 @@ export default class Tutorial extends Component {
           orbs
           tutorialLayers={layers}
           highlightLast={layers < 6}
+          morph={false}
         >
           <TutorialTimeline
             onUpdateLayers={this.setLayers}

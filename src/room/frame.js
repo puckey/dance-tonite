@@ -1,6 +1,6 @@
 import * as serializer from '../utils/serializer';
 import InstancedItem from '../instanced-item';
-import audio from '../audio';
+import settings from '../settings';
 
 const getFrame = (frames, number) => {
   let frame = frames[number];
@@ -22,13 +22,15 @@ export default class Frame {
   }
 
   gotoTime(seconds, maxLayers) {
-    this.time = seconds;
+    const duration = (settings.loopDuration * 2);
+    this.time = seconds % duration;
+    this.loopRatio = this.time / duration;
     this.maxLayers = maxLayers;
     this.needsUpdate = true;
   }
 
   secondsToFrame(seconds) {
-    return (seconds % (audio.loopDuration * 2)) * this.frames.fps;
+    return seconds * this.frames.fps;
   }
 
   getHeadPose(index, offset, applyMatrix = true) {
@@ -46,8 +48,9 @@ export default class Frame {
     const { frames } = this.frames;
     const { time, maxLayers } = this;
     const frameCount = frames && frames.length;
+    const requestedFrame = this.secondsToFrame(time);
     if (!frameCount) return;
-    const frameNumber = Math.min(frameCount - 1, this.secondsToFrame(time));
+    const frameNumber = Math.min(frameCount - 1, requestedFrame);
     const lowerNumber = Math.floor(frameNumber);
     const higherNumber = Math.ceil(frameNumber);
     if (
@@ -62,7 +65,7 @@ export default class Frame {
     this._count = maxLayers != null
       ? Math.min(maxLayers, serializer.count(lower))
       : serializer.count(lower);
-    this.needsUpdate = false;
+    this.needsUpdate = requestedFrame > frameCount;
   }
 
   getPose(performanceIndex, limbIndex, offset, applyMatrix, pose = POSE) {

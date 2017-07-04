@@ -61,7 +61,7 @@ export default class RoomComponent extends Component {
     }
   }
 
-  async asyncMount({ roomId, id, record, presenting }) {
+  async asyncMount({ roomId, id, record, presenting, morph }) {
     Room.reset();
     state.originalCameraPosition = viewer.camera.position.clone();
     state.originalZoom = viewer.camera.zoom;
@@ -84,6 +84,7 @@ export default class RoomComponent extends Component {
       index: roomId - 1,
       single: true,
       recording: record ? recording : null,
+      morph,
     });
     room.changeColorToWaiting();
     if (id) {
