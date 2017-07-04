@@ -64,9 +64,7 @@ export default class About extends Component {
     return (
       <Portal into="body">
         <div className="about">
-          <Align type="top-right">
-            <ButtonClose onClick={this.props.onClose} dark />
-          </Align>
+          <ButtonClose onClick={this.props.onClose} dark />
           { content && (
             <div
               className="about-content"
