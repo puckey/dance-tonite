@@ -1,5 +1,7 @@
 /** @jsx h */
 import { h, Component } from 'preact';
+import classNames from 'classnames';
+
 import './style.scss';
 import keyframes from './keyframes';
 
@@ -13,8 +15,8 @@ export default class Titles extends Component {
 
     const timeline = this.timeline = createTimeline(keyframes);
 
-    timeline.on('keyframe', ({ titles, colophon }) => {
-      this.setState({ titles });
+    timeline.on('keyframe', ({ titles, colophon = false, small }) => {
+      this.setState({ titles, small });
       this.props.onUpdate(titles, colophon);
     });
 
@@ -45,9 +47,11 @@ export default class Titles extends Component {
     ));
   }
 
-  render() {
-    return this.state.titles && (
-      <div className="titles">{this.renderTitles()}</div>
+  render(props, { titles, small }) {
+    return titles && (
+      <div className={classNames('titles', small && 'mod-small')}>
+        {this.renderTitles()}
+      </div>
     );
   }
 }
