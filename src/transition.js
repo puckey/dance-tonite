@@ -195,11 +195,13 @@ const transition = {
       await fadeOut();
     }
     transition.reset(true);
-    if (logging && version === transitionVersion) {
-      console.log(
-        'transition.exit: fadingIn viewer scene',
-        { version }
-      );
+    if (version === transitionVersion) {
+      if (logging) {
+        console.log(
+          'transition.exit: fadingIn viewer scene',
+          { version }
+        );
+      }
       await fadeIn(revealFar);
     }
   },
