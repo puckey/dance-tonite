@@ -87,7 +87,7 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const POV = {
     update: (progress = 0, fixedControllers = false) => {
-      if (!viewer.vrEffect.isPresenting) {
+      if (!viewer.vrEffect.isPresenting && !hoverPerformance) {
         if (intersectOrb(pointerX, pointerY)) {
           orb.highlight();
           Room.setHighlight();
