@@ -150,7 +150,9 @@ const audio = Object.assign(emitter(), {
     this.paused = false;
     if (context) context.resume();
     if (audioElement) audioElement.play();
-    audio.fadeIn();
+    if (!this.muted) {
+      audio.fadeIn();
+    }
   },
 
   pause() {
