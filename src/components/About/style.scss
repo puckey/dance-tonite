@@ -21,6 +21,8 @@
   }
 
   h1 {
+    width: 100%;
+    
     @media (max-width: $min-width) {
       width: 90%;
       margin: 0;
