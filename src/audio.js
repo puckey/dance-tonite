@@ -52,7 +52,7 @@ const audio = Object.assign(emitter(), {
     }
 
     this.totalProgress = this.loopCount * loopCount + this.progress;
-    this.totalTime = this.totalProgress * this.loopDuration;
+    this.totalTime = this.totalProgress * loopDuration;
     lastTime = time;
 
     if (this.totalProgress - lastLoopProgress > 1) {
