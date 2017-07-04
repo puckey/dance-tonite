@@ -12,6 +12,10 @@
     width: 5rem;
     height: 2.5rem;
   }
+
+  a:hover svg * {
+    fill: $white-color;
+  }
 }
 
 @media (max-width: $min-width) {

@@ -7,9 +7,3 @@
   z-index: $overlay-button-layer;
   margin: -.5rem;
 }
-
-.close {
-  @media (max-width: $min-width) {
-    position: absolute;
-  }
-}

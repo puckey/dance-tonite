@@ -1,0 +1,14 @@
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="3.22" height="33.42" viewBox="0 0 3.22 33.42">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #fcee23;
+        stroke-miterlimit: 10;
+        stroke-width: 3.2px;
+      }
+    </style>
+  </defs>
+  <title>divider</title>
+  <line class="cls-1" x1="1.62" y1="33.42" x2="1.6"/>
+</svg>

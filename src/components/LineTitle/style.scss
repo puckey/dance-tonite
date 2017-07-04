@@ -12,6 +12,8 @@
   text-align: center;
   z-index: $interface-layer;
   pointer-events: none;
+  vertical-align: baseline;
+  line-height: 1;
 
   @media (max-width: 540px) {
     top: 1rem;

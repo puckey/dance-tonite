@@ -1,4 +1,6 @@
-# Dance Tonite is an evolving VR collaboration by LCD Soundsystem and their fans
+<div class="title-wrapper">
+  <h1>Dance Tonite is an evolving VR collaboration by LCD Soundsystem and their fans</h1>
+</div>
 
 <div class="about-video-container">
   <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
