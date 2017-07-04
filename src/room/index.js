@@ -40,6 +40,7 @@ debugMesh.frustumCulled = false;
 
 const POSE = createPose();
 const FIRST_POSE = createPose();
+const SHADOW_EULER = new THREE.Euler(Math.PI * 0.5, 0, 0);
 
 const lerpPose = (
   [positionA, quaternionA],
@@ -158,6 +159,11 @@ export default class Room {
       if (!hideHead) {
         const pose = this.getPose(i, 0, position);
         items.head.add(pose, color, scale);
+
+        const shadowPose = this.getPose(i, 0, position);
+        shadowPose[0].y = 0.1;
+        shadowPose[1].setFromEuler(SHADOW_EULER);
+        items.shadow.add(pose, color, scale);
       }
       items.hand.add(this.getPose(i, 1, position), color, scale);
       items.hand.add(this.getPose(i, 2, position), color, scale);
@@ -193,6 +199,7 @@ Room.clear = () => {
   if (!items) return;
   items.hand.empty();
   items.head.empty();
+  items.shadow.empty();
 };
 
 Room.reset = () => {
@@ -219,6 +226,10 @@ Room.reset = () => {
       hand: new InstancedItem(
         layout.roomCount * 10 * 2,
         props.hand,
+      ),
+      shadow: new InstancedItem(
+        layout.roomCount * 10,
+        props.shadow,
       ),
     };
   }
