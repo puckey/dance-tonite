@@ -173,6 +173,7 @@ export default class Playlist extends Component {
           fixedControllers={this.props.fixedControllers}
           // When reviewing a recording, start closer to the rooms:
           offset={recording ? 2 : 0}
+          rooms={rooms}
         />
         {
           (process.env.FLAVOR === 'cms' && !viewer.vrEffect.isPresenting)
