@@ -1,4 +1,6 @@
-import ease from 'eases/back-in-out';
+import easeBackInOut from 'eases/back-in-out';
+import easeBounceOut from 'eases/bounce-out';
+
 import * as THREE from '../lib/three';
 
 import props from '../props';
@@ -180,33 +182,55 @@ export default class Room {
       this.lastFrame.getPose(frame.count - 1, limbIndex, offset, applyMatrix, LAST_POSE);
       const overlapRatio = (Math.min(0.2, frame.loopRatio)) / 0.2;
       const rotationRatio = (Math.min(0.05, frame.loopRatio)) / 0.05;
-      lerpPose(POSE, LAST_POSE, ease(1 - overlapRatio), ease(1 - rotationRatio));
+      lerpPose(
+        POSE,
+        LAST_POSE,
+        easeBackInOut(1 - overlapRatio),
+        easeBackInOut(1 - rotationRatio)
+      );
     }
 
     if (this.insideMegaGrid && !this.single) {
-      const ratio = Math.max(0,
-        Math.min(5,
-          audio.time - this.riseTime - this.index * -0.005
-        )
-      ) * 0.2;
-      if (ratio === 0) {
-        this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
-        const [position, quaternion] = POSE;
-        position.y *= ratio;
-        quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
-      } else {
-        this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, FIRST_POSE);
-        const [position, quaternion] = FIRST_POSE;
-        position.y *= ratio;
-        quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
-        lerpPose(POSE, FIRST_POSE,
-          ratio === 1
-            ? 1 - ratio
-            : elasticIn(1 - ratio)
-        );
-      }
+      this.risePerformance(performanceIndex, limbIndex, offset, applyMatrix);
+      this.dropPerformance(performanceIndex);
     }
     return POSE;
+  }
+
+  dropPerformance(performanceIndex) {
+    if (audio.time < settings.dropTime) return;
+    const ratio = Math.max(0,
+      Math.min(1,
+        audio.time - settings.dropTime - (this.index + performanceIndex) * -0.005
+      )
+    );
+    if (ratio === 0) return;
+    const [position] = POSE;
+    position.y *= 1 - easeBounceOut(ratio);
+  }
+
+  risePerformance(performanceIndex, limbIndex, offset, applyMatrix) {
+    const ratio = Math.max(0,
+      Math.min(5,
+        audio.time - this.riseTime - this.index * -0.005
+      )
+    ) * 0.2;
+    if (ratio === 0) {
+      this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
+      const [position, quaternion] = POSE;
+      position.y *= ratio;
+      quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
+    } else {
+      this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, FIRST_POSE);
+      const [position, quaternion] = FIRST_POSE;
+      position.y *= ratio;
+      quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
+      lerpPose(POSE, FIRST_POSE,
+        ratio === 1
+          ? 1 - ratio
+          : elasticIn(1 - ratio)
+      );
+    }
   }
 
   destroy() {

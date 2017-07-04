@@ -3,8 +3,6 @@ import { h, Component } from 'preact';
 import shuffle from 'just-shuffle';
 import asyncEach from 'async/eachLimit';
 
-import quadOut from 'eases/quad-out';
-
 import './style.scss';
 
 import Room from '../../room';
@@ -138,20 +136,9 @@ export default class Playlist extends Component {
 
     for (let i = 0; i < this.state.rooms.length; i++) {
       const room = this.state.rooms[i];
-      let time = audio.time;
+      let time = Math.min(audio.time, settings.dropTime);
       if (layout.isOdd(room.index)) {
         time += settings.loopDuration;
-      }
-      // Slow down recordings to a stop after music stops:
-      const slowdownDuration = 0.4;
-      const maxTime = 216.824266 - (slowdownDuration * 0.5);
-      if (audio.time > maxTime) {
-        time = maxTime + quadOut(
-          Math.min(
-            slowdownDuration,
-            audio.time - maxTime
-          ) / slowdownDuration
-        ) * slowdownDuration;
       }
       room.gotoTime(time % (settings.loopDuration * 2));
     }
