@@ -3,7 +3,6 @@ import Orb from './orb';
 import viewer from './viewer';
 import props from './props';
 import * as THREE from './lib/three';
-import { offsetFrom } from './utils/three';
 import { textColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
 import deps from './deps';
