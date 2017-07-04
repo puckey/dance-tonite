@@ -35,6 +35,7 @@ body:not(.mod-mobile) .paginated-list-item-name:hover {
 
 .item-list-navigation-pages {
   cursor: default;
+  margin-bottom: 0.2rem;
 }
 
 .aligner.mod-bottom-right {
@@ -46,6 +47,24 @@ body:not(.mod-mobile) .paginated-list-item-name:hover {
   .item-list-navigation {
     text-align: right;
     margin-top: .3rem;
+  }
+}
+
+.item-list-navigation {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: -0.3rem;
+
+  .button-item-icon {
+    height: 1.75rem;
+    width: 1rem;
+  }
+
+  .divider-icon * {
+    width: 0.5rem;
+    height: 0.75rem;
+    margin-bottom: -0.05rem;
   }
 }
 
@@ -86,16 +105,6 @@ body:not(.mod-mobile) .paginated-list-item-name:hover {
   justify-content: flex-end;
   pointer-events: all;
   width: 100%;
-}
-
-.paginated-list-next,
-.paginated-list-previous {
-  padding-bottom: 1rem;
-  cursor: pointer;
-
-  &.mod-disabled {
-    color: $inactive-color;
-  }
 }
 
 //

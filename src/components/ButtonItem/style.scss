@@ -27,8 +27,13 @@ body:not(.mod-mobile) .button-item:hover {
     margin-top: 0 !important;
   }
 
-  .mod-disabled {
+  &.mod-disabled {
     cursor: not-allowed;
+
+    .button-item-icon svg * {
+      fill: $inactive-color;
+      stroke: $inactive-color;
+    }
   }
 
   &.mod-dark {

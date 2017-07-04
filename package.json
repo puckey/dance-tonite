@@ -25,7 +25,6 @@
     "grapnel": "^0.6.4",
     "just-shuffle": "^1.0.0",
     "mitt": "^1.1.0",
-    "pad-number": "0.0.4",
     "parse-bmfont-ascii": "^1.0.6",
     "preact": "^8.1.0",
     "preact-portal": "^1.1.2",
