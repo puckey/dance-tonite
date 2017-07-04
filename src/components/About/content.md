@@ -52,6 +52,16 @@ To learn more, watch this video or read the technical deep dive.
   </div>
 
   <div>
+    <h3><a href="http://webpack.js.org">Webpack</a></h3>
+    Highly configurable open-source module bundler for JavaScript applications. Webpack takes modules with dependencies and generates static assets representing those modules.
+  </div>
+
+  <div>
+    <h3><a href="https://preactjs.com/">Preact</a></h3>
+    Fast and tiny open-source JavaScript library for building user interfaces. Preact allows developers to create large web applications that use data which can change over time, without reloading the page.
+  </div>
+
+  <div>
     <h3><a href="https://firebase.google.com/">Firebase</a></h3>
     Mobile and Web application development platform from Google that makes creating and maintaining highly scalable backends a snap.
   </div>
