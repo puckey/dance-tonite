@@ -16,6 +16,7 @@ export default function create({ rooms, orb, offset = 0 }) {
   let pointerY;
   let hoverPerformance;
   let hoverOrb;
+  let inPOV = false;
 
   const onMouseMove = ({ clientX, clientY }) => {
     if (viewer.vrEffect.isPresenting) return;
@@ -45,6 +46,8 @@ export default function create({ rooms, orb, offset = 0 }) {
       if (hoverPerformance) analytics.recordHeadSelectStart();
       else if (hoverOrb) analytics.recordOrbSelectStart();
     }
+
+    inPOV = true;
   };
 
   const onMouseUp = ({ touches }) => {
@@ -59,6 +62,8 @@ export default function create({ rooms, orb, offset = 0 }) {
     hoverPerformance = null;
     hoverOrb = false;
     viewer.switchCamera('orthographic');
+
+    inPOV = false;
   };
 
   const clearHighlights = () => {
@@ -89,7 +94,7 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const POV = {
     update: (progress = 0, fixedControllers = false) => {
-      if (!viewer.vrEffect.isPresenting && !hoverPerformance) {
+      if (!viewer.vrEffect.isPresenting && !inPOV) {
         if (intersectOrb(pointerX, pointerY)) {
           if (orb) {
             orb.highlight();
