@@ -52,6 +52,16 @@ To learn more, watch this video or read the technical deep dive.
   </div>
 
   <div>
+    <h3><a href="http://webpack.js.org">Webpack</a></h3>
+    Highly configurable open-source module bundler for JavaScript applications. Webpack takes modules with dependencies and generates static assets representing those modules.
+  </div>
+
+  <div>
+    <h3><a href="https://preactjs.com/">Preact</a></h3>
+    Fast and tiny open-source JavaScript library for building user interfaces. Preact allows developers to create large web applications that use data which can change over time, without reloading the page.
+  </div>
+
+  <div>
     <h3><a href="https://firebase.google.com/">Firebase</a></h3>
     Mobile and Web application development platform from Google that makes creating and maintaining highly scalable backends a snap.
   </div>
@@ -74,7 +84,7 @@ To learn more, watch this video or read the technical deep dive.
 The cones and cylinders are VR motion capture recordings of actual users who’ve submitted their choreography to the project. VR headsets are represented as cones, controllers as cylinders. Each room is made by a single person dancing to a specific portion of the song. All submissions are made using the same recording tools provided by this project.
 
 ### How does the recording process work?
-Users choreograph specific segments of the song in layers. Each layer includes one round of dancing. Once a round is complete, the music loops and the next round begins. Similar to a loop pedal, this builds layers of choreography that results in complex patterns made from just headset and controller position data. Watch the tutorial.
+Users choreograph specific segments of the song in layers. Each layer includes one round of dancing. Once a round is complete, the music loops and the next round begins. Similar to a loop pedal, this builds layers of choreography that results in complex patterns made from just headset and controller position data. [Watch the tutorial.](/record/4/head=yes/)
 
 ### How can I add my own part?
 Anyone can add to the experience using the “Add performance” link on the homepage. Room-scale VR and a [WebVR](http://webvr.info) supported browser are required.
