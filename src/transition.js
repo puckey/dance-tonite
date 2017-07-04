@@ -168,7 +168,7 @@ const transition = {
     floatingOrb.fadeIn();
     viewer.on('tick', tick);
     textItem.updateLabel(param.text);
-    floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
+    floatingOrb.mesh.position.set(0, 0, -8);
     floatingOrb.mesh.scale.set(4, 4, 4);
     await fadeIn(transitionSpaceFar);
   },
