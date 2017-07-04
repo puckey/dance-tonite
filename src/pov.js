@@ -64,7 +64,9 @@ export default function create({ rooms, orb, offset = 0 }) {
   const clearHighlights = () => {
     hoverPerformance = null;
     hoverOrb = false;
-    orb.unhighlight();
+    if (orb) {
+      orb.unhighlight();
+    }
     Room.setHighlight();
   };
 
@@ -87,12 +89,16 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const POV = {
     update: (progress = 0, fixedControllers = false) => {
-      if (!viewer.vrEffect.isPresenting) {
+      if (!viewer.vrEffect.isPresenting && !hoverPerformance) {
         if (intersectOrb(pointerX, pointerY)) {
-          orb.highlight();
+          if (orb) {
+            orb.highlight();
+          }
           Room.setHighlight();
         } else {
-          orb.unhighlight();
+          if (orb) {
+            orb.unhighlight();
+          }
           if (!hoverPerformance && !hoverOrb) {
             Room.setHighlight(
               closestHead(

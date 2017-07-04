@@ -166,8 +166,6 @@ export default class Playlist extends Component {
     return (
       <div>
         <POV
-          rooms={rooms}
-          orb={this.orb}
           enterHeads={process.env.FLAVOR !== 'cms'}
           totalProgress={this.props.totalProgress}
           fixedControllers={this.props.fixedControllers}
