@@ -139,6 +139,7 @@ const transition = {
   },
 
   async enter(param = {}) {
+    insideTransition = true;
     if (logging) {
       console.log('transition.enter', { transitionVersion, ...param, time: new Date() });
     }
@@ -151,7 +152,6 @@ const transition = {
       }
       await fadeOut();
     }
-    insideTransition = true;
     if (version !== transitionVersion) {
       if (logging) {
         console.log('transition.enter returned early because of version difference',
