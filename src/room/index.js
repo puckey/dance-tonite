@@ -189,11 +189,22 @@ export default class Room {
           audio.time - this.riseTime - this.index * -0.005
         )
       ) * 0.2;
-      this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, FIRST_POSE);
-      const [position, quaternion] = FIRST_POSE;
-      position.y *= ratio;
-      quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
-      lerpPose(POSE, FIRST_POSE, elasticIn(1 - ratio));
+      if (ratio === 0) {
+        this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
+        const [position, quaternion] = POSE;
+        position.y *= ratio;
+        quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
+      } else {
+        this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, FIRST_POSE);
+        const [position, quaternion] = FIRST_POSE;
+        position.y *= ratio;
+        quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
+        lerpPose(POSE, FIRST_POSE,
+          ratio === 1
+            ? 1 - ratio
+            : elasticIn(1 - ratio)
+        );
+      }
     }
     return POSE;
   }
