@@ -39,6 +39,13 @@ export default class Menu extends Component {
     this.setState({
       enterVROVerlay: presenting,
     });
+    if (presenting) {
+      setTimeout(() => {
+        this.setState({
+          enterVROVerlay: false,
+        });
+      }, 5000);
+    }
   }
 
   componentWillUnmount() {

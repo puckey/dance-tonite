@@ -12,14 +12,13 @@
   width: 150vw;
   height: 150vw;
   margin: -75vw;
-  transform: scale(0);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   &.mod-entering-vr {
-    animation: splash 5s ease-in;
+    animation: splash 0.3s ease-in 4.7s;
   }
 
   @media screen and (max-aspect-ratio: 1/1) {
@@ -45,14 +44,12 @@
 
 @keyframes textFade {
   0% { opacity: 0; }
-  10% { opacity: 1; }
+  5% { opacity: 1; }
   90% { opacity: 1; }
   100% { opacity: 0; }
 }
 
 @keyframes splash {
-  0% { transform: scale(0); }
-  8% { transform: scale(1); }
-  95% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(1); opacity: 0; }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }

@@ -18,7 +18,6 @@ import windowSize from './utils/windowSize';
 import audio from './audio';
 import postprocessing from './postprocessing';
 import Room from './room';
-import { sleep } from './utils/async';
 
 const orthographicDistance = 4;
 
@@ -169,8 +168,10 @@ const viewer = Object.assign(emitter(), {
   enterPresent() {
     if (vrEffect.isPresenting) return;
     vrEffect.requestPresent();
-    viewer.switchCamera('default');
-    scene.add(viewer.camera);
+    setTimeout(() => {
+      viewer.switchCamera('default');
+      scene.add(viewer.camera);
+    }, 10); // Delay switching 10ms to avoid flashing POV before overlay is displayed
   },
 
   toggleVR: async () => {
@@ -191,8 +192,6 @@ const viewer = Object.assign(emitter(), {
   },
   vrEffect,
 });
-
-
 
 const animate = () => {
   const dt = clock.getDelta();
