@@ -148,7 +148,7 @@ export default class Playlist extends Component {
     router.navigate(`/choose/${room.index}/`);
   }
 
-  render({ recording, stopped }, { rooms, entries }) {
+  render({ recording, stopped, orb }, { rooms, entries }) {
     return (
       <div>
         <POV
@@ -158,6 +158,7 @@ export default class Playlist extends Component {
           // When reviewing a recording, start closer to the rooms:
           offset={recording ? 2 : 0}
           rooms={rooms}
+          orb={orb && this.orb}
         />
         {
           (process.env.FLAVOR === 'cms' && !viewer.vrEffect.isPresenting)
