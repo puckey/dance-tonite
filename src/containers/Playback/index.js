@@ -3,7 +3,6 @@ import { h, Component } from 'preact';
 import './style.scss';
 
 import Menu from '../../components/Menu';
-import CMSMenu from '../../components/CMSMenu';
 import Container from '../../components/Container';
 import Error from '../../components/Error';
 import Align from '../../components/Align';
@@ -14,6 +13,7 @@ import Colophon from '../../components/Colophon';
 import Playlist from '../Playlist';
 import ButtonItem from '../../components/ButtonItem';
 import Overlay from '../../components/Overlay';
+import Controllers from '../../components/Controllers';
 
 import audio from '../../audio';
 import audioSrcOgg from '../../public/sound/tonite.ogg';
@@ -30,6 +30,7 @@ export default class Playback extends Component {
 
     this.onTitlesChanged = this.onTitlesChanged.bind(this);
     this.performExitPresent = this.performExitPresent.bind(this);
+    this.performExitVRInstructions = this.performExitVRInstructions.bind(this);
   }
 
   componentWillMount() {
@@ -70,6 +71,28 @@ export default class Playback extends Component {
     this.forceUpdate();
   }
 
+  async performExitVRInstructions() {
+    // Return early if we unmounted in the meantime:
+    if (!this.mounted) return;
+
+    // Fade to black from viewer scene
+    await Promise.all([
+      audio.fadeOut(),
+      transition.fadeOut(),
+    ]);
+    if (!this.mounted) return;
+
+    // Removes background color if any and stops moving camera:
+    this.setState({
+      stopped: true,
+      takeOffHeadset: true,
+    });
+
+    await transition.enter({
+      text: 'Please take off your headset',
+    });
+  }
+
   async asyncMount() {
     const { inContextOfRecording, roomId } = this.props;
     if (!inContextOfRecording) {
@@ -89,32 +112,9 @@ export default class Playback extends Component {
       // Start at 3 rooms before the recording:
       const watchTime = 30;
       const roomOffset = 2;
-      const startTime = (roomId - 2 + roomOffset) * audio.loopDuration;
+      const startTime = (roomId - 2 + roomOffset) * settings.loopDuration;
       audio.gotoTime(startTime);
-      setTimeout(async () => {
-        // Return early if we unmounted in the meantime:
-        if (!this.mounted) return;
-
-        // Fade to black from viewer scene
-        await Promise.all([
-          audio.fadeOut(),
-          transition.fadeOut(),
-        ]);
-        if (!this.mounted) return;
-
-        this.setState({
-          takeOffHeadset: true,
-        });
-
-        audio.pause();
-
-        // Removes background color if any and stops moving camera:
-        this.setState({ stopped: true });
-
-        await transition.enter({
-          text: 'Please take off your headset',
-        });
-      }, watchTime * 1000);
+      setTimeout(this.performExitVRInstructions, watchTime * 1000);
     }
 
     const timeLeft = 1500 - (Date.now() - audioLoadTime);
@@ -176,13 +176,13 @@ export default class Playback extends Component {
               ? (
                 <Overlay opaque>
                   <a onClick={onGotoSubmission}>
-                    <span>I took off my headset</span>
+                    <span>Press here to continue</span>
                   </a>
                 </Overlay>
               )
               : (
                 <Align type="bottom-right">
-                  <ButtonItem text="Skip Preview" onClick={onGotoSubmission} />
+                  <ButtonItem text="Skip Preview" onClick={this.performExitVRInstructions} />
                 </Align>
               )
           )
@@ -195,6 +195,7 @@ export default class Playback extends Component {
           pathRoomId={roomId}
           orb={orb}
           stopped={stopped}
+          fixedControllers={inContextOfRecording}
         />
         { process.env.FLAVOR !== 'cms'
           ? <Titles
@@ -202,7 +203,18 @@ export default class Playback extends Component {
           />
           : null
         }
-        {!inContextOfRecording && <ProgressBar />}
+        { inContextOfRecording ?
+          <Controllers
+            settings={{
+              right: {
+                text: 'skip\npreview',
+                onPress: this.performExitVRInstructions,
+                removeOnPress: true,
+              },
+            }}
+          /> :
+          <ProgressBar />
+        }
         <Align type="center">
           { error
             ? <Error>{error}</Error>

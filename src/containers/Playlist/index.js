@@ -3,8 +3,6 @@ import { h, Component } from 'preact';
 import shuffle from 'just-shuffle';
 import asyncEach from 'async/eachLimit';
 
-import quadOut from 'eases/quad-out';
-
 import './style.scss';
 
 import Room from '../../room';
@@ -136,25 +134,13 @@ export default class Playlist extends Component {
     if (!this.state.rooms || transition.isInside()) return;
     this.moveOrb(audio.progress || 0);
 
-    if (!audio.loopDuration) return;
     for (let i = 0; i < this.state.rooms.length; i++) {
       const room = this.state.rooms[i];
-      let time = audio.time;
+      let time = Math.min(audio.time, settings.dropTime);
       if (layout.isOdd(room.index)) {
-        time += audio.loopDuration;
+        time += settings.loopDuration;
       }
-      // Slow down recordings to a stop after music stops:
-      const slowdownDuration = 0.4;
-      const maxTime = 216.824266 - (slowdownDuration * 0.5);
-      if (audio.time > maxTime) {
-        time = maxTime + quadOut(
-          Math.min(
-            slowdownDuration,
-            audio.time - maxTime
-          ) / slowdownDuration
-        ) * slowdownDuration;
-      }
-      room.gotoTime(time % (audio.loopDuration * 2));
+      room.gotoTime(time % (settings.loopDuration * 2));
     }
   }
 
@@ -162,18 +148,19 @@ export default class Playlist extends Component {
     router.navigate(`/choose/${room.index}/`);
   }
 
-  render({ recording, stopped }, { rooms, entries }) {
+  render({ recording, stopped, orb }, { rooms, entries }) {
     return (
       <div>
-        <POV
-          rooms={rooms}
-          orb={this.orb}
+        {!stopped && <POV
           enterHeads={process.env.FLAVOR !== 'cms'}
           totalProgress={this.props.totalProgress}
           fixedControllers={this.props.fixedControllers}
           // When reviewing a recording, start closer to the rooms:
           offset={recording ? 2 : 0}
+          rooms={rooms}
+          orb={orb && this.orb}
         />
+        }
         {
           (process.env.FLAVOR === 'cms' && !viewer.vrEffect.isPresenting)
           ? <RoomLabels

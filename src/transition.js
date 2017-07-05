@@ -3,7 +3,6 @@ import Orb from './orb';
 import viewer from './viewer';
 import props from './props';
 import * as THREE from './lib/three';
-import { offsetFrom } from './utils/three';
 import { textColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
 import deps from './deps';
@@ -100,15 +99,15 @@ const transition = {
     const textCreator = deps.SDFText.creator();
     textItem = textCreator.create('', {
       wrapWidth: 4000,
-      scale: 15,
+      scale: 7,
       align: 'center',
       color: textColor.getHex(),
     });
 
     pivot = new THREE.Object3D();
     pivot.add(textItem);
-    textItem.position.z = -20;
-    textItem.position.y = 3;
+    textItem.position.z = -12;
+    textItem.position.y = 0.25;
 
     transitionScene.add(pivot);
     transitionScene.add(props.grid);
@@ -140,6 +139,7 @@ const transition = {
   },
 
   async enter(param = {}) {
+    insideTransition = true;
     if (logging) {
       console.log('transition.enter', { transitionVersion, ...param, time: new Date() });
     }
@@ -152,7 +152,6 @@ const transition = {
       }
       await fadeOut();
     }
-    insideTransition = true;
     if (version !== transitionVersion) {
       if (logging) {
         console.log('transition.enter returned early because of version difference',
@@ -168,8 +167,8 @@ const transition = {
     floatingOrb.fadeIn();
     viewer.on('tick', tick);
     textItem.updateLabel(param.text);
-    floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
-    floatingOrb.mesh.scale.set(4, 4, 4);
+    floatingOrb.mesh.position.set(0, 0, -8);
+    floatingOrb.mesh.scale.set(2, 2, 2);
     await fadeIn(transitionSpaceFar);
   },
 
@@ -196,11 +195,13 @@ const transition = {
       await fadeOut();
     }
     transition.reset(true);
-    if (logging && version === transitionVersion) {
-      console.log(
-        'transition.exit: fadingIn viewer scene',
-        { version }
-      );
+    if (version === transitionVersion) {
+      if (logging) {
+        console.log(
+          'transition.exit: fadingIn viewer scene',
+          { version }
+        );
+      }
       await fadeIn(revealFar);
     }
   },

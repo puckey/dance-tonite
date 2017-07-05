@@ -5,10 +5,10 @@ import './style.scss';
 import windowSize from '../../utils/windowSize';
 
 const getLineTransform = (x1, y1, x2, y2) => {
-  const margin = windowSize.height * 0.04;
-  const length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) - margin;
+  const margin = windowSize.height * 0.06;
+  const length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) - (margin * 1.5);
   const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-  return `translate(${x1}px, ${y1}px) rotate(${angle}deg) scaleX(${length / 100})`;
+  return `translate(${x1}px, ${y1 + margin * 0.5}px) rotate(${angle}deg) scaleX(${length / 100})`;
 };
 
 export default class LineTitle extends Component {
@@ -30,7 +30,7 @@ export default class LineTitle extends Component {
   updateWindowDimensions({ width }) {
     this.setState({
       originX: width * 0.5,
-      originY: this.state.textEl && this.state.textEl.offsetHeight * 1.2,
+      originY: this.state.textEl && this.state.textEl.offsetHeight,
     });
   }
 
@@ -51,7 +51,7 @@ export default class LineTitle extends Component {
               className="line-title-text"
               ref={this.receiveTextElement}
             >
-              { text }
+              <span>{ text }</span>
             </div>
           )
         }
@@ -65,8 +65,7 @@ export default class LineTitle extends Component {
                     originX,
                     originY,
                     x,
-                    y,
-                    windowSize.height * 0.04
+                    y
                   ),
                 opacity: hidden ? 0 : 1,
               }}

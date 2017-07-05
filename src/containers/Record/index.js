@@ -61,7 +61,7 @@ export default class Record extends Component {
     await Promise.all([
       // Keep recording until loop finishes:
       sleep(
-        (audio.duration - audio.time) < (audio.loopDuration * 0.5)
+        (audio.duration - audio.time) < (settings.loopDuration * 0.5)
           ? (audio.duration - audio.time + 0.1) * 1000
           : 0
       ).then(() => {

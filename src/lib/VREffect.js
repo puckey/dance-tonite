@@ -91,7 +91,10 @@ module.exports = function( THREE ){
 			if ( scope.isPresenting ) {
 
 				var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
-				renderer.setPixelRatio( 1 );
+				//  The intention here is to only call render.setPixelRatio if we need to
+				//  because that call redundantly calls renderer.setSize()
+				//  and that can easily add 300ms overhead.
+				if (renderer.getPixelRatio() !== 1) renderer.setPixelRatio(1);
 				renderer.setSize( eyeParamsL.renderWidth * 2, eyeParamsL.renderHeight, false );
 
 			} else {
@@ -125,8 +128,11 @@ module.exports = function( THREE ){
 					rendererPixelRatio = renderer.getPixelRatio();
 					rendererSize = renderer.getSize();
 
-					renderer.setPixelRatio( 1 );
-					renderer.setSize( eyeWidth * 2, eyeHeight, false );
+					//  The intention here is to only call render.setPixelRatio if we need to
+					//  because that call redundantly calls renderer.setSize()
+					//  and that can easily add 300ms overhead.
+					if (rendererPixelRatio !== 1) renderer.setPixelRatio(1);
+					renderer.setSize(eyeWidth * 2, eyeHeight, false);
 
 				}
 

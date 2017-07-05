@@ -2,6 +2,7 @@ import emitter from 'mitt';
 import audioPool from './utils/audio-pool';
 import feature from './utils/feature';
 import { sleep } from './utils/async';
+import settings from './settings';
 import pageVisibility from './utils/page-visibility';
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -33,7 +34,7 @@ const audio = Object.assign(emitter(), {
     const time = this.time = (audioElement
       ? (pauseTime || (Date.now() - startTime)) / 1000
       : context.currentTime - startTime) % duration;
-    const { loopDuration } = this;
+    const { loopDuration } = settings;
     // The position within the track as a multiple of loopDuration:
     this.progress = time > 0
       ? time / loopDuration
@@ -51,7 +52,7 @@ const audio = Object.assign(emitter(), {
     }
 
     this.totalProgress = this.loopCount * loopCount + this.progress;
-    this.totalTime = this.totalProgress * this.loopDuration;
+    this.totalTime = this.totalProgress * loopDuration;
     lastTime = time;
 
     if (this.totalProgress - lastLoopProgress > 1) {
@@ -74,7 +75,6 @@ const audio = Object.assign(emitter(), {
       this.loopCount = 0;
       const canPlay = () => {
         this.duration = duration;
-        this.loopDuration = duration / loopCount;
         if (context) context.suspend();
         resolve(param.src);
       };
@@ -150,7 +150,9 @@ const audio = Object.assign(emitter(), {
     this.paused = false;
     if (context) context.resume();
     if (audioElement) audioElement.play();
-    audio.fadeIn();
+    if (!this.muted) {
+      audio.fadeIn();
+    }
   },
 
   pause() {
@@ -169,12 +171,12 @@ const audio = Object.assign(emitter(), {
   },
 
   previousLoop() {
-    const time = (Math.round(this.progress) - 1.1) * this.loopDuration;
+    const time = (Math.round(this.progress) - 1.1) * settings.loopDuration;
     this.gotoTime(Math.max(0, Math.min(this.duration, time)));
   },
 
   nextLoop() {
-    const time = (Math.round(this.progress) + 0.9) * this.loopDuration;
+    const time = (Math.round(this.progress) + 0.9) * settings.loopDuration;
     this.gotoTime(Math.max(0, Math.min(this.duration, time)));
   },
 

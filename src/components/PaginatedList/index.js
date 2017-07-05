@@ -1,11 +1,12 @@
 /** @jsx h */
 import { h, Component } from 'preact';
-import padNumber from 'pad-number';
 
 import './style.scss';
-import NextButton from './NextButton';
-import PreviousButton from './PreviousButton';
+import ButtonNext from '../ButtonNext';
+import ButtonPrevious from '../ButtonPrevious';
 import ListChoice from './ListChoice';
+import dividerIcon from './icon.svg';
+import padNumber from '../../utils/padNumber';
 
 const hasNextPage = (currentPage, totalPages) => totalPages > currentPage + 1;
 
@@ -84,18 +85,17 @@ export default class PaginatedList extends Component {
         {
           hasPagination &&
             <div className="item-list-navigation">
-              <PreviousButton
+              <ButtonPrevious
                 disabled={!hasPrevPage(page)}
                 onClick={this.previousPage}
                 page={page}
               />
               <span className="item-list-navigation-pages">
-                {totalPages > 9
-                  ? padNumber(page + 1, 2)
-                  : page + 1
-                } | {totalPages}
+                { padNumber(page + 1, 2) }
+                <span className="divider-icon" dangerouslySetInnerHTML={{ __html: dividerIcon }} />
+                { padNumber(totalPages, 2) }
               </span>
-              <NextButton
+              <ButtonNext
                 disabled={!hasNextPage(page, totalPages)}
                 onClick={this.nextPage}
                 page={page}
@@ -106,4 +106,3 @@ export default class PaginatedList extends Component {
     );
   }
 };
-

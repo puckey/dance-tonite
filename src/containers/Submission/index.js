@@ -63,17 +63,15 @@ export default class Submission extends Component {
           <ButtonItem
             text={fromRecording
               ? `Watch yourself in the
-full experience.`
-              : `Press here to watch them
-in the full experience.`
+full experience`
+              : 'Watch in full experience'
             }
             onClick={onGotoFullExperience}
-            underline
           />
         </Align>
         { fromRecording &&
           <ShareButtons roomId={roomId} id={id}>
-            <ButtonItem text="Create animated GIF" navigate="/" underline />
+            <ButtonItem text="Create animated GIF" navigate="/" />
           </ShareButtons>
         }
       </div>

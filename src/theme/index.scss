@@ -22,6 +22,8 @@ body {
 
   &.mod-about {
     background: $text-color;
+    overflow-x: hidden;
+    overflow-y: scroll;
   }
 }
 
