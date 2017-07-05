@@ -151,7 +151,7 @@ export default class Playlist extends Component {
   render({ recording, stopped, orb }, { rooms, entries }) {
     return (
       <div>
-        <POV
+        {!stopped && <POV
           enterHeads={process.env.FLAVOR !== 'cms'}
           totalProgress={this.props.totalProgress}
           fixedControllers={this.props.fixedControllers}
@@ -160,6 +160,7 @@ export default class Playlist extends Component {
           rooms={rooms}
           orb={orb && this.orb}
         />
+        }
         {
           (process.env.FLAVOR === 'cms' && !viewer.vrEffect.isPresenting)
           ? <RoomLabels

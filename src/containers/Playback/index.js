@@ -82,14 +82,11 @@ export default class Playback extends Component {
     ]);
     if (!this.mounted) return;
 
+    // Removes background color if any and stops moving camera:
     this.setState({
+      stopped: true,
       takeOffHeadset: true,
     });
-
-    audio.pause();
-
-    // Removes background color if any and stops moving camera:
-    this.setState({ stopped: true });
 
     await transition.enter({
       text: 'Please take off your headset',
