@@ -63,9 +63,8 @@ export default class Submission extends Component {
           <ButtonItem
             text={fromRecording
               ? `Watch yourself in the
-full experience.`
-              : `Press here to watch them
-in the full experience.`
+full experience`
+              : 'Watch in full experience'
             }
             onClick={onGotoFullExperience}
             underline
