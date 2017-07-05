@@ -56,7 +56,7 @@ export default class Submission extends Component {
           <ButtonTwitter onClick={this.shareToTwitter} />
           <ButtonFacebook onClick={this.shareToFacebook} />
         </div>
-        <a href={link}><span>{deepLink}</span></a>
+        <a href={link}>{deepLink}</a>
         { children }
       </Align>
     );

@@ -67,12 +67,11 @@ full experience`
               : 'Watch in full experience'
             }
             onClick={onGotoFullExperience}
-            underline
           />
         </Align>
         { fromRecording &&
           <ShareButtons roomId={roomId} id={id}>
-            <ButtonItem text="Create animated GIF" navigate="/" underline />
+            <ButtonItem text="Create animated GIF" navigate="/" />
           </ShareButtons>
         }
       </div>
