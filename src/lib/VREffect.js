@@ -94,7 +94,7 @@ module.exports = function( THREE ){
 				//  The intention here is to only call render.setPixelRatio if we need to
 				//  because that call redundantly calls renderer.setSize()
 				//  and that can easily add 300ms overhead.
-				if (rendererPixelRatio !== 1) renderer.setPixelRatio(1);
+				if (renderer.getPixelRatio() !== 1) renderer.setPixelRatio(1);
 				renderer.setSize( eyeParamsL.renderWidth * 2, eyeParamsL.renderHeight, false );
 
 			} else {
