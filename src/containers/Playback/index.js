@@ -179,7 +179,7 @@ export default class Playback extends Component {
               ? (
                 <Overlay opaque>
                   <a onClick={onGotoSubmission}>
-                    <span>I took off my headset</span>
+                    <span>Press here to continue</span>
                   </a>
                 </Overlay>
               )
