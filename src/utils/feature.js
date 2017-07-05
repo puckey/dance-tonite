@@ -1,9 +1,9 @@
 const userAgent = navigator.userAgent;
-const verbosity = 1;
 
+const verbosity = 0;
 const log = (...args) => {
-  console.log("Features:", ...args);
-}
+  console.log('Features:', ...args);
+};
 
 const checkHasWebGL = () => {
   const canvas = document.createElement('canvas');
@@ -27,7 +27,7 @@ const getVRDisplays = () => (
     // On Android chrome, there is a bug where getVRDisplays is never resolved.
     // Set a 2 second timeout in that case
     // https://bugs.chromium.org/p/chromium/issues/detail?id=727969
-    if(isAndroid) {
+    if (isAndroid) {
       const timeoutPromise = new Promise((timeOutResolve) => {
         setTimeout(() => {
           timeOutResolve([]);
@@ -131,11 +131,11 @@ const feature = {
       checkHasVR()
         .then((hasVR) => {
           feature.hasVR = hasVR;
-          log("hasVR", feature.hasVR)
+          if (verbosity > 0) log('hasVR', feature.hasVR);
         }),
       getVRDisplays()
         .then((vrDisplays) => {
-          log("getVRDisplays", vrDisplays);
+          if (verbosity > 0) log('getVRDisplays', vrDisplays);
           feature.vrDisplays = vrDisplays.length;
           if (vrDisplays && vrDisplays.length > 0) {
             //  Yes, this must be the full vrDisplay instance
@@ -160,12 +160,12 @@ const feature = {
         }),
       checkHasExternalDisplay()
         .then((hasExternalDisplay) => {
-          log("hasExternalDisplay", hasExternalDisplay);
+          if (verbosity > 0) log('hasExternalDisplay', hasExternalDisplay);
           feature.hasExternalDisplay = hasExternalDisplay;
         }),
       checkHas6DOF()
         .then((has6DOF) => {
-          log("has6DOF", has6DOF);
+          if (verbosity > 0) log('has6DOF', has6DOF);
           feature.has6DOF = has6DOF;
         }),
     ])
