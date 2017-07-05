@@ -176,7 +176,7 @@ export default class Playback extends Component {
               ? (
                 <Overlay opaque>
                   <a onClick={onGotoSubmission}>
-                    <span>Click here to continue</span>
+                    <span>Press here to continue</span>
                   </a>
                 </Overlay>
               )
