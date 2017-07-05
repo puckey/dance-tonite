@@ -114,6 +114,7 @@ const props = {
       transparent: true,
       side: THREE.DoubleSide,
       depthWrite: false,
+      blending: THREE.SubtractiveBlending,
     });
     const geometry = new THREE.PlaneBufferGeometry(0.5, 0.5, 1, 1);
     const plane = new THREE.Mesh(geometry, material);

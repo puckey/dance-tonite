@@ -45,6 +45,7 @@ const POSE = createPose();
 const LAST_POSE = createPose();
 const FIRST_POSE = createPose();
 const SHADOW_EULER = new THREE.Euler(Math.PI * 0.5, 0, 0);
+const SHADOW_COLOR = new THREE.Color(0xffffff);
 
 const lerpPose = (
   [positionA, quaternionA],
@@ -169,13 +170,16 @@ export default class Room {
         const pose = this.getPose(i, 0, position);
         items.head.add(pose, color, scale);
 
-        const shadowPose = this.getPose(i, 0, position);
-        shadowPose[0].y = 0.1;
-        shadowPose[1].setFromEuler(SHADOW_EULER);
-        items.shadow.add(pose, color, scale);
+        this.setShadowPose(pose, position, i);
       }
-      items.hand.add(this.getPose(i, 1, position), color, scale);
-      items.hand.add(this.getPose(i, 2, position), color, scale);
+
+      const rhandPose = this.getPose(i, 1, position);
+      items.hand.add(rhandPose, color, scale);
+      this.setShadowPose(rhandPose, position, i, 1, 0.15);
+
+      const lhandPose = this.getPose(i, 2, position);
+      items.hand.add(lhandPose, color, scale);
+      this.setShadowPose(lhandPose, position, i, 2, 0.15);
     }
   }
 
@@ -201,6 +205,20 @@ export default class Room {
       this.dropPerformance(performanceIndex);
     }
     return POSE;
+  }
+
+  setShadowPose(copyPose, position, index, sub = 0, customScale = 1) {
+    const headDist = copyPose[0].y;
+
+    const shadowPose = this.getPose(index, sub, position);
+    shadowPose[0].y = 0.1;
+    shadowPose[1].setFromEuler(SHADOW_EULER);
+
+    const shadowPower = 1.5 / (headDist ** 2);
+    const shadowSize = Math.min(Math.max(shadowPower * customScale, 0.8), 1.0);
+    const shadowDarkness = Math.min(Math.max(shadowPower, 0.0), 0.4);
+    SHADOW_COLOR.setRGB(shadowDarkness, shadowDarkness, shadowDarkness);
+    items.shadow.add(copyPose, SHADOW_COLOR, shadowSize);
   }
 
   dropPerformance(performanceIndex) {
@@ -280,7 +298,7 @@ Room.reset = () => {
         props.hand,
       ),
       shadow: new InstancedItem(
-        layout.roomCount * 10,
+        layout.roomCount * 30,
         props.shadow,
       ),
     };
