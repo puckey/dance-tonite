@@ -167,7 +167,7 @@ const lhand = Props.controller.clone();
 rhand.children[0].castShadow = lhand.children[0].castShadow = true;
 
 const rText = textCreator.create('', {
-  wrapWidth: 1600,
+  wrapWidth: 1980, //was originally 1600
   scale: 0.25,
   align: 'left',
   color: textColor.getHex(),
