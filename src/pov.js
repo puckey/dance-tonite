@@ -147,6 +147,8 @@ export default function create({ rooms, orb, offset = 0 }) {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('touchstart', onMouseDown);
+      window.removeEventListener('touchend', onMouseUp);
       window.removeEventListener('vrdisplaypresentchange', clearHighlights);
       audio.off('loop', onLoop);
     },
