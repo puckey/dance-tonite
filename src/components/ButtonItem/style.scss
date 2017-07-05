@@ -15,6 +15,12 @@ body:not(.mod-mobile) .button-item:hover {
   }
 }
 
+.aligner.mod-top-left {
+  .button-item + .button-item {
+    margin-left: .2rem;
+  }
+}
+
 .button-item {
   @extend .mod-fill;
   @extend .mod-no-stroke;
