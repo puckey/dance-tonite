@@ -151,7 +151,6 @@ export default class Playlist extends Component {
   render({ recording, stopped, orb }, { rooms, entries }) {
     return (
       <div>
-        <POV
         {!stopped && <POV
           enterHeads={process.env.FLAVOR !== 'cms'}
           totalProgress={this.props.totalProgress}
