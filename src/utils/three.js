@@ -67,7 +67,7 @@ export const loadModel = async ([objUrl, textureUrl]) => {
   ]);
   object.material = new THREE.MeshLambertMaterial();
   if (texture) {
-    object.material.map = texture;
+    // object.material.map = texture;
   }
   return object;
 };
