@@ -92,12 +92,6 @@ export default class Playlist extends Component {
       });
       rooms.push(room);
     }
-    const roomsToRise = shuffle(rooms.filter(room => room.insideMegaGrid));
-    for (let i = 0; i < roomsToRise.length; i++) {
-      const room = roomsToRise[i];
-      const riseIndex = Math.floor(i / 4);
-      room.riseTime = settings.colorTimes[riseIndex];
-    }
 
     this.setState({ entries, rooms });
 

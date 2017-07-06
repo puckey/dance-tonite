@@ -109,6 +109,7 @@ const audio = Object.assign(emitter(), {
           this.emit('play');
         };
         onSeeked = () => {
+          startTime = Date.now() - getAudioTime();
           if (pauseTime) {
             pauseTime = getAudioTime();
           }

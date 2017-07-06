@@ -4,8 +4,7 @@ import settings from '../settings';
 
 const getFrame = (frames, number) => {
   let frame = frames[number];
-  // Check if data is still a string:
-  if (frame[0] === '[') {
+  if (typeof frame[0] === 'string') {
     frame = frames[number] = JSON.parse(frame);
   }
   return frame;
