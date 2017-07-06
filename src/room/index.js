@@ -29,6 +29,8 @@ import { createPose } from '../utils/serializer';
 import audio from '../audio';
 import { elasticIn } from '../utils/easing';
 
+import feature from '../utils/feature';
+
 let items;
 const UP_EULER = new THREE.Euler(Math.PI * 0.5, 0, 0);
 
@@ -222,17 +224,19 @@ export default class Room {
   }
 
   setShadowPose(copyPose, position, index, sub = 0, customScale = 1) {
-    const headDist = copyPose[0].y;
+    if (feature.shadow) {
+      const headDist = copyPose[0].y;
 
-    const shadowPose = this.getPose(index, sub, position);
-    shadowPose[0].y = 0.1;
-    shadowPose[1].setFromEuler(SHADOW_EULER);
+      const shadowPose = this.getPose(index, sub, position);
+      shadowPose[0].y = 0.1;
+      shadowPose[1].setFromEuler(SHADOW_EULER);
 
-    const shadowPower = 1.5 / (headDist ** 2);
-    const shadowSize = Math.min(Math.max(shadowPower * customScale, 0.8), 1.0);
-    const shadowDarkness = Math.min(Math.max(shadowPower, 0.0), 0.4);
-    SHADOW_COLOR.setRGB(shadowDarkness, shadowDarkness, shadowDarkness);
-    items.shadow.add(copyPose, SHADOW_COLOR, shadowSize);
+      const shadowPower = 1.5 / (headDist ** 2);
+      const shadowSize = Math.min(Math.max(shadowPower * customScale, 0.8), 1.0);
+      const shadowDarkness = Math.min(Math.max(shadowPower, 0.0), 0.4);
+      SHADOW_COLOR.setRGB(shadowDarkness, shadowDarkness, shadowDarkness);
+      items.shadow.add(copyPose, SHADOW_COLOR, shadowSize);
+    }
   }
 
   dropPerformance(performanceIndex) {
@@ -293,7 +297,9 @@ Room.clear = () => {
   if (!items) return;
   items.hand.empty();
   items.head.empty();
-  items.shadow.empty();
+  if (feature.shadow) {
+    items.shadow.empty();
+  }
 };
 
 Room.reset = () => {
@@ -322,11 +328,14 @@ Room.reset = () => {
         layout.roomCount * 10 * 2,
         props.hand,
       ),
-      shadow: new InstancedItem(
+    };
+
+    if (feature.shadow) {
+      items.shadow = new InstancedItem(
         layout.roomCount * 30,
         props.shadow,
-      ),
-    };
+      );
+    }
   }
 
   // Move an extra invisible object3d with a texture to the end of scene's children
