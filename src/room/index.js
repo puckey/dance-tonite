@@ -30,6 +30,7 @@ import audio from '../audio';
 import { elasticIn } from '../utils/easing';
 
 let items;
+const UP_EULER = new THREE.Euler(Math.PI * 0.5, 0, 0);
 
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
 const X_AXIS = new THREE.Vector3(1, 0, 0);
@@ -46,6 +47,7 @@ debugMesh.frustumCulled = false;
 const POSE = createPose();
 const LAST_POSE = createPose();
 const FIRST_POSE = createPose();
+const minY = 0.2;
 
 const lerpPose = (
   [positionA, quaternionA],
@@ -79,7 +81,7 @@ export default class Room {
     this.firstFrame = frames.getFrame(0);
     this.lastFrame = frames.getFrame((settings.loopDuration * 2) - 0.001);
     this.frame = frames.getFrame();
-    this.dropTimeOffset = Math.random();
+    this.random = Math.random();
     this.costumeColor = getCostumeColor(colorIndex);
     const roomColor = this.roomColor = getRoomColor(colorIndex);
     this.position = layout.getPosition(
@@ -215,15 +217,16 @@ export default class Room {
         audio.time - dropTime
       )
     );
+    if (ratio === 0) return;
     const rotationRatio = Math.max(0,
       Math.min(1,
         audio.time - dropTime
       )
     );
     const [position, quaternion] = POSE;
-    position.y *= 1 - easeBounceOut(ratio);
+    position.y = Math.max(minY, position.y * (1 - easeBounceOut(ratio)));
 
-    SCRATCH_QUATERNION.copy(quaternion).setFromAxisAngle(X_AXIS, Math.PI / 2);
+    SCRATCH_QUATERNION.copy(quaternion).setFromEuler(UP_EULER);
     quaternion.slerp(SCRATCH_QUATERNION, easeBackOut(Math.min(1, rotationRatio)));
   }
 
@@ -236,13 +239,13 @@ export default class Room {
     if (ratio === 0) {
       this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
       const [position, quaternion] = POSE;
-      position.y *= ratio;
-      quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
+      position.y = minY;
+      quaternion.setFromEuler(UP_EULER);
     } else {
       this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, FIRST_POSE);
       const [position, quaternion] = FIRST_POSE;
-      position.y *= ratio;
-      quaternion.setFromAxisAngle(X_AXIS, Math.PI / 2);
+      position.y = Math.max(position.y * ratio, minY);
+      quaternion.setFromEuler(UP_EULER);
       lerpPose(POSE, FIRST_POSE,
         ratio === 1
           ? 1 - ratio
