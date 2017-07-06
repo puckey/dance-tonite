@@ -37,13 +37,13 @@ export default (screenX, screenY, rooms) => {
           closestDistance = distance;
         }
       }
-      const rdistance = distanceToMouse(room.getPose(j, 0, room.position, true)[0]);
+      const rdistance = distanceToMouse(room.getPose(j, 1, room.position, true)[0]);
       if (rdistance < closestDistance && rdistance < MIN_HEAD_DISTANCE) {
         roomIndex = i;
         headIndex = j;
         closestDistance = rdistance;
       }
-      const ldistance = distanceToMouse(room.getPose(j, 0, room.position, true)[0]);
+      const ldistance = distanceToMouse(room.getPose(j, 2, room.position, true)[0]);
       if (ldistance < closestDistance && ldistance < MIN_HEAD_DISTANCE) {
         roomIndex = i;
         headIndex = j;
