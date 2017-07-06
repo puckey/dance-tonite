@@ -175,11 +175,11 @@ export default class Room {
 
       const rhandPose = this.getPose(i, 1, position);
       items.hand.add(rhandPose, color, scale);
-      this.setShadowPose(rhandPose, position, i, 1, 0.15);
+      this.setShadowPose(rhandPose, position, i, 1, true);
 
       const lhandPose = this.getPose(i, 2, position);
       items.hand.add(lhandPose, color, scale);
-      this.setShadowPose(lhandPose, position, i, 2, 0.15);
+      this.setShadowPose(lhandPose, position, i, 2, true);
     }
   }
 
@@ -207,18 +207,17 @@ export default class Room {
     return POSE;
   }
 
-  setShadowPose(copyPose, position, index, sub = 0, customScale = 1) {
+  setShadowPose(copyPose, position, index, sub = 0, small) {
     const headDist = copyPose[0].y;
 
-    const shadowPose = this.getPose(index, sub, position);
-    shadowPose[0].y = 0.1;
-    shadowPose[1].setFromEuler(SHADOW_EULER);
+    copyPose[0].y = 0.01;
+    copyPose[1].setFromEuler(SHADOW_EULER);
 
-    const shadowPower = 1.5 / (headDist ** 2);
-    const shadowSize = Math.min(Math.max(shadowPower * customScale, 0.8), 1.0);
-    const shadowDarkness = Math.min(Math.max(shadowPower, 0.0), 0.4);
+    const shadowPower = 10 / (headDist ** 2);
+    const shadowSize = Math.min(Math.max(shadowPower, 0.8), 1.0) * (small ? 0.5 : 1);
+    const shadowDarkness = small ? 0.15 : 0.3;
     SHADOW_COLOR.setRGB(shadowDarkness, shadowDarkness, shadowDarkness);
-    items.shadow.add(copyPose, SHADOW_COLOR, shadowSize);
+    items.shadow.add(copyPose, SHADOW_COLOR, shadowSize * 3);
   }
 
   dropPerformance(performanceIndex) {
