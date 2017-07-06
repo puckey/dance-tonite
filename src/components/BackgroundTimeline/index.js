@@ -19,14 +19,10 @@ export default class BackgroundTimeline extends Component {
     this.performChangeBackground = this.performChangeBackground.bind(this);
 
     this.keyframes = settings.colorTimes
-      .map((time, index, times) => (
+      .map((time, index) => (
         {
           time,
-          color: (
-            index === 0 ||
-            index === times.length - 1
-          ) ? BLACK
-            : getRoomColorByIndex(index + 23),
+          color: getRoomColorByIndex(index + 23),
         }
       ));
   }
