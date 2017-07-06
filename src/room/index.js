@@ -168,7 +168,7 @@ export default class Room {
   gotoTime(seconds, maxLayers, highlightLast = false) {
     this.currentTime = seconds;
     // In orthographic mode, scale up the meshes:
-    const scale = InstancedItem.perspectiveMode ? 1 : 1.3;
+    const scale = InstancedItem.perspectiveMode ? 1 : 1.5;
 
     const { position, frame, costumeColor } = this;
     frame.gotoTime(seconds, maxLayers);
