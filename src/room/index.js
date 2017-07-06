@@ -58,6 +58,15 @@ const lerpPose = (
   quaternionA.slerp(quaternionB, quaternionRatio);
 };
 
+const step = (t, min, max) => {
+  return min + (max - min) * t;
+};
+
+const smoothstep = (t, min, max) => {
+  const x = Math.max(0, Math.min(1, (t-min)/(max-min)));
+  return x*x*(3 - 2*x);
+};
+
 export default class Room {
   constructor(params) {
     const {
@@ -208,14 +217,15 @@ export default class Room {
   }
 
   setShadowPose(copyPose, position, index, sub = 0, small) {
-    const headDist = copyPose[0].y;
+    const objHeight = copyPose[0].y;
 
     copyPose[0].y = 0.01;
     copyPose[1].setFromEuler(SHADOW_EULER);
 
-    const shadowPower = 10 / (headDist ** 2);
-    const shadowSize = Math.min(Math.max(shadowPower, 0.8), 1.0) * (small ? 0.5 : 1);
-    const shadowDarkness = small ? 0.15 : 0.3;
+    // shadowPower -> 0 to 1, based on how high off the ground
+    const shadowPower = Math.min(Math.max(objHeight / 2.5, 0), 1.0); 
+    const shadowSize = step(shadowPower, 0.5, 1.0) * (small ? 0.6 : 1);
+    const shadowDarkness = step(shadowPower, 0.3, 0.15);
     SHADOW_COLOR.setRGB(shadowDarkness, shadowDarkness, shadowDarkness);
     items.shadow.add(copyPose, SHADOW_COLOR, shadowSize * 3);
   }
