@@ -1,5 +1,6 @@
 import easeBackInOut from 'eases/back-in-out';
 import easeBounceOut from 'eases/bounce-out';
+import easeBackOut from 'eases/back-out';
 
 import * as THREE from '../lib/three';
 
@@ -32,6 +33,7 @@ let items;
 
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
 const X_AXIS = new THREE.Vector3(1, 0, 0);
+const SCRATCH_QUATERNION = new THREE.Quaternion();
 
 const debugMesh = new THREE.Mesh(
   new THREE.BoxGeometry(0, 0, 0),
@@ -68,7 +70,7 @@ export default class Room {
       morph = true,
       isGiffing = false,
     } = params;
-    this.morph = morph;
+    this.morph = !!morph;
     this._worldPosition = new THREE.Vector3();
     this.index = params.single ? 0 : index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
@@ -77,6 +79,7 @@ export default class Room {
     this.firstFrame = frames.getFrame(0);
     this.lastFrame = frames.getFrame((settings.loopDuration * 2) - 0.001);
     this.frame = frames.getFrame();
+    this.dropTimeOffset = Math.random();
     this.costumeColor = getCostumeColor(colorIndex);
     const roomColor = this.roomColor = getRoomColor(colorIndex);
     this.position = layout.getPosition(
@@ -90,10 +93,16 @@ export default class Room {
       .add(roomOffset);
     position.y -= 1;
     const type = layout.getType(index);
-    if (type === 'PLANE') return;
-    items.room.add([position, null], roomColor);
-    if (single || wall || layout.hasWall(index)) {
-      items.wall.add([position, null], roomColor);
+    if (type !== 'PLANE') {
+      items.room.add([position, null], roomColor);
+      if (single || wall || layout.hasWall(index)) {
+        items.wall.add([position, null], roomColor);
+      }
+    } else {
+      this.dropTimes = [];
+      for (let i = 0; i < 20; i++) {
+        this.dropTimes.push(Math.random() * 0.2);
+      }
     }
     Room.isGiffing = isGiffing;
   }
@@ -199,14 +208,23 @@ export default class Room {
 
   dropPerformance(performanceIndex) {
     if (audio.time < settings.dropTime) return;
+    const dropTime = settings.dropTime + this.dropTimes[performanceIndex];
+
     const ratio = Math.max(0,
       Math.min(1,
-        audio.time - settings.dropTime - (this.index + performanceIndex) * -0.005
+        audio.time - dropTime
       )
     );
-    if (ratio === 0) return;
-    const [position] = POSE;
+    const rotationRatio = Math.max(0,
+      Math.min(1,
+        audio.time - dropTime
+      )
+    );
+    const [position, quaternion] = POSE;
     position.y *= 1 - easeBounceOut(ratio);
+
+    SCRATCH_QUATERNION.copy(quaternion).setFromAxisAngle(X_AXIS, Math.PI / 2);
+    quaternion.slerp(SCRATCH_QUATERNION, easeBackOut(Math.min(1, rotationRatio)));
   }
 
   risePerformance(performanceIndex, limbIndex, offset, applyMatrix) {
@@ -258,6 +276,7 @@ Room.reset = () => {
         layout.roomCount,
         props.perspectiveWall,
         props.orthographicWall
+  // if (!Room.isGiffing) viewer.scene.add(roomsGroup);
       ),
       room: new InstancedItem(
         layout.roomCount,
@@ -274,7 +293,6 @@ Room.reset = () => {
       ),
     };
   }
-  // if (!Room.isGiffing) viewer.scene.add(roomsGroup);
 
   // Move an extra invisible object3d with a texture to the end of scene's children
   // array in order to solve a texture glitch as described in:
