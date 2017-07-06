@@ -3,6 +3,8 @@ import { h, Component } from 'preact';
 import GIF from '../../lib/gif';
 import download from 'downloadjs';
 
+// import LineTitle from '../../components/LineTitle';
+// 
 import './style.scss';
 
 import Room from '../../components/Room';
@@ -11,12 +13,11 @@ import ButtonItem from '../../components/ButtonItem';
 import audio from '../../audio';
 import viewer from '../../viewer';
 
-const width = 512;
-const height = 512;
+const width = 768;
+const height = 768;
 const duration = 16; //  Unit is Seconds.
 const fps = 20;
-const quality = 100; // 97;
-const workers = 32;
+const workers = 8;
 
 export default class CreateGIF extends Component {
   constructor() {
@@ -26,7 +27,7 @@ export default class CreateGIF extends Component {
     };
 
     this.gotoSubmission = this.gotoSubmission.bind(this);
-    this.onProgress = this.onProgress.bind(this);
+    this.setProgress = this.setProgress.bind(this)
     this.tick = this.tick.bind(this);
     this.count = 0;
   }
@@ -43,8 +44,10 @@ export default class CreateGIF extends Component {
     viewer.off('render', this.tick);
   }
 
-  onProgress(p) {
-
+  setProgress(progress) {
+    this.setState({
+      progress: `${Math.round(progress * 100)}%`,
+    });
   }
 
   gotoSubmission() {
@@ -59,7 +62,7 @@ export default class CreateGIF extends Component {
     renderer.setSize(width, height);
     renderer.sortObjects = false;
 
-    const orthographicDistance = 4;
+    const orthographicDistance = 3;
     const aspectRatio = width / height;
     const camera = this.camera = new THREE.OrthographicCamera(
       -orthographicDistance * aspectRatio,
@@ -80,7 +83,6 @@ export default class CreateGIF extends Component {
     document.body.appendChild(renderer.domElement);
 
     const scene = this.scene = viewer.createScene();
-    console.log(scene);
     this.setState({ scene });
 
     const filename = `${
@@ -90,13 +92,14 @@ export default class CreateGIF extends Component {
     }-${
       duration.toString().padStart(2, '0')
     }sec@${fps}fps-`;
-
     this.gif = new GIF({
-      workers: 4,
+      workers: Math.ceil((window.navigator.hardwareConcurrency || 2) / 2),
       quality: 1,
       workerScript: '/public/gif.worker.js',
+      globalPalette: true,
     });
     let then;
+    this.gif.on('progress', this.setProgress);
     this.gif.on('finished', function(blob) {
       console.log(Date.now() - then);
       window.open(URL.createObjectURL(blob));
@@ -111,20 +114,20 @@ export default class CreateGIF extends Component {
     audio.on('loop', (index) => {
       if (index !== 2) return;
       this.capturing = false;
+      then = Date.now();
       this.gif.render();
     });
   }
 
   tick() {
     this.count++;
-    if (this.capturing && this.count % 3 === 0) {
+    if (this.capturing && this.count % 3 === 0 && audio.time > 4) {
       this.renderer.render(viewer.renderScene, this.camera);
-      this.gif.addFrame(this.renderer.domElement, { delay: 20, dispose: true, copy: true });
+      this.gif.addFrame(this.renderer.domElement, { delay: 16, dispose: true, copy: true });
     }
   }
 
   render({ roomId, id }, { scene }) {
-    console.log(scene);
     return (
       <div className="create-gif">
         { scene && <Room
@@ -134,6 +137,9 @@ export default class CreateGIF extends Component {
           onRoomLoadError={this.onRoomLoadError}
         />
       }
+      <Align type="top-right">
+        <div>{this.state.progress}</div>
+      </Align>
         <Align type="bottom-right">
           <ButtonItem
             text="Cancel"
