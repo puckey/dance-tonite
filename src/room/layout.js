@@ -48,7 +48,7 @@ let rooms = [
 ];
 
 if (process.env.FLAVOR === 'cms') {
-  rooms = rooms.filter(([,, type]) => type !== ph);
+  rooms = rooms.filter(([,,, { type }]) => type !== ph);
   rooms.forEach((room) => {
     const type = room[3];
     if (type === plh) {
