@@ -106,6 +106,9 @@ export default class Room {
         this.dropTimes.push(Math.random() * 0.2);
       }
     }
+    if (this.insideMegaGrid) {
+      this.riseTime = settings.colorTimes[layout.getSynthIndex(this.index)];
+    }
     Room.isGiffing = isGiffing;
   }
 
@@ -233,7 +236,7 @@ export default class Room {
   risePerformance(performanceIndex, limbIndex, offset, applyMatrix) {
     const ratio = Math.max(0,
       Math.min(5,
-        audio.time - this.riseTime - this.index * -0.005
+        audio.time - this.riseTime
       )
     ) * 0.2;
     if (ratio === 0) {
