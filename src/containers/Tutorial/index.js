@@ -27,7 +27,6 @@ export default class Tutorial extends Component {
     this.performShowOverlay = this.performShowOverlay.bind(this);
     this.performHideOverlay = this.performHideOverlay.bind(this);
     this.performAddPerformance = this.performAddPerformance.bind(this);
-    this.onRoomLoaded = this.onRoomLoaded.bind(this);
 
     viewer.exitPresent();
   }
@@ -39,10 +38,6 @@ export default class Tutorial extends Component {
   componentWillUnmount() {
     this.mounted = false;
     audio.fadeOut();
-  }
-
-  onRoomLoaded() {
-    audio.dim(true);
   }
 
   setLayers(layers) {
@@ -109,7 +104,7 @@ export default class Tutorial extends Component {
           tutorialLayers={layers}
           highlightLast={layers < 6}
           morph={false}
-          onLoaded={this.onRoomLoaded}
+          startDimmed
         >
           <TutorialTimeline
             onUpdateLayers={this.setLayers}

@@ -29,6 +29,10 @@ export default class RoomComponent extends Component {
 
   componentDidMount() {
     this.mounted = true;
+    const { onCreate } = this.props;
+    if (onCreate) {
+      onCreate(this);
+    }
     this.asyncMount(this.props);
   }
 
@@ -39,9 +43,6 @@ export default class RoomComponent extends Component {
       viewer.camera.position.z = 1.3;
       viewer.camera.updateProjectionMatrix();
       Room.rotate180();
-    }
-    if (props.mode === 'recording' && this.props.mode !== 'recording') {
-      this.loadAudio(true);
     }
   }
 
@@ -63,14 +64,10 @@ export default class RoomComponent extends Component {
     if (err && this.props.onRoomLoadError) {
       this.props.onRoomLoadError(err);
     }
-    if (this.props.onLoaded) {
-      this.props.onLoaded();
-    }
   }
 
   async loadAudio(startDimmed) {
     return new Promise(async (resolve) => {
-      // audio.reset();
       await audio.load({
         src: `/public/sound/room-${layout.loopIndex(this.props.roomId)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
         loops: 2,
@@ -84,7 +81,7 @@ export default class RoomComponent extends Component {
     });
   }
 
-  async asyncMount({ roomId, id, record, presenting, morph }) {
+  async asyncMount({ roomId, id, record, presenting, morph, startDimmed }) {
     Room.reset();
     state.originalCameraPosition = viewer.camera.position.clone();
     state.originalZoom = viewer.camera.zoom;
@@ -96,7 +93,7 @@ export default class RoomComponent extends Component {
       Room.rotate180();
     }
 
-    await this.loadAudio();
+    await this.loadAudio(startDimmed);
     if (!this.mounted) return;
 
     const room = new Room({

@@ -53,7 +53,6 @@ const recording = {
 
   tick() {
     if (stopped) return;
-    if (audio.time > 0 && !frames) return;
     const head = serializeMatrix(viewer.camera.matrixWorld);
     const [leftController, rightController] = viewer.controllers;
     if (leftController.matrixWorld) {
