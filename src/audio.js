@@ -10,6 +10,7 @@ const AudioContext = window.AudioContext || window.webkitAudioContext;
 let context;
 let source;
 let gainNode;
+let filter;
 let loopCount;
 let duration = 0;
 let lastTime = 0;
@@ -26,6 +27,8 @@ let muted = false;
 
 const FADE_OUT_SECONDS = 2;
 const ALMOST_ZERO = 1e-4;
+const FILTER_LOW = 2700.0;
+const FILTER_HIGH = 14000.0;
 
 let scheduledTime;
 const audio = Object.assign(emitter(), {
@@ -66,6 +69,10 @@ const audio = Object.assign(emitter(), {
       audio.reset();
       context = new AudioContext();
       gainNode = context.createGain();
+      filter = context.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = FILTER_HIGH;
+      filter.Q.value = 2;
       // Reset time, set loop count
       lastTime = 0;
       lastLoopProgress = 0;
@@ -249,27 +256,59 @@ const audio = Object.assign(emitter(), {
     return muted;
   },
 
-  async fadeOut(fadeDuration = FADE_OUT_SECONDS) {
+  async dim(immediate = false) {
+    if (!context) return;
+
+    source.disconnect();
+    source.connect(filter);
+    filter.connect(gainNode);
+
+    if (!immediate) {
+      await audio.fadeOut(0.75, FILTER_LOW, filter.frequency);
+    } else {
+      filter.frequency.value = FILTER_LOW;
+    }
+
+    await audio.fadeOut(0.5, 0.5);
+  },
+
+  async undim(immediate = false) {
+    if (!context) return;
+
+    if (!immediate) {
+      await audio.fadeIn(0.75, FILTER_HIGH, filter.frequency);
+    } else {
+      filter.frequency.value = FILTER_HIGH;
+    }
+
+    filter.disconnect();
+    source.disconnect();
+    source.connect(gainNode);
+
+    await audio.fadeIn(0.5, 1);
+  },
+
+  async fadeOut(fadeDuration = FADE_OUT_SECONDS, to = ALMOST_ZERO, _property = gainNode.gain) {
     if (!context) return;
     if (scheduledTime) {
-      gainNode.gain.cancelScheduledValues(scheduledTime);
+      _property.cancelScheduledValues(scheduledTime);
     }
     scheduledTime = context.currentTime;
-    gainNode.gain.exponentialRampToValueAtTime(
-      ALMOST_ZERO,
+    _property.exponentialRampToValueAtTime(
+      to,
       scheduledTime + fadeDuration
     );
     return sleep(fadeDuration * 1000);
   },
 
-  async fadeIn(fadeDuration = FADE_OUT_SECONDS) {
+  async fadeIn(fadeDuration = FADE_OUT_SECONDS, to = 1, _property = gainNode.gain) {
     if (!context || muted) return;
     if (scheduledTime) {
-      gainNode.gain.cancelScheduledValues(scheduledTime);
+      _property.cancelScheduledValues(scheduledTime);
     }
     scheduledTime = context.currentTime;
-    gainNode.gain.exponentialRampToValueAtTime(
-      1,
+    _property.exponentialRampToValueAtTime(
+      to,
       scheduledTime + fadeDuration
     );
     return sleep(fadeDuration * 1000);
