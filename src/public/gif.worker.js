@@ -380,7 +380,7 @@ GIFEncoder.prototype.findClosest = function(c, used) {
 var lastHash;
 var lastValue;
 GIFEncoder.prototype.findClosestRGB = function(r, g, b, used) {
-  var hash = ((Math.floor(r * 0.1) * 10 * 31 + Math.floor(g * 0.1) * 10) * 61 + Math.floor(b * 0.1) * 10) * 83;
+  var hash = ((r * 31 + g) * 61 + b * 10) * 83;
   if (lastHash === hash) {
     return lastValue;
   }
