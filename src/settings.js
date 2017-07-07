@@ -22,7 +22,7 @@ export default {
   maxLayerCount: 20,
 
   // The total amount of loops contained in the playback file:
-  totalLoopCount: 28,
+  totalLoopCount: 29,
 
   playlistsUrl: 'https://storage.googleapis.com/you-move-me.appspot.com/playlists/',
 
