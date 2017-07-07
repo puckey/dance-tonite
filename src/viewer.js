@@ -54,10 +54,11 @@ const cameras = (function () {
 }());
 
 let lastZoom = 4;
+let lastAspectRatio;
 const zoomCamera = (zoom) => {
   const newZoom = sineInOut(zoom);
-  if (newZoom === lastZoom) return;
   const { aspectRatio } = windowSize;
+  if (newZoom === lastZoom && lastAspectRatio === aspectRatio) return;
   const distance = orthographicDistance + newZoom * 3;
   const camera = cameras.orthographic;
   camera.left = -distance * aspectRatio;
