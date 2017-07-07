@@ -45,8 +45,8 @@ body:not(.mod-mobile) .paginated-list-item-name:hover {
   }
 
   .item-list-navigation {
-    text-align: right;
     margin-top: .3rem;
+    justify-content: flex-end;
   }
 }
 
