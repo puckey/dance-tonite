@@ -59,7 +59,6 @@ body:not(.mod-mobile) .button-item:hover {
 
 .button-item-label {
   display: none;
-  pointer-events: none;
   font-size: 1.2rem;
   line-height: 1rem;
 
@@ -70,9 +69,14 @@ body:not(.mod-mobile) .button-item:hover {
 }
 
 @media (max-width: $min-width) {
+  .mod-mobile .button-item {
+    pointer-events: none;
+  }
+
   .mod-mobile .button-item-label {
     display: inline-block;
     opacity: 0;
+    pointer-events: none;
     animation: fadeOut 5s forwards;
   }
 }
@@ -85,7 +89,7 @@ body:not(.mod-mobile) .button-item:hover {
 }
 
 @keyframes fadeOut {
-  0% { opacity: 1; }
+  0% { opacity: 1; pointer-events: all; }
   50% { opacity: 1; }
-  100% { opacity: 0; visibility: hidden; }
+  100% { opacity: 0; pointer-events: none; }
 }
