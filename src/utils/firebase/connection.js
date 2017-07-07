@@ -42,7 +42,7 @@ const contactServer = (URL, dataToSend, secretAuth) => {
         // authorize with the secret key
         authString = localStorage ? localStorage.getItem('secret') : '';
       } else {
-        // otherwise, auth with our user ID
+        // otherwise, auth with our user token
         authString = userAuth.token;
       }
 
@@ -76,6 +76,7 @@ const firebaseConnection = {
   firebase,
   contactServer,
   serverURL,
+  userAuth,
 };
 
 export default firebaseConnection;

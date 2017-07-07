@@ -12,11 +12,7 @@ const getConnection = () => (
 
 import convertFPS from '../convertFPS';
 
-const requestUploadToken = (roomID) => getConnection().then(
-  () => connection.contactServer(`${connection.serverURL}getUploadToken`, { room: roomID })
-);
-
-const uploadDataString = (dataString, filename, uploadToken) => {
+const uploadDataString = (dataString, filename) => {
   const promise = new Promise((resolve, reject) => {
     const targetFileRef = connection.firebase.storage().ref().child(`_incoming/${filename}`);
 
@@ -24,7 +20,8 @@ const uploadDataString = (dataString, filename, uploadToken) => {
     const metadata = {
       contentType: 'application/json',
       customMetadata: {
-        token: uploadToken,
+        uid: connection.userAuth.id,
+        token: connection.userAuth.token,
       },
     };
 
@@ -38,40 +35,40 @@ const uploadDataString = (dataString, filename, uploadToken) => {
     }, (error) => { // error
       reject(error);
     }, () => { // complete
-      resolve(uploadTask.snapshot.downloadURL);
+      resolve();
     });
   });
 
   return promise;
 };
 
-const startSubmissionProcessing = (token) => getConnection().then(
-  () => connection.contactServer(`${connection.serverURL}processSubmission`, { token })
+const startSubmissionProcessing = (uid) => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}processSubmission`, { uid })
 );
 
 const firebaseUploader = {
   upload: async (roomData, roomID, callback) => {
-    // Request an upload token
-    const { data: uploadToken, error: requestError } = await requestUploadToken(roomID);
-    if (requestError) return callback(requestError);
-    const { uri_array, token } = uploadToken;
+    await getConnection();
+
+    const standardFileDataRates = [15, 45, 90];
+    const uid = connection.userAuth.id;
+
     // Wait for all uploads to complete
     await Promise.all(
-      uri_array.map(([fps, filename]) => (
+      standardFileDataRates.map((fps) => (
         uploadDataString(
           (
             fps === 90
               ? roomData
               : convertFPS(roomData, fps)
           ).map(JSON.stringify).join('\n'),
-          filename,
-          token
+          `${uid}_${fps}.json`
         )
       ))
     );
 
     // now process files
-    const { data: submission, error: processingError } = await startSubmissionProcessing(token);
+    const { data: submission, error: processingError } = await startSubmissionProcessing(uid);
     if (processingError) return callback(processingError);
     // file processing is done, the recording is saved!
     callback(null, submission.id);
