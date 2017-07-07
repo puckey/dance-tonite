@@ -33,7 +33,6 @@ export default class Record extends Component {
     this.performControllersDisconnected = this.performControllersDisconnected.bind(this);
     this.performControllersConnected = this.performControllersConnected.bind(this);
     this.performRecordRoom = this.performRecordRoom.bind(this);
-    this.setLoading = this.setLoading.bind(this);
   }
 
   componentDidMount() {
@@ -48,8 +47,9 @@ export default class Record extends Component {
     this.mounted = false;
   }
 
-  setLoading(loading) {
-    this.setState({ loading });
+  onRoomLoaded() {
+    audio.play();
+    audio.dim(true);
   }
 
   async performFinish() {
@@ -111,7 +111,6 @@ export default class Record extends Component {
       mode: 'recording',
     });
     this.performWaitRoom();
-    audio.play();
     viewer.on('tick', this.tick);
     analytics.recordDanceSessionStart();
   }
@@ -171,9 +170,10 @@ export default class Record extends Component {
           reverseOrbs
           record
           roomId={roomId}
+          mode={mode}
           onOrbEnteredRoom={this.performRecordRoom}
           onOrbLeftRoom={this.performWaitRoom}
-          onReady={this.performExitTransition}
+          onLoaded={this.onRoomLoaded}
         />
         { mode === 'connect-controllers'
           ? <ConnectControllers

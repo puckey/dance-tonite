@@ -27,6 +27,7 @@ export default class Tutorial extends Component {
     this.performShowOverlay = this.performShowOverlay.bind(this);
     this.performHideOverlay = this.performHideOverlay.bind(this);
     this.performAddPerformance = this.performAddPerformance.bind(this);
+    this.onRoomLoaded = this.onRoomLoaded.bind(this);
 
     viewer.exitPresent();
   }
@@ -38,6 +39,10 @@ export default class Tutorial extends Component {
   componentWillUnmount() {
     this.mounted = false;
     audio.fadeOut();
+  }
+
+  onRoomLoaded() {
+    audio.dim(true);
   }
 
   setLayers(layers) {
@@ -55,8 +60,9 @@ export default class Tutorial extends Component {
     if (!viewer.vrEffect.isPresenting) {
       await viewer.vrEffect.requestPresent();
     }
-    // Wait for the VR overlay to cover the screen:
-    await sleep(500);
+    // Fade out and pause playback for a second
+    audio.fadeOut();
+    await sleep(1000);
     this.props.goto('record');
   }
 
@@ -103,6 +109,7 @@ export default class Tutorial extends Component {
           tutorialLayers={layers}
           highlightLast={layers < 6}
           morph={false}
+          onLoaded={this.onRoomLoaded}
         >
           <TutorialTimeline
             onUpdateLayers={this.setLayers}
