@@ -20,7 +20,6 @@ export default class RoomComponent extends Component {
     this.receiveOrb = this.receiveOrb.bind(this);
     this.tick = this.tick.bind(this);
     this.onRoomLoaded = this.onRoomLoaded.bind(this);
-    this.loadAudio = this.loadAudio.bind(this);
   }
 
   getChildContext() {
@@ -39,9 +38,6 @@ export default class RoomComponent extends Component {
       viewer.camera.position.z = 1.3;
       viewer.camera.updateProjectionMatrix();
       Room.rotate180();
-    }
-    if (props.mode === 'recording' && this.props.mode !== 'recording') {
-      this.loadAudio(true);
     }
   }
 
@@ -63,25 +59,6 @@ export default class RoomComponent extends Component {
     if (err && this.props.onRoomLoadError) {
       this.props.onRoomLoadError(err);
     }
-    if (this.props.onLoaded) {
-      this.props.onLoaded();
-    }
-  }
-
-  async loadAudio(startDimmed) {
-    return new Promise(async (resolve) => {
-      // audio.reset();
-      await audio.load({
-        src: `/public/sound/room-${layout.loopIndex(this.props.roomId)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
-        loops: 2,
-        loopOffset: 0.5,
-      });
-      if (startDimmed) {
-        audio.play();
-        audio.dim(true);
-      }
-      resolve();
-    });
   }
 
   async asyncMount({ roomId, id, record, presenting, morph }) {
@@ -96,9 +73,12 @@ export default class RoomComponent extends Component {
       Room.rotate180();
     }
 
-    await this.loadAudio();
+    await audio.load({
+      src: `/public/sound/room-${layout.loopIndex(roomId)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
+      loops: 2,
+      loopOffset: 0.5,
+    });
     if (!this.mounted) return;
-
     const room = new Room({
       id,
       index: roomId - 1,
@@ -107,12 +87,9 @@ export default class RoomComponent extends Component {
       morph,
     });
     room.changeColorToWaiting();
-
     if (id) {
       audio.play();
       room.load(this.onRoomLoaded);
-    } else {
-      this.onRoomLoaded();
     }
     this.setState({ room });
     viewer.on('tick', this.tick);
@@ -158,8 +135,6 @@ export default class RoomComponent extends Component {
           <RecordOrbs
             onEnteredRoom={this.performOrbEnteredRoom}
             onLeftRoom={this.performOrbLeftRoom}
-            onEarlyEnteredRoom={audio.undim}
-            onEarlyLeftRoom={audio.dim}
             onCreatedOrb={this.receiveOrb}
             reversed={this.props.reverseOrbs}
           />

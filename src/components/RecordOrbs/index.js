@@ -17,8 +17,6 @@ export default class RecordOrbs extends Component {
 
     this.performLeftRoom = this.performLeftRoom.bind(this);
     this.performEnteredRoom = this.performEnteredRoom.bind(this);
-    this.performEarlyLeftRoom = this.performEarlyLeftRoom.bind(this);
-    this.performEarlyEnteredRoom = this.performEarlyEnteredRoom.bind(this);
     this.tick = this.tick.bind(this);
   }
 
@@ -72,20 +70,6 @@ export default class RecordOrbs extends Component {
     }
   }
 
-  performEarlyEnteredRoom() {
-    const { onEarlyEnteredRoom } = this.props;
-    if (onEarlyEnteredRoom) {
-      onEarlyEnteredRoom();
-    }
-  }
-
-  performEarlyLeftRoom() {
-    const { onEarlyLeftRoom } = this.props;
-    if (onEarlyLeftRoom) {
-      onEarlyLeftRoom();
-    }
-  }
-
   render() {
     return (
       <AudioTimeline
@@ -96,16 +80,8 @@ export default class RecordOrbs extends Component {
             callback: this.performLeftRoom,
           },
           {
-            time: 0.9,
-            callback: this.performEarlyEnteredRoom,
-          },
-          {
             time: 1,
             callback: this.performEnteredRoom,
-          },
-          {
-            time: 1.9,
-            callback: this.performEarlyLeftRoom,
           },
         ]}
       />
