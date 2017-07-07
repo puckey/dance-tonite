@@ -3,6 +3,7 @@ import { h, Component } from 'preact';
 import './style.scss';
 
 import windowSize from '../../utils/windowSize';
+import Title from '../Title';
 
 const getLineTransform = (x1, y1, x2, y2) => {
   const margin = windowSize.height * 0.06;
@@ -47,11 +48,8 @@ export default class LineTitle extends Component {
       <div className="line-title">
         {
           visible && (
-            <div
-              className="line-title-text"
-              ref={this.receiveTextElement}
-            >
-              <span>{ text }</span>
+            <div ref={this.receiveTextElement} className="line-title-wrapper">
+              <Title>{ text }</Title>
             </div>
           )
         }

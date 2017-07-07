@@ -9,6 +9,7 @@ import Room from '../../components/Room';
 import Container from '../../components/Container';
 import Error from '../../components/Error';
 import Align from '../../components/Align';
+import Title from '../../components/Title';
 import PaginatedList from '../../components/PaginatedList';
 import Spinner from '../../components/Spinner';
 
@@ -87,6 +88,7 @@ export default class Gallery extends Component {
     return (
       <Container>
         <Menu close mute about />
+        <Title>Gallery</Title>
         <Align type="bottom-left" margin>
           <PaginatedList
             item={item}
