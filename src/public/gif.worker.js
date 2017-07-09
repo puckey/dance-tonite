@@ -237,6 +237,10 @@ GIFEncoder.prototype.analyzePixels = function() {
     this.neuQuant = new NeuQuant(this.pixels, this.sample);
     this.neuQuant.buildColormap(); // create reduced palette
     this.colorTab = this.neuQuant.getColormap();
+    var len = this.colorTab.length;
+    this.colorTab[len - 3] = 0;
+    this.colorTab[len - 2] = 255;
+    this.colorTab[len - 2] = 255;
   }
 
   // map image pixels to new palette
@@ -397,6 +401,7 @@ GIFEncoder.prototype.findClosestRGB = function(r, g, b, used) {
     var dg = g - (colorTab[i++] & 0xff);
     var db = b - (colorTab[i++] & 0xff);
     var d = dr * dr + dg * dg + db * db;
+    if (index === this.transIndex && d > 0) continue;
     if (d < dmin) {
       dmin = d;
       minpos = index;

@@ -23,4 +23,6 @@ export default {
 
   // The total amount of loops contained in the playback file:
   totalLoopCount: 28,
+
+  loopDuration: 8,
 };

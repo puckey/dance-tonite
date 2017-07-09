@@ -4,7 +4,7 @@ import {
 import audio from '../audio';
 import { avgPosition, avgQuaternion } from '../utils/serializer';
 
-export const secondsToFrames = (seconds) => Math.floor((seconds % (audio.loopDuration * 2)) * 90);
+export const secondsToFrames = (seconds) => Math.floor((seconds % (settings.loopDuration * 2)) * 90);
 
 export const transformMesh = (
   instancedMesh,

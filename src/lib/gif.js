@@ -512,7 +512,6 @@ GIF = (function(superClass) {
     this.emit('progress', this.finishedFrames / this.frames.length);
     this.imageParts[frame.index] = frame;
     if (this.options.globalPalette === true) {
-      this.log(frame.globalPalette);
       this.options.globalPalette = frame.globalPalette;
       this.log('global palette analyzed');
       if (this.frames.length > 2) {
@@ -626,6 +625,9 @@ GIF = (function(superClass) {
   GIF.prototype.log = function() {
     var args;
     args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    if (!this.options.debug) {
+      return;
+    }
     return console.log.apply(console, args);
   };
 

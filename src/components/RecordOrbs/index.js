@@ -53,8 +53,10 @@ export default class RecordOrbs extends Component {
   }
 
   performLeftRoom() {
-    this.orb2.fadeOut();
-    this.orb.fadeIn();
+    if (this.props.fade) {
+      this.orb2.fadeOut();
+      this.orb.fadeIn();
+    }
     const { onLeftRoom } = this.props;
     if (onLeftRoom) {
       onLeftRoom();

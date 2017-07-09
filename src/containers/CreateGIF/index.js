@@ -1,23 +1,18 @@
 /** @jsx h */
 import { h, Component } from 'preact';
-import GIF from '../../lib/gif';
 import download from 'downloadjs';
 
-// import LineTitle from '../../components/LineTitle';
-// 
 import './style.scss';
+
+import GIF from '../../lib/gif';
+import * as THREE from '../../lib/three';
+import viewer from '../../viewer';
+import settings from '../../settings';
 
 import Room from '../../components/Room';
 import Align from '../../components/Align';
 import ButtonItem from '../../components/ButtonItem';
-import audio from '../../audio';
-import viewer from '../../viewer';
-
-const width = 768;
-const height = 768;
-const duration = 16; //  Unit is Seconds.
-const fps = 20;
-const workers = 8;
+import Spinner from '../../components/Spinner';
 
 export default class CreateGIF extends Component {
   constructor() {
@@ -27,27 +22,42 @@ export default class CreateGIF extends Component {
     };
 
     this.gotoSubmission = this.gotoSubmission.bind(this);
-    this.setProgress = this.setProgress.bind(this)
-    this.tick = this.tick.bind(this);
+    this.setEncodeProgress = this.setEncodeProgress.bind(this);
+    this.setFrameProgress = this.setFrameProgress.bind(this);
+    this.downloadGif = this.downloadGif.bind(this);
     this.count = 0;
+    this.width = 768;
+    this.height = 768;
+    this.fps = 50;
+    this.duration = settings.loopDuration * 2;
+    this.startTime = settings.loopDuration * 0.5;
+    this.endTime = this.startTime + this.duration;
   }
 
   componentDidMount() {
     this.mounted = true;
     this.asyncMount();
-    viewer.on('render', this.tick);
   }
 
   componentWillUnmount() {
     this.mounted = false;
-    audio.fadeOut();
     viewer.off('render', this.tick);
   }
 
-  setProgress(progress) {
+  setFrameProgress(frame, total) {
     this.setState({
-      progress: `${Math.round(progress * 100)}%`,
+      progress: `Rendering frames: ${Math.round(frame / total * 100)}%`,
     });
+  }
+
+  setEncodeProgress(progress) {
+    this.setState({
+      progress: `Encoding GIF: ${Math.round(progress * 100)}%`,
+    });
+  }
+
+  downloadGif() {
+    download(this.state.gifData, 'performance.gif', 'image/gif');
   }
 
   gotoSubmission() {
@@ -55,15 +65,14 @@ export default class CreateGIF extends Component {
   }
 
   async asyncMount() {
-    const { roomId, id } = this.props;
     const renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor(0x000000);
     renderer.setPixelRatio(1); // window.devicePixelRatio
-    renderer.setSize(width, height);
+    renderer.setSize(this.width, this.height);
     renderer.sortObjects = false;
 
     const orthographicDistance = 3;
-    const aspectRatio = width / height;
+    const aspectRatio = this.width / this.height;
     const camera = this.camera = new THREE.OrthographicCamera(
       -orthographicDistance * aspectRatio,
       orthographicDistance * aspectRatio,
@@ -79,67 +88,116 @@ export default class CreateGIF extends Component {
     camera.position.z = 1.3;
     camera.zoom = 0.7;
     camera.updateProjectionMatrix();
-    renderer.domElement.style.zIndex = 2000;
-    document.body.appendChild(renderer.domElement);
 
     const scene = this.scene = viewer.createScene();
     this.setState({ scene });
 
-    const filename = `${
-      width.toString().padStart(4, '0')
-    }x${
-      height.toString().padStart(4, '0')
-    }-${
-      duration.toString().padStart(2, '0')
-    }sec@${fps}fps-`;
     this.gif = new GIF({
-      workers: Math.ceil((window.navigator.hardwareConcurrency || 2) / 2),
+      workers: Math.ceil((window.navigator.hardwareConcurrency || 2)),
       quality: 1,
       workerScript: '/public/gif.worker.js',
       globalPalette: true,
-    });
-    let then;
-    this.gif.on('progress', this.setProgress);
-    this.gif.on('finished', function(blob) {
-      console.log(Date.now() - then);
-      window.open(URL.createObjectURL(blob));
+      transparent: 0x00FFFF,
     });
 
-    audio.on('play', () => {
-      then = Date.now();
-      this.capturer.start();
-      this.capturing = true;
-    });
-    this.capturing = true;
-    audio.on('loop', (index) => {
-      if (index !== 2) return;
-      this.capturing = false;
-      then = Date.now();
+    viewer.animating = false;
+    setTimeout(this.renderFrame.bind(this, () => {
+      this.gif.on('progress', this.setEncodeProgress);
+      this.gif.on('finished', (blob) => {
+        this.setState({
+          progress: null,
+          gifData: blob,
+        });
+      });
       this.gif.render();
-    });
+    }), 100);
   }
 
-  tick() {
+  diffPixels(source) {
+    const first = !this.sourceCtx;
+    if (first) {
+      this.sourceCanvas = document.createElement('canvas');
+      this.sourceCanvas.width = this.width;
+      this.sourceCanvas.height = this.height;
+      this.sourceCtx = this.sourceCanvas.getContext('2d');
+      this.sourceCtx.fillStyle = '#000000';
+      this.sourceCtx.fillRect(0, 0, this.width, this.height);
+    }
+    this.sourceCtx.drawImage(source, 0, 0);
+    const { data: sourceData } = this.sourceCtx.getImageData(0, 0, this.width, this.height);
+    if (!this.canvas) {
+      this.canvas = document.createElement('canvas');
+      this.canvas.width = this.width;
+      this.canvas.height = this.height;
+      this.ctx = this.canvas.getContext('2d');
+    }
+    const currentImageData = this.ctx.getImageData(0, 0, this.width, this.height);
+    const currentData = currentImageData.data;
+    for (let i = 0, l = sourceData.length / 4; i < l; i++) {
+      const offset = i * 4;
+      const same = (
+        sourceData[offset] === currentData[offset] &&
+        sourceData[offset + 1] === currentData[offset + 1] &&
+        sourceData[offset + 2] === currentData[offset + 2] &&
+        sourceData[offset + 3] === currentData[offset + 3]
+      );
+      if (same) {
+        currentData[i * 4] = 0;
+        currentData[offset + 1] = 255;
+        currentData[offset + 2] = 255;
+        currentData[offset + 3] = 255;
+      } else {
+        currentData[offset] = sourceData[offset];
+        currentData[offset + 1] = sourceData[offset + 1];
+        currentData[offset + 2] = sourceData[offset + 2];
+        currentData[offset + 3] = sourceData[offset + 3];
+      }
+    }
+    this.ctx.putImageData(currentImageData, 0, 0);
+    this.gif.addFrame(this.canvas, { delay: 20, dispose: 1, copy: true });
+    this.ctx.drawImage(this.sourceCanvas, 0, 0);
+  }
+
+  renderFrame(callback) {
     this.count++;
-    if (this.capturing && this.count % 3 === 0 && audio.time > 4) {
-      this.renderer.render(viewer.renderScene, this.camera);
-      this.gif.addFrame(this.renderer.domElement, { delay: 16, dispose: true, copy: true });
+    console.log((this.duration * 1000) / (1000 / this.fps), (this.duration * 1000));
+    this.setFrameProgress(this.count, (this.duration * 1000) / (1000 / this.fps));
+    const time = this.count * (1 / this.fps) + this.startTime;
+    viewer.animate(null, time);
+    this.renderer.render(viewer.renderScene, this.camera);
+    this.diffPixels(this.renderer.domElement);
+    if (time > this.endTime) {
+      callback();
+    } else {
+      setTimeout(this.renderFrame.bind(this, callback), 1);
     }
   }
 
-  render({ roomId, id }, { scene }) {
+  render({ roomId, id }, { scene, progress, gifData }) {
     return (
       <div className="create-gif">
         { scene && <Room
           roomId={roomId}
           id={id}
           orbs
+          fadeOrbs={false}
+          hasAudio={false}
           onRoomLoadError={this.onRoomLoadError}
-        />
-      }
-      <Align type="top-right">
-        <div>{this.state.progress}</div>
-      </Align>
+        /> }
+        <Align type="center">
+          {progress &&
+            <Spinner
+              text={progress}
+            />
+          }
+          {gifData &&
+            <ButtonItem
+              text="Click here to download your gif"
+              onClick={this.downloadGif}
+              underline
+            />
+          }
+        </Align>
         <Align type="bottom-right">
           <ButtonItem
             text="Cancel"

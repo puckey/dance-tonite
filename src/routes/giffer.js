@@ -185,7 +185,7 @@ export default (req) => {
       Room.clear();
       room.gotoTime(
         // gifRoomProgress * audioLoopDuration,
-        gifRoomProgress * audio.loopDuration,
+        gifRoomProgress * settings.loopDuration,
         Math.max(
           state.minLayers,
           Math.ceil((gifProgress / 2) % 3)
@@ -270,7 +270,7 @@ export default (req) => {
       //  we have to load the audio file so audio.js can report
       //  loopDuration to room.js....
 
-      if (!audio.loopDuration) {
+      if (!settings.loopDuration) {
         await Promise.all([
           audio.load({
             src: '/public/sound/room-1.ogg',

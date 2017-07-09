@@ -137,6 +137,53 @@ const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
 
 const scene = createScene();
 
+const clock = new THREE.Clock();
+clock.start();
+
+const {
+  render: renderPostProcessing,
+  resize: resizePostProcessing,
+} = postprocessing({ renderer, camera: cameras.default, scene });
+
+const animate = (time, staticTime) => {
+  const dt = clock.getDelta();
+  if (viewer.animating) {
+    vrEffect.requestAnimationFrame(animate);
+  }
+
+  THREE.VRController.update();
+
+  if (feature.isIODaydream) {
+    viewer.daydreamController.update();
+  }
+
+  controls.update();
+  audio.tick(time, staticTime);
+  Room.clear();
+  viewer.emit('tick', dt);
+
+  zoomCamera(
+    audio.progress > 21
+      ? Math.min(2, audio.progress - 21) * 0.5
+      : 0
+  );
+
+  if (staticTime !== undefined) return;
+
+  if (!vrEffect.isPresenting && viewer.camera === cameras.default) {
+    renderPostProcessing();
+  } else {
+    vrEffect.render(viewer.renderScene, viewer.camera);
+  }
+  viewer.emit('render');
+  if (vrEffect.isPresenting && feature.hasExternalDisplay) {
+    renderer.render(viewer.renderScene, viewer.camera);
+  }
+
+  viewer.emit('render', dt);
+  if (feature.stats) stats();
+};
+
 const viewer = Object.assign(emitter(), {
   camera: cameras.orthographic,
   cameras,
@@ -146,6 +193,8 @@ const viewer = Object.assign(emitter(), {
   controls,
   createScene,
   renderer,
+  animate,
+  animating: true,
   toggleVR: async (isStillMounted) => {
     if (vrEffect.isPresenting) {
       vrEffect.exitPresent();
@@ -180,48 +229,6 @@ const viewer = Object.assign(emitter(), {
 window.addEventListener('vrdisplaypresentchange', () => {
   viewer.emit('vr-present-change', vrEffect.isPresenting);
 }, false);
-
-const clock = new THREE.Clock();
-clock.start();
-
-const {
-  render: renderPostProcessing,
-  resize: resizePostProcessing,
-} = postprocessing({ renderer, camera: cameras.default, scene });
-
-const animate = () => {
-  const dt = clock.getDelta();
-  vrEffect.requestAnimationFrame(animate);
-
-  THREE.VRController.update();
-
-  if (feature.isIODaydream) {
-    viewer.daydreamController.update();
-  }
-
-  controls.update();
-  audio.tick();
-  Room.clear();
-  viewer.emit('tick', dt);
-  zoomCamera(
-    audio.progress > 21
-      ? Math.min(2, audio.progress - 21) * 0.5
-      : 0
-  );
-
-  if (!vrEffect.isPresenting && viewer.camera === cameras.default) {
-    renderPostProcessing();
-  } else {
-    vrEffect.render(viewer.renderScene, viewer.camera);
-  }
-  viewer.emit('render');
-  if (vrEffect.isPresenting && feature.hasExternalDisplay) {
-    renderer.render(viewer.renderScene, viewer.camera);
-  }
-
-  viewer.emit('render', dt);
-  if (feature.stats) stats();
-};
 
 animate();
 

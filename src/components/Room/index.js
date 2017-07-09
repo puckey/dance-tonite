@@ -55,7 +55,7 @@ export default class RoomComponent extends Component {
     }
   }
 
-  async asyncMount({ roomId, id, record }) {
+  async asyncMount({ roomId, id, record, hasAudio = true }) {
     Room.reset();
     state.originalCameraPosition = viewer.camera.position.clone();
     state.originalZoom = viewer.camera.zoom;
@@ -67,11 +67,13 @@ export default class RoomComponent extends Component {
       Room.rotate180();
     }
 
-    await audio.load({
-      src: `/public/sound/room-${layout.loopIndex(roomId)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
-      loops: 2,
-      loopOffset: 0.5,
-    });
+    if (hasAudio) {
+      await audio.load({
+        src: `/public/sound/room-${layout.loopIndex(roomId)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
+        loops: 2,
+        loopOffset: 0.5,
+      });
+    }
     if (!this.mounted) return;
     const room = new Room({
       id,
@@ -80,7 +82,9 @@ export default class RoomComponent extends Component {
       recording: record ? recording : null,
     });
     if (id) {
-      audio.play();
+      if (hasAudio) {
+        audio.play();
+      }
       room.load(this.onRoomLoaded);
     }
     this.setState({ room });
@@ -122,11 +126,12 @@ export default class RoomComponent extends Component {
     this.state.room.gotoTime(audio.time, layers);
   }
 
-  render() {
+  render({ orbs, fadeOrbs }) {
     return (
       <div>
-        {this.props.orbs &&
+        {orbs &&
           <RecordOrbs
+            fade={fadeOrbs !== undefined ? fadeOrbs : true}
             onEnteredRoom={this.performOrbEnteredRoom}
             onLeftRoom={this.performOrbLeftRoom}
             onCreatedOrb={this.receiveOrb}

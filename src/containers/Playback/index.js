@@ -91,7 +91,7 @@ export default class Playback extends Component {
       // Start at 3 rooms before the recording:
       const watchTime = 30;
       const roomOffset = 2;
-      const startTime = (roomId - 2 + roomOffset) * audio.loopDuration;
+      const startTime = (roomId - 2 + roomOffset) * settings.loopDuration;
       audio.gotoTime(startTime);
       setTimeout(() => {
         if (!this.mounted) return;

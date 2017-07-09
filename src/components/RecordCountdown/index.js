@@ -6,6 +6,7 @@ import roundText from './round-text';
 
 import RoomInstructions from '../RoomInstructions';
 import audio from '../../audio';
+import settings from '../../settings';
 
 export default class RecordCountdown extends Component {
   constructor() {
@@ -27,7 +28,7 @@ export default class RecordCountdown extends Component {
     this.setState({
       subtitle: roundText(round),
     });
-    let remaining = Math.round(audio.loopDuration - audio.time);
+    let remaining = Math.round(settings.loopDuration - audio.time);
     while (remaining > -2) {
       if (remaining > 0) {
         this.setState({

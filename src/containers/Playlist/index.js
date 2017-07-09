@@ -130,12 +130,12 @@ export default class Playlist extends Component {
     if (!this.state.rooms || transition.isInside()) return;
     this.moveOrb(audio.progress || 0);
 
-    if (!audio.loopDuration) return;
+    if (!settings.loopDuration) return;
     for (let i = 0; i < this.state.rooms.length; i++) {
       const room = this.state.rooms[i];
       let time = audio.time;
       if (layout.isOdd(room.index)) {
-        time += audio.loopDuration;
+        time += settings.loopDuration;
       }
       // Slow down recordings to a stop after music stops:
       const slowdownDuration = 0.4;
@@ -148,7 +148,7 @@ export default class Playlist extends Component {
           ) / slowdownDuration
         ) * slowdownDuration;
       }
-      room.gotoTime(time % (audio.loopDuration * 2));
+      room.gotoTime(time % (settings.loopDuration * 2));
     }
   }
 

@@ -1,6 +1,6 @@
 import * as serializer from '../utils/serializer';
 import InstancedItem from '../instanced-item';
-import audio from '../audio';
+import settings from '../settings';
 
 const getFrame = (frames, number) => {
   let frame = frames[number];
@@ -28,7 +28,7 @@ export default class Frame {
   }
 
   secondsToFrame(seconds) {
-    return (seconds % (audio.loopDuration * 2)) * this.frames.fps;
+    return (seconds % (settings.loopDuration * 2)) * this.frames.fps;
   }
 
   getHeadPose(index, offset, applyMatrix = true) {
