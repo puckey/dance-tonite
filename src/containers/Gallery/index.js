@@ -106,6 +106,7 @@ export default class Gallery extends Component {
             key={recording.id}
             progressive={feature.isMobile}
             orbs
+            morph
           />
           : null
         }
