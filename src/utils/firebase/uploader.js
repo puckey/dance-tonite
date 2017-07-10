@@ -50,6 +50,9 @@ const firebaseUploader = {
   upload: async (roomData, roomID, callback) => {
     await getConnection();
 
+    const loginError = await connection.loginAnonymously();
+    if (loginError) return callback(loginError);
+
     const standardFileDataRates = [15, 45, 90];
     const uid = connection.userAuth.id;
 

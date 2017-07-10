@@ -55,6 +55,10 @@ if (process.env.FLAVOR === 'cms') {
     document.addEventListener('touchmove', (event) => {
       if (event.scale !== 1) event.preventDefault();
     }, false);
+    // Disable double tap to zoom:
+    document.addEventListener('gesturestart', (event) => {
+      event.preventDefault();
+    }, false);
   }
   document.getElementById('initial').remove();
   render(<Router />, document.body, root);
