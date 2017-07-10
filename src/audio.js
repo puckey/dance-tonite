@@ -40,7 +40,7 @@ const audio = Object.assign(emitter(), {
       this.looped = false;
       return;
     }
-    const time = this.time = (staticTime !== undefined
+    let time = this.time = (staticTime !== undefined
       ? staticTime
       : audioElement
         ? (pauseTime || (Date.now() - startTime)) / 1000
