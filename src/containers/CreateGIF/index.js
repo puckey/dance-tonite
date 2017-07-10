@@ -40,9 +40,13 @@ export default class CreateGIF extends Component {
     this.setFrameProgress = this.setFrameProgress.bind(this);
     this.downloadGif = this.downloadGif.bind(this);
     this.count = 0;
-    this.width = 768;
-    this.height = 768;
-    this.fps = 50;
+    this.width = 600;
+    this.height = 600;
+
+    // Because we can only set gif frame delays in hundreds of seconds,
+    // 1 frame every 3/100th sec = 33 FPS:
+    this.fps = 33;
+    this.delay = 30;
     this.duration = settings.loopDuration * 2;
     this.startTime = settings.loopDuration * 0.5;
     this.endTime = this.startTime + this.duration;
@@ -173,7 +177,7 @@ export default class CreateGIF extends Component {
       }
     }
     this.ctx.putImageData(currentImageData, 0, 0);
-    this.gif.addFrame(this.canvas, { delay: 30, dispose: 1, copy: true });
+    this.gif.addFrame(this.canvas, { delay: this.delay, dispose: 1, copy: true });
     this.ctx.drawImage(this.sourceCanvas, 0, 0);
   }
 1
