@@ -46,6 +46,10 @@ const audio = Object.assign(emitter(), {
         ? (pauseTime || (Date.now() - startTime)) / 1000
         : context.currentTime - startTime
     ) % duration;
+    if (audioElement && Math.abs(time - audioElement.currentTime) > 0.05) {
+      time = audioElement.currentTime;
+      startTime = Date.now() - time * 1000;
+    }
     const { loopDuration } = settings;
     // The position within the track as a multiple of loopDuration:
     this.progress = time > 0
@@ -86,7 +90,6 @@ const audio = Object.assign(emitter(), {
       this.loopCount = 0;
       const canPlay = () => {
         this.duration = duration;
-        if (context) context.suspend();
         resolve(param.src);
       };
 
@@ -212,6 +215,7 @@ const audio = Object.assign(emitter(), {
       audioElement.removeEventListener('pause', onPause);
       audioElement.removeEventListener('play', onPlay);
       audioElement.removeEventListener('seeked', onSeeked);
+      audioElement.pause();
       audioElement = null;
       onCanPlayThrough = null;
     }
