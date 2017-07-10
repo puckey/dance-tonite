@@ -7,6 +7,7 @@ const deps = {
         if (feature.has6DOF) {
           deps.SDFText = require('./sdftext');
           deps.controllers = require('./controllers').default;
+          deps.GIF = require('./lib/gif');
         }
         resolve();
       });

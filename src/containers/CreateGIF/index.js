@@ -4,7 +4,7 @@ import download from 'downloadjs';
 
 import './style.scss';
 
-import GIF from '../../lib/gif';
+import deps from '../../deps';
 import * as THREE from '../../lib/three';
 import viewer from '../../viewer';
 import settings from '../../settings';
@@ -109,7 +109,7 @@ export default class CreateGIF extends Component {
     const scene = this.scene = viewer.createScene();
     this.setState({ scene });
 
-    this.gif = new GIF({
+    this.gif = new deps.GIF({
       workers: Math.ceil((window.navigator.hardwareConcurrency || 2)),
       quality: 1,
       workerScript: '/public/gif.worker.js',
