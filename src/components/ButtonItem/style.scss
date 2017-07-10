@@ -79,6 +79,10 @@ body:not(.mod-mobile) .button-item:hover {
     pointer-events: none;
     animation: fadeOut 5s forwards;
   }
+
+  .mod-mobile .close {
+    pointer-events: all;
+  }
 }
 
 .button-item-icon {
