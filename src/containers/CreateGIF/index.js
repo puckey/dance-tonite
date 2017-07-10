@@ -160,8 +160,7 @@ export default class CreateGIF extends Component {
 
   renderFrame(callback) {
     this.count++;
-    console.log((this.duration * 1000) / (1000 / this.fps), (this.duration * 1000));
-    this.setFrameProgress(this.count, (this.duration * 1000) / (1000 / this.fps));
+    this.setFrameProgress(this.count, this.duration * this.fps);
     const time = this.count * (1 / this.fps) + this.startTime;
     viewer.animate(null, time);
     this.renderer.render(viewer.renderScene, this.camera);
