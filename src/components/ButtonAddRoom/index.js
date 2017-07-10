@@ -10,7 +10,7 @@ import settings from '../../settings';
 const randomRoom = () => {
   const room = Math.floor(Math.random() * (settings.roomCount - 2)) + 2;
   return room;
-}
+};
 
 // Random room, ignoring first and last rooms:
 export default (props) => (

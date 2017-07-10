@@ -16,6 +16,7 @@ import Spinner from '../../components/Spinner';
 import router from '../../router';
 import getFontSize from '../../utils/font-size';
 import windowSize from '../../utils/windowSize';
+import feature from '../../utils/feature';
 import settings from '../../settings';
 
 export default class Gallery extends Component {
@@ -102,7 +103,8 @@ export default class Gallery extends Component {
           ? <Room
             id={recording.id}
             roomId={1 + ((recording.room - 1) % settings.roomCount)}
-            key={recording && recording.id}
+            key={recording.id}
+            progressive={feature.isMobile}
             orbs
           />
           : null

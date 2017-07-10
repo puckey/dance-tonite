@@ -75,7 +75,6 @@ const audio = Object.assign(emitter(), {
       this.loopCount = 0;
       const canPlay = () => {
         this.duration = duration;
-        if (context) context.suspend();
         resolve(param.src);
       };
 
@@ -201,6 +200,7 @@ const audio = Object.assign(emitter(), {
       audioElement.removeEventListener('pause', onPause);
       audioElement.removeEventListener('play', onPlay);
       audioElement.removeEventListener('seeked', onSeeked);
+      audioElement.pause();
       audioElement = null;
       onCanPlayThrough = null;
     }
