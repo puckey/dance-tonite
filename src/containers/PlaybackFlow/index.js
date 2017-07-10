@@ -30,18 +30,11 @@ export default class PlaybackFlow extends Component {
     };
     this.performGotoFullExperience = this.performGotoFullExperience.bind(this);
     this.performGotoSubmission = this.performGotoSubmission.bind(this);
-    this.goto = this.goto.bind(this);
+    this.setMode = this.setMode.bind(this);
   }
 
-  goto(mode) {
-    const count = this.state.count + 1;
-    this.setState({ count });
-    analytics.recordSectionChange(mode);
-    if (mode === 'gif') {
-      this.setState({ mode });
-      return;
-    }
-    router.navigate(mode);
+  setMode(mode) {
+    this.setState({ mode });
   }
 
   revealOverlay(type) {
@@ -79,7 +72,7 @@ export default class PlaybackFlow extends Component {
       : (presenting && feature.vrPolyfill)
         ? <Menu />
         : (
-          fromRecording || mode === 'submission'
+          fromRecording || /submission|gif/.test(mode)
             ? <Menu about mute />
             : <Menu vr addRoom about mute />
       );
@@ -89,7 +82,6 @@ export default class PlaybackFlow extends Component {
     props,
     { mode, fromRecording }
   ) {
-    console.log(mode);
     return (
       <Container>
         { this.renderMenu() }
@@ -105,11 +97,11 @@ export default class PlaybackFlow extends Component {
               ? <CreateGIF
                 {...props}
                 inContextOfRecording={fromRecording}
-                goto={this.goto}
+                goto={this.setMode}
               />
               : <Submission
                 {...props}
-                goto={this.goto}
+                goto={this.setMode}
                 fromRecording={fromRecording}
                 onGotoFullExperience={this.performGotoFullExperience}
               />

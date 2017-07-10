@@ -13,6 +13,20 @@ import Room from '../../components/Room';
 import Align from '../../components/Align';
 import ButtonItem from '../../components/ButtonItem';
 import Spinner from '../../components/Spinner';
+import Title from '../../components/Title';
+
+const things = [
+  'Counting cones…',
+  'Interpreting dance…',
+  'Twiddling knobs…',
+  'Googling “How to make a GIF”…',
+  'Glueing pixels…',
+  'Becoming self-aware…',
+  'Coloring inside the lines…',
+  'Raising expectations…',
+  'Staring directly into the orb…',
+  'Creating GIF…',
+];
 
 export default class CreateGIF extends Component {
   constructor() {
@@ -41,18 +55,21 @@ export default class CreateGIF extends Component {
 
   componentWillUnmount() {
     this.mounted = false;
+    viewer.startAnimating();
+    viewer.animate();
     viewer.off('render', this.tick);
   }
 
   setFrameProgress(frame, total) {
+    const progress = frame / total;
     this.setState({
-      progress: `Rendering frames: ${Math.round(frame / total * 100)}%`,
+      progress: `${things[Math.floor(progress * 10)]}`,
     });
   }
 
   setEncodeProgress(progress) {
     this.setState({
-      progress: `Encoding GIF: ${Math.round(progress * 100)}%`,
+      progress: `Encoding GIF – ${Math.round(progress * 100)}%`,
     });
   }
 
@@ -100,13 +117,15 @@ export default class CreateGIF extends Component {
       transparent: 0x00FFFF,
     });
 
-    viewer.animating = false;
+    viewer.stopAnimating();
     setTimeout(this.renderFrame.bind(this, () => {
       this.gif.on('progress', this.setEncodeProgress);
       this.gif.on('finished', (blob) => {
+        if (!this.mounted) return;
         this.setState({
           progress: null,
           gifData: blob,
+          gifUrl: window.URL.createObjectURL(blob),
         });
       });
       this.gif.render();
@@ -154,11 +173,12 @@ export default class CreateGIF extends Component {
       }
     }
     this.ctx.putImageData(currentImageData, 0, 0);
-    this.gif.addFrame(this.canvas, { delay: 20, dispose: 1, copy: true });
+    this.gif.addFrame(this.canvas, { delay: 30, dispose: 1, copy: true });
     this.ctx.drawImage(this.sourceCanvas, 0, 0);
   }
-
+1
   renderFrame(callback) {
+    if (!this.mounted) return;
     this.count++;
     this.setFrameProgress(this.count, this.duration * this.fps);
     const time = this.count * (1 / this.fps) + this.startTime;
@@ -172,7 +192,7 @@ export default class CreateGIF extends Component {
     }
   }
 
-  render({ roomId, id }, { scene, progress, gifData }) {
+  render({ roomId, id }, { scene, progress, gifData, gifUrl }) {
     return (
       <div className="create-gif">
         { scene && <Room
@@ -183,15 +203,19 @@ export default class CreateGIF extends Component {
           hasAudio={false}
           onRoomLoadError={this.onRoomLoadError}
         /> }
+        <Title>{gifData ? 'Your GIF is ready!' : 'Hold on while we prepare your GIF…'}</Title>
         <Align type="center">
           {progress &&
             <Spinner
               text={progress}
             />
           }
+          {gifUrl &&
+            <img className="gif-image" src={gifUrl} />
+          }
           {gifData &&
             <ButtonItem
-              text="Click here to download your gif"
+              text="Press here to download your GIF"
               onClick={this.downloadGif}
               underline
             />
@@ -199,7 +223,7 @@ export default class CreateGIF extends Component {
         </Align>
         <Align type="bottom-right">
           <ButtonItem
-            text="Cancel"
+            text={gifData ? 'Go back to your submission' : 'Cancel'}
             onClick={this.gotoSubmission}
             underline
           />

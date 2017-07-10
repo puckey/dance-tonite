@@ -127,8 +127,14 @@ const viewer = Object.assign(emitter(), {
   controllers: [{}, {}],
   controls,
   renderer,
-  animating: true,
-  animate: (time, staticTime) => {
+  stopAnimating: () => {
+    viewer.animating = false;
+  },
+  startAnimating: () => {
+    viewer.animating = true;
+    viewer.animate();
+  },
+  animate: (timestamp, staticTime) => {
     const dt = clock.getDelta();
     if (viewer.animating) {
       vrEffect.requestAnimationFrame(viewer.animate);
@@ -198,7 +204,7 @@ const viewer = Object.assign(emitter(), {
     renderPostProcessing = render;
     resizePostProcessing = resize;
     windowSize.on('resize', onResize, false);
-    viewer.animate();
+    viewer.startAnimating();
   },
 
   exitPresent() {

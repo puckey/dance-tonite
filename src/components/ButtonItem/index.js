@@ -11,8 +11,9 @@ export default class ButtonItem extends Component {
     this.navigate = this.navigate.bind(this);
   }
 
-  shouldComponentUpdate({ icon, label, disabled }) {
+  shouldComponentUpdate({ icon, label, disabled, text }) {
     return icon !== this.props.icon ||
+      text !== this.props.text ||
       label !== this.props.label ||
       disabled !== this.props.disabled;
   }
