@@ -145,6 +145,7 @@ module.exports = function( THREE ){
 
 			}
 			
+
 			//renderer.domElement.style.width = rendererSize.width + "px";
 			//renderer.domElement.style.height = rendererSize.height + "px";
 		}
@@ -400,13 +401,13 @@ module.exports = function( THREE ){
 				// render left eye
 				if ( renderTarget ) {
 					
-					renderer.setViewport( renderRectL.x, renderRectL.y + (size.height - renderRectL.height), renderRectL.width, renderRectL.height );
-					renderer.setScissor( renderRectL.x, renderRectL.y + (size.height - renderRectL.height), renderRectL.width, renderRectL.height );
+					renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
+					renderer.setScissor( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
 
 				} else {
 
-					renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
-					renderer.setScissor( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
+					renderer.setViewport( renderRectL.x, renderRectL.y + (size.height - renderRectL.height), renderRectL.width, renderRectL.height );
+					renderer.setScissor( renderRectL.x, renderRectL.y + (size.height - renderRectL.height), renderRectL.width, renderRectL.height );
 
 				}
 				renderer.render( scene, cameraL, renderTarget, forceClear );
