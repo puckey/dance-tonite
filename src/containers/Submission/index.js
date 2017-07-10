@@ -80,7 +80,7 @@ full experience`
             underline
           />
         </Align>
-        { fromRecording &&
+        { // fromRecording &&
           <ShareButtons roomId={roomId} id={id}>
             <ButtonItem text="Create animated GIF" onClick={this.gotoCreateGif} underline />
           </ShareButtons>
