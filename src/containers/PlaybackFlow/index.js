@@ -6,6 +6,7 @@ import CMSMenu from '../../components/CMSMenu';
 import Container from '../../components/Container';
 import Playback from '../Playback';
 import Submission from '../Submission';
+import CreateGIF from '../CreateGIF';
 
 import recording from '../../recording';
 import router from '../../router';
@@ -29,12 +30,17 @@ export default class PlaybackFlow extends Component {
     };
     this.performGotoFullExperience = this.performGotoFullExperience.bind(this);
     this.performGotoSubmission = this.performGotoSubmission.bind(this);
+    this.goto = this.goto.bind(this);
   }
 
   goto(mode) {
     const count = this.state.count + 1;
     this.setState({ count });
     analytics.recordSectionChange(mode);
+    if (mode === 'gif') {
+      this.setState({ mode });
+      return;
+    }
     router.navigate(mode);
   }
 
@@ -83,6 +89,7 @@ export default class PlaybackFlow extends Component {
     props,
     { mode, fromRecording }
   ) {
+    console.log(mode);
     return (
       <Container>
         { this.renderMenu() }
@@ -94,11 +101,18 @@ export default class PlaybackFlow extends Component {
               onGotoSubmission={this.performGotoSubmission}
               colophon={!fromRecording}
             />
-            : <Submission
-              {...props}
-              fromRecording={fromRecording}
-              onGotoFullExperience={this.performGotoFullExperience}
-            />
+            : mode === 'gif'
+              ? <CreateGIF
+                {...props}
+                inContextOfRecording={fromRecording}
+                goto={this.goto}
+              />
+              : <Submission
+                {...props}
+                goto={this.goto}
+                fromRecording={fromRecording}
+                onGotoFullExperience={this.performGotoFullExperience}
+              />
         }
       </Container>
     );

@@ -29,11 +29,23 @@ const ALMOST_ZERO = 1e-4;
 
 let scheduledTime;
 const audio = Object.assign(emitter(), {
-  tick() {
-    if ((!audioElement && !context) || !startTime) return;
-    const time = this.time = (audioElement
-      ? (pauseTime || (Date.now() - startTime)) / 1000
-      : context.currentTime - startTime) % duration;
+  tick(timestamp, staticTime) {
+    const isStatic = staticTime !== undefined;
+    if ((!audioElement && !context && !isStatic) || (!startTime && !isStatic)) {
+      this.progress = 0;
+      this.time = 0;
+      this.totalTime = 0;
+      this.loopProgress = 0;
+      this.totalProgress = 0;
+      this.looped = false;
+      return;
+    }
+    const time = this.time = (staticTime !== undefined
+      ? staticTime
+      : audioElement
+        ? (pauseTime || (timestamp - startTime)) / 1000
+        : context.currentTime - startTime
+    ) % duration;
     const { loopDuration } = settings;
     // The position within the track as a multiple of loopDuration:
     this.progress = time > 0
@@ -54,7 +66,6 @@ const audio = Object.assign(emitter(), {
     this.totalProgress = this.loopCount * loopCount + this.progress;
     this.totalTime = this.totalProgress * loopDuration;
     lastTime = time;
-
     if (this.totalProgress - lastLoopProgress > 1) {
       lastLoopProgress = Math.floor(this.totalProgress);
       this.emit('loop', lastLoopProgress);
@@ -103,7 +114,7 @@ const audio = Object.assign(emitter(), {
           this.emit('pause');
         };
         onPlay = () => {
-          startTime = Date.now() - getAudioTime();
+          startTime = performance.now() - getAudioTime();
           this.paused = false;
           pauseTime = null;
           this.emit('play');
@@ -168,7 +179,7 @@ const audio = Object.assign(emitter(), {
 
   gotoTime(time) {
     audioElement.currentTime = time;
-    startTime = Date.now() - time * 1000;
+    startTime = performance.now() - time * 1000;
   },
 
   previousLoop() {
