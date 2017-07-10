@@ -8,7 +8,7 @@ import './style.scss';
 import cms from '../../utils/firebase/cms';
 
 import CMSMenu from '../../components/CMSMenu';
-import Room from '../../components/Room';
+import POVRoom from '../../components/POVRoom';
 import Container from '../../components/Container';
 import Error from '../../components/Error';
 import Align from '../../components/Align';
@@ -49,7 +49,7 @@ export default class Submissions extends Component {
 
   async submit() {
     this.setState({
-      loading: 'submitting',
+      loading: 'Submitting…',
     });
     const { error } = await cms.updateRecording(this.state.recording);
     if (!this.mounted) return;
@@ -123,7 +123,7 @@ export default class Submissions extends Component {
       .filter(recording => recording.room !== -1)
       .sort((a, b) => b.timestamp - a.timestamp);
     const items = recordings
-      .map((recording, index) => Object.assign({
+      .map((recording, index) => ({
         index,
         title: `${recording.is_universal ? '🌎' : padNumber(recording.room, 2)} – ${
           recording.title === '' ? 'Unnamed' : recording.title} ${
@@ -164,7 +164,8 @@ export default class Submissions extends Component {
 
   render(
     { room, goHome },
-    { items, item, recording, error, loading, deleteOverlay }
+    { items, item, recording, error, loading, deleteOverlay },
+    { presenting }
   ) {
     return (
       <Container>
@@ -236,14 +237,13 @@ export default class Submissions extends Component {
           : null
         }
         {
-          recording
-          ? <Room
-            id={recording.id}
-            roomId={recording.room}
-            key={recording && recording.id}
-            orbs
-          />
-          : null
+          recording &&
+            <POVRoom
+              id={recording.id}
+              roomId={recording.room}
+              presenting={presenting}
+              onRoomLoadError={this.onRoomLoadError}
+            />
         }
         { (error || loading)
           ? <Align type="center">

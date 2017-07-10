@@ -25,7 +25,6 @@
     "grapnel": "^0.6.4",
     "just-shuffle": "^1.0.0",
     "mitt": "^1.1.0",
-    "pad-number": "0.0.4",
     "parse-bmfont-ascii": "^1.0.6",
     "preact": "^8.1.0",
     "preact-portal": "^1.1.2",
@@ -35,7 +34,7 @@
     "tween-ticker": "^3.3.2",
     "unfetch": "^2.1.2",
     "unique-s3-uploader": "0.0.2",
-    "webvr-polyfill": "^0.9.34"
+    "webvr-polyfill": "^0.9.35"
   },
   "devDependencies": {
     "autoprefixer-loader": "^3.2.0",

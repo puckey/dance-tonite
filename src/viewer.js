@@ -2,11 +2,13 @@
  * @author mflux / http://minmax.design
  * Based on @mattdesl three-orbit-viewer
  */
-import 'webvr-polyfill';
 
 import emitter from 'mitt';
 
 import * as THREE from './lib/three';
+import installVREffect from './lib/VREffect';
+import installVRControls from './lib/VRControls';
+import installVRController from './lib/VRController';
 import stats from './lib/stats';
 import { tempVector } from './utils/three';
 import settings from './settings';
@@ -16,18 +18,6 @@ import windowSize from './utils/windowSize';
 import audio from './audio';
 import postprocessing from './postprocessing';
 import Room from './room';
-import { sleep } from './utils/async';
-
-// if we're on a mobile phone that doesn't support WebVR, use polyfill
-if (feature.vrPolyfill) {
-  window.WebVRConfig.BUFFER_SCALE = 0.75;
-  window.polyfill = new window.WebVRPolyfill();
-  console.log('WebVR polyfill');
-}
-
-require('./lib/VREffect')(THREE);
-require('./lib/VRControls')(THREE);
-require('./lib/VRController')(THREE);
 
 const orthographicDistance = 4;
 
@@ -64,10 +54,11 @@ const cameras = (function () {
 }());
 
 let lastZoom = 4;
+let lastAspectRatio;
 const zoomCamera = (zoom) => {
   const newZoom = sineInOut(zoom);
-  if (newZoom === lastZoom) return;
   const { aspectRatio } = windowSize;
+  if (newZoom === lastZoom && lastAspectRatio === aspectRatio) return;
   const distance = orthographicDistance + newZoom * 3;
   const camera = cameras.orthographic;
   camera.left = -distance * aspectRatio;
@@ -78,37 +69,31 @@ const zoomCamera = (zoom) => {
   lastZoom = newZoom;
 };
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setClearColor(0x000000);
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(windowSize.width, windowSize.height);
-renderer.sortObjects = false;
+let renderer;
+let vrEffect;
+let controls;
+let renderPostProcessing;
+let resizePostProcessing;
+let clock;
 
-const containerEl = document.createElement('div');
-containerEl.className = 'viewer';
-containerEl.appendChild(renderer.domElement);
-document.body.appendChild(containerEl);
-
-const vrEffect = new THREE.VREffect(renderer);
-
-const controls = new THREE.VRControls(cameras.default);
-controls.standing = true;
-
+const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
 
 const createScene = () => {
-  const scene = new THREE.Scene();
+  const _scene = new THREE.Scene();
   const light = new THREE.DirectionalLight(0xffffff);
   light.position.set(-1.42, 1.86, 0.74).normalize();
 
   const ambientLight = new THREE.AmbientLight(0x444444, 0.7);
   const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
 
-  scene.add(hemisphereLight, light, ambientLight);
-  scene.fog = new THREE.Fog(0x000000, 0, 120);
-  return scene;
+  _scene.add(hemisphereLight, light, ambientLight);
+  _scene.fog = new THREE.Fog(0x000000, 0, 120);
+  return _scene;
 };
 
-windowSize.on('resize', ({ width, height, aspectRatio }) => {
+const scene = createScene();
+
+const onResize = ({ width, height, aspectRatio }) => {
   const { orthographic } = cameras;
   Object.assign(
     orthographic,
@@ -131,90 +116,114 @@ windowSize.on('resize', ({ width, height, aspectRatio }) => {
       camera.aspect = aspectRatio;
       camera.updateProjectionMatrix();
     });
-}, false);
-
-const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
-
-const scene = createScene();
-
-const clock = new THREE.Clock();
-clock.start();
-
-const {
-  render: renderPostProcessing,
-  resize: resizePostProcessing,
-} = postprocessing({ renderer, camera: cameras.default, scene });
-
-const animate = (time, staticTime) => {
-  const dt = clock.getDelta();
-  if (viewer.animating) {
-    vrEffect.requestAnimationFrame(animate);
-  }
-
-  THREE.VRController.update();
-
-  if (feature.isIODaydream) {
-    viewer.daydreamController.update();
-  }
-
-  controls.update();
-  audio.tick(time, staticTime);
-  Room.clear();
-  viewer.emit('tick', dt);
-
-  zoomCamera(
-    audio.progress > 21
-      ? Math.min(2, audio.progress - 21) * 0.5
-      : 0
-  );
-
-  if (staticTime !== undefined) return;
-
-  if (!vrEffect.isPresenting && viewer.camera === cameras.default) {
-    renderPostProcessing();
-  } else {
-    vrEffect.render(viewer.renderScene, viewer.camera);
-  }
-  viewer.emit('render');
-  if (vrEffect.isPresenting && feature.hasExternalDisplay) {
-    renderer.render(viewer.renderScene, viewer.camera);
-  }
-
-  viewer.emit('render', dt);
-  if (feature.stats) stats();
 };
 
 const viewer = Object.assign(emitter(), {
   camera: cameras.orthographic,
   cameras,
+  createScene,
   scene,
   renderScene: scene,
   controllers: [{}, {}],
   controls,
-  createScene,
   renderer,
-  animate,
   animating: true,
-  toggleVR: async (isStillMounted) => {
-    if (vrEffect.isPresenting) {
-      vrEffect.exitPresent();
-      viewer.switchCamera('orthographic');
-      audio.play();
+  animate: (time, staticTime) => {
+    const dt = clock.getDelta();
+    if (viewer.animating) {
+      vrEffect.requestAnimationFrame(viewer.animate);
+    }
+
+    THREE.VRController.update();
+
+    if (feature.isIODaydream) {
+      viewer.daydreamController.update();
+    }
+
+    controls.update();
+    audio.tick(time, staticTime);
+    Room.clear();
+    viewer.emit('tick', dt);
+    zoomCamera(
+      audio.progress > 21
+        ? Math.min(2, audio.progress - 21) * 0.5
+        : 0
+    );
+
+    if (staticTime !== undefined) return;
+
+    if (!vrEffect.isPresenting && viewer.camera === cameras.default) {
+      renderPostProcessing();
     } else {
-      vrEffect.requestPresent();
-      await audio.fadeOut();
-      if (!isStillMounted()) return;
-      audio.pause();
+      vrEffect.render(viewer.renderScene, viewer.camera);
+    }
 
+    if (vrEffect.isPresenting && feature.hasExternalDisplay) {
+      renderer.render(viewer.renderScene, viewer.camera);
+    }
+
+    viewer.emit('render', dt);
+    if (feature.stats) stats();
+  },
+  prepare: () => {
+    clock = new THREE.Clock();
+    clock.start();
+    installVREffect(THREE);
+    installVRControls(THREE);
+    installVRController(THREE);
+    viewer.renderer = renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setClearColor(0x000000);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(windowSize.width, windowSize.height);
+    renderer.sortObjects = false;
+
+    const containerEl = document.createElement('div');
+    containerEl.className = 'viewer';
+    containerEl.appendChild(renderer.domElement);
+    document.body.appendChild(containerEl);
+
+    viewer.vrEffect = vrEffect = new THREE.VREffect(renderer);
+    viewer.controls = controls = new THREE.VRControls(cameras.default);
+    controls.standing = true;
+
+    window.addEventListener('vrdisplaypresentchange', () => {
+      viewer.emit('vr-present-change', vrEffect.isPresenting);
+    }, false);
+
+    const { render, resize } = postprocessing({
+      renderer,
+      camera: cameras.default,
+      scene,
+    });
+    renderPostProcessing = render;
+    resizePostProcessing = resize;
+    windowSize.on('resize', onResize, false);
+    viewer.animate();
+  },
+
+  exitPresent() {
+    if (!vrEffect.isPresenting) return;
+    vrEffect.exitPresent();
+    viewer.switchCamera('orthographic');
+  },
+
+  enterPresent() {
+    if (vrEffect.isPresenting) return;
+    vrEffect.requestPresent();
+    setTimeout(() => {
       viewer.switchCamera('default');
-      await sleep(5000);
-      if (!isStillMounted()) return;
-
-      audio.play();
-      audio.unmute();
       scene.add(viewer.camera);
+    }, 10); // Delay switching 10ms to avoid flashing POV before overlay is displayed
+  },
+
+  toggleVR: async () => {
+    if (vrEffect.isPresenting) {
+      viewer.exitPresent();
+    } else {
+      viewer.enterPresent();
     }
   },
+
   switchCamera: (name) => {
     InstancedItem.switch(
       name === 'orthographic'
@@ -225,11 +234,5 @@ const viewer = Object.assign(emitter(), {
   },
   vrEffect,
 });
-
-window.addEventListener('vrdisplaypresentchange', () => {
-  viewer.emit('vr-present-change', vrEffect.isPresenting);
-}, false);
-
-animate();
 
 export default viewer;

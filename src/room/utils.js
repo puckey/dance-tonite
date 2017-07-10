@@ -1,7 +1,7 @@
 import {
   tempVector,
 } from '../utils/three';
-import audio from '../audio';
+import settings from '../settings';
 import { avgPosition, avgQuaternion } from '../utils/serializer';
 
 export const secondsToFrames = (seconds) => Math.floor((seconds % (settings.loopDuration * 2)) * 90);

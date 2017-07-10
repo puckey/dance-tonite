@@ -1,3 +1,7 @@
+import easeBackInOut from 'eases/back-in-out';
+import easeBounceOut from 'eases/bounce-out';
+import easeBackOut from 'eases/back-out';
+
 import * as THREE from '../lib/three';
 
 import props from '../props';
@@ -14,6 +18,7 @@ import {
   getCostumeColor,
   getRoomColor,
   highlightColor,
+  waitRoomColor,
 } from '../theme/colors';
 
 import layout from './layout';
@@ -22,10 +27,14 @@ import InstancedItem from '../instanced-item';
 import Frames from './frames';
 import { createPose } from '../utils/serializer';
 import audio from '../audio';
+import { elasticIn } from '../utils/easing';
 
 let items;
+const UP_EULER = new THREE.Euler(Math.PI * 0.5, 0, 0);
 
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
+const X_AXIS = new THREE.Vector3(1, 0, 0);
+const SCRATCH_QUATERNION = new THREE.Quaternion();
 
 const debugMesh = new THREE.Mesh(
   new THREE.BoxGeometry(0, 0, 0),
@@ -36,15 +45,19 @@ const debugMesh = new THREE.Mesh(
 debugMesh.frustumCulled = false;
 
 const POSE = createPose();
+const LAST_POSE = createPose();
 const FIRST_POSE = createPose();
+const minY = 0.2;
 
 const lerpPose = (
   [positionA, quaternionA],
   [positionB, quaternionB],
-  ratio
+  ratio,
+  quaternionRatio = ratio,
 ) => {
+  if (ratio === 0) return;
   positionA.lerp(positionB, ratio);
-  quaternionA.slerp(quaternionB, ratio);
+  quaternionA.slerp(quaternionB, quaternionRatio);
 };
 
 export default class Room {
@@ -56,16 +69,21 @@ export default class Room {
       colorIndex = params.index,
       single = false,
       wall = false,
+      morph = true,
       isGiffing = false,
     } = params;
+    this.morph = !!morph;
     this._worldPosition = new THREE.Vector3();
-    this.index = index;
+    this.index = params.single ? 0 : index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
     this.single = single;
     const frames = this.frames = new Frames(id, recording);
     this.firstFrame = frames.getFrame(0);
+    this.lastFrame = frames.getFrame((settings.loopDuration * 2) - 0.001);
     this.frame = frames.getFrame();
+    this.random = Math.random();
     this.costumeColor = getCostumeColor(colorIndex);
+    const roomColor = this.roomColor = getRoomColor(colorIndex);
     this.position = layout.getPosition(
       index,
       new THREE.Vector3(),
@@ -77,11 +95,19 @@ export default class Room {
       .add(roomOffset);
     position.y -= 1;
     const type = layout.getType(index);
-    if (type === 'PLANE') return;
-    const roomColor = getRoomColor(colorIndex);
-    items.room.add([position, null], roomColor);
-    if (single || wall || layout.hasWall(index)) {
-      items.wall.add([position, null], roomColor);
+    if (type !== 'PLANE') {
+      items.room.add([position, null], roomColor);
+      if (single || wall || layout.hasWall(index)) {
+        items.wall.add([position, null], roomColor);
+      }
+    } else {
+      this.dropTimes = [];
+      for (let i = 0; i < 20; i++) {
+        this.dropTimes.push(Math.random() * 0.2);
+      }
+    }
+    if (this.insideMegaGrid) {
+      this.riseTime = settings.colorTimes[layout.getSynthIndex(this.index)];
     }
     Room.isGiffing = isGiffing;
   }
@@ -101,6 +127,14 @@ export default class Room {
       && Room.highlight.performanceIndex === performance;
   }
 
+  changeColorToWaiting() {
+    this.changeColor(waitRoomColor);
+  }
+
+  changeColorToRecording() {
+    this.changeColor(this.roomColor);
+  }
+
   changeColor(color) {
     items.room.changeColor(this.index, color);
     items.wall.changeColor(this.index, color);
@@ -110,17 +144,10 @@ export default class Room {
     return this.frame.getHeadPose(index, this.position, applyMatrix)[0];
   }
 
-  getRHandPosition(index, applyMatrix = true) {
-    return this.frame.getRHandPose(index, this.position, applyMatrix)[0];
-  }
-
-  getLHandPosition(index, applyMatrix = true) {
-    return this.frame.getLHandPose(index, this.position, applyMatrix)[0];
-  }
-
   transformToHead(object, layerIndex) {
-    const [position, rotation] = this.frame.getHeadPose(
+    const [position, rotation] = this.getPose(
       layerIndex,
+      0,
       this.position,
       false
     );
@@ -138,16 +165,19 @@ export default class Room {
     return worldToScreen(viewer.camera, this.worldPosition);
   }
 
-  gotoTime(seconds, maxLayers) {
+  gotoTime(seconds, maxLayers, highlightLast = false) {
     this.currentTime = seconds;
     // In orthographic mode, scale up the meshes:
-    const scale = InstancedItem.perspectiveMode ? 1 : 1.3;
+    const scale = InstancedItem.perspectiveMode ? 1 : 1.5;
 
     const { position, frame, costumeColor } = this;
     frame.gotoTime(seconds, maxLayers);
     const { hideHead } = this.frames;
     for (let i = 0; i < frame.count; i++) {
-      const color = this.isHighlighted(i) ? highlightColor : costumeColor;
+      const isLast = i === frame.count - 1;
+      const color = ((highlightLast && isLast) || this.isHighlighted(i))
+        ? highlightColor
+        : costumeColor;
       if (!hideHead) {
         const pose = this.getPose(i, 0, position);
         items.head.add(pose, color, scale);
@@ -157,22 +187,74 @@ export default class Room {
     }
   }
 
-  getPose(performanceIndex, limbIndex, offset) {
-    this.frame.getPose(performanceIndex, limbIndex, offset, false, POSE);
-    if (this.insideMegaGrid && !this.single) {
-      const RISE_TIME = 184.734288;
-      const ratio = Math.max(0, Math.min(2, audio.time - RISE_TIME)) * 0.5;
-      this.firstFrame.getPose(
-        performanceIndex,
-        limbIndex,
-        offset,
-        false,
-        FIRST_POSE
+  getPose(performanceIndex, limbIndex, offset, applyMatrix = false) {
+    const { frame } = this;
+    frame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
+
+    // Morph the beginning of the first performance with the end of the last:
+    if (this.morph && performanceIndex === 0) {
+      this.lastFrame.getPose(frame.count - 1, limbIndex, offset, applyMatrix, LAST_POSE);
+      const overlapRatio = (Math.min(0.2, frame.loopRatio)) / 0.2;
+      const rotationRatio = (Math.min(0.05, frame.loopRatio)) / 0.05;
+      lerpPose(
+        POSE,
+        LAST_POSE,
+        easeBackInOut(1 - overlapRatio),
+        easeBackInOut(1 - rotationRatio)
       );
-      FIRST_POSE[0].y *= ratio;
-      lerpPose(POSE, FIRST_POSE, 1 - ratio);
+    }
+
+    if (this.insideMegaGrid && !this.single) {
+      this.risePerformance(performanceIndex, limbIndex, offset, applyMatrix);
+      this.dropPerformance(performanceIndex);
     }
     return POSE;
+  }
+
+  dropPerformance(performanceIndex) {
+    if (audio.time < settings.dropTime) return;
+    const dropTime = settings.dropTime + this.dropTimes[performanceIndex];
+
+    const ratio = Math.max(0,
+      Math.min(1,
+        audio.time - dropTime
+      )
+    );
+    if (ratio === 0) return;
+    const rotationRatio = Math.max(0,
+      Math.min(1,
+        audio.time - dropTime
+      )
+    );
+    const [position, quaternion] = POSE;
+    position.y = Math.max(minY, position.y * (1 - easeBounceOut(ratio)));
+
+    SCRATCH_QUATERNION.copy(quaternion).setFromEuler(UP_EULER);
+    quaternion.slerp(SCRATCH_QUATERNION, easeBackOut(Math.min(1, rotationRatio)));
+  }
+
+  risePerformance(performanceIndex, limbIndex, offset, applyMatrix) {
+    const ratio = Math.max(0,
+      Math.min(5,
+        audio.time - this.riseTime
+      )
+    ) * 0.2;
+    if (ratio === 0) {
+      this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
+      const [position, quaternion] = POSE;
+      position.y = minY;
+      quaternion.setFromEuler(UP_EULER);
+    } else {
+      this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, FIRST_POSE);
+      const [position, quaternion] = FIRST_POSE;
+      position.y = Math.max(position.y * ratio, minY);
+      quaternion.setFromEuler(UP_EULER);
+      lerpPose(POSE, FIRST_POSE,
+        ratio === 1
+          ? 1 - ratio
+          : elasticIn(1 - ratio)
+      );
+    }
   }
 
   destroy() {
@@ -200,6 +282,7 @@ Room.reset = () => {
         layout.roomCount,
         props.perspectiveWall,
         props.orthographicWall
+  // if (!Room.isGiffing) viewer.scene.add(roomsGroup);
       ),
       room: new InstancedItem(
         layout.roomCount,
@@ -216,7 +299,6 @@ Room.reset = () => {
       ),
     };
   }
-  // if (!Room.isGiffing) viewer.scene.add(roomsGroup);
 
   // Move an extra invisible object3d with a texture to the end of scene's children
   // array in order to solve a texture glitch as described in:

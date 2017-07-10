@@ -41,10 +41,6 @@ export const createInstancedMesh = ({
   return instancedMesh;
 };
 
-export const offsetFrom = (object, x, y, z) => tempVector(x, y, z)
-    .applyQuaternion(object.quaternion)
-    .add(object.position);
-
 const ROTATION_MATRIX = new THREE.Matrix4().makeRotationAxis(
   new THREE.Vector3(0, 1, 0).normalize(),
   Math.PI

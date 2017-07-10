@@ -1,5 +1,10 @@
 const userAgent = navigator.userAgent;
 
+const verbosity = 0;
+const log = (...args) => {
+  console.log('Features:', ...args);
+};
+
 const checkHasWebGL = () => {
   const canvas = document.createElement('canvas');
   const gl = canvas.getContext('webgl')
@@ -15,8 +20,23 @@ const getVRDisplays = () => (
       resolve(false);
       return;
     }
-    navigator
-      .getVRDisplays()
+
+    const promises = [];
+    promises.push(navigator.getVRDisplays());
+
+    // On Android chrome, there is a bug where getVRDisplays is never resolved.
+    // Set a 2 second timeout in that case
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=727969
+    if (isAndroid) {
+      const timeoutPromise = new Promise((timeOutResolve) => {
+        setTimeout(() => {
+          timeOutResolve([]);
+        }, 2000);
+      });
+      promises.push(timeoutPromise);
+    }
+
+    Promise.race(promises)
       .then((displays) => {
         resolve(displays);
       })
@@ -33,8 +53,7 @@ const checkHasExternalDisplay = () => (
       resolve(false);
       return;
     }
-    navigator
-      .getVRDisplays()
+    getVRDisplays()
       .then(
         (displays) => {
           resolve(
@@ -57,8 +76,7 @@ const checkHasVR = () => (
       resolve(false);
       return;
     }
-    navigator
-      .getVRDisplays()
+    getVRDisplays()
       .then((displays) => {
         if (displays.length === 0) resolve(false);
         else resolve(true);
@@ -76,8 +94,7 @@ const checkHas6DOF = () => (
       resolve(false);
       return;
     }
-    navigator
-      .getVRDisplays()
+    getVRDisplays()
       .then((displays) => {
         resolve(
           !!displays[0] &&
@@ -97,7 +114,7 @@ const isAndroid = /android/i.test(userAgent);
 const isMobile = /android|ipad|iphone|iemobile/i.test(userAgent);
 const isTablet = (isAndroid && !/mobile/i.test(userAgent)) // https://stackoverflow.com/questions/5341637/how-do-detect-android-tablets-in-general-useragent
   || /ipad/i.test(userAgent);
-const vrPolyfill = isMobile && !isTablet && (navigator.getVRDisplays === undefined);
+const vrPolyfill = isMobile && !isTablet && !isAndroid && (navigator.getVRDisplays === undefined);
 
 
 const feature = {
@@ -113,10 +130,12 @@ const feature = {
     Promise.all([
       checkHasVR()
         .then((hasVR) => {
-          feature.hasVR = !feature.isTablet && hasVR;
+          feature.hasVR = hasVR;
+          if (verbosity > 0) log('hasVR', feature.hasVR);
         }),
       getVRDisplays()
         .then((vrDisplays) => {
+          if (verbosity > 0) log('getVRDisplays', vrDisplays);
           feature.vrDisplays = vrDisplays.length;
           if (vrDisplays && vrDisplays.length > 0) {
             //  Yes, this must be the full vrDisplay instance
@@ -141,10 +160,12 @@ const feature = {
         }),
       checkHasExternalDisplay()
         .then((hasExternalDisplay) => {
+          if (verbosity > 0) log('hasExternalDisplay', hasExternalDisplay);
           feature.hasExternalDisplay = hasExternalDisplay;
         }),
       checkHas6DOF()
         .then((has6DOF) => {
+          if (verbosity > 0) log('has6DOF', has6DOF);
           feature.has6DOF = has6DOF;
         }),
     ])

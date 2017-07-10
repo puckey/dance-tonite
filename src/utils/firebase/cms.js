@@ -1,42 +1,57 @@
-import firebaseConnection from './connection';
+let connection;
 
-const serverURL = firebaseConnection.serverURL;
+const getConnection = () => (
+  new Promise((resolve) => {
+    if (connection) return resolve(connection);
+    require.ensure([], function (require) {
+      connection = require('./connection').default;
+      resolve(connection);
+    });
+  })
+);
 
 // getDraftPlaylist:
 // cms.getDraftPlaylist().then((data) => { console.log('getDraftPlaylist!', data); });
-const getDraftPlaylist = () =>
-      firebaseConnection.contactServer(`${serverURL}getDraftPlaylist`, {}, true);
+const getDraftPlaylist = () => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}getDraftPlaylist`, {}, true)
+);
 
 // updateDraftPlaylist:
 // cms.updateDraftPlaylist({ room: 3, id: 'adsf' })
 //   .then((data) => { console.log('update', data); });
-const updateDraftPlaylist = ({ room, id }) =>
-      firebaseConnection.contactServer(`${serverURL}updateDraftPlaylist`, { room, id }, true);
+const updateDraftPlaylist = ({ room, id }) => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}updateDraftPlaylist`, { room, id }, true)
+);
 
 // publishDraftPlaylist:
 // cms.publishDraftPlaylist().then((data) => { console.log('publishDraftPlaylist!', data); });
-const publishDraftPlaylist = () =>
-      firebaseConnection.contactServer(`${serverURL}publishDraftPlaylist`, {}, true);
+const publishDraftPlaylist = () => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}publishDraftPlaylist`, {}, true)
+);
 
 // getUnmoderatedRecordings:
 // cms.getUnmoderatedRecordings().then((data) => { console.log('data', data); });
-const getUnmoderatedRecordings = () =>
-      firebaseConnection.contactServer(`${serverURL}getUnmoderatedRecordings`, {}, true);
+const getUnmoderatedRecordings = () => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}getUnmoderatedRecordings`, {}, true)
+);
 
 // getRecording:
 // cms.getRecording('EamZtQ').then((data) => { console.log('getRecording!', data); });
-const getRecording = (id) =>
-      firebaseConnection.contactServer(`${serverURL}getRecording`, { id }, true);
+const getRecording = (id) => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}getRecording`, { id }, true)
+);
 
 // getAvailableRecordings:
 // cms.getAvailableRecordings(1).then((data) => { console.log('getAvailableRecordings', data); });
-const getAvailableRecordings = (room) =>
-      firebaseConnection.contactServer(`${serverURL}getAvailableRecordings`, { room }, true);
+const getAvailableRecordings = (room) => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}getAvailableRecordings`, { room }, true)
+);
 
 // getAllRecordings:
 // cms.getAllRecordings().then((data) => { console.log('getAllRecordings', data); });
-const getAllRecordings = () =>
-      firebaseConnection.contactServer(`${serverURL}getAllRecordings`, {}, true);
+const getAllRecordings = () => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}getAllRecordings`, {}, true)
+);
 
 // updateRecording:
 // cms.updateRecording({ id: 'EamZtQ', title: 'hello there', rating: 1, is_universal: false, is_megagrid_worthy:true})
@@ -48,12 +63,15 @@ const getAllRecordings = () =>
 //       0 = unrated
 //       1 = good (star)
 //      -1 = not good
-const updateRecording = ({ id, title, rating, is_universal, is_megagrid_worthy, room }) =>
-      firebaseConnection.contactServer(
-        `${serverURL}updateRecording`,
-         { id, title, rating, is_universal, is_megagrid_worthy, room },
-         true
-       );
+const updateRecording = ({ id, title, rating, is_universal, is_megagrid_worthy, room }) => (
+  getConnection().then(
+    () => connection.contactServer(
+     `${connection.serverURL}updateRecording`,
+      { id, title, rating, is_universal, is_megagrid_worthy, room },
+      true
+    )
+  )
+);
 
 export default {
   getDraftPlaylist,

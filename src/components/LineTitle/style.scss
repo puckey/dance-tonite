@@ -1,0 +1,21 @@
+@import '../../theme/theme';
+
+.line-title-wrapper {
+  height: 1.5rem;
+
+  @media (max-width: 540px) {
+    height: 4.5rem;
+  }
+}
+
+.line-title-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: $line-width * 1.5;
+  background: $text-color;
+  z-index: $interface-layer;
+  transform-origin: 0 100%;
+  will-change: transform;
+}

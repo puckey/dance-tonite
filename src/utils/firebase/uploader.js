@@ -1,24 +1,27 @@
-import firebaseConnection from './connection';
+let connection;
+
+const getConnection = () => (
+  new Promise((resolve) => {
+    if (connection) return resolve(connection);
+    require.ensure([], function (require) {
+      connection = require('./connection').default;
+      resolve(connection);
+    });
+  })
+);
+
 import convertFPS from '../convertFPS';
 
-const generateTokenURL = `${firebaseConnection.serverURL}getUploadToken`;
-const processSubmissionURL = `${firebaseConnection.serverURL}processSubmission`;
-
-const storageRef = firebaseConnection.firebase.storage().ref();
-
-
-const requestUploadToken = (roomID) =>
-      firebaseConnection.contactServer(generateTokenURL, { room: roomID });
-
-const uploadDataString = (dataString, filename, uploadToken) => {
+const uploadDataString = (dataString, filename) => {
   const promise = new Promise((resolve, reject) => {
-    const targetFileRef = storageRef.child(`_incoming/${filename}`);
+    const targetFileRef = connection.firebase.storage().ref().child(`_incoming/${filename}`);
 
     // metadata we want to store with the file
     const metadata = {
       contentType: 'application/json',
       customMetadata: {
-        token: uploadToken,
+        uid: connection.userAuth.id,
+        token: connection.userAuth.token,
       },
     };
 
@@ -32,39 +35,43 @@ const uploadDataString = (dataString, filename, uploadToken) => {
     }, (error) => { // error
       reject(error);
     }, () => { // complete
-      resolve(uploadTask.snapshot.downloadURL);
+      resolve();
     });
   });
 
   return promise;
 };
 
-const startSubmissionProcessing = (token) =>
-      firebaseConnection.contactServer(processSubmissionURL, { token });
+const startSubmissionProcessing = (uid) => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}processSubmission`, { uid })
+);
 
 const firebaseUploader = {
   upload: async (roomData, roomID, callback) => {
-    // Request an upload token
-    const { data: uploadToken, error: requestError } = await requestUploadToken(roomID);
-    if (requestError) return callback(requestError);
-    const { uri_array, token } = uploadToken;
+    await getConnection();
+
+    const loginError = await connection.loginAnonymously();
+    if (loginError) return callback(loginError);
+
+    const standardFileDataRates = [15, 45, 90];
+    const uid = connection.userAuth.id;
+
     // Wait for all uploads to complete
     await Promise.all(
-      uri_array.map(([fps, filename]) => (
+      standardFileDataRates.map((fps) => (
         uploadDataString(
           (
             fps === 90
               ? roomData
               : convertFPS(roomData, fps)
           ).map(JSON.stringify).join('\n'),
-          filename,
-          token
+          `${uid}_${fps}.json`
         )
       ))
     );
 
     // now process files
-    const { data: submission, error: processingError } = await startSubmissionProcessing(token);
+    const { data: submission, error: processingError } = await startSubmissionProcessing(uid);
     if (processingError) return callback(processingError);
     // file processing is done, the recording is saved!
     callback(null, submission.id);

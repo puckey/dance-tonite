@@ -9,6 +9,8 @@ import Review from '../Review';
 import router from '../../router';
 import audio from '../../audio';
 
+import analytics from '../../utils/analytics';
+
 const modes = ['tutorial', 'record', 'review'];
 
 export default class RecordFlow extends Component {
@@ -24,8 +26,9 @@ export default class RecordFlow extends Component {
   }
 
   goto(mode) {
-    audio.reset();
+    audio.fadeOut();
     const count = this.state.count + 1;
+    analytics.recordSectionChange(mode);
     if (modes.indexOf(mode) === -1) {
       router.navigate(mode);
     } else {

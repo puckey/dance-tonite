@@ -1,4 +1,4 @@
-import tween from './utils/tween';
+import createTweener from './utils/tween';
 
 import props from './props';
 import viewer from './viewer';
@@ -18,10 +18,11 @@ export default class Orb {
     position.y = settings.holeHeight;
     position.z = 1000;
     (scene || viewer.scene).add(this.mesh);
+    this.tween = createTweener();
   }
 
   _fade(from, to) {
-    tween(
+    this.tween(
       this.mesh.material.color.copy(from),
       Object.assign({
         ease: 'easeOutCubic',
@@ -30,12 +31,8 @@ export default class Orb {
     );
   }
 
-  hide() {
-    viewer.scene.remove(this.mesh);
-  }
-
-  show() {
-    viewer.scene.add(this.mesh);
+  set visible(visible) {
+    this.mesh.visible = visible;
   }
 
   fadeOut() {

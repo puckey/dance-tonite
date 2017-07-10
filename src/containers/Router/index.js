@@ -6,6 +6,7 @@ import audio from '../../audio';
 import settings from '../../settings';
 import feature from '../../utils/feature';
 import audioPool from '../../utils/audio-pool';
+import viewer from '../../viewer';
 
 import NotFound from '../NotFound';
 import PressPlayToStart from '../PressPlayToStart';
@@ -32,13 +33,20 @@ export default class Router extends Component {
     // to play the audio:
     this.state = {
       needsFillPool: feature.isMobile,
+      presenting: viewer.vrEffect.isPresenting,
     };
     this.setNotFound = this.setNotFound.bind(this);
     this.performFillPool = this.performFillPool.bind(this);
     this.onRouteChanged = this.onRouteChanged.bind(this);
+    this.setPresenting = this.setPresenting.bind(this);
   }
 
-  componentDidMount() {
+  getChildContext() {
+    return { presenting: this.state.presenting };
+  }
+
+  componentWillMount() {
+    viewer.on('vr-present-change', this.setPresenting);
     Object
       .keys(componentByRoute)
       .forEach((route) => router.get(route, this.onRouteChanged));
@@ -49,15 +57,17 @@ export default class Router extends Component {
     if (event && event.parent()) return;
     convertParams(params);
     if (this.state.route) {
-      audio.reset();
+      audio.fadeOut();
     }
 
     let notFound;
-    if (params.roomId &&
-        params.roomId > settings.roomCount ||
-        params.roomId < 1
+    const { roomId } = params;
+    if (roomId !== undefined &&
+        isNaN(roomId) ||
+        roomId > settings.roomCount ||
+        roomId < 1
     ) {
-      notFound = 'Sorry, but the room id provided is invalid.';
+      notFound = 'The selected room id is invalid.';
     }
 
     this.setState({
@@ -65,6 +75,10 @@ export default class Router extends Component {
       params,
       notFound,
     });
+  }
+
+  setPresenting(presenting) {
+    this.setState({ presenting });
   }
 
   setNotFound(notFound) {

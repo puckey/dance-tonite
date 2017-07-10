@@ -1,5 +1,6 @@
 /** @jsx h */
 import { h, Component } from 'preact';
+import './style.scss';
 
 import Room from '../../components/Room';
 import Overlay from '../../components/Overlay';
@@ -27,10 +28,7 @@ export default class Tutorial extends Component {
     this.performHideOverlay = this.performHideOverlay.bind(this);
     this.performAddPerformance = this.performAddPerformance.bind(this);
 
-    if (viewer.vrEffect.isPresenting) {
-      viewer.vrEffect.exitPresent();
-    }
-    viewer.switchCamera('orthographic');
+    viewer.exitPresent();
   }
 
   componentDidMount() {
@@ -103,17 +101,19 @@ export default class Tutorial extends Component {
           id="hIR_Tw"
           orbs
           tutorialLayers={layers}
+          highlightLast={layers < 6}
+          morph={false}
         >
-          { !overlay &&
-            <TutorialTimeline
-              onUpdateLayers={this.setLayers}
-              onEnd={this.performShowOverlay}
-            />
-          }
+          <TutorialTimeline
+            onUpdateLayers={this.setLayers}
+            onEnd={this.performShowOverlay}
+            visible={!overlay}
+          />
         </Room>
         { skipButton && (
           <Align type="bottom-right">
             <a
+              className="skip-tutorial"
               onClick={() => {
                 this.performShowOverlay();
                 analytics.recordTutorialSkip();

@@ -43,12 +43,14 @@ export default class RecordOrbs extends Component {
   }
 
   tick() {
+    const { reversed } = this.props;
+    const { roomDepth, roomOffset } = settings;
+    const multiplier = reversed ? 1 : -1;
     const progress = audio.progress - 1; // value between -1 and 1
-    let z = ((progress - 0.5) * settings.roomDepth + settings.roomOffset);
-    if (!this.props.reversed) z = -z;
+    const z = ((progress - 0.5) * roomDepth + roomOffset) * multiplier;
     this.orb.position.z = z;
     if (audio.totalProgress > 1) {
-      this.orb2.position.z = z + -settings.roomDepth * 2;
+      this.orb2.position.z = z + roomDepth * 2 * multiplier;
     }
   }
 

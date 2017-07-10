@@ -1,56 +1,29 @@
-import tween from './utils/tween';
+import createTweener from './utils/tween';
 import Orb from './orb';
 import viewer from './viewer';
 import props from './props';
-import * as SDFText from './sdftext';
 import * as THREE from './lib/three';
-import { offsetFrom } from './utils/three';
 import { textColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
+import deps from './deps';
+
+const tween = createTweener();
+
+const logging = false;
 
 let transitionVersion = 0;
-
-const transitionScene = new THREE.Scene();
-
-// Set up stage
-const textCreator = SDFText.creator();
-const textItem = textCreator.create('', {
-  wrapWidth: 4000,
-  scale: 15,
-  align: 'center',
-  color: textColor.getHex(),
-});
-
-const pivot = new THREE.Object3D();
-pivot.add(textItem);
-textItem.position.z = -20;
-textItem.position.y = 3;
-
-transitionScene.add(pivot);
-transitionScene.add(props.grid);
-
-const debugMesh = new THREE.Mesh(
-  new THREE.BoxGeometry(0, 0, 0),
-  new THREE.MeshBasicMaterial({
-    map: new THREE.TextureLoader().load(dummyTextureUrl),
-  })
-);
-debugMesh.frustumCulled = false;
-// Move an extra invisible object3d with a texture to the end of scene's children
-// array in order to solve a texture glitch as described in:
-// https://github.com/puckey/you-move-me/issues/129
-transitionScene.add(debugMesh);
-
-const floatingOrb = new Orb(transitionScene);
-
+let transitionScene;
+let textItem;
+let pivot;
 let time = 0;
 let fadedOut = false;
 let insideTransition = false;
+let floatingOrb;
 
-const Y_AXIS = new THREE.Vector3(0, 1, 0);
-const Z_AXIS = new THREE.Vector3(0, 0, 1);
-const TEMP_VECTOR = new THREE.Vector3();
-const TEMP_VECTOR_2 = new THREE.Vector3();
+let Y_AXIS;
+let Z_AXIS;
+let TEMP_VECTOR;
+let TEMP_VECTOR_2;
 
 const tick = (dt) => {
   time += dt;
@@ -90,9 +63,16 @@ const tweenFog = (from, to, duration = 2) => {
 };
 
 const fadeOut = (duration) => {
+  fadedOut = true;
   const version = transitionVersion;
+  if (logging) {
+    console.log('fadeOut', { version, duration, time: new Date() });
+  }
   setTimeout(() => {
     if (version === transitionVersion) {
+      if (logging) {
+        console.log('removing label', { version, duration, time: new Date() });
+      }
       textItem.updateLabel('');
     }
   }, duration * 0.5);
@@ -101,6 +81,9 @@ const fadeOut = (duration) => {
 };
 
 const fadeIn = (maxFogDistance, duration) => {
+  if (logging) {
+    console.log('fadeIn', { transitionVersion, maxFogDistance, duration, time: new Date() });
+  }
   fadedOut = false;
   return tweenFog(0, maxFogDistance, duration);
 };
@@ -109,6 +92,46 @@ const revealFar = 300;
 const transitionSpaceFar = 25;
 
 const transition = {
+  prepare: () => {
+    transitionScene = new THREE.Scene();
+
+    // Set up stage
+    const textCreator = deps.SDFText.creator();
+    textItem = textCreator.create('', {
+      wrapWidth: 4000,
+      scale: 7,
+      align: 'center',
+      color: textColor.getHex(),
+    });
+
+    pivot = new THREE.Object3D();
+    pivot.add(textItem);
+    textItem.position.z = -12;
+    textItem.position.y = 0.25;
+
+    transitionScene.add(pivot);
+    transitionScene.add(props.grid);
+
+    const debugMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(0, 0, 0),
+      new THREE.MeshBasicMaterial({
+        map: new THREE.TextureLoader().load(dummyTextureUrl),
+      })
+    );
+    debugMesh.frustumCulled = false;
+    // Move an extra invisible object3d with a texture to the end of scene's children
+    // array in order to solve a texture glitch as described in:
+    // https://github.com/puckey/you-move-me/issues/129
+    transitionScene.add(debugMesh);
+
+    floatingOrb = new Orb(transitionScene);
+
+    Y_AXIS = new THREE.Vector3(0, 1, 0);
+    Z_AXIS = new THREE.Vector3(0, 0, 1);
+    TEMP_VECTOR = new THREE.Vector3();
+    TEMP_VECTOR_2 = new THREE.Vector3();
+  },
+
   fadeOut,
 
   isInside() {
@@ -116,13 +139,26 @@ const transition = {
   },
 
   async enter(param = {}) {
+    insideTransition = true;
+    if (logging) {
+      console.log('transition.enter', { transitionVersion, ...param, time: new Date() });
+    }
+
     const version = transitionVersion;
     // If fadeOut wasn't called before enter:
     if (!fadedOut) {
+      if (logging) {
+        console.log('transition.enter: fading out to black to hide viewer scene');
+      }
       await fadeOut();
     }
-    insideTransition = true;
     if (version !== transitionVersion) {
+      if (logging) {
+        console.log('transition.enter returned early because of version difference',
+        {
+          time: new Date()
+        });
+      }
       return;
     }
     viewer.renderScene = transitionScene;
@@ -131,36 +167,67 @@ const transition = {
     floatingOrb.fadeIn();
     viewer.on('tick', tick);
     textItem.updateLabel(param.text);
-    floatingOrb.mesh.position.copy(offsetFrom(viewer.camera, 2, 0, -8));
-    floatingOrb.mesh.scale.set(4, 4, 4);
-    if (param.immediate) {
-      viewer.renderScene.fog.far = transitionSpaceFar;
-    } else {
-      await fadeIn(transitionSpaceFar);
-    }
+    floatingOrb.mesh.position.set(0, 0, -8);
+    floatingOrb.mesh.scale.set(2, 2, 2);
+    await fadeIn(transitionSpaceFar);
   },
 
   async exit() {
-    if (!insideTransition) return;
+    if (logging) console.log('transition.exit');
+    if (!insideTransition) {
+      if (logging) {
+        console.log(
+          'transition.exit returned early because not inside transition',
+          { insideTransition, time: new Date() }
+        );
+      }
+      return;
+    }
     transitionVersion += 1;
     const version = transitionVersion;
     if (!fadedOut) {
+      if (logging) {
+        console.log(
+          'transition.exit: fading out to black to hide transition scene',
+          { version }
+        );
+      }
       await fadeOut();
     }
     transition.reset(true);
     if (version === transitionVersion) {
+      if (logging) {
+        console.log(
+          'transition.exit: fadingIn viewer scene',
+          { version }
+        );
+      }
       await fadeIn(revealFar);
     }
   },
 
   reset(soft) {
+    if (logging) {
+      console.log(
+        'transition.reset',
+        { soft, time: new Date() }
+      );
+    }
     insideTransition = false;
     fadedOut = false;
     viewer.off('tick', tick);
     viewer.renderScene = viewer.scene;
-    if (tweener) tweener.cancel();
+    if (tweener) {
+      if (logging) {
+        console.log('transition.reset: cancelling tweener');
+      }
+      tweener.cancel();
+    }
     insideTransition = false;
     if (!soft) {
+      if (logging) {
+        console.log('transition.reset: hard reveal of viewer scene');
+      }
       viewer.renderScene.fog.far = revealFar;
       transitionVersion += 1;
     }

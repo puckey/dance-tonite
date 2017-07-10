@@ -1,5 +1,9 @@
 export default [
   {
+    time: 0,
+    colophon: true,
+  },
+  {
     time: 4.1,
     titles: ['lcd'],
   },
@@ -43,5 +47,30 @@ export default [
     time: 15,
     titles: null,
     colophon: false,
+  },
+  {
+    time: 219,
+    titles: ['directed by'],
+    small: true,
+  },
+  {
+    time: 222,
+    titles: ['Jonathan', 'Puckey'],
+    small: true,
+  },
+  {
+    time: 224,
+    titles: ['Moniker'],
+    small: true,
+  },
+  {
+    time: 226,
+    titles: ['Google’s', 'Data Arts Team'],
+    small: true,
+  },
+  {
+    time: 228,
+    titles: [''],
+    small: false,
   },
 ];

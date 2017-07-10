@@ -6,7 +6,6 @@ import viewer from '../../viewer';
 import Room from '../../room';
 import layout from '../../room/layout';
 import feature from '../../utils/feature';
-import { waitRoomColor, getRoomColor } from '../../theme/colors';
 import recording from '../../recording';
 
 import RecordOrbs from '../RecordOrbs';
@@ -30,8 +29,16 @@ export default class RoomComponent extends Component {
   componentDidMount() {
     this.mounted = true;
     this.asyncMount(this.props);
-    const { roomId } = this.props;
-    this.roomColor = getRoomColor(roomId);
+  }
+
+  componentWillReceiveProps(props, { presenting }) {
+    if (presenting !== this.context.presenting && !presenting) {
+      viewer.switchCamera('orthographic');
+      viewer.camera.position.y = 2;
+      viewer.camera.position.z = 1.3;
+      viewer.camera.updateProjectionMatrix();
+      Room.rotate180();
+    }
   }
 
   componentWillUnmount() {
@@ -39,7 +46,6 @@ export default class RoomComponent extends Component {
     viewer.camera.position.copy(state.originalCameraPosition);
     viewer.camera.zoom = state.originalZoom;
     viewer.camera.updateProjectionMatrix();
-    audio.reset();
     audio.fadeOut();
     if (this.state.room) {
       this.state.room.destroy();
@@ -55,11 +61,11 @@ export default class RoomComponent extends Component {
     }
   }
 
-  async asyncMount({ roomId, id, record, hasAudio = true }) {
+  async asyncMount({ roomId, id, record, presenting, morph, hasAudio = true, fadeOrbs = true }) {
     Room.reset();
     state.originalCameraPosition = viewer.camera.position.clone();
     state.originalZoom = viewer.camera.zoom;
-    if (!record) {
+    if (!record && !presenting) {
       viewer.switchCamera('orthographic');
       viewer.camera.position.y = 2;
       viewer.camera.position.z = 1.3;
@@ -80,7 +86,11 @@ export default class RoomComponent extends Component {
       index: roomId - 1,
       single: true,
       recording: record ? recording : null,
+      morph,
     });
+    if (fadeOrbs) {
+      room.changeColorToWaiting();
+    }
     if (id) {
       if (hasAudio) {
         audio.play();
@@ -93,7 +103,7 @@ export default class RoomComponent extends Component {
 
   performOrbLeftRoom() {
     if (!this.state.room) return;
-    this.state.room.changeColor(waitRoomColor);
+    this.state.room.changeColorToWaiting();
 
     const { onOrbLeftRoom } = this.props;
     if (onOrbLeftRoom) {
@@ -104,9 +114,7 @@ export default class RoomComponent extends Component {
   performOrbEnteredRoom() {
     const { room } = this.state;
     if (!room) return;
-    if (room && this.roomColor) {
-      room.changeColor(this.roomColor);
-    }
+    room.changeColorToRecording();
 
     const { onOrbEnteredRoom } = this.props;
     if (onOrbEnteredRoom) {
@@ -123,17 +131,17 @@ export default class RoomComponent extends Component {
     const layers = tutorialLayers !== undefined
       ? Math.max(Math.floor((audio.totalProgress % 6) * 0.5) + 1, tutorialLayers)
       : null;
-    this.state.room.gotoTime(audio.time, layers);
+    this.state.room.gotoTime(audio.time, layers, this.props.highlightLast);
   }
 
-  render({ orbs, fadeOrbs }) {
+  render({ orbs, fadeOrbs = true }) {
     return (
       <div>
         {orbs &&
           <RecordOrbs
-            fade={fadeOrbs !== undefined ? fadeOrbs : true}
-            onEnteredRoom={this.performOrbEnteredRoom}
-            onLeftRoom={this.performOrbLeftRoom}
+            fade={fadeOrbs}
+            onEnteredRoom={fadeOrbs && this.performOrbEnteredRoom}
+            onLeftRoom={fadeOrbs && this.performOrbLeftRoom}
             onCreatedOrb={this.receiveOrb}
             reversed={this.props.reverseOrbs}
           />

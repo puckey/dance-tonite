@@ -3,7 +3,6 @@ import { h, Component } from 'preact';
 import './style.scss';
 
 import Menu from '../../components/Menu';
-import CMSMenu from '../../components/CMSMenu';
 import Container from '../../components/Container';
 import Error from '../../components/Error';
 import Align from '../../components/Align';
@@ -14,6 +13,7 @@ import Colophon from '../../components/Colophon';
 import Playlist from '../Playlist';
 import ButtonItem from '../../components/ButtonItem';
 import Overlay from '../../components/Overlay';
+import Controllers from '../../components/Controllers';
 
 import audio from '../../audio';
 import audioSrcOgg from '../../public/sound/tonite.ogg';
@@ -28,14 +28,17 @@ export default class Playback extends Component {
   constructor() {
     super();
 
-    this.state = {
-      hoverHead: null,
-      orb: true,
-      colophon: true,
-    };
     this.onTitlesChanged = this.onTitlesChanged.bind(this);
     this.performExitPresent = this.performExitPresent.bind(this);
-    this.gotoSubmission = this.gotoSubmission.bind(this);
+    this.performExitVRInstructions = this.performExitVRInstructions.bind(this);
+  }
+
+  componentWillMount() {
+    this.setState({
+      hoverHead: null,
+      orb: true,
+      colophon: this.props.colophon !== false,
+    });
   }
 
   componentDidMount() {
@@ -65,15 +68,33 @@ export default class Playback extends Component {
     if (viewer.vrEffect.isPresenting) {
       viewer.vrEffect.exitPresent();
     }
-    viewer.switchCamera('default');
     this.forceUpdate();
+  }
+
+  async performExitVRInstructions() {
+    // Return early if we unmounted in the meantime:
+    if (!this.mounted) return;
+
+    // Fade to black from viewer scene
+    await Promise.all([
+      audio.fadeOut(),
+      transition.fadeOut(),
+    ]);
+    if (!this.mounted) return;
+
+    // Removes background color if any and stops moving camera:
+    this.setState({
+      stopped: true,
+      takeOffHeadset: true,
+    });
+
+    await transition.enter({
+      text: 'Please take off your headset',
+    });
   }
 
   async asyncMount() {
     const { inContextOfRecording, roomId } = this.props;
-    if (!viewer.vrEffect.isPresenting) {
-      viewer.switchCamera('orthographic');
-    }
     if (!inContextOfRecording) {
       this.setLoading('Moving dancers into position…');
     }
@@ -93,16 +114,7 @@ export default class Playback extends Component {
       const roomOffset = 2;
       const startTime = (roomId - 2 + roomOffset) * settings.loopDuration;
       audio.gotoTime(startTime);
-      setTimeout(() => {
-        if (!this.mounted) return;
-        audio.fadeOut();
-        transition.enter({
-          text: 'Please take off your headset',
-        });
-        this.setState({
-          takeOffHeadset: true,
-        });
-      }, watchTime * 1000);
+      setTimeout(this.performExitVRInstructions, watchTime * 1000);
     }
 
     const timeLeft = 1500 - (Date.now() - audioLoadTime);
@@ -119,12 +131,7 @@ export default class Playback extends Component {
     // Safari won't play unless we wait until next tick
     setTimeout(() => {
       audio.play();
-      audio.fadeIn();
     });
-  }
-
-  gotoSubmission() {
-    this.props.goto('submission');
   }
 
   render(
@@ -140,6 +147,7 @@ export default class Playback extends Component {
       orb,
       colophon,
       takeOffHeadset,
+      stopped,
     }
   ) {
     const polyfillAndPresenting = feature.vrPolyfill
@@ -166,15 +174,15 @@ export default class Playback extends Component {
           inContextOfRecording && (
             takeOffHeadset
               ? (
-                <Overlay>
-                  <a onClick={this.gotoSubmission}>
-                    <span>I took off my headset</span>
+                <Overlay opaque>
+                  <a onClick={onGotoSubmission}>
+                    <span>Press here to continue</span>
                   </a>
                 </Overlay>
               )
               : (
                 <Align type="bottom-right">
-                  <ButtonItem text="Skip Preview" onClick={this.gotoSubmission} />
+                  <ButtonItem text="Skip Preview" onClick={this.performExitVRInstructions} />
                 </Align>
               )
           )
@@ -186,6 +194,8 @@ export default class Playback extends Component {
           pathRecordingId={id}
           pathRoomId={roomId}
           orb={orb}
+          stopped={stopped}
+          fixedControllers={inContextOfRecording}
         />
         { process.env.FLAVOR !== 'cms'
           ? <Titles
@@ -193,7 +203,18 @@ export default class Playback extends Component {
           />
           : null
         }
-        {!inContextOfRecording && <ProgressBar />}
+        { inContextOfRecording ?
+          <Controllers
+            settings={{
+              right: {
+                text: 'skip\npreview',
+                onPress: this.performExitVRInstructions,
+                removeOnPress: true,
+              },
+            }}
+          /> :
+          <ProgressBar />
+        }
         <Align type="center">
           { error
             ? <Error>{error}</Error>

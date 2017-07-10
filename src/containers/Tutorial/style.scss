@@ -1,0 +1,12 @@
+@import '../../theme/theme';
+
+.skip-tutorial {
+  opacity: 0;
+  animation: fadeInTutorial 1s forwards;
+  animation-delay: 2s;
+}
+
+@keyframes fadeInTutorial {
+  0% { opacity: 0; }
+  100% { opacity: 1;}
+}

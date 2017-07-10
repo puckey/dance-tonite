@@ -27,27 +27,29 @@ export default class Menu extends Component {
     this.toggleAbout = this.toggleAbout.bind(this);
     this.toggleVR = this.toggleVR.bind(this);
     this.toggleNoVROverlay = this.toggleNoVROverlay.bind(this);
-    this.toggleEnteredVROverlay = this.toggleEnteredVROverlay.bind(this);
     this.goHome = this.goHome.bind(this);
-    this.isMounted = this.isMounted.bind(this);
   }
 
   componentDidMount() {
     this.mounted = true;
-    viewer.on('vr-present-change', this.toggleEnteredVROverlay);
+  }
+
+  componentWillReceiveProps(props, { presenting }) {
+    if (presenting === this.context.presenting) return;
+    this.setState({
+      enterVROVerlay: presenting,
+    });
+    if (presenting) {
+      setTimeout(() => {
+        this.setState({
+          enterVROVerlay: false,
+        });
+      }, 5000);
+    }
   }
 
   componentWillUnmount() {
     this.mounted = false;
-    viewer.off('vr-present-change', this.toggleEnteredVROverlay);
-  }
-
-  toggleEnteredVROverlay(isPresenting) {
-    this.setState({
-      enteredVROverlay: isPresenting === undefined
-        ? !this.state.enteredVROverlay
-        : isPresenting,
-    });
   }
 
   toggleAbout() {
@@ -70,20 +72,16 @@ export default class Menu extends Component {
     }
   }
 
-  isMounted() {
-    return this.mounted;
-  }
-
   toggleVR() {
     if (!feature.hasVR) {
       this.toggleNoVROverlay();
     } else {
-      viewer.toggleVR(this.isMounted);
+      viewer.toggleVR();
     }
   }
 
   goHome() {
-    viewer.switchCamera('orthographic');
+    viewer.exitPresent();
     router.navigate('/');
   }
 
@@ -96,12 +94,12 @@ export default class Menu extends Component {
       close = false,
     },
     {
-      enteredVROverlay,
-    }
+      enterVROVerlay,
+    },
   ) {
     return (
       <div className="menu">
-        { enteredVROverlay
+        { enterVROVerlay
           ? <EnterVROverlay />
           : null
         }

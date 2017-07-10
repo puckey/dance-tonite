@@ -1,8 +1,7 @@
 /** @jsx h */
 import { h, Component } from 'preact';
+import shuffle from 'just-shuffle';
 import asyncEach from 'async/eachLimit';
-
-import quadOut from 'eases/quad-out';
 
 import './style.scss';
 
@@ -35,8 +34,9 @@ export default class Playlist extends Component {
     Room.reset();
     Room.rotate180();
 
-    const { recording, pathRoomId } = this.props;
+    const { recording, pathRoomId, orb } = this.props;
     const { rooms } = this.state;
+    this.orb.visible = !!orb;
 
     if (recording) {
       for (let index = 1; index < 18; index += 2) {
@@ -56,11 +56,10 @@ export default class Playlist extends Component {
     viewer.on('tick', this.tick);
   }
 
-  componentWillReceiveProps({ orb }) {
-    if (orb) {
-      this.orb.show();
-    } else {
-      this.orb.hide();
+  componentWillReceiveProps({ orb, stopped }) {
+    this.orb.visible = !!orb;
+    if (stopped) {
+      viewer.off('tick', this.tick);
     }
   }
 
@@ -82,17 +81,16 @@ export default class Playlist extends Component {
     for (let i = 0; i < entries.length; i++) {
       const isPathRecording = i === pathRoomId - 1;
       const entry = entries[i];
-      rooms.push(
-        new Room({
-          id: isPathRecording
-            ? pathRecordingId
-            : process.env.FLAVOR === 'cms'
-              ? entry.id
-              : entry,
-          index: i,
-          pathRecording: isPathRecording,
-        })
-      );
+      const room = new Room({
+        id: isPathRecording
+          ? pathRecordingId
+          : process.env.FLAVOR === 'cms'
+            ? entry.id
+            : entry,
+        index: i,
+        pathRecording: isPathRecording,
+      });
+      rooms.push(room);
     }
 
     this.setState({ entries, rooms });
@@ -130,23 +128,11 @@ export default class Playlist extends Component {
     if (!this.state.rooms || transition.isInside()) return;
     this.moveOrb(audio.progress || 0);
 
-    if (!settings.loopDuration) return;
     for (let i = 0; i < this.state.rooms.length; i++) {
       const room = this.state.rooms[i];
-      let time = audio.time;
+      let time = Math.min(audio.time, settings.dropTime);
       if (layout.isOdd(room.index)) {
         time += settings.loopDuration;
-      }
-      // Slow down recordings to a stop after music stops:
-      const slowdownDuration = 0.4;
-      const maxTime = 216.824266 - (slowdownDuration * 0.5);
-      if (audio.time > maxTime) {
-        time = maxTime + quadOut(
-          Math.min(
-            slowdownDuration,
-            audio.time - maxTime
-          ) / slowdownDuration
-        ) * slowdownDuration;
       }
       room.gotoTime(time % (settings.loopDuration * 2));
     }
@@ -156,18 +142,19 @@ export default class Playlist extends Component {
     router.navigate(`/choose/${room.index}/`);
   }
 
-  render({ recording }, { rooms, entries }) {
+  render({ recording, stopped, orb }, { rooms, entries }) {
     return (
       <div>
-        <POV
-          rooms={rooms}
-          orb={this.orb}
+        {!stopped && <POV
           enterHeads={process.env.FLAVOR !== 'cms'}
           totalProgress={this.props.totalProgress}
           fixedControllers={this.props.fixedControllers}
           // When reviewing a recording, start closer to the rooms:
           offset={recording ? 2 : 0}
+          rooms={rooms}
+          orb={orb && this.orb}
         />
+        }
         {
           (process.env.FLAVOR === 'cms' && !viewer.vrEffect.isPresenting)
           ? <RoomLabels
@@ -176,7 +163,7 @@ export default class Playlist extends Component {
           />
           : null
         }
-        <BackgroundTimeline />
+        { !stopped && <BackgroundTimeline /> }
       </div>
     );
   }

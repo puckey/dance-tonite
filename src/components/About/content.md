@@ -1,17 +1,21 @@
-# Dance Tonite is an evolving VR collaboration by LCD Soundsystem and their fans
+<div class="title-wrapper">
+  <h1>Dance Tonite is an evolving VR collaboration by LCD Soundsystem and their fans</h1>
+</div>
 
 <div class="about-video-container">
   <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
 </div>
 
-_Dance Tonite_ features VR motion capture recordings of users dancing to the song titled “Tonite” by LCD Soundsystem. Built in WebVR, the performance can be experienced in three different ways. Without VR, you are in the audience. On Daydream View, you are on stage watching the experience unfold around you. In room-scale VR, you are a performer.
+Dance Tonite features VR motion capture recordings of users dancing to the song titled “Tonite” by LCD Soundsystem. Built in WebVR, the performance can be experienced in three different ways. Without VR, you are in the audience. On Daydream View, you are on stage watching the experience unfold around you. In room-scale VR, you are a performer.
 
 Each room is made from a single person’s choreography. The entire experience evolves over time with every new user contribution.  
 
-## Technology
-Dance Tonite previews one of the most exciting developments in Chrome, WebVR, letting anyone can take part in the experience. Built for the web, no apps or downloads are required.
+Take a look at the [gallery of featured user contributions](/gallery/).
 
-This project is released open source. [View source code](https://github.com/puckey/you-move-me).
+## Technology
+Dance Tonite previews one of the most exciting developments in Chrome, WebVR, allowing anyone to take part in the experience. It’s built for the Web—no apps or downloads required.
+
+This project is open-source. [View source code](https://github.com/puckey/you-move-me).
 
 To learn more, watch this video or read the technical deep dive.
 
@@ -23,43 +27,53 @@ To learn more, watch this video or read the technical deep dive.
 
 <div class="column-wrapper">
   <div>
-    <h3><a href="http://webvr.info">WebVR</a></h3>
-    An open web standard that brings VR to the web. It lets anyone access the same VR experience regardless of their device without the need for apps or downloads.
+    <h3><a href="http://webvr.info">WebVR API</a></h3>
+    Open standard that brings virtual reality to the Web. Allows anyone access to the same VR experience, regardless of their device, without the need for apps or downloads.
   </div>
 
   <div>
     <h3><a href="https://github.com/googlevr/webvr-polyfill">WebVR Polyfill</a></h3>
-    An open-source JavaScript implementation of the WebVR spec. This project lets you use WebVR without requiring a special browser build, and view that same content without a VR headset.
+    Open-source JavaScript implementation of the WebVR spec. Emulates the WebVR API without requiring a special browser build, and allows users to view that same content as a “magic window” or first-person experience if no VR headset is present.
   </div>
 
   <div>
     <h3><a href="https://w3c.github.io/gamepad/">Gamepad API</a></h3>
-    An open API that lets the browser detect external controllers that are plugged into the computer. Tied into WebVR, it allows the browser to detect room-scale VR controllers.
+    Open standard that allows the browser to communicate with external game controllers. When paired with WebVR, allows the browser to use room-scale VR controllers to directly interact with the virtual world.
   </div>
 
   <div>
-    <h3>ControllerView</h3>
-    An open-source Javascript library built upon the Gamepad API and WebVR API that standardizes outgoing event data from various VR controllers.
+    <h3><a href="https://github.com/stewdio/THREE.VRController">VRController</a></h3>
+    Open-source Javascript library that extends Three.js and wraps the Gamepad API to handle controller discovery, tracking, and button events for all conforming VR controller models.
   </div>
 
   <div>
     <h3><a href="http://threejs.org">Three.js</a></h3>
-    A Javascript library built upon WebGL that lets you create 3D graphics using the computer’s graphics card.
+    Open-source Javascript 3D library for rendering content as WebGL, SVG, and CSS3D. Through WebGL, allows developers to harness the power of a user’s graphics card for high frame rate, hardware-accelerated performance.
+  </div>
+
+  <div>
+    <h3><a href="http://webpack.js.org">Webpack</a></h3>
+    Highly configurable open-source module bundler for JavaScript applications. Webpack takes modules with dependencies and generates static assets representing those modules.
+  </div>
+
+  <div>
+    <h3><a href="https://preactjs.com/">Preact</a></h3>
+    Fast and tiny open-source JavaScript library for building user interfaces. Preact allows developers to create large web applications that use data which can change over time, without reloading the page.
   </div>
 
   <div>
     <h3><a href="https://firebase.google.com/">Firebase</a></h3>
-    A mobile and web application development platform made by Google that lets you build scalable content such as databases
+    Mobile and Web application development platform from Google that makes creating and maintaining highly scalable backends a snap.
   </div>
 
   <div>
     <h3><a href="https://cloud.google.com/storage/">Cloud Storage</a></h3>
-    A geo-redundant storage solution made by Google that stores data and media in the cloud.
+    Geo-redundant storage solution from Google that stores data and media in the cloud.
   </div>
 
   <div>
     <h3><a href="https://cloud.google.com/appengine/">App Engine</a></h3>
-    A fully managed platform that abstracts away infrastructure made by Google.
+    Fully managed cloud platform from Google that abstracts away backend infrastructure.
   </div>
 </div>
 
@@ -70,7 +84,7 @@ To learn more, watch this video or read the technical deep dive.
 The cones and cylinders are VR motion capture recordings of actual users who’ve submitted their choreography to the project. VR headsets are represented as cones, controllers as cylinders. Each room is made by a single person dancing to a specific portion of the song. All submissions are made using the same recording tools provided by this project.
 
 ### How does the recording process work?
-Users choreograph specific segments of the song in layers. Each layer includes one round of dancing. Once a round is complete, the music loops and the next round begins. Similar to a loop pedal, this builds layers of choreography that results in complex patterns made from just VR headset and controller positional data. Watch the tutorial.
+Users choreograph specific segments of the song in layers. Each layer includes one round of dancing. Once a round is complete, the music loops and the next round begins. Similar to a loop pedal, this builds layers of choreography that results in complex patterns made from just headset and controller position data. [Watch the tutorial.](/record/4/head=yes/)
 
 ### How can I add my own part?
 Anyone can add to the experience using the “Add performance” link on the homepage. Room-scale VR and a [WebVR](http://webvr.info) supported browser are required.

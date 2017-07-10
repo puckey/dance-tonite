@@ -5,8 +5,8 @@ import InstancedItem from './instanced-item';
 import Room from './room';
 import layout from './room/layout';
 import settings from './settings';
-import controllers from './controllers';
 import audio from './audio';
+import deps from './deps';
 
 import analytics from './utils/analytics';
 
@@ -16,6 +16,7 @@ export default function create({ rooms, orb, offset = 0 }) {
   let pointerY;
   let hoverPerformance;
   let hoverOrb;
+  let inPOV = false;
 
   const onMouseMove = ({ clientX, clientY }) => {
     if (viewer.vrEffect.isPresenting) return;
@@ -25,6 +26,10 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const onMouseDown = ({ clientX, clientY, touches }) => {
     if (viewer.vrEffect.isPresenting) return;
+    if (hoverPerformance || hoverOrb) {
+      return;
+    }
+
     let x = clientX;
     let y = clientY;
     if (touches && touches.length > 0) {
@@ -40,22 +45,33 @@ export default function create({ rooms, orb, offset = 0 }) {
       InstancedItem.group.add(viewer.camera);
       if (hoverPerformance) analytics.recordHeadSelectStart();
       else if (hoverOrb) analytics.recordOrbSelectStart();
+
+      inPOV = true;
     }
   };
 
-  const onMouseUp = () => {
+  const onMouseUp = ({ touches }) => {
     if (viewer.vrEffect.isPresenting) return;
+
+    if (touches && touches.length >= 1) {
+      return;
+    }
+
     if (hoverPerformance) analytics.recordHeadSelectStop();
     else if (hoverOrb) analytics.recordOrbSelectStop();
     hoverPerformance = null;
     hoverOrb = false;
     viewer.switchCamera('orthographic');
+
+    inPOV = false;
   };
 
   const clearHighlights = () => {
     hoverPerformance = null;
     hoverOrb = false;
-    orb.unhighlight();
+    if (orb) {
+      orb.unhighlight();
+    }
     Room.setHighlight();
   };
 
@@ -78,12 +94,16 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const POV = {
     update: (progress = 0, fixedControllers = false) => {
-      if (!viewer.vrEffect.isPresenting) {
+      if (!viewer.vrEffect.isPresenting && !inPOV) {
         if (intersectOrb(pointerX, pointerY)) {
-          orb.highlight();
+          if (orb) {
+            orb.highlight();
+          }
           Room.setHighlight();
         } else {
-          orb.unhighlight();
+          if (orb) {
+            orb.unhighlight();
+          }
           if (!hoverPerformance && !hoverOrb) {
             Room.setHighlight(
               closestHead(
@@ -101,7 +121,7 @@ export default function create({ rooms, orb, offset = 0 }) {
       position.z *= -1;
 
       if (fixedControllers) {
-        controllers.fixToPosition(position);
+        deps.controllers.fixToPosition(position);
       }
       viewer.camera.position.copy(position);
       if (hoverOrb) {
@@ -127,9 +147,13 @@ export default function create({ rooms, orb, offset = 0 }) {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('touchstart', onMouseDown);
+      window.removeEventListener('touchend', onMouseUp);
       window.removeEventListener('vrdisplaypresentchange', clearHighlights);
       audio.off('loop', onLoop);
     },
+
+    isInPOV: () => inPOV,
 
     clearHighlights,
   };

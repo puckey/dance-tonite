@@ -13,6 +13,8 @@ import router from '../../router';
 import viewer from '../../viewer';
 import feature from '../../utils/feature';
 
+import analytics from '../../utils/analytics';
+
 export default class PlaybackFlow extends Component {
   constructor({ roomId }) {
     super();
@@ -26,29 +28,19 @@ export default class PlaybackFlow extends Component {
       fromRecording,
       count: 0,
     };
+    this.performGotoFullExperience = this.performGotoFullExperience.bind(this);
+    this.performGotoSubmission = this.performGotoSubmission.bind(this);
     this.goto = this.goto.bind(this);
-    this.onVRPresentChange = this.onVRPresentChange.bind(this);
-  }
-
-  componentDidMount() {
-    viewer.on('vr-present-change', this.onVRPresentChange);
-  }
-
-  componentWillUnmount() {
-    viewer.off('vr-present-change', this.onVRPresentChange);
-  }
-
-  onVRPresentChange(presenting) {
-    if (feature.vrPolyfill) {
-      this.setState({
-        polyfillPresenting: presenting,
-      });
-    }
   }
 
   goto(mode) {
     const count = this.state.count + 1;
     this.setState({ count });
+    analytics.recordSectionChange(mode);
+    if (mode === 'gif') {
+      this.setState({ mode });
+      return;
+    }
     router.navigate(mode);
   }
 
@@ -58,24 +50,33 @@ export default class PlaybackFlow extends Component {
     });
   }
 
-  goto(mode) {
-    if (mode === 'playback') {
-      if (recording.exists()) {
-        recording.destroy();
-      }
-      this.setState({ fromRecording: false });
+  performGotoFullExperience() {
+    if (recording.exists()) {
+      recording.destroy();
     }
-    this.setState({ mode });
+    this.setState({
+      mode: 'playback',
+      fromRecording: false,
+    });
+    analytics.recordSectionChange('Playback');
+  }
+
+  performGotoSubmission() {
+    this.setState({
+      mode: 'submission',
+    });
+    analytics.recordSectionChange('Submission');
   }
 
   renderMenu() {
-    const { fromRecording, mode, polyfillPresenting } = this.state;
+    const { fromRecording, mode } = this.state;
+    const { presenting } = this.context;
     return process.env.FLAVOR === 'cms'
       ? <CMSMenu
         vr audio mute
         submissions inbox publish
       />
-      : polyfillPresenting
+      : (presenting && feature.vrPolyfill)
         ? <Menu />
         : (
           fromRecording || mode === 'submission'
@@ -88,26 +89,29 @@ export default class PlaybackFlow extends Component {
     props,
     { mode, fromRecording }
   ) {
+    console.log(mode);
     return (
       <Container>
         { this.renderMenu() }
         {
-          mode === 'gif'
-            ? <CreateGIF
+          mode === 'playback'
+            ? <Playback
               {...props}
               inContextOfRecording={fromRecording}
-              goto={this.goto}
+              onGotoSubmission={this.performGotoSubmission}
+              colophon={!fromRecording}
             />
-            : mode === 'playback'
-              ? <Playback
+            : mode === 'gif'
+              ? <CreateGIF
                 {...props}
                 inContextOfRecording={fromRecording}
                 goto={this.goto}
               />
               : <Submission
                 {...props}
-                fromRecording={fromRecording}
                 goto={this.goto}
+                fromRecording={fromRecording}
+                onGotoFullExperience={this.performGotoFullExperience}
               />
         }
       </Container>

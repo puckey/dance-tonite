@@ -112,13 +112,12 @@ export default class Record extends Component {
     });
     this.performWaitRoom();
     audio.play();
-    audio.mute();
-    audio.fadeIn();
     viewer.on('tick', this.tick);
     analytics.recordDanceSessionStart();
   }
 
   async performRetry() {
+    analytics.recordSectionChange('retry');
     this.setState({
       mode: 'retry',
     });
@@ -168,7 +167,7 @@ export default class Record extends Component {
     return (
       <div>
         <Room
-          orbs
+          orbs={mode === 'recording'}
           reverseOrbs
           record
           roomId={roomId}

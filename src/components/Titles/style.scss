@@ -13,9 +13,14 @@
   pointer-events: none;
   cursor: default;
   flex-direction: column;
+
+  &.mod-small .titles-title {
+    font-size: 6.5vw;
+  }
 }
 
 .titles-title {
+  line-height: 1em;
   width: 100%;
   font-size: 10vw;
   text-align: center;

@@ -2,9 +2,9 @@
 import { Component } from 'preact';
 
 import { Group } from '../../lib/three';
-import * as SDFText from '../../sdftext';
 import viewer from '../../viewer';
 import { textColor } from '../../theme/colors';
+import deps from '../../deps';
 
 let subtitleItem;
 let mainItem;
@@ -14,7 +14,7 @@ export default class RecordInstructions extends Component {
     super();
 
     if (!subtitleItem) {
-      const textCreator = SDFText.creator();
+      const textCreator = deps.SDFText.creator();
 
       const textSettings = {
         align: 'center',

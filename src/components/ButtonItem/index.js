@@ -11,22 +11,24 @@ export default class ButtonItem extends Component {
     this.navigate = this.navigate.bind(this);
   }
 
-  shouldComponentUpdate({ icon, label }) {
+  shouldComponentUpdate({ icon, label, disabled }) {
     return icon !== this.props.icon ||
-      label !== this.props.label;
+      label !== this.props.label ||
+      disabled !== this.props.disabled;
   }
 
   navigate() {
     router.navigate(this.props.navigate);
   }
 
-  render({ onClick, navigate, icon, label, className, text, underline }) {
+  render({ onClick, navigate, icon, label, className, text, underline, disabled }) {
     return (
       <div
         className={classNames(
           'button-item',
           className,
-          text && 'mod-text'
+          text && 'mod-text',
+          disabled && 'mod-disabled',
         )}
         onClick={navigate ? this.navigate : onClick}
       >

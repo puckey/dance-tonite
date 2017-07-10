@@ -7,6 +7,7 @@ import Room from '../../components/Room';
 import Align from '../../components/Align';
 import ButtonItem from '../../components/ButtonItem';
 import ShareButtons from '../../components/ShareButtons';
+import ThanksTimeline from '../../components/ThanksTimeline';
 import audio from '../../audio';
 import viewer from '../../viewer';
 
@@ -49,14 +50,7 @@ export default class Submission extends Component {
   }
 
   async asyncMount() {
-    if (transition.isInside()) {
-      await transition.fadeOut();
-    }
-    if (!this.mounted) return;
-    if (viewer.vrEffect.isPresenting) {
-      viewer.vrEffect.exitPresent();
-    }
-    viewer.switchCamera('orthographic');
+    viewer.exitPresent();
     transition.reset();
   }
 
@@ -72,14 +66,15 @@ export default class Submission extends Component {
           id={id}
           orbs
           onRoomLoadError={this.onRoomLoadError}
-        />
+        >
+          <ThanksTimeline fromRecording={fromRecording} />
+        </Room>
         <Align type="bottom-right">
           <ButtonItem
             text={fromRecording
               ? `Watch yourself in the
-full experience.`
-              : `Press here to watch them
-in the full experience.`
+full experience`
+              : 'Watch in full experience'
             }
             onClick={this.gotoPlayback}
             underline

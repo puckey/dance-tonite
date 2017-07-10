@@ -7,11 +7,10 @@ import './style.scss';
 import Container from '../../components/Container';
 
 import CMSMenu from '../../components/CMSMenu';
-import Room from '../../components/Room';
 import Align from '../../components/Align';
 import Spinner from '../../components/Spinner';
 import Error from '../../components/Error';
-
+import POVRoom from '../../components/POVRoom';
 import cms from '../../utils/firebase/cms';
 import router from '../../router';
 
@@ -67,7 +66,8 @@ export default class Inbox extends Component {
 
     // Filter out faulty room with -1:
     unmoderated = unmoderated
-      .filter(recording => recording.room >= 0);
+      .filter(recording => recording.room >= 0)
+      .sort((a, b) => b.timestamp - a.timestamp);
     const { recordingId } = this.props;
     if (!recordingId && unmoderated.length) {
       const recording = unmoderated[0];
@@ -161,7 +161,8 @@ export default class Inbox extends Component {
 
   render(
     { recordingId },
-    { unmoderatedCount, recording, submitting, error }
+    { unmoderatedCount, recording, submitting, error },
+    { presenting }
   ) {
     const starred = !!recording && (recording.rating === 1);
     return (
@@ -228,11 +229,10 @@ export default class Inbox extends Component {
               </Align>
             )
             : (
-              <Room
+              <POVRoom
                 id={recording.id}
                 roomId={recording.room}
-                key={recording && recording.id}
-                orbs
+                presenting={presenting}
               />
             )
         }
