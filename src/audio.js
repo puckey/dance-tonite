@@ -29,11 +29,27 @@ const ALMOST_ZERO = 1e-4;
 
 let scheduledTime;
 const audio = Object.assign(emitter(), {
-  tick() {
-    if ((!audioElement && !context) || !startTime) return;
-    const time = this.time = (audioElement
-      ? (pauseTime || (Date.now() - startTime)) / 1000
-      : context.currentTime - startTime) % duration;
+  tick(staticTime) {
+    const isStatic = staticTime !== undefined;
+    if ((!audioElement && !context && !isStatic) || (!startTime && !isStatic)) {
+      this.progress = 0;
+      this.time = 0;
+      this.totalTime = 0;
+      this.loopProgress = 0;
+      this.totalProgress = 0;
+      this.looped = false;
+      return;
+    }
+    let time = this.time = (staticTime !== undefined
+      ? staticTime
+      : audioElement
+        ? (pauseTime || (Date.now() - startTime)) / 1000
+        : context.currentTime - startTime
+    ) % duration;
+    if (audioElement && Math.abs(time - audioElement.currentTime) > 0.05) {
+      time = audioElement.currentTime;
+      startTime = Date.now() - time * 1000;
+    }
     const { loopDuration } = settings;
     // The position within the track as a multiple of loopDuration:
     this.progress = time > 0
@@ -54,7 +70,6 @@ const audio = Object.assign(emitter(), {
     this.totalProgress = this.loopCount * loopCount + this.progress;
     this.totalTime = this.totalProgress * loopDuration;
     lastTime = time;
-
     if (this.totalProgress - lastLoopProgress > 1) {
       lastLoopProgress = Math.floor(this.totalProgress);
       this.emit('loop', lastLoopProgress);
@@ -75,7 +90,6 @@ const audio = Object.assign(emitter(), {
       this.loopCount = 0;
       const canPlay = () => {
         this.duration = duration;
-        if (context) context.suspend();
         resolve(param.src);
       };
 
@@ -201,6 +215,7 @@ const audio = Object.assign(emitter(), {
       audioElement.removeEventListener('pause', onPause);
       audioElement.removeEventListener('play', onPlay);
       audioElement.removeEventListener('seeked', onSeeked);
+      audioElement.pause();
       audioElement = null;
       onCanPlayThrough = null;
     }

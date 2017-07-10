@@ -281,6 +281,7 @@ controllers.fixToPosition = (function () {
   return (position) => {
     for (let i = 0; i < viewer.controllers.length; i++) {
       const controller = viewer.controllers[i];
+      if (!controller.matrix) return;
       controller.matrix.decompose(POSITION, ROTATION, SCALE);
       const { x, y, z } = POSITION.add(position).sub(viewer.camera.position);
       controller.matrix.copyPosition(MATRIX.makeTranslation(x, y, z));

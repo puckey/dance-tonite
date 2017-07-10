@@ -58,10 +58,12 @@ export default class RoomComponent extends Component {
   onRoomLoaded(err) {
     if (err && this.props.onRoomLoadError) {
       this.props.onRoomLoadError(err);
+    } else if (this.props.onRoomLoaded) {
+      this.props.onRoomLoaded(err);
     }
   }
 
-  async asyncMount({ roomId, id, record, presenting, morph }) {
+  async asyncMount({ roomId, id, record, presenting, morph, progressive, hasAudio = true, fadeOrbs = true }) {
     Room.reset();
     state.originalCameraPosition = viewer.camera.position.clone();
     state.originalZoom = viewer.camera.zoom;
@@ -77,6 +79,7 @@ export default class RoomComponent extends Component {
       src: `/public/sound/room-${layout.loopIndex(roomId)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
       loops: 2,
       loopOffset: 0.5,
+      progressive,
     });
     if (!this.mounted) return;
     const room = new Room({
@@ -86,10 +89,16 @@ export default class RoomComponent extends Component {
       recording: record ? recording : null,
       morph,
     });
-    room.changeColorToWaiting();
+    if (fadeOrbs) {
+      room.changeColorToWaiting();
+    }
     if (id) {
-      audio.play();
+      if (hasAudio) {
+        audio.play();
+      }
       room.load(this.onRoomLoaded);
+    } else {
+      audio.pause();
     }
     this.setState({ room });
     viewer.on('tick', this.tick);
@@ -128,13 +137,14 @@ export default class RoomComponent extends Component {
     this.state.room.gotoTime(audio.time, layers, this.props.highlightLast);
   }
 
-  render() {
+  render({ orbs, fadeOrbs = true }) {
     return (
       <div>
-        {this.props.orbs &&
+        {orbs &&
           <RecordOrbs
-            onEnteredRoom={this.performOrbEnteredRoom}
-            onLeftRoom={this.performOrbLeftRoom}
+            fade={fadeOrbs}
+            onEnteredRoom={fadeOrbs && this.performOrbEnteredRoom}
+            onLeftRoom={fadeOrbs && this.performOrbLeftRoom}
             onCreatedOrb={this.receiveOrb}
             reversed={this.props.reverseOrbs}
           />

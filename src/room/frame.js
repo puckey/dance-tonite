@@ -4,7 +4,7 @@ import settings from '../settings';
 
 const getFrame = (frames, number) => {
   let frame = frames[number];
-  if (typeof frame[0] === 'string') {
+  if (typeof frame === 'string') {
     frame = frames[number] = JSON.parse(frame);
   }
   return frame;

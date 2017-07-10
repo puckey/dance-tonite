@@ -45,9 +45,9 @@ export default function create({ rooms, orb, offset = 0 }) {
       InstancedItem.group.add(viewer.camera);
       if (hoverPerformance) analytics.recordHeadSelectStart();
       else if (hoverOrb) analytics.recordOrbSelectStart();
-    }
 
-    inPOV = true;
+      inPOV = true;
+    }
   };
 
   const onMouseUp = ({ touches }) => {
@@ -152,6 +152,8 @@ export default function create({ rooms, orb, offset = 0 }) {
       window.removeEventListener('vrdisplaypresentchange', clearHighlights);
       audio.off('loop', onLoop);
     },
+
+    isInPOV: () => inPOV,
 
     clearHighlights,
   };

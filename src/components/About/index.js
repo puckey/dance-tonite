@@ -4,11 +4,11 @@ import Portal from 'preact-portal';
 
 import './style.scss';
 
-import Align from '../Align';
 import ButtonClose from '../ButtonClose';
 import Colophon from '../Colophon';
 import feature from '../../utils/feature';
 import audio from '../../audio';
+import router from '../../router';
 import aboutSrc from './content.md';
 
 let content;
@@ -17,6 +17,7 @@ export default class About extends Component {
   constructor() {
     super();
     this.state = {};
+    this.receiveContentElement = this.receiveContentElement.bind(this);
   }
 
   componentWillMount() {
@@ -48,6 +49,20 @@ export default class About extends Component {
     audio.play();
   }
 
+  receiveContentElement(el) {
+    if (!el) return;
+
+    setTimeout(() => {
+      el.querySelector('.gallery-link').addEventListener(
+        'click',
+        () => {
+          this.props.onClose();
+          router.navigate('/gallery/');
+        }
+      );
+    });
+  }
+
   async asyncMount() {
     if (!content) {
       const response = await fetch(aboutSrc, {
@@ -68,6 +83,7 @@ export default class About extends Component {
           { content && (
             <div
               className="about-content"
+              ref={this.receiveContentElement}
               dangerouslySetInnerHTML={{ __html: content }}
             />
           )}

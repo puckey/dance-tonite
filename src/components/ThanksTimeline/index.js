@@ -42,7 +42,7 @@ export default class TutorialTimeline extends Component {
       'Killer steps.',
       'Sh.. Sh.. Shake it!',
       'So elegant.',
-      'Remarkeable.',
+      'Remarkable.',
       'You monster, you!',
       'Cut that rug up!',
       'Exactly!',

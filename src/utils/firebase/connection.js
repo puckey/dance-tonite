@@ -17,16 +17,18 @@ const auth = firebase.auth();
 const userAuth = { id: '', token: '' };
 
 // this will return immediately if the user is already logged in
-const loginAnonymously = (callback) => {
-  auth.signInAnonymously().then((user) => {
-    userAuth.id = user.uid;
-    user.getIdToken().then((token) => {
-      userAuth.token = token;
-      callback(null);
+const loginAnonymously = () => {
+  return new Promise((resolve) => {
+    auth.signInAnonymously().then((user) => {
+      userAuth.id = user.uid;
+      user.getIdToken().then((token) => {
+        userAuth.token = token;
+        resolve();
+      });
+    })
+    .catch((error) => {
+      resolve(error);
     });
-  })
-  .catch((error) => {
-    callback(error);
   });
 };
 
@@ -34,15 +36,15 @@ const loginAnonymously = (callback) => {
 // dataToSend: data object to send in the request body
 const contactServer = (URL, dataToSend, secretAuth) => {
   const promise = new Promise((resolve, reject) => {
-    loginAnonymously((error) => {
-      if (error) throw error;
+    loginAnonymously().then((error) => {
+      if (error) return reject(error);
 
       let authString = '';
       if (secretAuth) {
         // authorize with the secret key
         authString = localStorage ? localStorage.getItem('secret') : '';
       } else {
-        // otherwise, auth with our user ID
+        // otherwise, auth with our user token
         authString = userAuth.token;
       }
 
@@ -75,7 +77,9 @@ const contactServer = (URL, dataToSend, secretAuth) => {
 const firebaseConnection = {
   firebase,
   contactServer,
+  loginAnonymously,
   serverURL,
+  userAuth,
 };
 
 export default firebaseConnection;
