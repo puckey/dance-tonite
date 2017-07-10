@@ -141,7 +141,7 @@ const viewer = Object.assign(emitter(), {
     }
 
     controls.update();
-    audio.tick(time, staticTime);
+    audio.tick(staticTime);
     Room.clear();
     viewer.emit('tick', dt);
     zoomCamera(

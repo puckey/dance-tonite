@@ -29,7 +29,7 @@ const ALMOST_ZERO = 1e-4;
 
 let scheduledTime;
 const audio = Object.assign(emitter(), {
-  tick(timestamp, staticTime) {
+  tick(staticTime) {
     const isStatic = staticTime !== undefined;
     if ((!audioElement && !context && !isStatic) || (!startTime && !isStatic)) {
       this.progress = 0;
@@ -43,7 +43,7 @@ const audio = Object.assign(emitter(), {
     const time = this.time = (staticTime !== undefined
       ? staticTime
       : audioElement
-        ? (pauseTime || (timestamp - startTime)) / 1000
+        ? (pauseTime || (Date.now() - startTime)) / 1000
         : context.currentTime - startTime
     ) % duration;
     const { loopDuration } = settings;
@@ -114,7 +114,7 @@ const audio = Object.assign(emitter(), {
           this.emit('pause');
         };
         onPlay = () => {
-          startTime = performance.now() - getAudioTime();
+          startTime = Date.now() - getAudioTime();
           this.paused = false;
           pauseTime = null;
           this.emit('play');
@@ -179,7 +179,7 @@ const audio = Object.assign(emitter(), {
 
   gotoTime(time) {
     audioElement.currentTime = time;
-    startTime = performance.now() - time * 1000;
+    startTime = Date.now() - time * 1000;
   },
 
   previousLoop() {
