@@ -32,13 +32,14 @@ export default class CreateGIF extends Component {
   constructor() {
     super();
     this.state = {
-      loading: 'Loading performance…',
+      progress: 'Loading performance…',
     };
 
     this.gotoSubmission = this.gotoSubmission.bind(this);
     this.setEncodeProgress = this.setEncodeProgress.bind(this);
     this.setFrameProgress = this.setFrameProgress.bind(this);
     this.downloadGif = this.downloadGif.bind(this);
+    this.startRender = this.startRender.bind(this);
     this.count = 0;
     this.width = 600;
     this.height = 600;
@@ -114,7 +115,7 @@ export default class CreateGIF extends Component {
     this.setState({ scene });
 
     this.gif = new deps.GIF({
-      workers: Math.ceil((window.navigator.hardwareConcurrency || 2)),
+      workers: (window.navigator.hardwareConcurrency - 1) || 2,
       quality: 1,
       workerScript: '/public/gif.worker.js',
       globalPalette: true,
@@ -122,18 +123,6 @@ export default class CreateGIF extends Component {
     });
 
     viewer.stopAnimating();
-    setTimeout(this.renderFrame.bind(this, () => {
-      this.gif.on('progress', this.setEncodeProgress);
-      this.gif.on('finished', (blob) => {
-        if (!this.mounted) return;
-        this.setState({
-          progress: null,
-          gifData: blob,
-          gifUrl: window.URL.createObjectURL(blob),
-        });
-      });
-      this.gif.render();
-    }), 100);
   }
 
   diffPixels(source) {
@@ -180,7 +169,7 @@ export default class CreateGIF extends Component {
     this.gif.addFrame(this.canvas, { delay: this.delay, dispose: 1, copy: true });
     this.ctx.drawImage(this.sourceCanvas, 0, 0);
   }
-1
+
   renderFrame(callback) {
     if (!this.mounted) return;
     this.count++;
@@ -188,12 +177,30 @@ export default class CreateGIF extends Component {
     const time = this.count * (1 / this.fps) + this.startTime;
     viewer.animate(null, time);
     this.renderer.render(viewer.renderScene, this.camera);
+    document.body.appendChild(this.renderer.domElement);
     this.diffPixels(this.renderer.domElement);
     if (time > this.endTime) {
       callback();
     } else {
       setTimeout(this.renderFrame.bind(this, callback), 1);
     }
+  }
+
+  startRender() {
+    const then = Date.now();
+    setTimeout(this.renderFrame.bind(this, () => {
+      this.gif.on('progress', this.setEncodeProgress);
+      this.gif.on('finished', (blob) => {
+        if (!this.mounted) return;
+        console.log(`Encoding took: ${Date.now() - then}`);
+        this.setState({
+          progress: null,
+          gifData: blob,
+          gifUrl: window.URL.createObjectURL(blob),
+        });
+      });
+      this.gif.render();
+    }), 100);
   }
 
   render({ roomId, id }, { scene, progress, gifData, gifUrl }) {
@@ -205,6 +212,7 @@ export default class CreateGIF extends Component {
           orbs
           fadeOrbs={false}
           hasAudio={false}
+          onRoomLoaded={this.startRender}
           onRoomLoadError={this.onRoomLoadError}
         /> }
         <Title>{gifData ? 'Your GIF is ready!' : 'Hold on while we prepare your GIF…'}</Title>

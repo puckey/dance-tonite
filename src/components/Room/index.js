@@ -58,6 +58,8 @@ export default class RoomComponent extends Component {
   onRoomLoaded(err) {
     if (err && this.props.onRoomLoadError) {
       this.props.onRoomLoadError(err);
+    } else if (this.props.onRoomLoaded) {
+      this.props.onRoomLoaded(err);
     }
   }
 
