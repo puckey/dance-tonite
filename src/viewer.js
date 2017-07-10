@@ -189,6 +189,8 @@ const viewer = Object.assign(emitter(), {
     document.body.appendChild(containerEl);
 
     viewer.vrEffect = vrEffect = new THREE.VREffect(renderer);
+    viewer.vrEffect.setVRResolutionRatio(0.1);
+
     viewer.controls = controls = new THREE.VRControls(cameras.default);
     controls.standing = true;
 
