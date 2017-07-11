@@ -194,6 +194,7 @@ const viewer = Object.assign(emitter(), {
 
     window.addEventListener('vrdisplaypresentchange', () => {
       viewer.emit('vr-present-change', vrEffect.isPresenting);
+      if (!vrEffect.isPresenting) viewer.switchCamera('orthographic');
     }, false);
 
     const { render, resize } = postprocessing({
