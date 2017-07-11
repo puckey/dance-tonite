@@ -46,6 +46,8 @@ debugMesh.frustumCulled = false;
 const POSE = createPose();
 const LAST_POSE = createPose();
 const FIRST_POSE = createPose();
+const SHADOW_EULER = new THREE.Euler(Math.PI * 0.5, 0, 0);
+const SHADOW_COLOR = new THREE.Color(0xffffff);
 const minY = 0.2;
 
 const lerpPose = (
@@ -57,6 +59,10 @@ const lerpPose = (
   if (ratio === 0) return;
   positionA.lerp(positionB, ratio);
   quaternionA.slerp(quaternionB, quaternionRatio);
+};
+
+const step = function (t, min, max) {
+  return min + (max - min) * t;
 };
 
 export default class Room {
@@ -186,9 +192,17 @@ export default class Room {
       if (!hideHead) {
         const pose = this.getPose(i, 0, position);
         items.head.add(pose, color, scale);
+
+        this.setShadowPose(pose, position, i);
       }
-      items.hand.add(this.getPose(i, 1, position), color, scale);
-      items.hand.add(this.getPose(i, 2, position), color, scale);
+
+      const rhandPose = this.getPose(i, 1, position);
+      items.hand.add(rhandPose, color, scale);
+      this.setShadowPose(rhandPose, position, i, 1, true);
+
+      const lhandPose = this.getPose(i, 2, position);
+      items.hand.add(lhandPose, color, scale);
+      this.setShadowPose(lhandPose, position, i, 2, true);
     }
   }
 
@@ -215,6 +229,24 @@ export default class Room {
       this.dropPerformance(performanceIndex);
     }
     return POSE;
+  }
+
+  setShadowPose(copyPose, position, index, sub = 0, small) {
+    if (settings.useShadow === false) {
+      return;
+    }
+
+    const objHeight = copyPose[0].y;
+
+    copyPose[0].y = 0.01;
+    copyPose[1].setFromEuler(SHADOW_EULER);
+
+    // shadowPower -> 0 to 1, based on how high off the ground
+    const shadowPower = Math.min(Math.max(objHeight / 2.5, 0), 1.0);
+    const shadowSize = step(shadowPower, 0.5, 1.0) * (small ? 0.6 : 1);
+    const shadowDarkness = step(shadowPower, 0.3, 0.15);
+    SHADOW_COLOR.setRGB(shadowDarkness, shadowDarkness, shadowDarkness);
+    items.shadow.add(copyPose, SHADOW_COLOR, shadowSize * 3);
   }
 
   dropPerformance(performanceIndex) {
@@ -280,6 +312,9 @@ Room.clear = () => {
   if (!items) return;
   items.hand.empty();
   items.head.empty();
+  if (settings.useShadow) {
+    items.shadow.empty();
+  }
 };
 
 Room.reset = () => {
@@ -309,6 +344,13 @@ Room.reset = () => {
         props.hand,
       ),
     };
+
+    if (settings.useShadow) {
+      items.shadow = new InstancedItem(
+        layout.roomCount * 30,
+        props.shadow,
+      );
+    }
   }
 
   // Move an extra invisible object3d with a texture to the end of scene's children
