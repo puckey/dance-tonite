@@ -122,7 +122,6 @@ const feature = {
   isTablet,
   isAndroid,
   isChrome: /chrome/i.test(userAgent),
-  stats: /fps/.test(window.location.hash),
   vrPolyfill,
   hasWebGL: checkHasWebGL(),
   hasWebVR,

@@ -175,7 +175,7 @@ const viewer = Object.assign(emitter(), {
     }
 
     viewer.emit('render', dt);
-    if (feature.stats) stats(renderer);
+    if (settings.stats) stats(renderer);
   },
   prepare: () => {
     clock = new THREE.Clock();

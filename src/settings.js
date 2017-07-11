@@ -1,3 +1,5 @@
+import { queryData } from './utils/url';
+
 export default {
   // Room dimensions:
   roomDepth: 6,
@@ -37,10 +39,12 @@ export default {
 
   loopDuration: 8,
 
-  shouldCull: true,
-  cullDistance: 12,
+  shouldCull: (queryData.cull === undefined) ? true : queryData.cull, // URL?cull=false
+  cullDistance: queryData.culldist || 15, // URL?culldist=3
 
-  useShadow: true,
+  useShadow: (queryData.shadows === undefined) ? true : queryData.shadows, // URL?shadows=false
 
-  maxPixelRatio: 4,
+  maxPixelRatio: queryData.dpr || 4, // URL?dpr=1
+
+  stats: /fps/.test(window.location.hash) || queryData.fps, // URL#fps or URL?fps=1
 };
