@@ -174,22 +174,6 @@ export default class CreateGIF extends Component {
     this.ctx.drawImage(this.sourceCanvas, 0, 0);
   }
 
-  renderFrame(callback) {
-    if (!this.mounted) return;
-    this.count++;
-    this.setFrameProgress(this.count, this.duration * this.fps);
-    const time = this.count * (1 / this.fps) + this.startTime;
-    viewer.animate(null, time);
-    this.renderer.render(viewer.renderScene, this.camera);
-    document.body.appendChild(this.renderer.domElement);
-    this.diffPixels(this.renderer.domElement);
-    if (time > this.endTime) {
-      callback();
-    } else {
-      setTimeout(this.renderFrame.bind(this, callback), 1);
-    }
-  }
-
   startRender() {
     const then = Date.now();
     setTimeout(this.renderFrame.bind(this, () => {
@@ -205,6 +189,22 @@ export default class CreateGIF extends Component {
       });
       this.gif.render();
     }), 100);
+  }
+
+  renderFrame(callback) {
+    if (!this.mounted) return;
+    this.count++;
+    this.setFrameProgress(this.count, this.duration * this.fps);
+    const time = this.count * (1 / this.fps) + this.startTime;
+    viewer.animate(null, time);
+    this.renderer.render(viewer.renderScene, this.camera);
+    document.body.appendChild(this.renderer.domElement);
+    this.diffPixels(this.renderer.domElement);
+    if (time > this.endTime) {
+      callback();
+    } else {
+      setTimeout(this.renderFrame.bind(this, callback), 1);
+    }
   }
 
   render({ roomId, id }, { scene, progress, gifData, gifUrl }) {
