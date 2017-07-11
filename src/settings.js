@@ -39,4 +39,6 @@ export default {
 
   shouldCull: true,
   cullDistance: 12,
+
+  useShadow: true,
 };

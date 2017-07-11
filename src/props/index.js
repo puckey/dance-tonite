@@ -10,6 +10,7 @@ import isometricWallUrl from './models/first-wall-isometric.obj';
 import isometricRoomUrl from './models/space-isometric.obj';
 import roomTextureUrl from './models/bake/VR_AOMap.png';
 import isometricRoomTextureUrl from './models/bake/ISO_AOMap.png';
+import shadowTextureUrl from './shadow.png';
 
 const {
   Mesh,
@@ -41,7 +42,6 @@ const props = {
     cylinder.rotation.x = Math.PI * 0.5 * 7;
     cylinder.updateMatrix();
     cylinder.geometry.applyMatrix(cylinder.matrix);
-    cylinder.castShadow = true;
     return cylinder;
   }()),
 
@@ -86,7 +86,6 @@ const props = {
     cone.rotation.x = Math.PI * 0.5 * 7;
     cone.updateMatrix();
     cone.geometry.applyMatrix(cone.matrix);
-    cone.castShadow = true;
     return cone;
   }()),
 
@@ -106,6 +105,20 @@ const props = {
 
   grid: (function createGrid() {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
+  }()),
+
+  shadow: (function createShadow() {
+    const texture = new THREE.TextureLoader().load(shadowTextureUrl);
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      blending: THREE.SubtractiveBlending,
+    });
+    const geometry = new THREE.PlaneBufferGeometry(0.5, 0.5, 1, 1);
+    const plane = new THREE.Mesh(geometry, material);
+    return plane;
   }()),
 
   prepare: () => Promise.all(
