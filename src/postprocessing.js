@@ -3,6 +3,8 @@ import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effect
 import BadTVShader from './lib/BadTVShader';
 import StaticShader from './lib/StaticShader';
 
+import settings from './settings';
+
 export default function setup({ renderer, scene, camera }) {
   const composer = new EffectComposer(renderer);
   // composer.setSize(renderer.width, renderer.height);
@@ -25,7 +27,7 @@ export default function setup({ renderer, scene, camera }) {
 
   let shaderTime = 0;
 
-  const pixelRatio = window.devicePixelRatio || 1;
+  const pixelRatio = Math.min(window.devicePixelRatio, settings.maxPixelRatio) || 1;
 
   return {
     render: function () {
