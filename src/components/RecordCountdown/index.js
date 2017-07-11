@@ -7,6 +7,7 @@ import roundText from './round-text';
 import RoomInstructions from '../RoomInstructions';
 import audio from '../../audio';
 import settings from '../../settings';
+import transition from '../../transition';
 
 export default class RecordCountdown extends Component {
   constructor() {
@@ -52,11 +53,11 @@ export default class RecordCountdown extends Component {
   }
 
   render(props, { main, subtitle }) {
-    return (
+    return !transition.isFadedOut() ? (
       <RoomInstructions
         main={main}
         subtitle={subtitle}
       />
-    );
+    ) : null;
   }
 }
