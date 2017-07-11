@@ -112,7 +112,7 @@ const props = {
     const material = new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
-      side: THREE.DoubleSide,
+      side: THREE.BackSide,
       depthWrite: false,
       blending: THREE.SubtractiveBlending,
     });
