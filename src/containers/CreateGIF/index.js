@@ -115,7 +115,9 @@ export default class CreateGIF extends Component {
     this.setState({ scene });
 
     this.gif = new deps.GIF({
-      workers: (window.navigator.hardwareConcurrency - 1) || 2,
+      workers: window.navigator.hardwareConcurrency
+        ? (Math.min(4, window.navigator.hardwareConcurrency))
+        : 2,
       quality: 1,
       workerScript: '/public/gif.worker.js',
       globalPalette: true,
