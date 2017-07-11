@@ -53,6 +53,8 @@ const cameras = (function () {
   return { default: perspective, orthographic };
 }());
 
+const cameraWorldPos = new THREE.Vector3();
+
 let lastZoom = 4;
 let lastAspectRatio;
 const zoomCamera = (zoom) => {
@@ -121,6 +123,7 @@ const onResize = ({ width, height, aspectRatio }) => {
 const viewer = Object.assign(emitter(), {
   camera: cameras.orthographic,
   cameras,
+  cameraWorldPos,
   createScene,
   scene,
   renderScene: scene,
@@ -150,6 +153,9 @@ const viewer = Object.assign(emitter(), {
     audio.tick(staticTime);
     Room.clear();
     viewer.emit('tick', dt);
+
+    cameraWorldPos.setFromMatrixPosition(viewer.camera.matrixWorld);
+
     zoomCamera(
       audio.progress > 21
         ? Math.min(2, audio.progress - 21) * 0.5
@@ -179,7 +185,7 @@ const viewer = Object.assign(emitter(), {
     installVRController(THREE);
     viewer.renderer = renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor(0x000000);
-    renderer.setPixelRatio(feature.isMobile ? 1 : window.devicePixelRatio);
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(windowSize.width, windowSize.height);
     renderer.sortObjects = false;
 

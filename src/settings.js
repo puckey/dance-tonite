@@ -36,4 +36,7 @@ export default {
   dropTime: 216.624266,
 
   loopDuration: 8,
+
+  shouldCull: true,
+  cullDistance: 12,
 };
