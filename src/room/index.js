@@ -189,6 +189,7 @@ export default class Room {
 
   getPose(performanceIndex, limbIndex, offset, applyMatrix = false) {
     const { frame } = this;
+    if (!frame.isLoaded()) return;
     frame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
 
     // Morph the beginning of the first performance with the end of the last:
