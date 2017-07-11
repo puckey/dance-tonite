@@ -25,7 +25,7 @@ export default function setup({ renderer, scene, camera }) {
 
   let shaderTime = 0;
 
-  const pixelRatio = window.devicePixelRatio || 1;
+  const pixelRatio = 1;
 
   return {
     render: function () {
