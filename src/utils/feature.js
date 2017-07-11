@@ -1,4 +1,5 @@
 const userAgent = navigator.userAgent;
+import { queryData } from '../utils/url';
 
 const verbosity = 0;
 const log = (...args) => {
@@ -123,6 +124,7 @@ const feature = {
   isAndroid,
   isChrome: /chrome/i.test(userAgent),
   stats: /fps/.test(window.location.hash),
+  maxDevicePixelRatio: queryData.dpr || window.devicePixelRatio,
   vrPolyfill,
   hasWebGL: checkHasWebGL(),
   hasWebVR,

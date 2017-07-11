@@ -179,7 +179,7 @@ const viewer = Object.assign(emitter(), {
     installVRController(THREE);
     viewer.renderer = renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor(0x000000);
-    renderer.setPixelRatio(feature.isMobile ? 1 : window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, feature.maxDevicePixelRatio));
     renderer.setSize(windowSize.width, windowSize.height);
     renderer.sortObjects = false;
 
