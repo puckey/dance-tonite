@@ -30,7 +30,7 @@ export default class Frames {
     let meta;
     this.streamer = streamJSON(
       `${PROTOCOL}//storage.googleapis.com/you-move-me.appspot.com/recordings/${this.id}/${
-        `${queryData.fps || (feature.has6DOF ? 45 : 15)}FPS.json`
+        `${queryData.dataRate || (feature.has6DOF ? 45 : 15)}FPS.json`
       }`,
       (error, json) => {
         if (error || !json) {
