@@ -29,8 +29,6 @@ import { createPose } from '../utils/serializer';
 import audio from '../audio';
 import { elasticIn } from '../utils/easing';
 
-import feature from '../utils/feature';
-
 let items;
 const UP_EULER = new THREE.Euler(Math.PI * 0.5, 0, 0);
 
@@ -234,6 +232,10 @@ export default class Room {
   }
 
   setShadowPose(copyPose, position, index, sub = 0, small) {
+    if (settings.useShadow === false) {
+      return;
+    }
+
     const objHeight = copyPose[0].y;
 
     copyPose[0].y = 0.01;
@@ -310,7 +312,7 @@ Room.clear = () => {
   if (!items) return;
   items.hand.empty();
   items.head.empty();
-  if (feature.shadow) {
+  if (settings.useShadow) {
     items.shadow.empty();
   }
 };
@@ -343,7 +345,7 @@ Room.reset = () => {
       ),
     };
 
-    if (feature.shadow) {
+    if (settings.useShadow) {
       items.shadow = new InstancedItem(
         layout.roomCount * 30,
         props.shadow,

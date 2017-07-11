@@ -123,7 +123,6 @@ const feature = {
   isAndroid,
   isChrome: /chrome/i.test(userAgent),
   stats: /fps/.test(window.location.hash),
-  shadow: /shadow/.test(window.location.hash),
   vrPolyfill,
   hasWebGL: checkHasWebGL(),
   hasWebVR,
