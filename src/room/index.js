@@ -168,7 +168,7 @@ export default class Room {
   gotoTime(seconds, maxLayers, highlightLast = false) {
     this.currentTime = seconds;
 
-    if (this.cullRoom()) {
+    if (settings.shouldCull && this.cullRoom()) {
       return;
     }
 
@@ -264,7 +264,7 @@ export default class Room {
 
   cullRoom() {
     const distanceToCamera = Math.abs(this.position.z + viewer.cameraWorldPos.z);
-    return distanceToCamera > 12;
+    return distanceToCamera > settings.cullDistance;
   }
 
   destroy() {
