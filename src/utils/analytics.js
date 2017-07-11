@@ -1,5 +1,5 @@
 import feature from './feature';
-
+import capitalize from './capitalize';
 
 //  Google Analytics injection.
 
@@ -60,7 +60,7 @@ const analytics = {
   // right now this must be called manually
   //  but can we make a location.href event listener instead? would that make sense??????
   recordSectionChange: (label) => {
-    const labelProper = label.charAt(0).toUpperCase() + label.slice(1);
+    const labelProper = capitalize(label);
     if (verbosity >= 0.5) console.log('Note:', labelProper);
     if (window.ga !== undefined && typeof window.ga === 'function') {
       const callback = () => {
