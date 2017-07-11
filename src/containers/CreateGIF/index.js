@@ -8,6 +8,7 @@ import deps from '../../deps';
 import * as THREE from '../../lib/three';
 import viewer from '../../viewer';
 import settings from '../../settings';
+import audio from '../../audio';
 
 import Room from '../../components/Room';
 import Align from '../../components/Align';
@@ -87,6 +88,7 @@ export default class CreateGIF extends Component {
   }
 
   async asyncMount() {
+    audio.reset();
     const renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor(0x000000);
     renderer.setPixelRatio(1); // window.devicePixelRatio
