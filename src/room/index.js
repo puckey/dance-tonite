@@ -232,7 +232,8 @@ export default class Room {
   }
 
   setShadowPose(copyPose, position, index, sub = 0, small) {
-    if (settings.useShadow === false) {
+    // no shadows if disabled, or in VR mode
+    if ((settings.useShadow === false) || (viewer.vrEffect.isPresenting)) {
       return;
     }
 
