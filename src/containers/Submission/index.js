@@ -26,7 +26,9 @@ export default class Submission extends Component {
       facebook: 'https://www.facebook.com/sharer/sharer.php?u=',
     };
 
+    this.gotoPlayback = this.gotoPlayback.bind(this);
     this.onRoomLoadError = this.onRoomLoadError.bind(this);
+    this.gotoCreateGif = this.gotoCreateGif.bind(this);
   }
 
   componentDidMount() {
@@ -43,12 +45,20 @@ export default class Submission extends Component {
     window.location = '/'; // If the room was deleted, redirect to homepage
   }
 
+  gotoCreateGif() {
+    this.props.goto('gif');
+  }
+
   async asyncMount() {
     viewer.exitPresent();
     transition.reset();
   }
 
-  render({ roomId, id, fromRecording, onGotoFullExperience }) {
+  gotoPlayback() {
+    this.props.goto('playback');
+  }
+
+  render({ roomId, id, fromRecording }) {
     return (
       <div className="submission">
         <Room
@@ -66,12 +76,13 @@ export default class Submission extends Component {
 full experience`
               : 'Watch in full experience'
             }
-            onClick={onGotoFullExperience}
+            onClick={this.gotoPlayback}
+            underline
           />
         </Align>
         { fromRecording &&
           <ShareButtons roomId={roomId} id={id}>
-            <ButtonItem text="Create animated GIF" navigate="/" />
+            <ButtonItem text="Create animated GIF" onClick={this.gotoCreateGif} underline />
           </ShareButtons>
         }
       </div>

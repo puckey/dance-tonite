@@ -35,7 +35,6 @@ let items;
 const UP_EULER = new THREE.Euler(Math.PI * 0.5, 0, 0);
 
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
-const X_AXIS = new THREE.Vector3(1, 0, 0);
 const SCRATCH_QUATERNION = new THREE.Quaternion();
 
 const debugMesh = new THREE.Mesh(
@@ -102,6 +101,7 @@ export default class Room {
       .add(this.position)
       .add(roomOffset);
     position.y -= 1;
+
     const type = layout.getType(index);
     if (type !== 'PLANE') {
       items.room.add([position, null], roomColor);
@@ -175,6 +175,11 @@ export default class Room {
 
   gotoTime(seconds, maxLayers, highlightLast = false) {
     this.currentTime = seconds;
+
+    if (settings.shouldCull && this.cullRoom()) {
+      return;
+    }
+
     // In orthographic mode, scale up the meshes:
     const scale = InstancedItem.perspectiveMode ? 1 : 1.5;
 
@@ -205,6 +210,7 @@ export default class Room {
 
   getPose(performanceIndex, limbIndex, offset, applyMatrix = false) {
     const { frame } = this;
+    if (!frame.isLoaded()) return;
     frame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
 
     // Morph the beginning of the first performance with the end of the last:
@@ -285,6 +291,11 @@ export default class Room {
           : elasticIn(1 - ratio)
       );
     }
+  }
+
+  cullRoom() {
+    const distanceToCamera = Math.abs(this.position.z + viewer.cameraWorldPos.z);
+    return distanceToCamera > settings.cullDistance;
   }
 
   destroy() {

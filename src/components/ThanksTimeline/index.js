@@ -42,7 +42,7 @@ export default class TutorialTimeline extends Component {
       'Killer steps.',
       'Sh.. Sh.. Shake it!',
       'So elegant.',
-      'Remarkeable.',
+      'Remarkable.',
       'You monster, you!',
       'Cut that rug up!',
       'Exactly!',
@@ -64,85 +64,42 @@ export default class TutorialTimeline extends Component {
       'Gene, is that you?',
       'Crank that.',
     ]);
-    const keyframes = this.props.fromRecording
-      ? [
-        {
-          duration: 2,
-          text: '',
-        },
-        {
-          duration: 1,
-          text: '...',
-        },
-        {
-          duration: 1,
-          text: 'Gosh...',
-        },
-        {
-          duration: 2,
-          text: 'We have no words!',
-        },
-        {
-          duration: 4,
-          text: 'That was amazing.',
-        },
-        {
-          duration: 4,
-          text: 'You must be worn out.',
-        },
-        {
-          duration: 6,
-          text: 'Thanks so much for your contribution.',
-        },
-        {
-          duration: 4,
-          text: 'Let’s take a moment to admire your moves:',
-        },
-        {
-          duration: 3,
-          text: '',
-        },
-      ]
-    : [
+    const keyframes = [
       {
         duration: 2,
         text: '',
       },
       {
+        duration: 1,
+        text: '...',
+      },
+      {
+        duration: 1,
+        text: 'Gosh...',
+      },
+      {
         duration: 2,
-        text: '…',
+        text: 'We have no words!',
+      },
+      {
+        duration: 4,
+        text: 'That was amazing.',
+      },
+      {
+        duration: 4,
+        text: 'You must be worn out.',
       },
       {
         duration: 6,
-        text: 'Here’s your friend in Dance Tonite.',
-      },
-      {
-        duration: 0.5,
-        text: 'Pretty,',
-      },
-      {
-        duration: 0.5,
-        text: 'Pretty, pretty.',
-      },
-      {
-        duration: 0.5,
-        text: 'Pretty, pretty, good,',
+        text: 'Thanks so much for your contribution.',
       },
       {
         duration: 4,
-        text: 'Pretty, pretty, good, right?',
-      },
-      {
-        duration: 4,
-        text: 'Be sure to watch them in the full experience.',
+        text: 'Let’s take a moment to admire your moves:',
       },
       {
         duration: 3,
-        text: 'But first…',
-      },
-      {
-        duration: 4,
-        text: 'Let’s take a moment to admire their moves:',
+        text: '',
       },
     ];
 

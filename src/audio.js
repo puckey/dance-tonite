@@ -13,28 +13,60 @@ let gainNode;
 let loopCount;
 let duration = 0;
 let lastTime = 0;
+let audioTime;
 let lastLoopProgress = 0;
 let startTime;
+let contextStartTime;
 let audioElement;
 let request;
 let onCanPlayThrough;
 let onPause;
 let onPlay;
-let onSeeked;
+let onSeeking;
 let pauseTime;
 let muted = false;
+let pauseCount = 0;
 
 const FADE_OUT_SECONDS = 2;
 const ALMOST_ZERO = 1e-4;
 
 let scheduledTime;
 const audio = Object.assign(emitter(), {
-  tick() {
-    if ((!audioElement && !context) || !startTime) return;
-    const time = this.time = (audioElement
-      ? (pauseTime || (Date.now() - startTime)) / 1000
-      : context.currentTime - startTime) % duration;
+  tick(staticTime) {
+    if (!context || !duration) return;
+
+    // Because there is no reliable way to see if an audio element is paused,
+    // we need to see if its currentTime property changed. Because the currentTime
+    // doesn't always change each frame, we wait for it to not have changed
+    // 2 times, before actually pausing:
+    if (audioElement) {
+      if (audioTime === audioElement.currentTime) {
+        pauseCount++;
+      } else {
+        pauseCount = 0;
+      }
+      if (pauseCount > 1) return;
+    }
+    const isStatic = staticTime !== undefined;
+    this.time = (isStatic
+      ? staticTime
+      : (pauseTime || (Date.now() - startTime)) / 1000
+    ) % duration;
+
+    if (!isStatic) {
+      // The time as reported by the context or audio element:
+      audioTime = (audioElement
+        ? audioElement.currentTime
+        : context.currentTime - contextStartTime) % audio.duration;
+
+      // If our time is running more than 5ms out of sync, correct it:
+      if (Math.abs(this.time - audioTime) > 0.05) {
+        this.time = audioTime;
+        startTime = Date.now() - this.time * 1000;
+      }
+    }
     const { loopDuration } = settings;
+    const time = this.time;
     // The position within the track as a multiple of loopDuration:
     this.progress = time > 0
       ? time / loopDuration
@@ -43,8 +75,7 @@ const audio = Object.assign(emitter(), {
     this.loopProgress = (time % loopDuration) / loopDuration;
 
     // True when the audio looped, false otherwise:
-    this.looped = time < lastTime;
-
+    this.looped = (time < lastTime) && Math.abs(time - lastTime) > (audio.duration * 0.9);
     if (this.looped) {
       // The index of the loop, used when the audio has more than one loops:
       this.loopIndex = Math.floor(this.progress * loopCount);
@@ -54,7 +85,6 @@ const audio = Object.assign(emitter(), {
     this.totalProgress = this.loopCount * loopCount + this.progress;
     this.totalTime = this.totalProgress * loopDuration;
     lastTime = time;
-
     if (this.totalProgress - lastLoopProgress > 1) {
       lastLoopProgress = Math.floor(this.totalProgress);
       this.emit('loop', lastLoopProgress);
@@ -75,7 +105,6 @@ const audio = Object.assign(emitter(), {
       this.loopCount = 0;
       const canPlay = () => {
         this.duration = duration;
-        if (context) context.suspend();
         resolve(param.src);
       };
 
@@ -103,21 +132,21 @@ const audio = Object.assign(emitter(), {
           this.emit('pause');
         };
         onPlay = () => {
-          startTime = Date.now() - getAudioTime();
           this.paused = false;
           pauseTime = null;
           this.emit('play');
         };
-        onSeeked = () => {
+        onSeeking = () => {
           startTime = Date.now() - getAudioTime();
           if (pauseTime) {
             pauseTime = getAudioTime();
           }
+          this.time = audioElement.currentTime;
         };
         audioElement.addEventListener('canplaythrough', onCanPlayThrough);
         audioElement.addEventListener('pause', onPause);
-        audioElement.addEventListener('play', onPlay);
-        audioElement.addEventListener('seeked', onSeeked);
+        audioElement.addEventListener('playing', onPlay);
+        audioElement.addEventListener('seeking', onSeeking);
         source = context.createMediaElementSource(audioElement);
       } else {
         source = context.createBufferSource();
@@ -133,7 +162,8 @@ const audio = Object.assign(emitter(), {
               duration = source.buffer.duration;
               source.loop = param.loop === undefined ? true : param.loop;
               source.start(0);
-              startTime = context.currentTime;
+              contextStartTime = context.currentTime;
+              startTime = Date.now();
               canPlay();
             },
             reject
@@ -150,7 +180,9 @@ const audio = Object.assign(emitter(), {
   play() {
     this.paused = false;
     if (context) context.resume();
-    if (audioElement) audioElement.play();
+    if (audioElement) {
+      audioElement.play();
+    }
     if (!this.muted) {
       audio.fadeIn();
     }
@@ -159,7 +191,9 @@ const audio = Object.assign(emitter(), {
   pause() {
     this.paused = true;
     if (context) context.suspend();
-    if (audioElement) audioElement.pause();
+    if (audioElement) {
+      audioElement.pause();
+    }
   },
 
   toggle() {
@@ -168,7 +202,7 @@ const audio = Object.assign(emitter(), {
 
   gotoTime(time) {
     audioElement.currentTime = time;
-    startTime = Date.now() - time * 1000;
+    this.tick();
   },
 
   previousLoop() {
@@ -188,6 +222,8 @@ const audio = Object.assign(emitter(), {
     this.loopProgress = 0;
     this.totalProgress = 0;
     this.looped = false;
+    duration = 0;
+    lastTime = null;
   },
 
   reset() {
@@ -199,8 +235,9 @@ const audio = Object.assign(emitter(), {
     if (audioElement) {
       audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
       audioElement.removeEventListener('pause', onPause);
-      audioElement.removeEventListener('play', onPlay);
-      audioElement.removeEventListener('seeked', onSeeked);
+      audioElement.removeEventListener('playing', onPlay);
+      audioElement.removeEventListener('seeking', onSeeking);
+      audioElement.pause();
       audioElement = null;
       onCanPlayThrough = null;
     }
@@ -209,7 +246,8 @@ const audio = Object.assign(emitter(), {
       request.onload = null;
       request = null;
     }
-    pauseTime = startTime = null;
+    pauseTime = contextStartTime = null;
+    startTime = 0;
   },
 
   rewind() {

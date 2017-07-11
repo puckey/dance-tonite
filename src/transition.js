@@ -76,7 +76,6 @@ const fadeOut = (duration) => {
       textItem.updateLabel('');
     }
   }, duration * 0.5);
-  fadedOut = true;
   return tweenFog(25, 0, duration);
 };
 
@@ -136,6 +135,10 @@ const transition = {
 
   isInside() {
     return insideTransition;
+  },
+
+  isFadedOut() {
+    return fadedOut;
   },
 
   async enter(param = {}) {

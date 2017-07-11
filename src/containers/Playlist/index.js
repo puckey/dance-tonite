@@ -18,6 +18,8 @@ import router from '../../router';
 import BackgroundTimeline from '../../components/BackgroundTimeline';
 import RoomLabels from '../../components/RoomLabels';
 import POV from '../../components/POV';
+import Align from '../../components/Align';
+import RoomCountdown from '../../components/RoomCountdown';
 
 export default class Playlist extends Component {
   constructor() {
@@ -126,6 +128,10 @@ export default class Playlist extends Component {
 
   tick() {
     if (!this.state.rooms || transition.isInside()) return;
+    const currentRoomID = audio.progress > 0.7 && Math.floor(audio.progress) - 1;
+    if (this.state.currentRoomID !== currentRoomID) {
+      this.setState({ currentRoomID });
+    }
     this.moveOrb(audio.progress || 0);
 
     for (let i = 0; i < this.state.rooms.length; i++) {
@@ -142,7 +148,10 @@ export default class Playlist extends Component {
     router.navigate(`/choose/${room.index}/`);
   }
 
-  render({ recording, stopped, orb }, { rooms, entries }) {
+  render(
+    { recording, stopped, orb, pathRoomId },
+    { rooms, entries, currentRoomID }
+  ) {
     return (
       <div>
         {!stopped && <POV
@@ -154,6 +163,13 @@ export default class Playlist extends Component {
           rooms={rooms}
           orb={orb && this.orb}
         />
+        }
+        {
+          pathRoomId !== undefined && currentRoomID && (
+            <Align type="bottom-left">
+              <RoomCountdown target={pathRoomId} current={currentRoomID} />
+            </Align>
+          )
         }
         {
           (process.env.FLAVOR === 'cms' && !viewer.vrEffect.isPresenting)

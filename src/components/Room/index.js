@@ -8,6 +8,8 @@ import layout from '../../room/layout';
 import feature from '../../utils/feature';
 import recording from '../../recording';
 
+import Align from '../Align';
+import Spinner from '../Spinner';
 import RecordOrbs from '../RecordOrbs';
 
 const state = {};
@@ -15,6 +17,11 @@ const state = {};
 export default class RoomComponent extends Component {
   constructor() {
     super();
+
+    this.state = {
+      loading: false,
+    };
+
     this.performOrbLeftRoom = this.performOrbLeftRoom.bind(this);
     this.performOrbEnteredRoom = this.performOrbEnteredRoom.bind(this);
     this.receiveOrb = this.receiveOrb.bind(this);
@@ -56,12 +63,26 @@ export default class RoomComponent extends Component {
   }
 
   onRoomLoaded(err) {
+    console.log('room loaded');
+    audio.play();
+    this.setState({ loading: false });
+
     if (err && this.props.onRoomLoadError) {
       this.props.onRoomLoadError(err);
+    } else if (this.props.onRoomLoaded) {
+      this.props.onRoomLoaded(err);
     }
   }
 
-  async asyncMount({ roomId, id, record, presenting, morph }) {
+  async asyncMount({
+    roomId,
+    id,
+    record,
+    presenting,
+    morph,
+    progressive,
+    fadeOrbs = true,
+  }) {
     Room.reset();
     state.originalCameraPosition = viewer.camera.position.clone();
     state.originalZoom = viewer.camera.zoom;
@@ -73,10 +94,12 @@ export default class RoomComponent extends Component {
       Room.rotate180();
     }
 
+    this.setState({ loading: true });
     await audio.load({
       src: `/public/sound/room-${layout.loopIndex(roomId)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
       loops: 2,
       loopOffset: 0.5,
+      progressive,
     });
     if (!this.mounted) return;
     const room = new Room({
@@ -86,10 +109,16 @@ export default class RoomComponent extends Component {
       recording: record ? recording : null,
       morph,
     });
-    room.changeColorToWaiting();
+    if (fadeOrbs) {
+      room.changeColorToWaiting();
+    }
+
+    audio.pause();
+
     if (id) {
-      audio.play();
       room.load(this.onRoomLoaded);
+    } else {
+      this.setState({ loading: false });
     }
     this.setState({ room });
     viewer.on('tick', this.tick);
@@ -128,17 +157,21 @@ export default class RoomComponent extends Component {
     this.state.room.gotoTime(audio.time, layers, this.props.highlightLast);
   }
 
-  render() {
+  render({ orbs, fadeOrbs = true }, { loading }) {
     return (
       <div>
-        {this.props.orbs &&
+        {orbs &&
           <RecordOrbs
-            onEnteredRoom={this.performOrbEnteredRoom}
-            onLeftRoom={this.performOrbLeftRoom}
+            fade={fadeOrbs}
+            onEnteredRoom={fadeOrbs && this.performOrbEnteredRoom}
+            onLeftRoom={fadeOrbs && this.performOrbLeftRoom}
             onCreatedOrb={this.receiveOrb}
             reversed={this.props.reverseOrbs}
           />
         }
+        <Align type="center">
+          { loading && <Spinner /> }
+        </Align>
         {this.props.children}
       </div>
     );

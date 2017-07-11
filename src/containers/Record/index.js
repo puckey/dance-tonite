@@ -173,7 +173,6 @@ export default class Record extends Component {
           roomId={roomId}
           onOrbEnteredRoom={this.performRecordRoom}
           onOrbLeftRoom={this.performWaitRoom}
-          onReady={this.performExitTransition}
         />
         { mode === 'connect-controllers'
           ? <ConnectControllers

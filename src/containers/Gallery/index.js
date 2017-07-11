@@ -9,12 +9,14 @@ import Room from '../../components/Room';
 import Container from '../../components/Container';
 import Error from '../../components/Error';
 import Align from '../../components/Align';
+import Title from '../../components/Title';
 import PaginatedList from '../../components/PaginatedList';
 import Spinner from '../../components/Spinner';
 
 import router from '../../router';
 import getFontSize from '../../utils/font-size';
 import windowSize from '../../utils/windowSize';
+import feature from '../../utils/feature';
 import settings from '../../settings';
 
 export default class Gallery extends Component {
@@ -87,6 +89,7 @@ export default class Gallery extends Component {
     return (
       <Container>
         <Menu close mute about />
+        <Title>{feature.isMobile ? 'Gallery' : 'Featured Performances'}</Title>
         <Align type="bottom-left" margin>
           <PaginatedList
             item={item}
@@ -100,8 +103,10 @@ export default class Gallery extends Component {
           ? <Room
             id={recording.id}
             roomId={1 + ((recording.room - 1) % settings.roomCount)}
-            key={recording && recording.id}
+            key={recording.id}
+            progressive={feature.isMobile}
             orbs
+            morph
           />
           : null
         }

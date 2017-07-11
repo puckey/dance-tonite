@@ -6,6 +6,7 @@ import CMSMenu from '../../components/CMSMenu';
 import Container from '../../components/Container';
 import Playback from '../Playback';
 import Submission from '../Submission';
+import CreateGIF from '../CreateGIF';
 
 import recording from '../../recording';
 import router from '../../router';
@@ -21,21 +22,17 @@ export default class PlaybackFlow extends Component {
     const fromRecording = recording.exists() && hasRoomId;
 
     this.state = {
-      mode: (!hasRoomId || fromRecording)
-        ? 'playback'
-        : 'submission',
+      mode: 'playback',
       fromRecording,
       count: 0,
     };
     this.performGotoFullExperience = this.performGotoFullExperience.bind(this);
     this.performGotoSubmission = this.performGotoSubmission.bind(this);
+    this.setMode = this.setMode.bind(this);
   }
 
-  goto(mode) {
-    const count = this.state.count + 1;
-    this.setState({ count });
-    analytics.recordSectionChange(mode);
-    router.navigate(mode);
+  setMode(mode) {
+    this.setState({ mode });
   }
 
   revealOverlay(type) {
@@ -73,7 +70,7 @@ export default class PlaybackFlow extends Component {
       : (presenting && feature.vrPolyfill)
         ? <Menu />
         : (
-          fromRecording || mode === 'submission'
+          fromRecording || /submission|gif/.test(mode)
             ? <Menu about mute />
             : <Menu vr addRoom about mute />
       );
@@ -94,11 +91,18 @@ export default class PlaybackFlow extends Component {
               onGotoSubmission={this.performGotoSubmission}
               colophon={!fromRecording}
             />
-            : <Submission
-              {...props}
-              fromRecording={fromRecording}
-              onGotoFullExperience={this.performGotoFullExperience}
-            />
+            : mode === 'gif'
+              ? <CreateGIF
+                {...props}
+                inContextOfRecording={fromRecording}
+                goto={this.setMode}
+              />
+              : <Submission
+                {...props}
+                goto={this.setMode}
+                fromRecording={fromRecording}
+                onGotoFullExperience={this.performGotoFullExperience}
+              />
         }
       </Container>
     );

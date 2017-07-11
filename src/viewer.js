@@ -34,7 +34,7 @@ const orthographicDistance = 4;
 
 const cameras = (function () {
   const { aspectRatio } = windowSize;
-  const perspective = new THREE.PerspectiveCamera(90, aspectRatio, 0.01, 200);
+  const perspective = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
   perspective.lookAt(tempVector(0, 0, 1));
   perspective.position.y = settings.holeHeight;
 
@@ -53,11 +53,14 @@ const cameras = (function () {
   return { default: perspective, orthographic };
 }());
 
+const cameraWorldPos = new THREE.Vector3();
+
 let lastZoom = 4;
+let lastAspectRatio;
 const zoomCamera = (zoom) => {
   const newZoom = sineInOut(zoom);
-  if (newZoom === lastZoom) return;
   const { aspectRatio } = windowSize;
+  if (newZoom === lastZoom && lastAspectRatio === aspectRatio) return;
   const distance = orthographicDistance + newZoom * 3;
   const camera = cameras.orthographic;
   camera.left = -distance * aspectRatio;
@@ -77,7 +80,7 @@ let clock;
 
 const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
 
-const scene = (() => {
+const createScene = () => {
   const _scene = new THREE.Scene();
   const light = new THREE.DirectionalLight(0xffffff);
   light.position.set(-1.42, 1.86, 0.74).normalize();
@@ -88,7 +91,9 @@ const scene = (() => {
   _scene.add(hemisphereLight, light, ambientLight);
   _scene.fog = new THREE.Fog(0x000000, 0, 120);
   return _scene;
-})();
+};
+
+const scene = createScene();
 
 const onResize = ({ width, height, aspectRatio }) => {
   const { orthographic } = cameras;
@@ -118,11 +123,60 @@ const onResize = ({ width, height, aspectRatio }) => {
 const viewer = Object.assign(emitter(), {
   camera: cameras.orthographic,
   cameras,
+  cameraWorldPos,
+  createScene,
   scene,
   renderScene: scene,
   controllers: [{}, {}],
   controls,
   renderer,
+  stopAnimating: () => {
+    viewer.animating = false;
+  },
+  startAnimating: () => {
+    viewer.animating = true;
+    viewer.animate();
+  },
+  animate: (timestamp, staticTime) => {
+    const dt = clock.getDelta();
+    if (viewer.animating) {
+      vrEffect.requestAnimationFrame(viewer.animate);
+    }
+
+    THREE.VRController.update();
+
+    if (feature.isIODaydream) {
+      viewer.daydreamController.update();
+    }
+
+    controls.update();
+    audio.tick(staticTime);
+    Room.clear();
+    viewer.emit('tick', dt);
+
+    cameraWorldPos.setFromMatrixPosition(viewer.camera.matrixWorld);
+
+    zoomCamera(
+      audio.progress > 21
+        ? Math.min(2, audio.progress - 21) * 0.5
+        : 0
+    );
+
+    if (staticTime !== undefined) return;
+
+    if (!vrEffect.isPresenting && viewer.camera === cameras.default) {
+      renderPostProcessing();
+    } else {
+      vrEffect.render(viewer.renderScene, viewer.camera);
+    }
+
+    if (vrEffect.isPresenting && feature.hasExternalDisplay) {
+      renderer.render(viewer.renderScene, viewer.camera);
+    }
+
+    viewer.emit('render', dt);
+    if (feature.stats) stats(renderer);
+  },
   prepare: () => {
     clock = new THREE.Clock();
     clock.start();
@@ -146,6 +200,7 @@ const viewer = Object.assign(emitter(), {
 
     window.addEventListener('vrdisplaypresentchange', () => {
       viewer.emit('vr-present-change', vrEffect.isPresenting);
+      if (!vrEffect.isPresenting) viewer.switchCamera('orthographic');
     }, false);
 
     const { render, resize } = postprocessing({
@@ -156,7 +211,7 @@ const viewer = Object.assign(emitter(), {
     renderPostProcessing = render;
     resizePostProcessing = resize;
     windowSize.on('resize', onResize, false);
-    animate();
+    viewer.startAnimating();
   },
 
   exitPresent() {
@@ -192,39 +247,5 @@ const viewer = Object.assign(emitter(), {
   },
   vrEffect,
 });
-
-const animate = () => {
-  const dt = clock.getDelta();
-  vrEffect.requestAnimationFrame(animate);
-
-  THREE.VRController.update();
-
-  if (feature.isIODaydream) {
-    viewer.daydreamController.update();
-  }
-
-  controls.update();
-  audio.tick();
-  Room.clear();
-  viewer.emit('tick', dt);
-  zoomCamera(
-    audio.progress > 21
-      ? Math.min(2, audio.progress - 21) * 0.5
-      : 0
-  );
-
-  if (!vrEffect.isPresenting && viewer.camera === cameras.default) {
-    renderPostProcessing();
-  } else {
-    vrEffect.render(viewer.renderScene, viewer.camera);
-  }
-
-  if (vrEffect.isPresenting && feature.hasExternalDisplay) {
-    renderer.render(viewer.renderScene, viewer.camera);
-  }
-
-  viewer.emit('render', dt);
-  if (feature.stats) stats();
-};
 
 export default viewer;

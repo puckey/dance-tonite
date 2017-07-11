@@ -78,6 +78,7 @@ class InstancedItem {
   }
 
   add(pose, color, scale) {
+    if (!pose) return;
     const index = addInstance(this.perspectiveMesh);
     if (this.orthographicMesh) {
       addInstance(this.orthographicMesh);

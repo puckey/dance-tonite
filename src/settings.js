@@ -22,7 +22,7 @@ export default {
   maxLayerCount: 20,
 
   // The total amount of loops contained in the playback file:
-  totalLoopCount: 28,
+  totalLoopCount: 29,
 
   playlistsUrl: 'https://storage.googleapis.com/you-move-me.appspot.com/playlists/',
 
@@ -36,4 +36,7 @@ export default {
   dropTime: 216.624266,
 
   loopDuration: 8,
+
+  shouldCull: true,
+  cullDistance: 12,
 };
