@@ -8,6 +8,8 @@ import layout from '../../room/layout';
 import feature from '../../utils/feature';
 import recording from '../../recording';
 
+import Align from '../Align';
+import Spinner from '../Spinner';
 import RecordOrbs from '../RecordOrbs';
 
 const state = {};
@@ -15,6 +17,11 @@ const state = {};
 export default class RoomComponent extends Component {
   constructor() {
     super();
+
+    this.state = {
+      loading: false,
+    };
+
     this.performOrbLeftRoom = this.performOrbLeftRoom.bind(this);
     this.performOrbEnteredRoom = this.performOrbEnteredRoom.bind(this);
     this.receiveOrb = this.receiveOrb.bind(this);
@@ -56,6 +63,10 @@ export default class RoomComponent extends Component {
   }
 
   onRoomLoaded(err) {
+    console.log('room loaded');
+    audio.play();
+    this.setState({ loading: false });
+
     if (err && this.props.onRoomLoadError) {
       this.props.onRoomLoadError(err);
     } else if (this.props.onRoomLoaded) {
@@ -63,7 +74,15 @@ export default class RoomComponent extends Component {
     }
   }
 
-  async asyncMount({ roomId, id, record, presenting, morph, progressive, hasAudio = true, fadeOrbs = true }) {
+  async asyncMount({
+    roomId,
+    id,
+    record,
+    presenting,
+    morph,
+    progressive,
+    fadeOrbs = true,
+  }) {
     Room.reset();
     state.originalCameraPosition = viewer.camera.position.clone();
     state.originalZoom = viewer.camera.zoom;
@@ -75,6 +94,7 @@ export default class RoomComponent extends Component {
       Room.rotate180();
     }
 
+    this.setState({ loading: true });
     await audio.load({
       src: `/public/sound/room-${layout.loopIndex(roomId)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
       loops: 2,
@@ -92,13 +112,13 @@ export default class RoomComponent extends Component {
     if (fadeOrbs) {
       room.changeColorToWaiting();
     }
+
+    audio.pause();
+
     if (id) {
-      if (hasAudio) {
-        audio.play();
-      }
       room.load(this.onRoomLoaded);
     } else {
-      audio.pause();
+      this.setState({ loading: false });
     }
     this.setState({ room });
     viewer.on('tick', this.tick);
@@ -137,7 +157,7 @@ export default class RoomComponent extends Component {
     this.state.room.gotoTime(audio.time, layers, this.props.highlightLast);
   }
 
-  render({ orbs, fadeOrbs = true }) {
+  render({ orbs, fadeOrbs = true }, { loading }) {
     return (
       <div>
         {orbs &&
@@ -149,6 +169,9 @@ export default class RoomComponent extends Component {
             reversed={this.props.reverseOrbs}
           />
         }
+        <Align type="center">
+          { loading && <Spinner /> }
+        </Align>
         {this.props.children}
       </div>
     );

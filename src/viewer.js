@@ -34,7 +34,7 @@ const orthographicDistance = 4;
 
 const cameras = (function () {
   const { aspectRatio } = windowSize;
-  const perspective = new THREE.PerspectiveCamera(90, aspectRatio, 0.01, 200);
+  const perspective = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
   perspective.lookAt(tempVector(0, 0, 1));
   perspective.position.y = settings.holeHeight;
 
@@ -175,7 +175,7 @@ const viewer = Object.assign(emitter(), {
     }
 
     viewer.emit('render', dt);
-    if (feature.stats) stats();
+    if (feature.stats) stats(renderer);
   },
   prepare: () => {
     clock = new THREE.Clock();
@@ -200,6 +200,7 @@ const viewer = Object.assign(emitter(), {
 
     window.addEventListener('vrdisplaypresentchange', () => {
       viewer.emit('vr-present-change', vrEffect.isPresenting);
+      if (!vrEffect.isPresenting) viewer.switchCamera('orthographic');
     }, false);
 
     const { render, resize } = postprocessing({

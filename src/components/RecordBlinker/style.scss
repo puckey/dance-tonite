@@ -1,0 +1,15 @@
+@import '../../theme/theme';
+
+.record-label {
+  margin: 0.25rem 0;
+}
+
+.record-blinker {
+  animation: blink 2s infinite step-end;
+  opacity: 1;
+  margin-right: 0.25rem;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}

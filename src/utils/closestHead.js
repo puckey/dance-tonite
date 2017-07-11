@@ -29,15 +29,9 @@ export default (screenX, screenY, rooms) => {
     const roomDistance = distanceToMouse(room.worldPosition);
     if (roomDistance > minRoomDistance) continue;
     for (let j = 0, l = room.frame.count; j < l; j++) {
-      if (room.frames.hideHead === false) {
-        const distance = distanceToMouse(room.getPose(j, 0, room.position, true)[0]);
-        if (distance < closestDistance && distance < MIN_HEAD_DISTANCE) {
-          roomIndex = i;
-          headIndex = j;
-          closestDistance = distance;
-        }
-      }
-      const rdistance = distanceToMouse(room.getPose(j, 1, room.position, true)[0]);
+      const rpose = room.getPose(j, 1, room.position, true);
+      if (!rpose) continue;
+      const rdistance = distanceToMouse(rpose[0]);
       if (rdistance < closestDistance && rdistance < MIN_HEAD_DISTANCE) {
         roomIndex = i;
         headIndex = j;
@@ -48,6 +42,14 @@ export default (screenX, screenY, rooms) => {
         roomIndex = i;
         headIndex = j;
         closestDistance = ldistance;
+      }
+      if (room.frames.hideHead === false) {
+        const distance = distanceToMouse(room.getPose(j, 0, room.position, true)[0]);
+        if (distance < closestDistance && distance < MIN_HEAD_DISTANCE) {
+          roomIndex = i;
+          headIndex = j;
+          closestDistance = distance;
+        }
       }
     }
   }

@@ -89,7 +89,7 @@ export default class Gallery extends Component {
     return (
       <Container>
         <Menu close mute about />
-        <Title>Gallery</Title>
+        <Title>{feature.isMobile ? 'Gallery' : 'Featured Performances'}</Title>
         <Align type="bottom-left" margin>
           <PaginatedList
             item={item}
