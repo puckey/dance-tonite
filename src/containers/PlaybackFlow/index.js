@@ -22,9 +22,7 @@ export default class PlaybackFlow extends Component {
     const fromRecording = recording.exists() && hasRoomId;
 
     this.state = {
-      mode: (!hasRoomId || fromRecording)
-        ? 'playback'
-        : 'submission',
+      mode: 'playback',
       fromRecording,
       count: 0,
     };
