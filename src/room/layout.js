@@ -7,7 +7,6 @@ const plh = { type: 'PLANE', megagrid: true };
 const em = { type: 'EMPTY' };
 const ho = { type: 'HORIZONTAL' };
 const hw = { type: 'HORIZONTAL', wall: true };
-const hbw = { type: 'HORIZONTAL', wall: true, backWall: true };
 
 let rooms = [
   [0, 0, -3, em],
@@ -31,7 +30,7 @@ let rooms = [
   [0, 0, 15, ho],
   [0, 0, 16, ho],
   [0, 0, 17, ho],
-  [0, 0, 18, hbw],
+  [0, 0, 18, ho],
   [-3, 0, 19, ph, 3], [-2, 0, 19, ph, 4], [-1, 0, 19, ph, 5], [0, 0, 19, plh, 8], [1, 0, 19, ph, 5], [2, 0, 19, ph, 4], [3, 0, 19, ph, 3],
   [-3, 0, 20, ph, 2], [-2, 0, 20, ph, 3], [-1, 0, 20, ph, 2], [0, 0, 20, plh, 1], [1, 0, 20, ph, 2], [2, 0, 20, ph, 3], [3, 0, 20, ph, 2],
   [-3, 0, 21, ph, 3], [-2, 0, 21, ph, 6], [-1, 0, 21, ph, 1], [0, 0, 21, plh, 0], [1, 0, 21, ph, 1], [2, 0, 21, ph, 6], [3, 0, 21, ph, 3],
@@ -92,10 +91,6 @@ export default {
 
   hasWall(index) {
     return !!layout[index][3].wall;
-  },
-
-  isBackWall(index) {
-    return !!layout[index][3].backWall;
   },
 
   isOdd(index) {

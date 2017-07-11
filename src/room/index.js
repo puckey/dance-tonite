@@ -98,8 +98,7 @@ export default class Room {
     if (type !== 'PLANE') {
       items.room.add([position, null], roomColor);
       if (single || wall || layout.hasWall(index)) {
-        const wallRotation = layout.isBackWall(index) ? new THREE.Quaternion(0, -1, 0, 0) : null;
-        items.wall.add([position, wallRotation], roomColor);
+        items.wall.add([position, null], roomColor);
       }
     } else {
       this.dropTimes = [];
