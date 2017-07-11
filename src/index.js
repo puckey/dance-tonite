@@ -59,6 +59,11 @@ if (process.env.FLAVOR === 'cms') {
     document.addEventListener('gesturestart', (event) => {
       event.preventDefault();
     }, false);
+    document.addEventListener('touchstart', (event) => {
+      if (event.touches.length > 1) {
+        event.preventDefault();
+      }
+    }, false);
   }
   document.getElementById('initial').remove();
   render(<Router />, document.body, root);
