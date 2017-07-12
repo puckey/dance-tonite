@@ -189,20 +189,20 @@ export default class Room {
       const color = ((highlightLast && isLast) || this.isHighlighted(i))
         ? highlightColor
         : costumeColor;
-      if (!hideHead) {
-        const pose = this.getPose(i, 0, position);
-        items.head.add(pose, color, scale);
-
-        this.setShadowPose(pose, position, i);
-      }
-
       const rhandPose = this.getPose(i, 1, position);
+      if (!rhandPose) continue;
       items.hand.add(rhandPose, color, scale);
       this.setShadowPose(rhandPose, position, i, 1, true);
 
       const lhandPose = this.getPose(i, 2, position);
       items.hand.add(lhandPose, color, scale);
       this.setShadowPose(lhandPose, position, i, 2, true);
+
+      if (!hideHead) {
+        const pose = this.getPose(i, 0, position);
+        items.head.add(pose, color, scale);
+        this.setShadowPose(pose, position, i);
+      }
     }
   }
 
