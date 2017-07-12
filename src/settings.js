@@ -41,9 +41,9 @@ export default {
 
   shouldCull: (queryData.cull === undefined) ? true : queryData.cull, // URL?cull=false
   fogNear: 6,
-  cullDistance: 12,
-  minCullDistance: 12,
-  maxCullDistance: 32,
+  cullDistance: 18,
+  minCullDistance: 18,
+  maxCullDistance: 48,
 
   useShadow: (queryData.shadows === undefined) ? true : queryData.shadows, // URL?shadows=false
 
