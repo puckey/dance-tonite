@@ -109,7 +109,7 @@ const props = {
 
   shadow: (function createShadow() {
     const texture = new THREE.TextureLoader().load(shadowTextureUrl);
-    const material = new THREE.MeshBasicMaterial({
+    const material = new THREE.MeshLambertMaterial({
       map: texture,
       transparent: true,
       side: THREE.BackSide,

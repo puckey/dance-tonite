@@ -233,7 +233,7 @@ export default class Room {
 
   setShadowPose(copyPose, position, index, sub = 0, small) {
     // no shadows if disabled, or in VR mode
-    if ((settings.useShadow === false) || (viewer.vrEffect.isPresenting)) {
+    if (Room.shouldUseShadow() === false) {
       return;
     }
 
@@ -244,7 +244,7 @@ export default class Room {
 
     // shadowPower -> 0 to 1, based on how high off the ground
     const shadowPower = Math.min(Math.max(objHeight / 2.5, 0), 1.0);
-    const shadowSize = step(shadowPower, 0.5, 1.0) * (small ? 0.6 : 1);
+    const shadowSize = Math.max(step(shadowPower, 0.5, 1.0) * (small ? 0.6 : 1), 0.001);
     const shadowDarkness = step(shadowPower, 0.3, 0.15);
     SHADOW_COLOR.setRGB(shadowDarkness, shadowDarkness, shadowDarkness);
     items.shadow.add(copyPose, SHADOW_COLOR, shadowSize * 3);
@@ -316,6 +316,10 @@ Room.clear = () => {
   if (settings.useShadow) {
     items.shadow.empty();
   }
+
+  //  webvr polyfill will break if transparency is set ...
+  //  ???
+  items.shadow.mesh.material.transparent = Room.shouldUseShadow();
 };
 
 Room.reset = () => {
@@ -358,6 +362,13 @@ Room.reset = () => {
   // array in order to solve a texture glitch as described in:
   // https://github.com/puckey/you-move-me/issues/129
   if (!Room.isGiffing) viewer.scene.add(debugMesh);
+};
+
+Room.shouldUseShadow = function () {
+  if ((settings.useShadow === false) || (viewer.vrEffect.isPresenting)) {
+    return false;
+  }
+  return true;
 };
 
 Room.rotate180 = () => {
