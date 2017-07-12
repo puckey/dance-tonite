@@ -337,18 +337,18 @@ Room.reset = () => {
         props.orthographicRoom
       ),
       head: new InstancedItem(
-        layout.roomCount * 10,
+        layout.roomCount * 20,
         props.head,
       ),
       hand: new InstancedItem(
-        layout.roomCount * 10 * 2,
+        layout.roomCount * 20 * 2,
         props.hand,
       ),
     };
 
     if (settings.useShadow) {
       items.shadow = new InstancedItem(
-        layout.roomCount * 30,
+        layout.roomCount * 60,
         props.shadow,
       );
     }
