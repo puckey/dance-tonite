@@ -14,7 +14,7 @@ document.addEventListener('visibilitychange', () => {
   hidden = document.hidden;
 });
 
-export default (interval = 1000) => {
+export default (interval = 3000) => {
   if (hidden) {
     prevTime = null;
     frames = 0;
