@@ -25,7 +25,7 @@ export default (interval = 1000) => {
   if (prevTime == null) prevTime = time;
   if (time > prevTime + interval) {
     fps = (frames * 1000) / (time - prevTime);
-    fps = Math.round(fps * 0.2) * 5;
+    fps = Math.min(55, Math.round(fps * 0.2) * 5);
     frames = 0;
     prevTime = time;
 
@@ -36,15 +36,15 @@ export default (interval = 1000) => {
     }
     lastFps = fps;
     const lastCullDistance = cullDistance;
-    if (fps < 60) {
+    if (fps < 55) {
       cullDistance = Math.max(
         settings.minCullDistance,
         cullDistance - settings.roomDepth
       );
-    } else if (steadyCount > 3) {
+    } else {
       cullDistance = Math.min(
         settings.maxCullDistance,
-        cullDistance + settings.roomDepth
+        cullDistance + settings.roomDepth * 2
       );
     }
     fogNear = settings.cullDistance - settings.roomDepth;
@@ -52,8 +52,8 @@ export default (interval = 1000) => {
       console.log('Changed cull distance to', cullDistance);
     }
   }
-  settings.cullDistance = settings.cullDistance * 0.8 + cullDistance * 0.2;
-  settings.fogNear = settings.fogNear * 0.8 + fogNear * 0.2;
+  settings.cullDistance = settings.cullDistance * 0.95 + cullDistance * 0.05;
+  settings.fogNear = settings.fogNear * 0.95 + fogNear * 0.05;
   viewer.fog.near = settings.fogNear;
   return fps;
 };
