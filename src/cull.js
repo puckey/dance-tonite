@@ -8,7 +8,7 @@ let lastFps = 60;
 let steadyCount = 0;
 let hidden = false;
 let cullDistance = settings.cullDistance;
-let fogNear = 100;
+let fogNear = settings.fogNear;
 
 document.addEventListener('visibilitychange', () => {
   hidden = document.hidden;
