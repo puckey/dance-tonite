@@ -49,7 +49,7 @@ export default (interval = 1000) => {
     }
     fogNear = settings.cullDistance - settings.roomDepth;
     if (lastCullDistance !== cullDistance) {
-      console.log('Changed cull distance to', settings.cullDistance);
+      console.log('Changed cull distance to', cullDistance);
     }
   }
   settings.cullDistance = settings.cullDistance * 0.8 + cullDistance * 0.2;
