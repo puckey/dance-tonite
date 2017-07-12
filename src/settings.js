@@ -43,7 +43,7 @@ export default {
   cullDistance: 0,
   cullDistanceIsometric: 18,
   cullDistanceVR: 48,
-  cullDistanceVRMobile: 18,
+  cullDistanceVRMobile: 24,
   cullDistanceOverride: queryData.culldist, // URL?culldist=3
 
   useShadow: (queryData.shadows === undefined) ? true : queryData.shadows, // URL?shadows=false
