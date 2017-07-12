@@ -36,7 +36,7 @@ export default (interval = 3000) => {
     }
     lastFps = fps;
     const lastCullDistance = cullDistance;
-    if (fps < 55) {
+    if (fps < 52) {
       cullDistance = Math.max(
         settings.minCullDistance,
         cullDistance - settings.roomDepth
@@ -44,7 +44,7 @@ export default (interval = 3000) => {
     } else {
       cullDistance = Math.min(
         settings.maxCullDistance,
-        cullDistance + settings.roomDepth * 2
+        cullDistance + settings.roomDepth
       );
     }
     fogNear = settings.cullDistance - settings.roomDepth;
