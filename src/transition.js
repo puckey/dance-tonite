@@ -50,11 +50,11 @@ const tick = (dt) => {
 
 let tweener;
 const tweenFog = (from, to, duration = 2) => {
-  viewer.renderScene.fog.far = from;
+  viewer.renderScene.fog.near = from;
   tweener = tween(
     viewer.renderScene.fog,
     {
-      far: to,
+      near: to,
       ease: 'easeOutCubic',
       duration,
     }
@@ -165,7 +165,7 @@ const transition = {
       return;
     }
     viewer.renderScene = transitionScene;
-    transitionScene.fog = new THREE.Fog(0x000000, 0, 0);
+    transitionScene.fog = new THREE.FogExp2(0x000000, 0.1, 0);
 
     floatingOrb.fadeIn();
     viewer.on('tick', tick);
@@ -231,7 +231,7 @@ const transition = {
       if (logging) {
         console.log('transition.reset: hard reveal of viewer scene');
       }
-      viewer.renderScene.fog.far = revealFar;
+      viewer.renderScene.fog.near = revealFar;
       transitionVersion += 1;
     }
   },
