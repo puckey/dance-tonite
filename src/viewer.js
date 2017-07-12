@@ -95,6 +95,17 @@ const createScene = () => {
 
 const scene = createScene();
 
+const updateCullDistance = () => {
+  if (settings.cullDistanceOverride) {
+    settings.cullDistance = settings.cullDistanceOverride;
+  } else if (vrEffect.isPresenting) {
+    settings.cullDistance = feature.isMobile ? settings.cullDistanceVRMobile : settings.cullDistanceVR;
+  } else {
+    settings.cullDistance = settings.cullDistanceIsometric;
+  }
+  // console.log("cullDistance ", settings.cullDistance);
+};
+
 const onResize = ({ width, height, aspectRatio }) => {
   const { orthographic } = cameras;
   Object.assign(
@@ -211,6 +222,7 @@ const viewer = Object.assign(emitter(), {
     renderPostProcessing = render;
     resizePostProcessing = resize;
     windowSize.on('resize', onResize, false);
+    updateCullDistance();
     viewer.startAnimating();
   },
 
@@ -218,6 +230,7 @@ const viewer = Object.assign(emitter(), {
     if (!vrEffect.isPresenting) return;
     vrEffect.exitPresent();
     viewer.switchCamera('orthographic');
+    updateCullDistance();
   },
 
   enterPresent() {
@@ -226,6 +239,7 @@ const viewer = Object.assign(emitter(), {
     setTimeout(() => {
       viewer.switchCamera('default');
       scene.add(viewer.camera);
+      updateCullDistance();
     }, 10); // Delay switching 10ms to avoid flashing POV before overlay is displayed
   },
 

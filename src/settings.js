@@ -40,7 +40,11 @@ export default {
   loopDuration: 8,
 
   shouldCull: (queryData.cull === undefined) ? true : queryData.cull, // URL?cull=false
-  cullDistance: queryData.culldist || 15, // URL?culldist=3
+  cullDistance: 0,
+  cullDistanceIsometric: 18,
+  cullDistanceVR: 48,
+  cullDistanceVRMobile: 18,
+  cullDistanceOverride: queryData.culldist, // URL?culldist=3
 
   useShadow: (queryData.shadows === undefined) ? true : queryData.shadows, // URL?shadows=false
 
