@@ -165,7 +165,7 @@ export default class Playlist extends Component {
         />
         }
         {
-          pathRoomId !== undefined && currentRoomID && (
+          pathRoomId !== undefined && !!currentRoomID && (
             <Align type="bottom-left">
               <RoomCountdown target={pathRoomId} current={currentRoomID} />
             </Align>
