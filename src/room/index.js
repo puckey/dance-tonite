@@ -87,6 +87,7 @@ export default class Room {
     this.lastFrame = frames.getFrame((settings.loopDuration * 2) - 0.001);
     this.frame = frames.getFrame();
     this.random = Math.random();
+    this.randomItemOffsets = [];
     this.costumeColor = getCostumeColor(colorIndex);
     const roomColor = this.roomColor = getRoomColor(colorIndex);
     this.position = layout.getPosition(
@@ -281,7 +282,19 @@ export default class Room {
     if (ratio === 0) {
       this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
       const [position, quaternion] = POSE;
+
       position.y = minY;
+
+      // position with random x/z offset
+      if (!this.randomItemOffsets[performanceIndex]) {
+        this.randomItemOffsets[performanceIndex] = [];
+      }
+      if (!this.randomItemOffsets[performanceIndex][limbIndex]) {
+        this.randomItemOffsets[performanceIndex][limbIndex] = [Math.random() * 6 - 3, Math.random() * 6 - 3];
+      }
+      position.x += this.randomItemOffsets[performanceIndex][limbIndex][0];
+      position.z += this.randomItemOffsets[performanceIndex][limbIndex][1];
+
       quaternion.setFromEuler(UP_EULER);
     } else {
       this.firstFrame.getPose(performanceIndex, limbIndex, offset, applyMatrix, FIRST_POSE);
