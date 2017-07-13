@@ -40,7 +40,6 @@ export default {
   loopDuration: 8,
 
   shouldCull: (queryData.cull === undefined) ? true : queryData.cull, // URL?cull=false
-  fogNear: 6,
   cullDistance: 18,
   minCullDistance: 18,
   maxCullDistance: 48,

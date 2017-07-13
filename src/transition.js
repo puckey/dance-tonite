@@ -166,7 +166,7 @@ const transition = {
       return;
     }
     viewer.renderScene = transitionScene;
-    transitionScene.fog = new THREE.FogExp2(0x000000, 0.1, 0);
+    transitionScene.fog = new THREE.Fog(0x000000, 0.1, 0);
 
     floatingOrb.fadeIn();
     viewer.on('tick', tick);

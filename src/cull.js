@@ -6,7 +6,6 @@ let frames = 0;
 let fps = 60;
 let hidden = false;
 let cullDistance = settings.cullDistance;
-let fogNear = settings.fogNear;
 const logging = false;
 
 document.addEventListener('visibilitychange', () => {
@@ -38,12 +37,11 @@ export default (interval = 3000) => {
         settings.maxCullDistance,
         cullDistance + settings.roomDepth
       );
-    fogNear = settings.cullDistance - settings.roomDepth;
     if (logging && lastCullDistance !== cullDistance) {
       console.log(`${lastCullDistance > cullDistance ? 'Lowering' : 'Upping'} cull distance to`, cullDistance);
     }
   }
   settings.cullDistance = settings.cullDistance * 0.95 + cullDistance * 0.05;
-  settings.fogNear = settings.fogNear * 0.95 + fogNear * 0.05;
-  viewer.fog.near = settings.fogNear;
+  viewer.fog.near = settings.cullDistance - settings.roomDepth;
+  viewer.fog.far = settings.cullDistance;
 };

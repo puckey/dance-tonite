@@ -80,6 +80,7 @@ let resizePostProcessing;
 let clock;
 
 const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
+const fog = new THREE.Fog(backgroundColor, 10, 200);
 
 const createScene = () => {
   const _scene = new THREE.Scene();
@@ -90,6 +91,7 @@ const createScene = () => {
   const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
 
   _scene.add(hemisphereLight, light, ambientLight);
+  _scene.fog = fog;
   return _scene;
 };
 
@@ -130,7 +132,7 @@ const viewer = Object.assign(emitter(), {
   controllers: [{}, {}],
   controls,
   renderer,
-  fog: new THREE.FogExp2(backgroundColor, 0.3),
+  fog,
   stopAnimating: () => {
     viewer.animating = false;
   },
