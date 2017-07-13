@@ -7,6 +7,7 @@ import settings from '../../settings';
 import feature from '../../utils/feature';
 import audioPool from '../../utils/audio-pool';
 import viewer from '../../viewer';
+import transition from '../../transition';
 
 import NotFound from '../NotFound';
 import PressPlayToStart from '../PressPlayToStart';
@@ -55,6 +56,7 @@ export default class Router extends Component {
   onRouteChanged(req = {}, event) {
     const { params } = req;
     if (event && event.parent()) return;
+    transition.reset(true);
     convertParams(params);
     if (this.state.route) {
       audio.fadeOut();
