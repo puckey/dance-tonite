@@ -297,8 +297,9 @@ export default class Room {
   }
 
   cullRoom() {
-    const distanceToCamera = Math.abs(this.position.z + viewer.cameraWorldPos.z);
-    return distanceToCamera > settings.cullDistance;
+    const z = this.position.z + viewer.cameraWorldPos.z;
+    const x = this.position.x - viewer.cameraWorldPos.x;
+    return (z * z + x * x) > (settings.cullDistance * settings.cullDistance);
   }
 
   destroy() {

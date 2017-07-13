@@ -1,7 +1,12 @@
+import feature from './feature';
+
 export default () => {
   document.body.classList.add('mod-mobile');
 
-  // Disable pinch to zoom and double tap on mobile
+  if (!feature.isIOs) return;
+
+  // Disable pinch to zoom and double tap on iOs devices, since they no longer
+  // listen to the 'user-scalable=no' viewport meta tag:
   let lastTouchEvent = 0;
 
   document.addEventListener('touchmove', (event) => {

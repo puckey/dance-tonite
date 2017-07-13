@@ -63,7 +63,6 @@ export default class RoomComponent extends Component {
   }
 
   onRoomLoaded(err) {
-    console.log('room loaded');
     audio.play();
     this.setState({ loading: false });
 

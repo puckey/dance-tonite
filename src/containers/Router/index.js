@@ -18,6 +18,8 @@ const componentByRoute = require(`./routes-${
 
 componentByRoute['/*'] = NotFound;
 
+let animationStarted = false;
+
 const convertParams = (params) => {
   if (params.roomId) {
     params.roomId = parseInt(params.roomId, 10);
@@ -95,6 +97,10 @@ export default class Router extends Component {
   }
 
   render(props, { route, params, notFound, needsFillPool }) {
+    if (!animationStarted && !needsFillPool) {
+      viewer.startAnimating();
+      animationStarted = true;
+    }
     const RouteComponent = componentByRoute[route];
     return (
       needsFillPool

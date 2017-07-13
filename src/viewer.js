@@ -18,9 +18,10 @@ import windowSize from './utils/windowSize';
 import audio from './audio';
 import postprocessing from './postprocessing';
 import Room from './room';
+import { backgroundColor } from './theme/colors';
+import updateCull from './cull';
 
 const orthographicDistance = 4;
-
 // TODO: remove me:
 // const times = [0];
 // document.addEventListener('keydown', (event) => {
@@ -61,7 +62,7 @@ const zoomCamera = (zoom) => {
   const newZoom = sineInOut(zoom);
   const { aspectRatio } = windowSize;
   if (newZoom === lastZoom && lastAspectRatio === aspectRatio) return;
-  const distance = orthographicDistance + newZoom * 3;
+  const distance = orthographicDistance + (feature.isMobile ? newZoom : newZoom * 3);
   const camera = cameras.orthographic;
   camera.left = -distance * aspectRatio;
   camera.right = distance * aspectRatio;
@@ -89,22 +90,10 @@ const createScene = () => {
   const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
 
   _scene.add(hemisphereLight, light, ambientLight);
-  _scene.fog = new THREE.Fog(0x000000, 0, 120);
   return _scene;
 };
 
 const scene = createScene();
-
-const updateCullDistance = () => {
-  if (settings.cullDistanceOverride) {
-    settings.cullDistance = settings.cullDistanceOverride;
-  } else if (vrEffect.isPresenting) {
-    settings.cullDistance = feature.isMobile ? settings.cullDistanceVRMobile : settings.cullDistanceVR;
-  } else {
-    settings.cullDistance = settings.cullDistanceIsometric;
-  }
-  // console.log("cullDistance ", settings.cullDistance);
-};
 
 const onResize = ({ width, height, aspectRatio }) => {
   const { orthographic } = cameras;
@@ -141,6 +130,7 @@ const viewer = Object.assign(emitter(), {
   controllers: [{}, {}],
   controls,
   renderer,
+  fog: new THREE.FogExp2(backgroundColor, 0.3),
   stopAnimating: () => {
     viewer.animating = false;
   },
@@ -149,6 +139,7 @@ const viewer = Object.assign(emitter(), {
     viewer.animate();
   },
   animate: (timestamp, staticTime) => {
+    updateCull();
     const dt = clock.getDelta();
     if (viewer.animating) {
       vrEffect.requestAnimationFrame(viewer.animate);
@@ -195,7 +186,7 @@ const viewer = Object.assign(emitter(), {
     installVRControls(THREE);
     installVRController(THREE);
     viewer.renderer = renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setClearColor(0x000000);
+    renderer.setClearColor(backgroundColor);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, settings.maxPixelRatio));
     renderer.setSize(windowSize.width, windowSize.height);
     renderer.sortObjects = false;
@@ -222,15 +213,12 @@ const viewer = Object.assign(emitter(), {
     renderPostProcessing = render;
     resizePostProcessing = resize;
     windowSize.on('resize', onResize, false);
-    updateCullDistance();
-    viewer.startAnimating();
   },
 
   exitPresent() {
     if (!vrEffect.isPresenting) return;
     vrEffect.exitPresent();
     viewer.switchCamera('orthographic');
-    updateCullDistance();
   },
 
   enterPresent() {
@@ -239,7 +227,6 @@ const viewer = Object.assign(emitter(), {
     setTimeout(() => {
       viewer.switchCamera('default');
       scene.add(viewer.camera);
-      updateCullDistance();
     }, 10); // Delay switching 10ms to avoid flashing POV before overlay is displayed
   },
 
@@ -252,11 +239,13 @@ const viewer = Object.assign(emitter(), {
   },
 
   switchCamera: (name) => {
-    InstancedItem.switch(
-      name === 'orthographic'
-        ? 'orthographic'
-        : 'perspective',
-    );
+    if (name === 'orthographic') {
+      InstancedItem.switch(name);
+      viewer.renderScene.fog = null;
+    } else {
+      InstancedItem.switch('perspective');
+      viewer.renderScene.fog = viewer.fog;
+    }
     viewer.camera = cameras[name];
   },
   vrEffect,
