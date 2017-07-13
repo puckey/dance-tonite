@@ -3,9 +3,10 @@ import Orb from './orb';
 import viewer from './viewer';
 import props from './props';
 import * as THREE from './lib/three';
-import { textColor } from './theme/colors';
+import { textColor, backgroundColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
 import deps from './deps';
+import settings from './settings';
 
 const tween = createTweener();
 
@@ -50,11 +51,15 @@ const tick = (dt) => {
 
 let tweener;
 const tweenFog = (from, to, duration = 2) => {
-  viewer.fog.near = from;
+  console.log({ duration });
+  if (!viewer.renderScene.fog) return;
+  viewer.renderScene.fog.near = from;
+  viewer.renderScene.fog.far = from === 0 ? 0 : from + settings.roomDepth;
   tweener = tween(
-    viewer.fog,
+    viewer.renderScene.fog,
     {
       near: to,
+      far: to === 0 ? 0 : to + settings.roomDepth,
       ease: 'easeOutCubic',
       duration,
     }
@@ -166,7 +171,7 @@ const transition = {
       return;
     }
     viewer.renderScene = transitionScene;
-    transitionScene.fog = new THREE.Fog(0x000000, 0.1, 0);
+    transitionScene.fog = new THREE.Fog(backgroundColor, 0, 0);
 
     floatingOrb.fadeIn();
     viewer.on('tick', tick);
@@ -206,7 +211,7 @@ const transition = {
           { version }
         );
       }
-      await fadeIn(revealFar);
+      await fadeIn(settings.cullDistance);
     }
   },
 
@@ -232,7 +237,9 @@ const transition = {
       if (logging) {
         console.log('transition.reset: hard reveal of viewer scene');
       }
-      viewer.fog.near = revealFar;
+      if (viewer.renderScene.fog) {
+        viewer.renderScene.fog.near = settings.cullDistance;
+      }
       transitionVersion += 1;
     }
   },
