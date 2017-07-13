@@ -27,7 +27,7 @@ const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor }
 
 const props = {
   perspectiveWall: [wallUrl],
-  perspectiveRoom: [roomUrl, roomTextureUrl, false],
+  perspectiveRoom: [roomUrl, roomTextureUrl, true],
   orthographicWall: [isometricWallUrl],
   orthographicRoom: [isometricRoomUrl, isometricRoomTextureUrl],
   hand: (function createHand() {
