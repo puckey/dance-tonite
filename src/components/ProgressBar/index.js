@@ -5,6 +5,7 @@ import viewer from '../../viewer';
 import windowSize from '../../utils/windowSize';
 import audio from '../../audio';
 import settings from '../../settings';
+import feature from '../../utils/feature';
 
 import './style.scss';
 
@@ -61,13 +62,14 @@ export default class ProgressBar extends Component {
   }
 
   render() {
+    const { isMobile } = feature;
     return (
       <div
         className="audio-progress-bar-container"
-        onMouseDown={this.onMouseDown}
         onClick={this.onClick}
-        onMouseLeave={this.onMouseLeave}
-        onMouseMove={this.onMouseMove}
+        onMouseDown={!isMobile && this.onMouseDown}
+        onMouseLeave={!isMobile && this.onMouseLeave}
+        onMouseMove={!isMobile && this.onMouseMove}
       >
         <div
           className="audio-progress-bar"
