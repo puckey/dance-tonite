@@ -7,7 +7,6 @@ const packs = [
       new Promise((resolve) => {
         require.ensure([], function (require) {
           deps.SDFText = require('./sdftext');
-          // console.log(SDFText);
           resolve();
         });
       })
@@ -18,6 +17,10 @@ const packs = [
     prepare: () => (
       new Promise((resolve) => {
         require.ensure([], function (require) {
+          //  race condition vs the above sdftext require above
+          //  this has to be here too?
+          //  FIXME
+          deps.SDFText = require('./sdftext');
           deps.controllers = require('./controllers').default;
           deps.GIF = require('./lib/gif');
           resolve();
