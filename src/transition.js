@@ -51,7 +51,6 @@ const tick = (dt) => {
 
 let tweener;
 const tweenFog = (from, to, duration = 2) => {
-  console.log({ duration });
   if (!viewer.renderScene.fog) return;
   viewer.renderScene.fog.near = from;
   viewer.renderScene.fog.far = from === 0 ? 0 : from + settings.roomDepth;
