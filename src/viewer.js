@@ -213,7 +213,6 @@ const viewer = Object.assign(emitter(), {
     renderPostProcessing = render;
     resizePostProcessing = resize;
     windowSize.on('resize', onResize, false);
-    viewer.startAnimating();
   },
 
   exitPresent() {
