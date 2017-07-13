@@ -25,6 +25,7 @@ export default class BackgroundTimeline extends Component {
           color: getRoomColorByIndex(index + 23),
         }
       ));
+    this.keyframes[this.keyframes.length-1].color = BLACK;
   }
 
   componentWillMount() {
@@ -43,7 +44,7 @@ export default class BackgroundTimeline extends Component {
         ease: 'easeOutCubic',
         duration: 1,
         onUpdate: () => viewer.renderer.setClearColor(EASE_COLOR),
-      }, BLACK)
+      }, EASE_COLOR)
     );
   }
 
