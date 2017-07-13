@@ -162,7 +162,7 @@ const viewer = Object.assign(emitter(), {
 
     zoomCamera(
       audio.progress > 21
-        ? Math.min(2, audio.progress - 21) * 0.5
+        ? Math.min(4, audio.progress - 21) * 0.25
         : 0
     );
 
