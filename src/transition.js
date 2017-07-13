@@ -50,9 +50,9 @@ const tick = (dt) => {
 
 let tweener;
 const tweenFog = (from, to, duration = 2) => {
-  viewer.renderScene.fog.near = from;
+  viewer.fog.near = from;
   tweener = tween(
-    viewer.renderScene.fog,
+    viewer.fog,
     {
       near: to,
       ease: 'easeOutCubic',
@@ -158,9 +158,10 @@ const transition = {
     if (version !== transitionVersion) {
       if (logging) {
         console.log('transition.enter returned early because of version difference',
-        {
-          time: new Date()
-        });
+          {
+            time: new Date()
+          }
+        );
       }
       return;
     }
@@ -231,7 +232,7 @@ const transition = {
       if (logging) {
         console.log('transition.reset: hard reveal of viewer scene');
       }
-      viewer.renderScene.fog.near = revealFar;
+      viewer.fog.near = revealFar;
       transitionVersion += 1;
     }
   },
