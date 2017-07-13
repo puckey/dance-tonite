@@ -9,6 +9,7 @@
   background: $text-color;
   transform: scaleX(0);
   transform-origin: left;
+  will-change: transform;
 }
 
 .audio-progress-bar-container {
