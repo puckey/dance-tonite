@@ -2,7 +2,7 @@ import feature from './utils/feature';
 
 const packs = [
   {
-    test: () => feature.hasWebVR,
+    test: () => feature.hasVR,
     prepare: () => (
       new Promise((resolve) => {
         require.ensure([], function (require) {
