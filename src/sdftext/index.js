@@ -96,13 +96,8 @@ export function creator() {
         const width = mesh.geometry.boundingBox.getSize().x;
         const height = mesh.geometry.boundingBox.getSize().y;
 
-        console.log("CENTER IT!", width, height)
-
         mesh.position.x = width * 0.5 * mesh.scale.x;
         mesh.position.y = height * 0.5 * mesh.scale.y;
-
-
-        console.log("CENTER IT!", mesh.position, mesh.scale)
       }
     };
 

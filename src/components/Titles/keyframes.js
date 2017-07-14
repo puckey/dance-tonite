@@ -61,21 +61,25 @@ export default [
     time: 219,
     titles: ['directed by'],
     small: true,
+    position: { z: -164 },
   },
   {
     time: 222,
     titles: ['Jonathan', 'Puckey'],
     small: true,
+    position: { z: -166 },
   },
   {
     time: 224,
     titles: ['Moniker'],
     small: true,
+    position: { z: -168 },
   },
   {
     time: 226,
     titles: ['Google’s', 'Data Arts Team'],
     small: true,
+    position: { z: -170 },
   },
   {
     time: 228,

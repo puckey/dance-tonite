@@ -7,11 +7,11 @@ export default function create() {
   const textCreator = deps.SDFText.creator();
 
   const group = new THREE.Group();
-  group.position.x = -3.75; // TODO.. why is this a magic number?!!?
+  group.position.x = -7.0; // TODO.. why is this a magic number?!!?
   group.position.y = settings.holeHeight; // hole height
 
   const textLine = textCreator.create('', {
-    wrapWidth: 1980,
+    wrapWidth: 5120,
     scale: 9,
     align: 'center',
     color: textColor.getHex(),
