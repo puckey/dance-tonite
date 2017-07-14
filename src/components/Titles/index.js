@@ -30,16 +30,19 @@ export default class Titles extends Component {
     };
 
     this.tick = this.tick.bind(this);
-  }
 
-  componentDidMount() {
     viewer.on('tick', this.tick);
     viewer.scene.add(this.vrTitles.group);
   }
 
+  componentDidMount() {
+    // viewer.on('tick', this.tick);
+    // viewer.scene.add(this.vrTitles.group);
+  }
+
   componentWillUnmount() {
-    viewer.off('tick', this.tick);
-    viewer.scene.remove(this.vrTitles.group);
+    // viewer.off('tick', this.tick);
+    // viewer.scene.remove(this.vrTitles.group);
   }
 
   tick() {
