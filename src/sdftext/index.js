@@ -48,13 +48,14 @@ export function creator() {
 
   const colorMaterials = {};
 
-  function createText(str, fnt, color, scale, wrapWidth, align) {
+  function createText(str, fnt, color, scale, wrapWidth, align, lineHeight) {
     const geometry = createGeometry({
       text: str,
       align,
       width: wrapWidth,
       flipY: true,
       font: fnt,
+      lineHeight,
     });
 
 
@@ -78,22 +79,30 @@ export function creator() {
   }
 
 
-  function create(str = '', { color = 0xffffff, scale = 1.0, wrapWidth = undefined, align = 'left' } = {}) {
+  function create(str = '', { color = 0xffffff, scale = 1.0, wrapWidth = undefined, align = 'left', lineHeight = undefined } = {}) {
     const group = new THREE.Group();
 
-    const mesh = createText(str.toUpperCase, font, color, scale, wrapWidth, align);
+    const mesh = createText(str.toUpperCase, font, color, scale, wrapWidth, align, lineHeight);
     group.add(mesh);
     group.layout = mesh.geometry.layout;
 
     group.updateLabel = function (txt) {
       mesh.geometry.update(txt.toUpperCase());
 
+
       if (align === 'center') {
         //  center alignment doesn't seem to be working in BMFontText
         mesh.geometry.computeBoundingBox();
         const width = mesh.geometry.boundingBox.getSize().x;
+        const height = mesh.geometry.boundingBox.getSize().y;
 
-        mesh.position.x = -width * 0.5 * textScale * scale;
+        console.log("CENTER IT!", width, height)
+
+        mesh.position.x = width * 0.5 * mesh.scale.x;
+        mesh.position.y = height * 0.5 * mesh.scale.y;
+
+
+        console.log("CENTER IT!", mesh.position, mesh.scale)
       }
     };
 
