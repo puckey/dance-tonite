@@ -66,6 +66,7 @@ export function creator() {
     }
     const mesh = new THREE.Mesh(geometry, material);
     mesh.scale.multiply(new THREE.Vector3(1, -1, 1));
+    mesh.frustumCulled = false;
 
     const finalScale = scale * textScale;
 
