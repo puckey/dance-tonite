@@ -5,7 +5,7 @@ import { sleep } from './utils/async';
 import settings from './settings';
 import pageVisibility from './utils/page-visibility';
 
-const logging = false;
+const logging = true;
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -48,23 +48,31 @@ const audio = Object.assign(emitter(), {
     const now = Date.now();
 
     const isStatic = staticTime !== undefined;
-    this.time = (isStatic
-      ? staticTime
-      : (pauseTime || (now - startTime)) / 1000
-    ) % duration;
 
     if (!isStatic) {
       // The time as reported by the context or audio element:
       audioTime = (audioElement
         ? audioElement.currentTime
         : context.currentTime - contextStartTime) % audio.duration;
+      if (audioTime === 0) {
+        startTime = now;
+        return;
+      }
+    }
 
+    this.time = (isStatic
+      ? staticTime
+      : (pauseTime || (now - startTime)) / 1000
+    );
+
+    if (!isStatic) {
       // If our animation time is running out of sync with the time reported
       // by the audio element correct it:
-      const syncDiff = Math.abs(this.time - audioTime);
-      if (syncDiff > ALLOWED_SYNC_DIFFERENCE) {
+      const syncDiff = this.time - audioTime;
+      if (Math.abs(syncDiff) > ALLOWED_SYNC_DIFFERENCE) {
         if (logging) {
-          console.log(`syncing animation to audio by ${Math.round(syncDiff * 1000)} ms`);
+          const loopText = syncDiff > (0.9 * audio.duration) ? 'audio looped: ' : '';
+          console.log(`${loopText}syncing animation to audio by ${Math.round(syncDiff * 1000)} ms to ${audioTime}`);
         }
         this.time = audioTime;
         startTime = now - audioTime * 1000;
