@@ -320,7 +320,9 @@ Room.clear = () => {
 
   //  webvr polyfill will break if transparency is set ...
   //  ???
-  items.shadow.mesh.material.transparent = Room.shouldUseShadow();
+  if (settings.useShadow) {
+    items.shadow.mesh.material.transparent = Room.shouldUseShadow();
+  }
 };
 
 Room.reset = () => {
