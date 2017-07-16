@@ -7,6 +7,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const FLAVOR = process.env.FLAVOR || 'website';
@@ -107,11 +108,13 @@ const config = {
       template: `templates/${FLAVOR === 'cms' ? 'cms' : 'index'}.html`,
       title: 'You Move Me',
       favicon: './public/favico.png',
+      inlineSource: '.(css)$',
     }),
     new webpack.ExtendedAPIPlugin(),
     new ScriptExtHtmlWebpackPlugin({
       defaultAttribute: 'async',
     }),
+    new HtmlWebpackInlineSourcePlugin(),
     new ExtractTextPlugin('style.css'),
     new webpack.ProvidePlugin({
       THREE: 'THREE',
