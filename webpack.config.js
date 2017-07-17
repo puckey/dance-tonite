@@ -126,6 +126,7 @@ const config = {
     hot: true,
     overlay: true,
     historyApiFallback: true,
+    compress: true,
   },
   context: path.resolve(__dirname, 'src'),
 };
