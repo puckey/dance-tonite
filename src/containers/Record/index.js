@@ -98,6 +98,15 @@ export default class Record extends Component {
           },
         },
       });
+
+      setTimeout(() => {
+        viewer.controllers.forEach(controller => {
+          const hapticActuator = controller.gamepad.hapticActuators[0];
+          if (hapticActuator) {
+            hapticActuator.pulse(1, 60);
+          }
+        });
+      }, 500);
     }
     const round = Math.floor(audio.totalProgress / 2);
     this.setState({ round });
