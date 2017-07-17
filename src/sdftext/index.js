@@ -60,7 +60,6 @@ export function creator() {
 
 
     const layout = geometry.layout;
-
     let material = colorMaterials[color];
     if (material === undefined) {
       material = colorMaterials[color] = createMaterial(color);
@@ -82,14 +81,12 @@ export function creator() {
   function create(str = '', { color = 0xffffff, scale = 1.0, wrapWidth = undefined, align = 'left', lineHeight = undefined } = {}) {
     const group = new THREE.Group();
 
-    const mesh = createText(str.toUpperCase, font, color, scale, wrapWidth, align, lineHeight);
+    const mesh = createText(str.toUpperCase(), font, color, scale, wrapWidth, align, lineHeight);
     group.add(mesh);
     group.layout = mesh.geometry.layout;
 
     group.updateLabel = function (txt) {
       mesh.geometry.update(txt.toUpperCase());
-
-
       if (align === 'center') {
         //  center alignment doesn't seem to be working in BMFontText
         mesh.geometry.computeBoundingBox();
