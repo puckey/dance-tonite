@@ -41,13 +41,15 @@ a {
   color: $text-color;
   cursor: pointer;
   text-decoration: none;
-}
-
-a span {
-  border-bottom: solid $line-width * 1.2 $text-color;
 
   &:hover {
-    border-bottom-color: $white-color;
+    span {
+      border-bottom-color: $white-color;
+    }
+  }
+
+  span {
+    border-bottom: solid $line-width * 1.2 $text-color;
   }
 }
 
