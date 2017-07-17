@@ -367,12 +367,7 @@ Room.reset = () => {
   if (!Room.isGiffing) viewer.scene.add(debugMesh);
 };
 
-Room.shouldUseShadow = function () {
-  if ((settings.useShadow === false) || (viewer.vrEffect.isPresenting)) {
-    return false;
-  }
-  return true;
-};
+Room.shouldUseShadow = () => !!settings.useShadow && !viewer.vrEffect.isPresenting;
 
 Room.rotate180 = () => {
   set180RotationMatrix(InstancedItem.group);
