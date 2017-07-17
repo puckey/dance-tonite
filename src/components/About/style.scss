@@ -95,6 +95,10 @@
     .single-column {
       margin-left: 0;
       max-width: 15rem;
+
+      @media (max-width: 711px) {
+        max-width: 100%;
+      }
     }
   }
 
