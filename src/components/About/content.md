@@ -148,3 +148,8 @@ Choreography on the website is curated by hand. Please be patient as we review a
   </p>
   <h3>Typeface<br/><a href="https://bold-decisions.biz/typefaces/lars">Lars by Bold Decisions</a></h3>
 </div>
+
+
+## Contact
+
+email us or [download the press kit](https://storage.googleapis.com/you-move-me.appspot.com/presskit/DanceTonite_PressKit.zip)
