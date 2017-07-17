@@ -5,7 +5,7 @@ import { sleep } from './utils/async';
 import settings from './settings';
 import pageVisibility from './utils/page-visibility';
 
-const logging = true;
+const logging = false;
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
