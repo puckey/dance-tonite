@@ -22,7 +22,7 @@ export default class VRTitles extends Component {
 
     this.textLine = this.textCreator.create('', {
       wrapWidth: 5120,
-      scale: 9,
+      scale: 5,
       align: 'center',
       vAlign: 'center',
       color: textColor.getHex(),
