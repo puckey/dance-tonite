@@ -8,21 +8,17 @@ import keyframes from './keyframes';
 import createTimeline from '../../lib/timeline';
 import audio from '../../audio';
 import viewer from '../../viewer';
-import createVRTitles from './vrtitles';
+import VRTitles from '../VRTitles';
 
 export default class Titles extends Component {
   constructor() {
     super();
 
-    this.vrTitles = createVRTitles();
-
     const timeline = this.timeline = createTimeline(keyframes);
 
-    timeline.on('keyframe', ({ titles, colophon = false, small, position }) => {
-      this.vrTitles.setTitles(titles);
-      this.vrTitles.setPosition(position);
-      this.setState({ titles, small });
-      this.props.onUpdate(titles, colophon);
+    timeline.on('keyframe', (param) => {
+      this.setState(param);
+      this.props.onUpdate(param);
     });
 
     this.state = {
@@ -34,12 +30,10 @@ export default class Titles extends Component {
 
   componentDidMount() {
     viewer.on('tick', this.tick);
-    viewer.scene.add(this.vrTitles.group);
   }
 
   componentWillUnmount() {
     viewer.off('tick', this.tick);
-    viewer.scene.remove(this.vrTitles.group);
   }
 
   tick() {
@@ -54,11 +48,15 @@ export default class Titles extends Component {
     ));
   }
 
-  render(props, { titles, small }) {
-    return titles && (
-      <div className={classNames('titles', small && 'mod-small')}>
-        {this.renderTitles()}
-      </div>
+  render(props, { titles, small, position }) {
+    return (
+        !viewer.vrEffect.isPresenting ?
+          titles &&
+            <div className={classNames('titles', small && 'mod-small')}>
+              { this.renderTitles() }
+            </div>
+          :
+          <VRTitles titles={titles} small={small} position={position} />
     );
   }
 }

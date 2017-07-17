@@ -1,20 +1,18 @@
-import { tempVector, tempQuaternion, tempQuaternion2 } from './three';
+import { tempVector } from './three';
 import * as THREE from '../lib/three';
 import settings from '../settings';
 
 export const PERFORMANCE_ELEMENT_COUNT = 21;
 export const LIMB_ELEMENT_COUNT = 7;
 
-export const getPosition = (positions, performanceIndex, limbIndex, offset) => {
+export const getPosition = (positions, performanceIndex, limbIndex) => {
   const arrayOffset = performanceIndex * PERFORMANCE_ELEMENT_COUNT
     + limbIndex * LIMB_ELEMENT_COUNT;
-  const position = tempVector(
+  return tempVector(
     positions[arrayOffset] * 0.0001,
     positions[arrayOffset + 1] * 0.0001,
     positions[arrayOffset + 2] * 0.0001
   );
-  if (offset) position.add(offset);
-  return position;
 };
 
 export const getQuaternion = (

@@ -53,10 +53,10 @@ export default class Playback extends Component {
     }
   }
 
-  onTitlesChanged(titles, colophon = true) {
+  onTitlesChanged({ titles, colophon }) {
     this.setState({
       orb: !titles,
-      colophon,
+      colophon: !!colophon,
     });
   }
 

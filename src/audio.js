@@ -5,6 +5,8 @@ import { sleep } from './utils/async';
 import settings from './settings';
 import pageVisibility from './utils/page-visibility';
 
+const logging = true;
+
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 let context;
@@ -25,44 +27,55 @@ let onPlay;
 let onSeeking;
 let pauseTime;
 let muted = false;
-let pauseCount = 0;
 
 const FADE_OUT_SECONDS = 2;
 const ALMOST_ZERO = 1e-4;
+
+// The allowable sync difference on android is higher, because for some reason
+// it is is much less accurate in reporting HTMLMediaElement.currentTime:
+const ALLOWED_SYNC_DIFFERENCE = (feature.isMobile && !feature.isIOs) ? 0.1 : 0.05;
 
 let scheduledTime;
 const audio = Object.assign(emitter(), {
   tick(staticTime) {
     if (!context || !duration) return;
 
-    // Because there is no reliable way to see if an audio element is paused,
-    // we need to see if its currentTime property changed. Because the currentTime
-    // doesn't always change each frame, we wait for it to not have changed
-    // 2 times, before actually pausing:
-    if (audioElement) {
-      if (audioTime === audioElement.currentTime) {
-        pauseCount++;
-      } else {
-        pauseCount = 0;
-      }
-      if (pauseCount > 1) return;
-    }
+    // If we don't have enough data to play the audio,
+    // pause playback by returning early:
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
+    if (audioElement && audioElement.readyState === 2) return;
+
+    const now = Date.now();
+
     const isStatic = staticTime !== undefined;
-    this.time = (isStatic
-      ? staticTime
-      : (pauseTime || (Date.now() - startTime)) / 1000
-    ) % duration;
 
     if (!isStatic) {
       // The time as reported by the context or audio element:
       audioTime = (audioElement
         ? audioElement.currentTime
         : context.currentTime - contextStartTime) % audio.duration;
+      if (audioTime === 0) {
+        startTime = now;
+        return;
+      }
+    }
 
-      // If our time is running more than 5ms out of sync, correct it:
-      if (Math.abs(this.time - audioTime) > 0.05) {
+    this.time = (isStatic
+      ? staticTime
+      : (pauseTime || (now - startTime)) / 1000
+    );
+
+    if (!isStatic) {
+      // If our animation time is running out of sync with the time reported
+      // by the audio element correct it:
+      const syncDiff = this.time - audioTime;
+      if (Math.abs(syncDiff) > ALLOWED_SYNC_DIFFERENCE) {
+        if (logging) {
+          const loopText = syncDiff > (0.9 * audio.duration) ? 'audio looped: ' : '';
+          console.log(`${loopText}syncing animation to audio by ${Math.round(syncDiff * 1000)} ms to ${audioTime}`);
+        }
         this.time = audioTime;
-        startTime = Date.now() - this.time * 1000;
+        startTime = now - audioTime * 1000;
       }
     }
     const { loopDuration } = settings;
