@@ -11,9 +11,17 @@ const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const FLAVOR = process.env.FLAVOR || 'website';
+const isProd = NODE_ENV === 'production';
+
+const extractSass = new ExtractTextPlugin({
+  filename: 'style.css',
+  disable: process.env.NODE_ENV === 'development',
+});
 
 const config = {
-  devtool: process.env.NODE_ENV === 'production' ? null : 'source-map',
+  devtool: process.env.NODE_ENV === 'production'
+    ? false
+    : 'cheap-module-eval-source-map',
   entry: {
     jsx: './index.js',
   },
@@ -24,33 +32,28 @@ const config = {
     publicPath: '/',
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.html$/,
         loader: 'html-loader',
       },
       {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style', ['css-loader?minimize', 'autoprefixer']),
-      },
-      {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('style', [
-          'css-loader?minimize',
-          'autoprefixer',
-          'sass?sourceMap',
-        ]),
+        use: extractSass.extract({
+          use: [{
+            loader: 'css-loader',
+            options: { minimize: true },
+          }, {
+            loader: 'sass-loader',
+          }],
+          // use style-loader in development
+          fallback: 'style-loader',
+        }),
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loaders: [
-          'babel-loader',
-        ],
-      },
-      {
-        test: /\.json$/,
-        loader: 'json-loader',
+        loader: 'babel-loader',
       },
       {
         test: /\.(png|gif|jpg|jpeg|mp3|otf|woff|woff2|obj|ogg)$/,
@@ -60,13 +63,7 @@ const config = {
         test: /.*\.svg$/,
         loaders: [
           'string-loader',
-          `svgo-loader?${JSON.stringify({
-            plugins: [
-              { removeTitle: true },
-              { convertColors: { shorthex: false } },
-              { convertPathData: false },
-            ],
-          })}`,
+          'svgo-loader',
         ],
       },
       {
@@ -81,16 +78,14 @@ const config = {
     ],
   },
   resolve: {
-    extensions: ['', '.js'],
+    extensions: ['.js'],
     alias: {
       THREE: path.resolve(__dirname, './src/lib/three.js'),
     },
   },
   plugins: [
-    new CleanWebpackPlugin(['dist'], {
-      verbose: true,
-      dry: false,
-    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new CleanWebpackPlugin(['dist']),
     new CopyWebpackPlugin([
       { from: 'public', to: '../dist/public' },
       { from: 'templates/_redirects', to: '../dist/' },
@@ -106,16 +101,14 @@ const config = {
       inject: true,
       cache: false,
       template: `templates/${FLAVOR === 'cms' ? 'cms' : 'index'}.html`,
-      title: 'You Move Me',
+      title: 'Dance Tonite',
       favicon: './public/favico.png',
       inlineSource: '.(css)$',
     }),
-    new webpack.ExtendedAPIPlugin(),
     new ScriptExtHtmlWebpackPlugin({
       defaultAttribute: 'async',
     }),
     new HtmlWebpackInlineSourcePlugin(),
-    new ExtractTextPlugin('style.css'),
     new webpack.ProvidePlugin({
       THREE: 'THREE',
     }),
@@ -123,28 +116,29 @@ const config = {
       (/^three$/),
       require.resolve('./src/lib/three')
     ),
+    extractSass,
   ],
   devServer: {
     contentBase: './src',
     host: '0.0.0.0',
     port: 3000,
     disableHostCheck: true,
+    hot: true,
+    overlay: true,
+    historyApiFallback: true,
   },
   context: path.resolve(__dirname, 'src'),
 };
 
-if (process.env.NODE_ENV === 'production' && process.env.RG_ENV !== 'dev') {
-  config.plugins = config.plugins.concat(
-    new webpack.optimize.UglifyJsPlugin({
-      output: {
-        comments: false,
-      },
-    })
+if (!isProd) {
+  config.plugins.push(
+    new webpack.NamedModulesPlugin()
   );
 }
 
+
 if (process.env.ANALYZE_BUNDLE) {
-  config.plugins = config.plugins.concat(
+  config.plugins.push(
     new BundleAnalyzerPlugin({
       defaultSizes: 'gzip',
     })
