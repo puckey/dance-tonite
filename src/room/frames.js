@@ -5,6 +5,12 @@ import Frame from './frame';
 
 const PROTOCOL = location.protocol;
 
+const getURL = (id) => (
+  `${PROTOCOL}//storage.googleapis.com/you-move-me.appspot.com/recordings/${id}/${
+    `${queryData.dataRate || (feature.has6DOF ? 45 : 15)}FPS.json`
+  }`
+);
+
 export default class Frames {
   constructor(id, recording) {
     this.fps = 90;
@@ -29,9 +35,7 @@ export default class Frames {
     const frames = this.frames = [];
     let meta;
     this.streamer = streamJSON(
-      `${PROTOCOL}//storage.googleapis.com/you-move-me.appspot.com/recordings/${this.id}/${
-        `${queryData.dataRate || (feature.has6DOF ? 45 : 15)}FPS.json`
-      }`,
+      getURL(this.id),
       (error, json) => {
         if (error || !json) {
           if (callback) {
@@ -57,3 +61,14 @@ export default class Frames {
     );
   }
 }
+
+Frames.testUrl = (id) => new Promise((resolve) => {
+  const request = new XMLHttpRequest();
+  request.open('GET', getURL(id), true);
+  request.onreadystatechange = () => {
+    if (request.readyState === 4) {
+      resolve(request.status < 400);
+    }
+  };
+  request.send();
+});

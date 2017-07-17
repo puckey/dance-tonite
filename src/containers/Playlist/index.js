@@ -13,6 +13,7 @@ import Orb from '../../orb';
 import settings from '../../settings';
 import transition from '../../transition';
 import router from '../../router';
+import Frames from '../../room/frames';
 
 import BackgroundTimeline from '../../components/BackgroundTimeline';
 import RoomLabels from '../../components/RoomLabels';
@@ -81,8 +82,13 @@ export default class Playlist extends Component {
 
     const rooms = this.state.rooms;
 
+    let pathRecordingExists;
+    if (pathRecordingId) {
+      pathRecordingExists = await Frames.testUrl(pathRecordingId);
+    }
+
     for (let i = 0; i < entries.length; i++) {
-      const isPathRecording = i === pathRoomId - 1;
+      const isPathRecording = pathRecordingExists && i === pathRoomId - 1;
       const entry = entries[i];
       const room = new Room({
         id: isPathRecording
@@ -112,7 +118,7 @@ export default class Playlist extends Component {
         },
         (error) => {
           if (error && error.name !== destroyedErrorName) {
-            this.onError(error);
+            if (this.props.onError) this.props.onError(error);
           }
           resolve();
         },
