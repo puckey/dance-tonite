@@ -6,17 +6,17 @@ export default [
   {
     time: 4.1,
     titles: ['lcd'],
-    position: { z: 9 },
+    position: { z: 8.5 },
   },
   {
     time: 5.1,
     titles: ['lcd', 'sound'],
-    position: { z: 9 },
+    position: { z: 8.5 },
   },
   {
     time: 6.1,
     titles: ['lcd', 'sound', 'system'],
-    position: { z: 9 },
+    position: { z: 8.5 },
   },
   {
     time: 7.1,
@@ -36,17 +36,17 @@ export default [
   {
     time: 10.1,
     titles: ['tonite'],
-    position: { z: 5 },
+    position: { z: 4.5 },
   },
   {
     time: 11.1,
     titles: ['tonite', 'tonite'],
-    position: { z: 5 },
+    position: { z: 4.5 },
   },
   {
     time: 12.1,
     titles: ['tonite', 'tonite', 'tonite'],
-    position: { z: 5 },
+    position: { z: 4.5 },
   },
   {
     time: 13.1,

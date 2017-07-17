@@ -5,25 +5,23 @@ import { textColor } from '../../theme/colors';
 export default function create() {
   const textCreator = deps.SDFText.creator();
 
-  const numLines = 3;
-  const textLines = [];
+  // const numLines = 3;
+  // const textLines = [];
+
   const group = new THREE.Group();
-  for (let i = 0; i < numLines; i++) {
-    const textLine = textCreator.create('', {
-      wrapWidth: 1980,
-      scale: 4,
-      align: 'center',
-      color: textColor.getHex(),
-    });
-    textLines.push(textLine);
-    group.add(textLine);
-    textLine.position.y = 2 - i * 0.5;
-  }
+  const textLine = textCreator.create('', {
+    wrapWidth: 1980,
+    scale: 4,
+    align: 'center',
+    vAlign: 'center',
+    color: textColor.getHex(),
+  });
+
+  textLine.position.y = 1.5;
+  group.add(textLine);
 
   function clearTitles() {
-    textLines.forEach(function (textLine) {
-      textLine.updateLabel('');
-    });
+    textLine.updateLabel('');
   }
 
   function setTitles(titles) {
@@ -31,14 +29,12 @@ export default function create() {
       clearTitles();
       return;
     }
-    textLines.forEach(function (textLine, index) {
-      const title = titles[index];
-      if (title !== undefined) {
-        textLine.updateLabel(title);
-      } else {
-        textLine.updateLabel('');
-      }
-    });
+
+    const str = titles.reduce(function (fullStr, line) {
+      return fullStr + line + '\n';
+    }, '');
+
+    textLine.updateLabel(str);
   }
 
   function setPosition(p) {

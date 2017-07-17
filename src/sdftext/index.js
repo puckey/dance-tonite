@@ -41,7 +41,7 @@ export function createMaterial(color) {
   }));
 }
 
-const textScale = 0.00024;
+export const textScale = 0.00024;
 
 export function creator() {
   const font = parseASCII(Font.fnt());
@@ -77,7 +77,7 @@ export function creator() {
   }
 
 
-  function create(str = '', { color = 0xffffff, scale = 1.0, wrapWidth = undefined, align = 'left' } = {}) {
+  function create(str = '', { color = 0xffffff, scale = 1.0, wrapWidth = undefined, align = 'left', vAlign = 'bottom' } = {}) {
     const group = new THREE.Group();
 
     const mesh = createText(str.toUpperCase, font, color, scale, wrapWidth, align);
@@ -86,13 +86,19 @@ export function creator() {
 
     group.updateLabel = function (txt) {
       mesh.geometry.update(txt.toUpperCase());
+      group.layout = mesh.geometry.layout;
 
       if (align === 'center') {
         //  center alignment doesn't seem to be working in BMFontText
-        mesh.geometry.computeBoundingBox();
-        const width = mesh.geometry.boundingBox.getSize().x;
+        // mesh.geometry.computeBoundingBox();
+        // const width = mesh.geometry.boundingBox.getSize().x;
 
-        mesh.position.x = -width * 0.5 * textScale * scale;
+        // mesh.position.x = -width * 0.5 * textScale * scale;
+        mesh.position.x = -group.layout.width * 0.5 * scale * textScale;
+      }
+
+      if (vAlign === 'center') {
+        mesh.position.y = -group.layout.height * 0.5 * scale * textScale;
       }
     };
 
