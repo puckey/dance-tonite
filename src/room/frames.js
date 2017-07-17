@@ -66,8 +66,9 @@ Frames.testUrl = (id) => new Promise((resolve) => {
   const request = new XMLHttpRequest();
   request.open('GET', getURL(id), true);
   request.onreadystatechange = () => {
-    if (request.readyState === 4) {
+    if (request.status) {
       resolve(request.status < 400);
+      request.abort();
     }
   };
   request.send();
