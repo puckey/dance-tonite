@@ -23,6 +23,7 @@ import settings from '../../settings';
 import transition from '../../transition';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
+import recording from '../../recording';
 
 export default class Playback extends Component {
   constructor() {
@@ -196,6 +197,7 @@ export default class Playback extends Component {
           orb={orb}
           stopped={stopped}
           fixedControllers={inContextOfRecording}
+          hideRoomCountdown={inContextOfRecording}
         />
         { process.env.FLAVOR !== 'cms'
           ? <Titles
