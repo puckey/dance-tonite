@@ -38,7 +38,7 @@ export default class VRTitles extends Component {
       this.clearTitles();
       return;
     }
-    this.textLine.updateLabel(titles.join('\n'));
+    this.textLine.updateLabel(titles.join('\n').replace('o','@'));
     this.setPosition(position);
   }
 
