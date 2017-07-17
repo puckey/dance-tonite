@@ -33,29 +33,31 @@ export default class Playlist extends Component {
 
   componentWillMount() {
     this.mounted = true;
-    Room.reset();
-    Room.rotate180();
+    // Do all this in the next frame, to hide the initial play button on mobile faster
+    setTimeout(() => {
+      Room.reset();
+      Room.rotate180();
+      const { recording, pathRoomId, orb } = this.props;
+      const { rooms } = this.state;
+      this.orb.visible = !!orb;
 
-    const { recording, pathRoomId, orb } = this.props;
-    const { rooms } = this.state;
-    this.orb.visible = !!orb;
-
-    if (recording) {
-      for (let index = 1; index < 18; index += 2) {
-        const room = new Room({
-          recording,
-          index,
-          colorIndex: pathRoomId - 1,
-          wall: true,
-        });
-        rooms.push(room);
+      if (recording) {
+        for (let index = 1; index < 18; index += 2) {
+          const room = new Room({
+            recording,
+            index,
+            colorIndex: pathRoomId - 1,
+            wall: true,
+          });
+          rooms.push(room);
+        }
       }
-    }
 
-    this.moveOrb(0);
+      this.moveOrb(0);
 
-    this.asyncMount();
-    viewer.on('tick', this.tick);
+      this.asyncMount();
+      viewer.on('tick', this.tick);
+    });
   }
 
   componentWillReceiveProps({ orb, stopped }) {
