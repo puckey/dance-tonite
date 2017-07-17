@@ -156,7 +156,7 @@ export default class Playlist extends Component {
   }
 
   render(
-    { recording, stopped, orb, pathRoomId },
+    { recording, stopped, orb, pathRoomId, hideRoomCountdown },
     { rooms, entries, currentRoomID }
   ) {
     return (
@@ -172,7 +172,7 @@ export default class Playlist extends Component {
         />
         }
         {
-          pathRoomId !== undefined && !!currentRoomID && (
+          !hideRoomCountdown && pathRoomId !== undefined && !!currentRoomID && (
             <Align type="bottom-left">
               <RoomCountdown target={pathRoomId} current={currentRoomID} />
             </Align>
