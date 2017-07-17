@@ -22,7 +22,7 @@
 
   h1 {
     width: 100%;
-    
+
     @media (max-width: $min-width) {
       width: 90%;
       margin: 0;
@@ -90,6 +90,11 @@
       &:nth-of-type(even) {
         margin-right: 0;
       }
+    }
+
+    .single-column {
+      margin-left: 0;
+      max-width: 15rem;
     }
   }
 

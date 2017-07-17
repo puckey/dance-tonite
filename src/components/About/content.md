@@ -120,7 +120,7 @@ Choreography on the website is curated by hand. Please be patient as we review a
     Roel Wouters
   </a>
   </div>
-  <div>
+  <div class="single-column">
 
   <h3><a href="https://github.com/dataarts">Data Arts Team</a></h3>
   <a href="http://custom-logic.com">
