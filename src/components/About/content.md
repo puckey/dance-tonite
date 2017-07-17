@@ -136,13 +136,6 @@ Choreography on the website is curated by hand. Please be patient as we review a
     Stewart Smith
   </a>
   </div>
-  <div>
-
-  <h3><a href="http://gpixer.com">Grainey Pictures</a></h3>
-  <a href="http://gpixer.com">
-    Colin Gray, Megan Raney Aarons, Sherry Daniel, Nathan McGuire, Will Henderson-Nold, Nicholas Lee, Nicole Ryan
-  </a>
-  </div>
 </div>
 <div class="credits mod-thanks">
   <p>Special thanks to the following folks at Google<br/>
