@@ -1,6 +1,5 @@
 /** @jsx h */
 import { h, Component } from 'preact';
-import shuffle from 'just-shuffle';
 import asyncEach from 'async/eachLimit';
 
 import './style.scss';

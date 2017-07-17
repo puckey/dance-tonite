@@ -1,4 +1,5 @@
 import easeBackInOut from 'eases/back-in-out';
+import easeSineInOut from 'eases/sine-in-out';
 import easeBounceOut from 'eases/bounce-out';
 import easeBackOut from 'eases/back-out';
 
@@ -177,7 +178,6 @@ export default class Room {
     if (settings.shouldCull && this.cullRoom()) {
       return;
     }
-
     // In orthographic mode, scale up the meshes:
     const scale = InstancedItem.perspectiveMode ? 1 : 1.5;
 
@@ -189,6 +189,13 @@ export default class Room {
       const color = ((highlightLast && isLast) || this.isHighlighted(i))
         ? highlightColor
         : costumeColor;
+
+      if (!hideHead) {
+        const pose = this.getPose(i, 0, position);
+        items.head.add(pose, color, scale);
+        this.setShadowPose(pose, position, i);
+      }
+
       const rhandPose = this.getPose(i, 1, position);
       if (!rhandPose) continue;
       items.hand.add(rhandPose, color, scale);
@@ -197,12 +204,6 @@ export default class Room {
       const lhandPose = this.getPose(i, 2, position);
       items.hand.add(lhandPose, color, scale);
       this.setShadowPose(lhandPose, position, i, 2, true);
-
-      if (!hideHead) {
-        const pose = this.getPose(i, 0, position);
-        items.head.add(pose, color, scale);
-        this.setShadowPose(pose, position, i);
-      }
     }
   }
 
@@ -212,15 +213,24 @@ export default class Room {
     frame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
 
     // Morph the beginning of the first performance with the end of the last:
-    if (this.morph && performanceIndex === 0) {
+    if (this.morph && performanceIndex === 0 && this.frames.complete) {
       this.lastFrame.getPose(frame.count - 1, limbIndex, offset, applyMatrix, LAST_POSE);
-      const overlapRatio = (Math.min(0.2, frame.loopRatio)) * 5;
-      const rotationRatio = (Math.min(0.05, frame.loopRatio)) * 20;
+      let { morphDuration } = this;
+      if (!morphDuration) {
+        const [position] = frame.getPose(0, limbIndex, offset, applyMatrix);
+        const distance = Math.min(2, position.distanceTo(LAST_POSE[0])) * 0.5;
+        morphDuration = this.morphDuration = Math.max(0.01, distance * 0.3);
+      }
+      const overlapRatio = Math.min(morphDuration, frame.loopRatio)
+          * (1 / this.morphDuration);
+      const rotationDuration = morphDuration > 0.1 ? 0.08 : 0.05;
+      const rotationRatio = (Math.min(rotationDuration, frame.loopRatio)) * (1 / rotationDuration);
+      const easer = morphDuration > 0.1 ? easeBackInOut : easeSineInOut;
       lerpPose(
         POSE,
         LAST_POSE,
-        easeBackInOut(1 - overlapRatio),
-        easeBackInOut(1 - rotationRatio)
+        easer(1 - overlapRatio),
+        easer(1 - rotationRatio)
       );
     }
 

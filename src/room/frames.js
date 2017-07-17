@@ -35,9 +35,11 @@ export default class Frames {
       (error, json) => {
         if (error || !json) {
           if (callback) {
+            if (!error) {
+              this.complete = true;
+            }
             callback(error);
           }
-
           return;
         }
         if (!meta) {
