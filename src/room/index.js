@@ -192,6 +192,7 @@ export default class Room {
 
       if (!hideHead) {
         const pose = this.getPose(i, 0, position);
+        if (!pose) continue;
         items.head.add(pose, color, scale);
         this.setShadowPose(pose, position, i);
       }
