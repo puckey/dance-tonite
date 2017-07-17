@@ -5,7 +5,7 @@ import { sleep } from './utils/async';
 import settings from './settings';
 import pageVisibility from './utils/page-visibility';
 
-const logging = false;
+const logging = true;
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -30,6 +30,7 @@ let pauseTime;
 let muted = false;
 
 const FADE_OUT_SECONDS = 2;
+const FADE_IN_SECONDS = 1;
 const ALMOST_ZERO = 1e-4;
 const FILTER_LOW = 2700.0;
 const FILTER_HIGH = 14000.0;
@@ -125,6 +126,8 @@ const audio = Object.assign(emitter(), {
       this.loopCount = 0;
       const canPlay = () => {
         this.duration = duration;
+        gainNode.gain.value = ALMOST_ZERO;
+        audio.fadeIn();
         resolve(param.src);
       };
 
@@ -342,7 +345,7 @@ const audio = Object.assign(emitter(), {
     await audio.fade(fadeDuration, ALMOST_ZERO);
   },
 
-  async fadeIn(fadeDuration = FADE_OUT_SECONDS) {
+  async fadeIn(fadeDuration = FADE_IN_SECONDS) {
     await audio.fade(fadeDuration, 1);
   },
 
