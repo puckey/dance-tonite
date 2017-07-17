@@ -122,6 +122,7 @@ export default class Review extends Component {
           review
           totalProgress
           fixedControllers
+          hideRoomCountdown
           recording={recording}
           pathRecordingId={id}
           pathRoomId={roomId}
