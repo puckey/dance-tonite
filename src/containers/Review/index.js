@@ -36,10 +36,6 @@ export default class Review extends Component {
       transition.enter({
         text: 'Time to review your performance',
       }),
-      audio.load({
-        src: `/public/sound/room-${this.props.roomId}.ogg`,
-        loops: 2,
-      }),
       sleep(5000),
     ]);
     if (!this.mounted) return;
@@ -47,10 +43,13 @@ export default class Review extends Component {
     await transition.fadeOut();
     if (!this.mounted) return;
 
+    await audio.load({
+      src: `/public/sound/room-${this.props.roomId}.ogg`,
+      loops: 2,
+    });
     this.setState({
       visible: true,
     });
-    audio.play();
     transition.exit();
   }
 
