@@ -147,7 +147,9 @@ const viewer = Object.assign(emitter(), {
       vrEffect.requestAnimationFrame(viewer.animate);
     }
 
-    THREE.VRController.update();
+    if (feature.has6DOF) {
+      THREE.VRController.update();
+    }
 
     if (feature.isIODaydream) {
       viewer.daydreamController.update();

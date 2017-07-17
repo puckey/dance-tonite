@@ -16,6 +16,10 @@
 
   &.mod-small .titles-title {
     font-size: 6.5vw;
+
+    @media (max-width: $min-width) {
+      font-size: 11.7vw;
+    }
   }
 }
 
@@ -28,4 +32,8 @@
   font-feature-settings: 'ss01';
   pointer-events: none;
   box-sizing: border-box;
+
+  @media (max-width: $min-width) {
+    font-size: 18vw;
+  }
 }

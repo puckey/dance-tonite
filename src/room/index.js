@@ -214,8 +214,8 @@ export default class Room {
     // Morph the beginning of the first performance with the end of the last:
     if (this.morph && performanceIndex === 0) {
       this.lastFrame.getPose(frame.count - 1, limbIndex, offset, applyMatrix, LAST_POSE);
-      const overlapRatio = (Math.min(0.2, frame.loopRatio)) / 0.2;
-      const rotationRatio = (Math.min(0.05, frame.loopRatio)) / 0.05;
+      const overlapRatio = (Math.min(0.2, frame.loopRatio)) * 5;
+      const rotationRatio = (Math.min(0.05, frame.loopRatio)) * 20;
       lerpPose(
         POSE,
         LAST_POSE,
@@ -367,12 +367,7 @@ Room.reset = () => {
   if (!Room.isGiffing) viewer.scene.add(debugMesh);
 };
 
-Room.shouldUseShadow = function () {
-  if ((settings.useShadow === false) || (viewer.vrEffect.isPresenting)) {
-    return false;
-  }
-  return true;
-};
+Room.shouldUseShadow = () => !!settings.useShadow && !viewer.vrEffect.isPresenting;
 
 Room.rotate180 = () => {
   set180RotationMatrix(InstancedItem.group);
