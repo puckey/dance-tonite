@@ -18,13 +18,13 @@ export default class VRTitles extends Component {
 
   componentDidMount() {
     const group = this.group = new THREE.Group();
-    group.position.x = -7.0; // TODO.. why is this a magic number?!!?
     group.position.y = settings.holeHeight; // hole height
 
     this.textLine = this.textCreator.create('', {
       wrapWidth: 5120,
       scale: 9,
       align: 'center',
+      vAlign: 'center',
       color: textColor.getHex(),
       lineHeight: 400,
       mode: 'nowrap',
@@ -38,7 +38,7 @@ export default class VRTitles extends Component {
       this.clearTitles();
       return;
     }
-    this.textLine.updateLabel(titles.join('\n').replace('o','@'));
+    this.textLine.updateLabel(titles.join('\n').replace('o', '@'));
     this.setPosition(position);
   }
 
