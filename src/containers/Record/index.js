@@ -111,6 +111,7 @@ export default class Record extends Component {
       mode: 'recording',
     });
     this.performWaitRoom();
+    audio.dim(true);
     audio.play();
     viewer.on('tick', this.tick);
     analytics.recordDanceSessionStart();
