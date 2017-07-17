@@ -12,6 +12,7 @@ const AudioContext = window.AudioContext || window.webkitAudioContext;
 let context;
 let source;
 let gainNode;
+let filter;
 let loopCount;
 let duration = 0;
 let lastTime = 0;
@@ -30,6 +31,8 @@ let muted = false;
 
 const FADE_OUT_SECONDS = 2;
 const ALMOST_ZERO = 1e-4;
+const FILTER_LOW = 2700.0;
+const FILTER_HIGH = 14000.0;
 
 // The allowable sync difference on android is higher, because for some reason
 // it is is much less accurate in reporting HTMLMediaElement.currentTime:
@@ -109,6 +112,10 @@ const audio = Object.assign(emitter(), {
       audio.reset();
       context = new AudioContext();
       gainNode = context.createGain();
+      filter = context.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = FILTER_HIGH;
+      filter.Q.value = 2;
       // Reset time, set loop count
       lastTime = 0;
       lastLoopProgress = 0;
@@ -300,27 +307,54 @@ const audio = Object.assign(emitter(), {
     return muted;
   },
 
-  async fadeOut(fadeDuration = FADE_OUT_SECONDS) {
+  async dim(immediate = false) {
     if (!context) return;
-    if (scheduledTime) {
-      gainNode.gain.cancelScheduledValues(scheduledTime);
+
+    source.disconnect();
+    source.connect(filter);
+    filter.connect(gainNode);
+
+    if (immediate) {
+      filter.frequency.value = FILTER_LOW;
+    } else {
+      audio.fade(1, FILTER_LOW, filter.frequency);
     }
-    scheduledTime = context.currentTime;
-    gainNode.gain.exponentialRampToValueAtTime(
-      ALMOST_ZERO,
-      scheduledTime + fadeDuration
-    );
-    return sleep(fadeDuration * 1000);
+
+    await audio.fade(1, 0.5);
+  },
+
+  async undim(immediate = false) {
+    if (!context) return;
+
+    if (immediate) {
+      filter.frequency.value = FILTER_HIGH;
+    } else {
+      audio.fade(1, FILTER_LOW, filter.frequency);
+    }
+
+    await audio.fade(1, 1);
+
+    filter.disconnect();
+    source.disconnect();
+    source.connect(gainNode);
+  },
+
+  async fadeOut(fadeDuration = FADE_OUT_SECONDS) {
+    await audio.fade(fadeDuration, ALMOST_ZERO);
   },
 
   async fadeIn(fadeDuration = FADE_OUT_SECONDS) {
+    await audio.fade(fadeDuration, 1);
+  },
+
+  async fade(fadeDuration, targetValue, _property = gainNode.gain) {
     if (!context || muted) return;
     if (scheduledTime) {
-      gainNode.gain.cancelScheduledValues(scheduledTime);
+      _property.cancelScheduledValues(scheduledTime);
     }
     scheduledTime = context.currentTime;
-    gainNode.gain.exponentialRampToValueAtTime(
-      1,
+    _property.exponentialRampToValueAtTime(
+      targetValue,
       scheduledTime + fadeDuration
     );
     return sleep(fadeDuration * 1000);

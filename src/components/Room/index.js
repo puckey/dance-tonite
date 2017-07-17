@@ -64,6 +64,7 @@ export default class RoomComponent extends Component {
 
   onRoomLoaded(err) {
     audio.play();
+    audio.dim(true);
     this.setState({ loading: false });
 
     if (err && this.props.onRoomLoadError) {
@@ -164,6 +165,8 @@ export default class RoomComponent extends Component {
             fade={fadeOrbs}
             onEnteredRoom={fadeOrbs && this.performOrbEnteredRoom}
             onLeftRoom={fadeOrbs && this.performOrbLeftRoom}
+            onEarlyLeftRoom={() => audio.dim()}
+            onEarlyEnteredRoom={() => audio.undim()}
             onCreatedOrb={this.receiveOrb}
             reversed={this.props.reverseOrbs}
           />
