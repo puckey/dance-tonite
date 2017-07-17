@@ -63,9 +63,9 @@ export default class RoomComponent extends Component {
   }
 
   onRoomLoaded(err) {
-    audio.play();
-    audio.dim(true);
     this.setState({ loading: false });
+    audio.dim(true);
+    audio.play();
 
     if (err && this.props.onRoomLoadError) {
       this.props.onRoomLoadError(err);
