@@ -28,8 +28,6 @@ const changeInstanceColor = (mesh, index, color) => {
   mesh.needsUpdate('color');
 };
 
-const addInstance = mesh => mesh.geometry.maxInstancedCount++;
-
 class InstancedItem {
   constructor(count, perspectiveMesh, orthographicMesh) {
     items.push(this);
