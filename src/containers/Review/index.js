@@ -56,11 +56,6 @@ export default class Review extends Component {
   }
 
   async performSubmit() {
-    const persisting = storage.persist(
-      recording.serialize(),
-      recording.roomIndex + 1
-    );
-
     await Promise.all([
       transition.fadeOut(),
       audio.fadeOut(),
@@ -71,11 +66,16 @@ export default class Review extends Component {
       visible: false,
     });
 
+    await transition.enter({
+      text: 'Submitting your recording. Please wait.',
+    });
+    if (!this.mounted) return;
+
     const [recordingSrc] = await Promise.all([
-      persisting,
-      transition.enter({
-        text: 'Submitting your recording. Please wait.',
-      }),
+      storage.persist(
+        recording.serialize(),
+        recording.roomIndex + 1
+      ),
       sleep(5000),
     ]);
     if (!this.mounted) return;
