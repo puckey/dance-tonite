@@ -21,7 +21,7 @@ const things = [
   'Interpreting dance…',
   'Twiddling knobs…',
   'Googling “How to make a GIF”…',
-  'Glueing pixels…',
+  'Gluing pixels…',
   'Becoming self-aware…',
   'Coloring inside the lines…',
   'Raising expectations…',
