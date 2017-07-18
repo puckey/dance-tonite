@@ -16,7 +16,9 @@
   "postcss": {
     "plugins": {
       "autoprefixer": {},
-      "cssnano": {}
+      "cssnano": {
+        "reduceIdents": false
+      }
     }
   },
   "dependencies": {
