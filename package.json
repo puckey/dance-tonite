@@ -15,7 +15,9 @@
   },
   "postcss": {
     "plugins": {
-      "autoprefixer": {},
+      "autoprefixer": {
+        "browsers": "> 1%"
+      },
       "cssnano": {
         "reduceIdents": false
       }
