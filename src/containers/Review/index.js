@@ -60,9 +60,11 @@ export default class Review extends Component {
       recording.serialize(),
       recording.roomIndex + 1
     );
-    audio.fadeOut();
 
-    await transition.fadeOut();
+    await Promise.all([
+      transition.fadeOut(),
+      audio.fadeOut(),
+    ]);
     if (!this.mounted) return;
 
     this.setState({

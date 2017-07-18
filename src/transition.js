@@ -66,8 +66,11 @@ const tweenFog = (from, to, duration = 2) => {
   return tweener.promise;
 };
 
-const fadeOut = (duration) => {
+const fadeOut = (duration, fromWithin) => {
   fadedOut = true;
+  if (!fromWithin) {
+    transitionVersion += 1;
+  }
   const version = transitionVersion;
   if (logging) {
     console.log('fadeOut', { version, duration, time: new Date() });
@@ -91,7 +94,6 @@ const fadeIn = (maxFogDistance, duration) => {
   return tweenFog(0, maxFogDistance, duration);
 };
 
-const revealFar = 300;
 const transitionSpaceFar = 25;
 
 const transition = {
@@ -146,12 +148,15 @@ const transition = {
   },
 
   async enter(param = {}) {
+    transitionVersion += 1;
+    const version = transitionVersion;
+
     insideTransition = true;
+
     if (logging) {
       console.log('transition.enter', { transitionVersion, ...param, time: new Date() });
     }
 
-    const version = transitionVersion;
     // If fadeOut wasn't called before enter:
     if (!fadedOut) {
       if (logging) {
@@ -163,7 +168,7 @@ const transition = {
       if (logging) {
         console.log('transition.enter returned early because of version difference',
           {
-            time: new Date()
+            time: new Date(),
           }
         );
       }
@@ -202,7 +207,7 @@ const transition = {
       }
       await fadeOut();
     }
-    transition.reset(true);
+    transition.reset(true, true);
     if (version === transitionVersion) {
       if (logging) {
         console.log(
@@ -214,7 +219,10 @@ const transition = {
     }
   },
 
-  reset(soft) {
+  reset(soft, fromWithin) {
+    if (!fromWithin) {
+      transitionVersion += 1;
+    }
     if (logging) {
       console.log(
         'transition.reset',
@@ -239,7 +247,6 @@ const transition = {
       if (viewer.renderScene.fog) {
         viewer.renderScene.fog.near = settings.cullDistance;
       }
-      transitionVersion += 1;
     }
   },
 };

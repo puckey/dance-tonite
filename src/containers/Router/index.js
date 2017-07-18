@@ -58,7 +58,8 @@ export default class Router extends Component {
   onRouteChanged(req = {}, event) {
     const { params } = req;
     if (event && event.parent()) return;
-    transition.reset(true);
+    transition.exit();
+    
     convertParams(params);
     if (this.state.route) {
       audio.fadeOut();
