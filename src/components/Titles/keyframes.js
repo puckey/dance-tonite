@@ -77,7 +77,7 @@ export default [
   },
   {
     time: 226,
-    titles: ['Google’s', 'Data Arts Team'],
+    titles: ['Google', 'Data Arts Team'],
     small: true,
     position: { z: -164.5 },
   },
