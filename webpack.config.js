@@ -40,12 +40,21 @@ const config = {
       {
         test: /\.scss$/,
         use: extractSass.extract({
-          use: [{
-            loader: 'css-loader',
-            options: { minimize: true },
-          }, {
-            loader: 'sass-loader',
-          }],
+          use: [
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: !isProd,
+              },
+            },
+            {
+              loader: 'postcss-loader',
+              options: { sourceMap: !isProd },
+            },
+            {
+              loader: 'sass-loader', options: { sourceMap: !isProd },
+            },
+          ],
           // use style-loader in development
           fallback: 'style-loader',
         }),
