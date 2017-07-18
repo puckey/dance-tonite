@@ -95,6 +95,7 @@ export default class RoomComponent extends Component {
     }
 
     this.setState({ loading: true });
+
     await audio.load({
       src: `/public/sound/room-${layout.loopIndex(roomId)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
       loops: 2,
@@ -102,6 +103,7 @@ export default class RoomComponent extends Component {
       progressive,
     });
     if (!this.mounted) return;
+
     const room = new Room({
       id,
       index: roomId - 1,

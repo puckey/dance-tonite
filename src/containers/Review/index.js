@@ -47,6 +47,8 @@ export default class Review extends Component {
       src: `/public/sound/room-${this.props.roomId}.ogg`,
       loops: 2,
     });
+    if (!this.mounted) return;
+
     this.setState({
       visible: true,
     });
@@ -61,10 +63,11 @@ export default class Review extends Component {
     audio.fadeOut();
 
     await transition.fadeOut();
+    if (!this.mounted) return;
+
     this.setState({
       visible: false,
     });
-    if (!this.mounted) return;
 
     const [recordingSrc] = await Promise.all([
       persisting,

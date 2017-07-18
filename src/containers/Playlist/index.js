@@ -76,8 +76,8 @@ export default class Playlist extends Component {
   async asyncMount() {
     const { pathRecordingId, pathRoomId, recording } = this.props;
     if (recording) return;
-    const entries = this.entries = await storage.loadPlaylist();
 
+    const entries = this.entries = await storage.loadPlaylist();
     if (!this.mounted) return;
 
     const rooms = this.state.rooms;
@@ -85,6 +85,7 @@ export default class Playlist extends Component {
     let pathRecordingExists;
     if (pathRecordingId) {
       pathRecordingExists = await Frames.testUrl(pathRecordingId);
+      if (!this.mounted) return;
     }
 
     for (let i = 0; i < entries.length; i++) {
