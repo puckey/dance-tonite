@@ -12,6 +12,8 @@ let frameNumber;
 let left = serializeMatrix(new Matrix4());
 let right = serializeMatrix(new Matrix4());
 
+const secondsToFrames = (seconds) => Math.floor(seconds * 90);
+
 const addFrame = (head) => {
   if (frames.length <= frameNumber) {
     frames.push([...head, ...left, ...right]);
@@ -30,13 +32,11 @@ const addFrame = (head) => {
 };
 
 const fillMissingFrames = (time, head) => {
-  const totalFrames = Math.round(time * 90);
+  const totalFrames = secondsToFrames(time);
   const diff = totalFrames - frameNumber;
-  if (diff > 1) {
-    for (let i = 0; i < (diff - 1); i++) {
-      frameNumber++;
-      addFrame(head);
-    }
+  for (let i = 0; i < diff; i++) {
+    frameNumber++;
+    addFrame(head);
   }
 };
 
@@ -48,7 +48,6 @@ const recording = {
     frameNumber = null;
     stopped = false;
     this.hideHead = hideHead;
-    this.totalFrames = Math.round(audio.duration * 90);
     this.count = null;
   },
 
@@ -75,6 +74,8 @@ const recording = {
       }
       frames = [];
     } else {
+      const framesNeeded = secondsToFrames(audio.time);
+      if (framesNeeded - frameNumber < 0) return;
       frameNumber++;
     }
     addFrame(head);
