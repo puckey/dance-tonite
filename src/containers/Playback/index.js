@@ -38,6 +38,9 @@ export default class Playback extends Component {
       hoverHead: null,
       orb: true,
       colophon: this.props.colophon !== false,
+      loading: this.props.inContextOfRecording
+        ? null
+        : 'Moving dancers into position…',
     });
   }
 
@@ -95,9 +98,6 @@ export default class Playback extends Component {
 
   async asyncMount() {
     const { inContextOfRecording, roomId } = this.props;
-    if (!inContextOfRecording) {
-      this.setLoading('Moving dancers into position…');
-    }
 
     const audioLoadTime = Date.now();
     await audio.load({
