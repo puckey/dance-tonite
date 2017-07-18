@@ -100,7 +100,7 @@ Choreography on the website is curated by hand. Please be patient as we review a
 
   <h3>Music by <a href="http://lcdsoundsystem.com">LCD Soundsystem</a></h3>
 
-  <h3>Directed by <a href="http://puckey.studio">Jonathan Puckey</a>, <a href="http://studiomoniker.com">Moniker</a>, and <a href="http://workshop.chromeexperiments.com/">Google’s Data Arts Team</a></h3>
+  <h3>Directed by <a href="http://puckey.studio">Jonathan Puckey</a>, <a href="http://studiomoniker.com">Moniker</a>, and the <a href="http://workshop.chromeexperiments.com/">Google Data Arts Team</a></h3>
 
 </div>
 <div class="column-wrapper credits">
