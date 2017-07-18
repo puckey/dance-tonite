@@ -1,4 +1,4 @@
-import { serializeMatrix } from './utils/serializer';
+import { serializeMatrix, count } from './utils/serializer';
 
 import audio from './audio';
 import viewer from './viewer';
@@ -83,7 +83,7 @@ const recording = {
 
   stop() {
     stopped = true;
-    this.count = this.frames[0] ? (this.frames[0].length / 21) : 0;
+    this.count = this.frames[0] ? count(this.frames[0]) : 0;
   },
 
   exists() {
