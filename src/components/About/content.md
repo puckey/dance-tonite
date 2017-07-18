@@ -1,12 +1,12 @@
 <div class="title-wrapper">
-  <h1>Dance Tonite is an evolving VR collaboration by LCD Soundsystem and their fans</h1>
+  <h1>Dance Tonite is an ever-changing VR collaboration by LCD Soundsystem and their fans</h1>
 </div>
 
 <div class="about-video-container">
   <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
 </div>
 
-Dance Tonite features VR motion capture recordings of users dancing to the song titled “Tonite” by LCD Soundsystem. Built in WebVR, the performance can be experienced in three different ways. Without VR, you are in the audience. On Daydream View, you are on stage watching the experience unfold around you. In room-scale VR, you are a performer.
+Dance Tonite features VR motion capture recordings of users dancing to the song titled “Tonite” by LCD Soundsystem. The performance can be experienced in three different ways, all through the web. Without VR, you are in the audience. On Daydream View, you are on stage watching the experience unfold around you. In room-scale VR, you are a performer.
 
 Each room is made from a single person’s choreography. The entire experience evolves over time with every new user contribution.  
 
@@ -15,15 +15,7 @@ Take a look at the <a class="gallery-link">gallery of featured user contribution
 ## Technology
 Dance Tonite previews one of the most exciting developments in Chrome, WebVR, allowing anyone to take part in the experience. It’s built for the Web—no apps or downloads required.
 
-This project is open-source. [View source code](https://github.com/puckey/you-move-me).
-
-To learn more, watch this video or read the technical deep dive.
-
-<div class="about-video-container">
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
-</div>
-
-## Technologies used in Dance Tonite
+To learn more about how this was made, read the technical deep dive or view the [open source project code](https://github.com/puckey/you-move-me).
 
 <div class="column-wrapper">
   <div>
@@ -126,21 +118,18 @@ Choreography on the website is curated by hand. Please be patient as we review a
     Jeff Nusz,
     Sabah Kosoy,
     Alisha Jaeger,
-    Gianluca Martini,
     Michael Chang,
-    Stewart Smith
+    Stewart Smith,
+    Gianluca Martini,
+    and special guests Christian Haas, 
+    Takashi Kawashima
   </div>
 </div>
 <div class="credits mod-thanks">
-  <p>Special thanks to the following folks at Google<br/>
-    Christian Haas,
-    Takashi Kawashima,
-    Jeremy Weinstein
-  </p>
   <h3>Typeface<br/><a href="https://bold-decisions.biz/typefaces/lars">Lars by Bold Decisions</a></h3>
 </div>
 
 
 ## Contact
 
-email us or [download the press kit](https://storage.googleapis.com/you-move-me.appspot.com/presskit/DanceTonite_PressKit.zip)
+Email us or [download the press kit](https://storage.googleapis.com/you-move-me.appspot.com/presskit/DanceTonite_PressKit.zip).
