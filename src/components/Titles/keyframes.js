@@ -6,32 +6,32 @@ export default [
   {
     time: 4.1,
     titles: ['lcd'],
-    position: { z: 6.8 },
+    position: { z: 7.8 },
   },
   {
     time: 5.1,
     titles: ['lcd', 'sound'],
-    position: { z: 6.8 },
+    position: { z: 7.8 },
   },
   {
     time: 6.1,
     titles: ['lcd', 'sound', 'system'],
-    position: { z: 6.8 },
+    position: { z: 7.8 },
   },
   {
     time: 7.1,
     titles: ['dance'],
-    position: { z: 4.5 },
+    position: { z: 6 },
   },
   {
     time: 8.1,
     titles: ['dance', 'dance'],
-    position: { z: 4.5 },
+    position: { z: 6 },
   },
   {
     time: 9.1,
     titles: ['dance', 'dance', 'dance'],
-    position: { z: 4.5 },
+    position: { z: 6 },
   },
   {
     time: 10.1,
@@ -67,19 +67,19 @@ export default [
     time: 222,
     titles: ['Jonathan', 'Puckey'],
     small: true,
-    position: { z: -161 },
+    position: { z: -161.5 },
   },
   {
     time: 224,
     titles: ['Moniker'],
     small: true,
-    position: { z: -162 },
+    position: { z: -163 },
   },
   {
     time: 226,
     titles: ['Google’s', 'Data Arts Team'],
     small: true,
-    position: { z: -163 },
+    position: { z: -164.5 },
   },
   {
     time: 228,
