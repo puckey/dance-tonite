@@ -36,6 +36,20 @@
       if (!supportsWebGL()) {
         window.location = '/no-webgl.html';
       }
+
+      function checkLocale(){
+        var request = new XMLHttpRequest();
+        request.open('GET', 'http://freegeoip.net/json/', true);
+
+        request.onload = function() {
+          if (request.status >= 200 && request.status < 400) {
+            var data = JSON.parse(request.responseText);
+            if (data.country_code == 'AR') window.location = '/not-available.html';
+          }
+        };
+        request.send();
+      }
+      checkLocale();
     </script>
   </head>
   <body class="mod-overflow-hidden">

@@ -120,31 +120,27 @@ Choreography on the website is curated by hand. Please be patient as we review a
     Roel Wouters
   </a>
   </div>
-  <div>
+  <div class="single-column">
 
   <h3><a href="https://github.com/dataarts">Data Arts Team</a></h3>
-  <a href="http://custom-logic.com">
-    Jeff Nusz</a>,
-  <a href="http://sabahme.com">
-    Sabah Kosoy</a>,
-  Alisha Jaeger,
-  <a href="http://gianlucamartini.me/">
-    Gianluca Martini</a>,
-  <a href="http://minmax.design/">
-    Michael Chang</a>,
-  <a href="http://stewartsmith.io/">
+    Jeff Nusz,
+    Sabah Kosoy,
+    Alisha Jaeger,
+    Gianluca Martini,
+    Michael Chang,
     Stewart Smith
-  </a>
   </div>
 </div>
 <div class="credits mod-thanks">
   <p>Special thanks to the following folks at Google<br/>
-  <a href="http://haasmade.com/">
-    Christian Haas</a>,
-  <a href="http://takashikawashima.com/">
-    Takashi Kawashima</a>,
-  <a href="http://grow.io">
-    Jeremy Weinstein</a>
+    Christian Haas,
+    Takashi Kawashima,
+    Jeremy Weinstein
   </p>
   <h3>Typeface<br/><a href="https://bold-decisions.biz/typefaces/lars">Lars by Bold Decisions</a></h3>
 </div>
+
+
+## Contact
+
+email us or [download the press kit](https://storage.googleapis.com/you-move-me.appspot.com/presskit/DanceTonite_PressKit.zip)

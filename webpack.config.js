@@ -90,6 +90,7 @@ const config = {
       { from: 'public', to: '../dist/public' },
       { from: 'templates/_redirects', to: '../dist/' },
       { from: 'templates/no-webgl.html', to: '../dist' },
+      { from: 'templates/not-available.html', to: '../dist' },
     ]),
     new webpack.DefinePlugin({
       'process.env': {

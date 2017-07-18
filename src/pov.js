@@ -95,8 +95,8 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const POV = {
     update: (progress = 0, fixedControllers = false) => {
-      if (!viewer.vrEffect.isPresenting && !inPOV && !feature.isMobile) {
-        if (intersectOrb(pointerX, pointerY)) {
+      if (!viewer.vrEffect.isPresenting && !feature.isMobile) {
+        if (intersectOrb(pointerX, pointerY) && !inPOV) {
           if (orb) {
             orb.highlight();
           }
@@ -114,6 +114,15 @@ export default function create({ rooms, orb, offset = 0 }) {
               )
             );
           }
+        }
+      }
+
+      //  unfortunately mobile needs to be handled a bit differently
+      if (!viewer.vrEffect.isPresenting && feature.isMobile) {
+        if (inPOV && hoverPerformance) {
+          Room.setHighlight(hoverPerformance);
+        } else {
+          Room.setHighlight();
         }
       }
 
