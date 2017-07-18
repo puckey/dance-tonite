@@ -76,13 +76,17 @@ To learn more about how this was made, read the technical deep dive or view the 
 The cones and cylinders are VR motion capture recordings of actual users who’ve submitted their choreography to the project. VR headsets are represented as cones, controllers as cylinders. Each room is made by a single person dancing to a specific portion of the song. All submissions are made using the same recording tools provided by this project.
 
 ### How does the recording process work?
-Users choreograph specific segments of the song in layers. Each layer includes one round of dancing. Once a round is complete, the music loops and the next round begins. Similar to a loop pedal, this builds layers of choreography that results in complex patterns made from just headset and controller position data. [Watch the tutorial.](/record/4/head=yes/)
+A performer is given an 16 second section of music to dance to. The music starts, and the recording begins. When section of music ends, it immediately starts over again, and the performer will see their previous “self” dancing in the room with them. They can add new elements to the dance as the music loops over and over. 
+
+Similar to a loop pedal, this builds layers of choreography that results in complex patterns made from just VR headset and controller positional data. [Watch the tutorial.](/record/4/head=yes/)
 
 ### How can I add my own part?
 Anyone can add to the experience using the “Add performance” link on the homepage. Room-scale VR and a [WebVR](http://webvr.info) supported browser are required.
 
-### Why is everything so simple?
-Room-scale VR are essentially powerful motion capture tools found in our homes and workspaces. Inspired by this data, we wanted to explore how little visual information is necessary to convey a wide range of motion and humanity. In keeping the aesthetic minimal, the creativity comes from the user.
+### Why is everything so minimalistic?
+Room-scale VR systems are essentially powerful motion-capture tools found in our homes and workspaces. Inspired by the rich motion data they capture, we wanted to explore how little visual information is necessary to convey a wide range of motion and humanity. 
+<br />
+As a creation tool, a minimal aesthetic ensures that the creativity and variety in the piece comes from people’s unique performances rather than special effects. 
 
 ### Why don’t I see my dance on the website?
 Choreography on the website is curated by hand. Please be patient as we review and add submissions.
