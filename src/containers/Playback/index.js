@@ -161,9 +161,6 @@ export default class Playback extends Component {
             pathRoomId={roomId}
             orb={orb}
           />
-          <Menu
-            close={this.performExitPresent}
-          />
         </Container>
       );
     }

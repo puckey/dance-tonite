@@ -68,7 +68,9 @@ export default class PlaybackFlow extends Component {
         submissions inbox publish
       />
       : (presenting && feature.vrPolyfill)
-        ? <Menu />
+        ? <Menu
+          close={this.performExitPresent}
+        />
         : (
           fromRecording || /submission|gif/.test(mode)
             ? <Menu about mute />
