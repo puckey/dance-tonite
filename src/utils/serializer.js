@@ -66,7 +66,14 @@ export const avgPosition = (
 
 const AVG_QUATERNION = new THREE.Quaternion();
 const AVG_QUATERNION_2 = new THREE.Quaternion();
-export const avgQuaternion = (lower, higher, ratio, performanceIndex, limbIndex, dest = AVG_QUATERNION) => {
+export const avgQuaternion = (
+  lower,
+  higher,
+  ratio,
+  performanceIndex,
+  limbIndex,
+  dest = AVG_QUATERNION
+) => {
   const quaternion = getQuaternion(lower, performanceIndex, limbIndex, dest);
   if (higher) {
     quaternion.slerp(
