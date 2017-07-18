@@ -23,7 +23,6 @@ import settings from '../../settings';
 import transition from '../../transition';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
-import recording from '../../recording';
 
 export default class Playback extends Component {
   constructor() {
