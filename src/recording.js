@@ -49,6 +49,7 @@ const recording = {
     stopped = false;
     this.hideHead = hideHead;
     this.totalFrames = Math.round(audio.duration * 90);
+    this.count = null;
   },
 
   tick() {
@@ -82,6 +83,7 @@ const recording = {
 
   stop() {
     stopped = true;
+    this.count = this.frames[0] ? (this.frames[0].length / 21) : 0;
   },
 
   exists() {
@@ -94,7 +96,7 @@ const recording = {
 
   serialize() {
     return [{
-      count: this.frames[0] ? (this.frames[0].length / 21) : 0,
+      count: this.count,
       loopIndex: layout.loopIndex(this.roomIndex + 1),
       hideHead: this.hideHead,
     }]

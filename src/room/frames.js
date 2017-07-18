@@ -17,6 +17,8 @@ export default class Frames {
     if (recording) {
       this.frames = recording.frames;
       this.hideHead = recording.hideHead;
+      this.count = recording.count;
+      this.complete = true;
     }
     this.id = id;
   }
