@@ -106,6 +106,7 @@ export default class Tutorial extends Component {
           tutorialLayers={layers}
           highlightLast={layers < 6}
           morph={false}
+          progressive={feature.isIOs}
         >
           <TutorialTimeline
             onUpdateLayers={this.setLayers}

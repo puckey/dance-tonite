@@ -106,7 +106,7 @@ export default class Gallery extends Component {
             id={recording.id}
             roomId={1 + ((recording.room - 1) % settings.roomCount)}
             key={recording.id}
-            progressive={feature.isMobile}
+            progressive={feature.isIOs}
             orbs
             morph
           />
