@@ -136,4 +136,4 @@ Choreography on the website is curated by hand. Please be patient as we review a
 
 ## Contact
 
-Email us or [download the press kit](https://storage.googleapis.com/you-move-me.appspot.com/presskit/DanceTonite_PressKit.zip).
+[Email us](mailto:dance.tonite.contact@gmail.com) or [download the press kit](https://storage.googleapis.com/you-move-me.appspot.com/presskit/DanceTonite_PressKit.zip).
