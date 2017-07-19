@@ -8,6 +8,7 @@ import keyframes from './keyframes';
 import createTimeline from '../../lib/timeline';
 import audio from '../../audio';
 import viewer from '../../viewer';
+import VRTitles from '../VRTitles';
 
 export default class Titles extends Component {
   constructor() {
@@ -15,9 +16,9 @@ export default class Titles extends Component {
 
     const timeline = this.timeline = createTimeline(keyframes);
 
-    timeline.on('keyframe', ({ titles, colophon = false, small }) => {
-      this.setState({ titles, small });
-      this.props.onUpdate(titles, colophon);
+    timeline.on('keyframe', (param) => {
+      this.setState(param);
+      this.props.onUpdate(param);
     });
 
     this.state = {
@@ -47,11 +48,15 @@ export default class Titles extends Component {
     ));
   }
 
-  render(props, { titles, small }) {
-    return titles && (
-      <div className={classNames('titles', small && 'mod-small')}>
-        {this.renderTitles()}
-      </div>
+  render(props, { titles, small, position }) {
+    return (
+        !viewer.vrEffect.isPresenting ?
+          titles &&
+            <div className={classNames('titles', small && 'mod-small')}>
+              { this.renderTitles() }
+            </div>
+          :
+          <VRTitles titles={titles} small={small} position={position} />
     );
   }
 }
