@@ -2,12 +2,22 @@ import feature from './utils/feature';
 
 const packs = [
   {
-    test: () => feature.has6DOF,
+    test: () => feature.hasVR,
     prepare: () => (
       new Promise((resolve) => {
         require.ensure([], function (require) {
           deps.SDFText = require('./sdftext');
           deps.controllers = require('./controllers').default;
+          resolve();
+        });
+      })
+    ),
+  },
+  {
+    test: () => feature.has6DOF,
+    prepare: () => (
+      new Promise((resolve) => {
+        require.ensure([], function (require) {
           deps.GIF = require('./lib/gif');
           resolve();
         });
