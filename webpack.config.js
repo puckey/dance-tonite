@@ -18,6 +18,14 @@ const extractSass = new ExtractTextPlugin({
   disable: process.env.NODE_ENV === 'development',
 });
 
+const htmlSettings = {
+  inject: true,
+  cache: false,
+  title: 'Dance Tonite',
+  favicon: './public/favico.png',
+  inlineSource: '.(css)$',
+};
+
 const config = {
   devtool: process.env.NODE_ENV === 'production'
     ? false
@@ -107,14 +115,49 @@ const config = {
         FLAVOR: JSON.stringify(FLAVOR),
       },
     }),
-    new HtmlWebpackPlugin({
-      inject: true,
-      cache: false,
-      template: `templates/${FLAVOR === 'cms' ? 'cms' : 'index'}.html`,
-      title: 'Dance Tonite',
-      favicon: './public/favico.png',
-      inlineSource: '.(css)$',
-    }),
+
+    // Main page html settings:
+    new HtmlWebpackPlugin(
+      Object.assign(
+        {
+          filename: 'index.html',
+          template: `templates/${FLAVOR === 'cms' ? 'cms.html' : 'index.ejs'}`,
+          twitter: {
+            title: 'Dance Tonite',
+            description: 'The twitter description goes here',
+          },
+          facebook: {
+            title: 'Dance Tonite',
+            description: 'The description for facebook goes here',
+            appId: 'The facebook app id goes here',
+            image: '/url/to/facebook/image.png',
+          },
+        },
+        htmlSettings
+      )
+    ),
+
+    // Shared performance html settings:
+    new HtmlWebpackPlugin(
+      Object.assign(
+        {
+          filename: 'performance.html',
+          template: 'templates/index.ejs',
+          twitter: {
+            title: 'Dance Tonite',
+            description: 'The twitter description for the shared performance goes here',
+          },
+          facebook: {
+            title: 'Dance Tonite',
+            description: 'The facebook description for the shared performance goes here',
+            appId: 'The facebook app id goes here',
+            image: '/url/to/facebook/image.png',
+          },
+        },
+        htmlSettings
+      )
+    ),
+
     new ScriptExtHtmlWebpackPlugin({
       defaultAttribute: 'async',
     }),
