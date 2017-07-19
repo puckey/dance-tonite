@@ -27,6 +27,15 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const onMouseDown = ({ clientX, clientY, touches }) => {
     if (viewer.vrEffect.isPresenting) return;
+
+    if (feature.isMobile && (hoverPerformance || hoverOrb)) {
+      hoverPerformance = null;
+      hoverOrb = false;
+      viewer.switchCamera('orthographic');
+      inPOV = false;
+      return;
+    }
+
     if (hoverPerformance || hoverOrb) {
       return;
     }
@@ -53,6 +62,10 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const onMouseUp = ({ touches }) => {
     if (viewer.vrEffect.isPresenting) return;
+
+    if (feature.isMobile) {
+      return;
+    }
 
     if (touches && touches.length >= 1) {
       return;
