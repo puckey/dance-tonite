@@ -36,10 +36,6 @@ export default class Review extends Component {
       transition.enter({
         text: 'Time to review your performance',
       }),
-      audio.load({
-        src: `/public/sound/room-${this.props.roomId}.ogg`,
-        loops: 2,
-      }),
       sleep(5000),
     ]);
     if (!this.mounted) return;
@@ -47,31 +43,39 @@ export default class Review extends Component {
     await transition.fadeOut();
     if (!this.mounted) return;
 
+    await audio.load({
+      src: `/public/sound/room-${this.props.roomId}.ogg`,
+      loops: 2,
+    });
+    if (!this.mounted) return;
+
     this.setState({
       visible: true,
     });
-    audio.play();
     transition.exit();
   }
 
   async performSubmit() {
-    const persisting = storage.persist(
-      recording.serialize(),
-      recording.roomIndex + 1
-    );
-    audio.fadeOut();
+    await Promise.all([
+      transition.fadeOut(),
+      audio.fadeOut(),
+    ]);
+    if (!this.mounted) return;
 
-    await transition.fadeOut();
     this.setState({
       visible: false,
+    });
+
+    await transition.enter({
+      text: 'Submitting your recording. Please wait.',
     });
     if (!this.mounted) return;
 
     const [recordingSrc] = await Promise.all([
-      persisting,
-      transition.enter({
-        text: 'Submitting your recording. Please wait.',
-      }),
+      storage.persist(
+        recording.serialize(),
+        recording.roomIndex + 1
+      ),
       sleep(5000),
     ]);
     if (!this.mounted) return;
@@ -122,6 +126,7 @@ export default class Review extends Component {
           review
           totalProgress
           fixedControllers
+          hideRoomCountdown
           recording={recording}
           pathRecordingId={id}
           pathRoomId={roomId}

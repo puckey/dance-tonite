@@ -7,6 +7,7 @@ import settings from '../../settings';
 import feature from '../../utils/feature';
 import audioPool from '../../utils/audio-pool';
 import viewer from '../../viewer';
+import transition from '../../transition';
 
 import NotFound from '../NotFound';
 import PressPlayToStart from '../PressPlayToStart';
@@ -16,6 +17,8 @@ const componentByRoute = require(`./routes-${
 }`).default;
 
 componentByRoute['/*'] = NotFound;
+
+let animationStarted = false;
 
 const convertParams = (params) => {
   if (params.roomId) {
@@ -55,6 +58,8 @@ export default class Router extends Component {
   onRouteChanged(req = {}, event) {
     const { params } = req;
     if (event && event.parent()) return;
+    transition.exit();
+    
     convertParams(params);
     if (this.state.route) {
       audio.fadeOut();
@@ -93,6 +98,10 @@ export default class Router extends Component {
   }
 
   render(props, { route, params, notFound, needsFillPool }) {
+    if (!animationStarted && !needsFillPool) {
+      viewer.startAnimating();
+      animationStarted = true;
+    }
     const RouteComponent = componentByRoute[route];
     return (
       needsFillPool

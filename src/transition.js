@@ -3,9 +3,11 @@ import Orb from './orb';
 import viewer from './viewer';
 import props from './props';
 import * as THREE from './lib/three';
-import { textColor } from './theme/colors';
+import { textColor, backgroundColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
 import deps from './deps';
+import settings from './settings';
+import { sleep } from './utils/async';
 
 const tween = createTweener();
 
@@ -49,12 +51,15 @@ const tick = (dt) => {
 };
 
 let tweener;
-const tweenFog = (from, to, duration = 2) => {
-  viewer.renderScene.fog.far = from;
+const tweenFog = (from, to, duration = 1) => {
+  if (!viewer.renderScene.fog) return;
+  viewer.renderScene.fog.near = from === 0 ? 0.01 : 5;
+  viewer.renderScene.fog.far = from === 0 ? 0.01 : from + settings.roomDepth;
   tweener = tween(
     viewer.renderScene.fog,
     {
-      far: to,
+      near: to === 0 ? 0.01 : to,
+      far: to === 0 ? 0.01 : to + settings.roomDepth,
       ease: 'easeOutCubic',
       duration,
     }
@@ -62,8 +67,16 @@ const tweenFog = (from, to, duration = 2) => {
   return tweener.promise;
 };
 
-const fadeOut = (duration) => {
+const fadeOut = (duration, fromWithin) => {
+  if (insideTransition) {
+    floatingOrb.fadeOut();
+  } else {
+    viewer.insideTransition = true;
+  }
   fadedOut = true;
+  if (!fromWithin) {
+    transitionVersion += 1;
+  }
   const version = transitionVersion;
   if (logging) {
     console.log('fadeOut', { version, duration, time: new Date() });
@@ -76,7 +89,6 @@ const fadeOut = (duration) => {
       textItem.updateLabel('');
     }
   }, duration * 0.5);
-  fadedOut = true;
   return tweenFog(25, 0, duration);
 };
 
@@ -88,7 +100,6 @@ const fadeIn = (maxFogDistance, duration) => {
   return tweenFog(0, maxFogDistance, duration);
 };
 
-const revealFar = 300;
 const transitionSpaceFar = 25;
 
 const transition = {
@@ -138,13 +149,20 @@ const transition = {
     return insideTransition;
   },
 
+  isFadedOut() {
+    return fadedOut;
+  },
+
   async enter(param = {}) {
-    insideTransition = true;
+    viewer.insideTransition = true;
+    const then = Date.now();
+    transitionVersion += 1;
+    const version = transitionVersion;
+
     if (logging) {
       console.log('transition.enter', { transitionVersion, ...param, time: new Date() });
     }
 
-    const version = transitionVersion;
     // If fadeOut wasn't called before enter:
     if (!fadedOut) {
       if (logging) {
@@ -152,24 +170,31 @@ const transition = {
       }
       await fadeOut();
     }
+    insideTransition = true;
+
+    floatingOrb.fadeIn();
+    floatingOrb.mesh.position.set(0, 0, -8);
+    floatingOrb.mesh.scale.set(2, 2, 2);
+
     if (version !== transitionVersion) {
       if (logging) {
         console.log('transition.enter returned early because of version difference',
-        {
-          time: new Date()
-        });
+          {
+            time: new Date(),
+          }
+        );
       }
       return;
     }
     viewer.renderScene = transitionScene;
-    transitionScene.fog = new THREE.Fog(0x000000, 0, 0);
+    transitionScene.fog = new THREE.Fog(backgroundColor, 0, 0);
 
-    floatingOrb.fadeIn();
     viewer.on('tick', tick);
     textItem.updateLabel(param.text);
-    floatingOrb.mesh.position.set(0, 0, -8);
-    floatingOrb.mesh.scale.set(2, 2, 2);
     await fadeIn(transitionSpaceFar);
+    if (param.duration) {
+      await sleep(Math.max(0, param.duration - (Date.now() - then)))
+    }
   },
 
   async exit() {
@@ -194,7 +219,7 @@ const transition = {
       }
       await fadeOut();
     }
-    transition.reset(true);
+    transition.reset(true, true);
     if (version === transitionVersion) {
       if (logging) {
         console.log(
@@ -202,11 +227,15 @@ const transition = {
           { version }
         );
       }
-      await fadeIn(revealFar);
+      await fadeIn(settings.cullDistance);
     }
+    viewer.insideTransition = false;
   },
 
-  reset(soft) {
+  reset(soft, fromWithin) {
+    if (!fromWithin) {
+      transitionVersion += 1;
+    }
     if (logging) {
       console.log(
         'transition.reset',
@@ -228,8 +257,10 @@ const transition = {
       if (logging) {
         console.log('transition.reset: hard reveal of viewer scene');
       }
-      viewer.renderScene.fog.far = revealFar;
-      transitionVersion += 1;
+      if (viewer.renderScene.fog) {
+        viewer.renderScene.fog.near = settings.cullDistance;
+      }
+      viewer.insideTransition = false;
     }
   },
 };

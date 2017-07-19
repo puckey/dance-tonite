@@ -43,3 +43,4 @@ export const orbColor = yellow;
 export const highlightColor = white;
 export const textColor = yellow;
 export const controllerButtonColor = yellow;
+export const backgroundColor = new Color(0x000000);

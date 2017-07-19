@@ -26,7 +26,6 @@ export default class Submission extends Component {
       facebook: 'https://www.facebook.com/sharer/sharer.php?u=',
     };
 
-    this.gotoPlayback = this.gotoPlayback.bind(this);
     this.onRoomLoadError = this.onRoomLoadError.bind(this);
     this.gotoCreateGif = this.gotoCreateGif.bind(this);
   }
@@ -54,10 +53,6 @@ export default class Submission extends Component {
     transition.reset();
   }
 
-  gotoPlayback() {
-    this.props.goto('playback');
-  }
-
   render({ roomId, id, fromRecording }) {
     return (
       <div className="submission">
@@ -76,7 +71,7 @@ export default class Submission extends Component {
 full experience`
               : 'Watch in full experience'
             }
-            onClick={this.gotoPlayback}
+            onClick={this.props.onGotoFullExperience}
             underline
           />
         </Align>

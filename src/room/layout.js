@@ -4,6 +4,7 @@ import { tempVector } from '../utils/three';
 const { roomWidth, roomHeight, roomDepth, roomOffset } = settings;
 const ph = { type: 'PLANE', timeline: false, megagrid: true };
 const plh = { type: 'PLANE', megagrid: true };
+const plr = { type: 'PLANE' };
 const em = { type: 'EMPTY' };
 const ho = { type: 'HORIZONTAL' };
 const hw = { type: 'HORIZONTAL', wall: true };
@@ -34,7 +35,7 @@ let rooms = [
   [-3, 0, 19, ph, 3], [-2, 0, 19, ph, 4], [-1, 0, 19, ph, 5], [0, 0, 19, plh, 8], [1, 0, 19, ph, 5], [2, 0, 19, ph, 4], [3, 0, 19, ph, 3],
   [-3, 0, 20, ph, 2], [-2, 0, 20, ph, 3], [-1, 0, 20, ph, 2], [0, 0, 20, plh, 1], [1, 0, 20, ph, 2], [2, 0, 20, ph, 3], [3, 0, 20, ph, 2],
   [-3, 0, 21, ph, 3], [-2, 0, 21, ph, 6], [-1, 0, 21, ph, 1], [0, 0, 21, plh, 0], [1, 0, 21, ph, 1], [2, 0, 21, ph, 6], [3, 0, 21, ph, 3],
-  [-3, 0, 22, ph, 5], [-2, 0, 22, ph, 2], [-1, 0, 22, ph, 3], [0, 0, 22, plh, 6], [1, 0, 22, ph, 3], [2, 0, 22, ph, 2], [3, 0, 22, ph, 5],
+  [-3, 0, 22, ph, 5], [-2, 0, 22, ph, 2], [-1, 0, 22, ph, 3], [0, 0, 22, plr], [1, 0, 22, ph, 3], [2, 0, 22, ph, 2], [3, 0, 22, ph, 5],
   [-3, 0, 23, ph, 4], [-2, 0, 23, ph, 3], [-1, 0, 23, ph, 2], [0, 0, 23, plh, 3], [1, 0, 23, ph, 3], [2, 0, 23, ph, 3], [3, 0, 23, ph, 4],
   [-3, 0, 24, ph, 3], [-2, 0, 24, ph, 4], [-1, 0, 24, ph, 4], [0, 0, 24, plh, 2], [1, 0, 24, ph, 4], [2, 0, 24, ph, 4], [3, 0, 24, ph, 3],
   [-3, 0, 25, ph, 6], [-2, 0, 25, ph, 5], [-1, 0, 25, ph, 5], [0, 0, 25, plh, 4], [1, 0, 25, ph, 5], [2, 0, 25, ph, 5], [3, 0, 25, ph, 6],

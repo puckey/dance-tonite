@@ -15,7 +15,7 @@ html {
 body {
   background: $background-color;
   color: $text-color;
-  font-family: 'Lars';
+  font-family: 'Lars', sans-serif;
   font-feature-settings: 'tnum';
   margin: 0;
   user-select: none;
@@ -41,13 +41,15 @@ a {
   color: $text-color;
   cursor: pointer;
   text-decoration: none;
-}
-
-a span {
-  border-bottom: solid $line-width * 1.2 $text-color;
 
   &:hover {
-    border-bottom-color: $white-color;
+    span {
+      border-bottom-color: $white-color;
+    }
+  }
+
+  span {
+    border-bottom: solid $line-width * 1.2 $text-color;
   }
 }
 

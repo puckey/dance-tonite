@@ -1,4 +1,5 @@
 import easeBackInOut from 'eases/back-in-out';
+import easeSineInOut from 'eases/sine-in-out';
 import easeBounceOut from 'eases/bounce-out';
 import easeBackOut from 'eases/back-out';
 
@@ -33,7 +34,6 @@ let items;
 const UP_EULER = new THREE.Euler(Math.PI * 0.5, 0, 0);
 
 const roomOffset = new THREE.Vector3(0, settings.roomHeight * 0.5, 0);
-const X_AXIS = new THREE.Vector3(1, 0, 0);
 const SCRATCH_QUATERNION = new THREE.Quaternion();
 
 const debugMesh = new THREE.Mesh(
@@ -47,6 +47,8 @@ debugMesh.frustumCulled = false;
 const POSE = createPose();
 const LAST_POSE = createPose();
 const FIRST_POSE = createPose();
+const SHADOW_EULER = new THREE.Euler(Math.PI * 0.5, 0, 0);
+const SHADOW_COLOR = new THREE.Color(0xffffff);
 const minY = 0.2;
 
 const lerpPose = (
@@ -58,6 +60,10 @@ const lerpPose = (
   if (ratio === 0) return;
   positionA.lerp(positionB, ratio);
   quaternionA.slerp(quaternionB, quaternionRatio);
+};
+
+const step = function (t, min, max) {
+  return min + (max - min) * t;
 };
 
 export default class Room {
@@ -94,6 +100,7 @@ export default class Room {
       .add(this.position)
       .add(roomOffset);
     position.y -= 1;
+
     const type = layout.getType(index);
     if (type !== 'PLANE') {
       items.room.add([position, null], roomColor);
@@ -167,6 +174,10 @@ export default class Room {
 
   gotoTime(seconds, maxLayers, highlightLast = false) {
     this.currentTime = seconds;
+
+    if (settings.shouldCull && this.cullRoom()) {
+      return;
+    }
     // In orthographic mode, scale up the meshes:
     const scale = InstancedItem.perspectiveMode ? 1 : 1.5;
 
@@ -178,29 +189,49 @@ export default class Room {
       const color = ((highlightLast && isLast) || this.isHighlighted(i))
         ? highlightColor
         : costumeColor;
+
       if (!hideHead) {
         const pose = this.getPose(i, 0, position);
+        if (!pose) continue;
         items.head.add(pose, color, scale);
+        this.setShadowPose(pose, position, i);
       }
-      items.hand.add(this.getPose(i, 1, position), color, scale);
-      items.hand.add(this.getPose(i, 2, position), color, scale);
+
+      const rhandPose = this.getPose(i, 1, position);
+      if (!rhandPose) continue;
+      items.hand.add(rhandPose, color, scale);
+      this.setShadowPose(rhandPose, position, i, 1, true);
+
+      const lhandPose = this.getPose(i, 2, position);
+      items.hand.add(lhandPose, color, scale);
+      this.setShadowPose(lhandPose, position, i, 2, true);
     }
   }
 
   getPose(performanceIndex, limbIndex, offset, applyMatrix = false) {
     const { frame } = this;
+    if (!frame.isLoaded()) return;
     frame.getPose(performanceIndex, limbIndex, offset, applyMatrix, POSE);
 
     // Morph the beginning of the first performance with the end of the last:
-    if (this.morph && performanceIndex === 0) {
+    if (this.morph && performanceIndex === 0 && this.frames.complete) {
       this.lastFrame.getPose(frame.count - 1, limbIndex, offset, applyMatrix, LAST_POSE);
-      const overlapRatio = (Math.min(0.2, frame.loopRatio)) / 0.2;
-      const rotationRatio = (Math.min(0.05, frame.loopRatio)) / 0.05;
+      let { morphDuration } = this;
+      if (!morphDuration) {
+        const [position] = frame.getPose(0, limbIndex, offset, applyMatrix);
+        const distance = Math.min(2, position.distanceTo(LAST_POSE[0])) * 0.5;
+        morphDuration = this.morphDuration = Math.max(0.01, distance * 0.3);
+      }
+      const overlapRatio = Math.min(morphDuration, frame.loopRatio)
+          * (1 / this.morphDuration);
+      const rotationDuration = morphDuration > 0.1 ? 0.08 : 0.05;
+      const rotationRatio = (Math.min(rotationDuration, frame.loopRatio)) * (1 / rotationDuration);
+      const easer = morphDuration > 0.1 ? easeBackInOut : easeSineInOut;
       lerpPose(
         POSE,
         LAST_POSE,
-        easeBackInOut(1 - overlapRatio),
-        easeBackInOut(1 - rotationRatio)
+        easer(1 - overlapRatio),
+        easer(1 - rotationRatio)
       );
     }
 
@@ -209,6 +240,25 @@ export default class Room {
       this.dropPerformance(performanceIndex);
     }
     return POSE;
+  }
+
+  setShadowPose(copyPose, position, index, sub = 0, small) {
+    // no shadows if disabled, or in VR mode
+    if (Room.shouldUseShadow() === false) {
+      return;
+    }
+
+    const objHeight = copyPose[0].y;
+
+    copyPose[0].y = 0.01;
+    copyPose[1].setFromEuler(SHADOW_EULER);
+
+    // shadowPower -> 0 to 1, based on how high off the ground
+    const shadowPower = Math.min(Math.max(objHeight / 2.5, 0), 1.0);
+    const shadowSize = Math.max(step(shadowPower, 0.5, 1.0) * (small ? 0.6 : 1), 0.001);
+    const shadowDarkness = step(shadowPower, 0.3, 0.15);
+    SHADOW_COLOR.setRGB(shadowDarkness, shadowDarkness, shadowDarkness);
+    items.shadow.add(copyPose, SHADOW_COLOR, shadowSize * 3);
   }
 
   dropPerformance(performanceIndex) {
@@ -257,6 +307,12 @@ export default class Room {
     }
   }
 
+  cullRoom() {
+    const z = this.position.z + viewer.cameraWorldPos.z;
+    const x = this.position.x - viewer.cameraWorldPos.x;
+    return (z * z + x * x) > (settings.cullDistance * settings.cullDistance);
+  }
+
   destroy() {
     for (const i in items) {
       items[i].empty();
@@ -269,6 +325,15 @@ Room.clear = () => {
   if (!items) return;
   items.hand.empty();
   items.head.empty();
+  if (settings.useShadow) {
+    items.shadow.empty();
+  }
+
+  //  webvr polyfill will break if transparency is set ...
+  //  ???
+  if (settings.useShadow) {
+    items.shadow.mesh.material.transparent = Room.shouldUseShadow();
+  }
 };
 
 Room.reset = () => {
@@ -298,6 +363,13 @@ Room.reset = () => {
         props.hand,
       ),
     };
+
+    if (settings.useShadow) {
+      items.shadow = new InstancedItem(
+        layout.roomCount * 30,
+        props.shadow,
+      );
+    }
   }
 
   // Move an extra invisible object3d with a texture to the end of scene's children
@@ -305,6 +377,8 @@ Room.reset = () => {
   // https://github.com/puckey/you-move-me/issues/129
   if (!Room.isGiffing) viewer.scene.add(debugMesh);
 };
+
+Room.shouldUseShadow = () => !!settings.useShadow && !viewer.vrEffect.isPresenting;
 
 Room.rotate180 = () => {
   set180RotationMatrix(InstancedItem.group);

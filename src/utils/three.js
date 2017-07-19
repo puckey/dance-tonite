@@ -56,12 +56,14 @@ export const setIdentityMatrix = (object) => {
   object.matrix.copy(IDENTITY_MATRIX);
 };
 
-export const loadModel = async ([objUrl, textureUrl]) => {
+export const loadModel = async ([objUrl, textureUrl, doubleSided]) => {
   const [object, texture] = await Promise.all([
     loadObject(objUrl),
     textureUrl ? loadTexture(textureUrl) : null,
   ]);
-  object.material = new THREE.MeshLambertMaterial();
+  object.material = new THREE.MeshLambertMaterial({
+    side: doubleSided ? THREE.DoubleSide : THREE.FrontSide,
+  });
   if (texture) {
     object.material.map = texture;
   }

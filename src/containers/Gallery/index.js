@@ -56,7 +56,10 @@ export default class Gallery extends Component {
       loading: 'Loading recordings…',
     });
     const { id: recordingId } = this.props;
+
     let recordings = await storage.loadGallery();
+    if (!this.mounted) return;
+
     recordings = recordings
       .sort((a, b) => b.timestamp - a.timestamp)
       .filter(({ room }) => room > 0);
@@ -67,7 +70,6 @@ export default class Gallery extends Component {
         id,
         title: `- ${title || 'Unnamed'}`,
       }));
-    if (!this.mounted) return;
     const item = recordingId ? items.find(it => it.id === recordingId) : items[0];
     this.setState({
       items,
@@ -89,7 +91,7 @@ export default class Gallery extends Component {
     return (
       <Container>
         <Menu close mute about />
-        <Title>Gallery</Title>
+        <Title>{feature.isMobile ? 'Gallery' : 'Featured Performances'}</Title>
         <Align type="bottom-left" margin>
           <PaginatedList
             item={item}
@@ -104,7 +106,7 @@ export default class Gallery extends Component {
             id={recording.id}
             roomId={1 + ((recording.room - 1) % settings.roomCount)}
             key={recording.id}
-            progressive={feature.isMobile}
+            progressive={feature.isIOs}
             orbs
             morph
           />

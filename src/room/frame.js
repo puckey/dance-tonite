@@ -36,6 +36,12 @@ export default class Frame {
     return this.getPose(index, 0, offset, applyMatrix);
   }
 
+  isLoaded() {
+    const { frames } = this.frames;
+    if (!frames) return false;
+    return Math.ceil(this.requestedFrame) <= this.frameCount;
+  }
+
   get count() {
     if (this.needsUpdate) {
       this.update();
@@ -46,8 +52,8 @@ export default class Frame {
   update() {
     const { frames } = this.frames;
     const { time, maxLayers } = this;
-    const frameCount = frames && frames.length;
-    const requestedFrame = this.secondsToFrame(time);
+    const frameCount = this.frameCount = frames && frames.length;
+    const requestedFrame = this.requestedFrame = this.secondsToFrame(time);
     if (!frameCount) return;
     const frameNumber = Math.min(frameCount - 1, requestedFrame);
     const lowerNumber = Math.floor(frameNumber);

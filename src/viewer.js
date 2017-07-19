@@ -18,9 +18,10 @@ import windowSize from './utils/windowSize';
 import audio from './audio';
 import postprocessing from './postprocessing';
 import Room from './room';
+import { backgroundColor } from './theme/colors';
+import updateCull from './cull';
 
 const orthographicDistance = 4;
-
 // TODO: remove me:
 // const times = [0];
 // document.addEventListener('keydown', (event) => {
@@ -34,7 +35,7 @@ const orthographicDistance = 4;
 
 const cameras = (function () {
   const { aspectRatio } = windowSize;
-  const perspective = new THREE.PerspectiveCamera(90, aspectRatio, 0.01, 200);
+  const perspective = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
   perspective.lookAt(tempVector(0, 0, 1));
   perspective.position.y = settings.holeHeight;
 
@@ -53,13 +54,15 @@ const cameras = (function () {
   return { default: perspective, orthographic };
 }());
 
+const cameraWorldPos = new THREE.Vector3();
+
 let lastZoom = 4;
 let lastAspectRatio;
 const zoomCamera = (zoom) => {
   const newZoom = sineInOut(zoom);
   const { aspectRatio } = windowSize;
   if (newZoom === lastZoom && lastAspectRatio === aspectRatio) return;
-  const distance = orthographicDistance + newZoom * 3;
+  const distance = orthographicDistance + (feature.isMobile ? newZoom : newZoom * 3);
   const camera = cameras.orthographic;
   camera.left = -distance * aspectRatio;
   camera.right = distance * aspectRatio;
@@ -77,6 +80,7 @@ let resizePostProcessing;
 let clock;
 
 const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
+const fog = new THREE.Fog(backgroundColor, 10, 200);
 
 const createScene = () => {
   const _scene = new THREE.Scene();
@@ -87,7 +91,7 @@ const createScene = () => {
   const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040);
 
   _scene.add(hemisphereLight, light, ambientLight);
-  _scene.fog = new THREE.Fog(0x000000, 0, 120);
+  _scene.fog = fog;
   return _scene;
 };
 
@@ -121,12 +125,14 @@ const onResize = ({ width, height, aspectRatio }) => {
 const viewer = Object.assign(emitter(), {
   camera: cameras.orthographic,
   cameras,
+  cameraWorldPos,
   createScene,
   scene,
   renderScene: scene,
   controllers: [{}, {}],
   controls,
   renderer,
+  fog,
   stopAnimating: () => {
     viewer.animating = false;
   },
@@ -134,13 +140,19 @@ const viewer = Object.assign(emitter(), {
     viewer.animating = true;
     viewer.animate();
   },
+  isOrthographic: true,
   animate: (timestamp, staticTime) => {
+    if (!viewer.insideTransition) {
+      updateCull();
+    }
     const dt = clock.getDelta();
     if (viewer.animating) {
       vrEffect.requestAnimationFrame(viewer.animate);
     }
 
-    THREE.VRController.update();
+    if (feature.has6DOF) {
+      THREE.VRController.update();
+    }
 
     if (feature.isIODaydream) {
       viewer.daydreamController.update();
@@ -150,6 +162,9 @@ const viewer = Object.assign(emitter(), {
     audio.tick(staticTime);
     Room.clear();
     viewer.emit('tick', dt);
+
+    cameraWorldPos.setFromMatrixPosition(viewer.camera.matrixWorld);
+
     zoomCamera(
       audio.progress > 21
         ? Math.min(2, audio.progress - 21) * 0.5
@@ -169,7 +184,7 @@ const viewer = Object.assign(emitter(), {
     }
 
     viewer.emit('render', dt);
-    if (feature.stats) stats();
+    if (settings.stats) stats(renderer);
   },
   prepare: () => {
     clock = new THREE.Clock();
@@ -178,8 +193,8 @@ const viewer = Object.assign(emitter(), {
     installVRControls(THREE);
     installVRController(THREE);
     viewer.renderer = renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setClearColor(0x000000);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setClearColor(backgroundColor);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, settings.maxPixelRatio));
     renderer.setSize(windowSize.width, windowSize.height);
     renderer.sortObjects = false;
 
@@ -196,6 +211,7 @@ const viewer = Object.assign(emitter(), {
 
     window.addEventListener('vrdisplaypresentchange', () => {
       viewer.emit('vr-present-change', vrEffect.isPresenting);
+      if (!vrEffect.isPresenting) viewer.switchCamera('orthographic');
     }, false);
 
     const { render, resize } = postprocessing({
@@ -206,7 +222,6 @@ const viewer = Object.assign(emitter(), {
     renderPostProcessing = render;
     resizePostProcessing = resize;
     windowSize.on('resize', onResize, false);
-    viewer.startAnimating();
   },
 
   exitPresent() {
@@ -233,11 +248,8 @@ const viewer = Object.assign(emitter(), {
   },
 
   switchCamera: (name) => {
-    InstancedItem.switch(
-      name === 'orthographic'
-        ? 'orthographic'
-        : 'perspective',
-    );
+    const isOrthographic = viewer.isOrthographic = name === 'orthographic';
+    InstancedItem.switch(isOrthographic ? name : 'perspective');
     viewer.camera = cameras[name];
   },
   vrEffect,

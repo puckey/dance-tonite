@@ -1,5 +1,6 @@
 import closestHead from './utils/closestHead';
 import intersectOrb from './utils/intersectcenter';
+import feature from './utils/feature';
 import viewer from './viewer';
 import InstancedItem from './instanced-item';
 import Room from './room';
@@ -32,7 +33,7 @@ export default function create({ rooms, orb, offset = 0 }) {
 
     let x = clientX;
     let y = clientY;
-    if (touches && touches.length > 0) {
+    if (touches && touches.length === 1) {
       x = touches[0].pageX;
       y = touches[0].pageY;
     }
@@ -94,8 +95,8 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const POV = {
     update: (progress = 0, fixedControllers = false) => {
-      if (!viewer.vrEffect.isPresenting && !inPOV) {
-        if (intersectOrb(pointerX, pointerY)) {
+      if (!viewer.vrEffect.isPresenting && !feature.isMobile) {
+        if (intersectOrb(pointerX, pointerY) && !inPOV) {
           if (orb) {
             orb.highlight();
           }
@@ -113,6 +114,15 @@ export default function create({ rooms, orb, offset = 0 }) {
               )
             );
           }
+        }
+      }
+
+      //  unfortunately mobile needs to be handled a bit differently
+      if (!viewer.vrEffect.isPresenting && feature.isMobile) {
+        if (inPOV && hoverPerformance) {
+          Room.setHighlight(hoverPerformance);
+        } else {
+          Room.setHighlight();
         }
       }
 

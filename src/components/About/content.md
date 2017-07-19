@@ -1,12 +1,12 @@
 <div class="title-wrapper">
-  <h1>Dance Tonite is an evolving VR collaboration by LCD Soundsystem and their fans</h1>
+  <h1>Dance Tonite is an ever-changing VR collaboration by LCD Soundsystem and their fans</h1>
 </div>
 
 <div class="about-video-container">
   <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
 </div>
 
-Dance Tonite features VR motion capture recordings of users dancing to the song titled “Tonite” by LCD Soundsystem. Built in WebVR, the performance can be experienced in three different ways. Without VR, you are in the audience. On Daydream View, you are on stage watching the experience unfold around you. In room-scale VR, you are a performer.
+Dance Tonite features VR motion capture recordings of users dancing to the song titled “Tonite” by LCD Soundsystem. The performance can be experienced in three different ways, all through the web. Without VR, you are in the audience. On Daydream View, you are on stage watching the experience unfold around you. In room-scale VR, you are a performer.
 
 Each room is made from a single person’s choreography. The entire experience evolves over time with every new user contribution.  
 
@@ -15,15 +15,7 @@ Take a look at the <a class="gallery-link">gallery of featured user contribution
 ## Technology
 Dance Tonite previews one of the most exciting developments in Chrome, WebVR, allowing anyone to take part in the experience. It’s built for the Web—no apps or downloads required.
 
-This project is open-source. [View source code](https://github.com/puckey/you-move-me).
-
-To learn more, watch this video or read the technical deep dive.
-
-<div class="about-video-container">
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
-</div>
-
-## Technologies used in Dance Tonite
+To learn more about how this was made, read the technical deep dive or view the [open source project code](https://github.com/puckey/you-move-me).
 
 <div class="column-wrapper">
   <div>
@@ -84,13 +76,17 @@ To learn more, watch this video or read the technical deep dive.
 The cones and cylinders are VR motion capture recordings of actual users who’ve submitted their choreography to the project. VR headsets are represented as cones, controllers as cylinders. Each room is made by a single person dancing to a specific portion of the song. All submissions are made using the same recording tools provided by this project.
 
 ### How does the recording process work?
-Users choreograph specific segments of the song in layers. Each layer includes one round of dancing. Once a round is complete, the music loops and the next round begins. Similar to a loop pedal, this builds layers of choreography that results in complex patterns made from just headset and controller position data. [Watch the tutorial.](/record/4/head=yes/)
+A performer is given an 16 second section of music to dance to. The music starts, and the recording begins. When section of music ends, it immediately starts over again, and the performer will see their previous “self” dancing in the room with them. They can add new elements to the dance as the music loops over and over. 
+
+Similar to a loop pedal, this builds layers of choreography that results in complex patterns made from just VR headset and controller positional data. [Watch the tutorial.](/record/4/head=yes/)
 
 ### How can I add my own part?
 Anyone can add to the experience using the “Add performance” link on the homepage. Room-scale VR and a [WebVR](http://webvr.info) supported browser are required.
 
-### Why is everything so simple?
-Room-scale VR are essentially powerful motion capture tools found in our homes and workspaces. Inspired by this data, we wanted to explore how little visual information is necessary to convey a wide range of motion and humanity. In keeping the aesthetic minimal, the creativity comes from the user.
+### Why is everything so minimalistic?
+Room-scale VR systems are essentially powerful motion-capture tools found in our homes and workspaces. Inspired by the rich motion data they capture, we wanted to explore how little visual information is necessary to convey a wide range of motion and humanity. 
+<br />
+As a creation tool, a minimal aesthetic ensures that the creativity and variety in the piece comes from people’s unique performances rather than special effects. 
 
 ### Why don’t I see my dance on the website?
 Choreography on the website is curated by hand. Please be patient as we review and add submissions.
@@ -100,7 +96,7 @@ Choreography on the website is curated by hand. Please be patient as we review a
 
   <h3>Music by <a href="http://lcdsoundsystem.com">LCD Soundsystem</a></h3>
 
-  <h3>Directed by <a href="http://puckey.studio">Jonathan Puckey</a>, <a href="http://studiomoniker.com">Moniker</a>, and <a href="http://workshop.chromeexperiments.com/">Google’s Data Arts Team</a></h3>
+  <h3>Directed by <a href="http://puckey.studio">Jonathan Puckey</a>, <a href="http://studiomoniker.com">Moniker</a>, and the <a href="http://workshop.chromeexperiments.com/">Google Data Arts Team</a></h3>
 
 </div>
 <div class="column-wrapper credits">
@@ -120,38 +116,24 @@ Choreography on the website is curated by hand. Please be patient as we review a
     Roel Wouters
   </a>
   </div>
-  <div>
+  <div class="single-column">
 
   <h3><a href="https://github.com/dataarts">Data Arts Team</a></h3>
-  <a href="http://custom-logic.com">
-    Jeff Nusz</a>,
-  <a href="http://sabahme.com">
-    Sabah Kosoy</a>,
-  Alisha Jaeger,
-  <a href="http://gianlucamartini.me/">
-    Gianluca Martini</a>,
-  <a href="http://minmax.design/">
-    Michael Chang</a>,
-  <a href="http://stewartsmith.io/">
-    Stewart Smith
-  </a>
-  </div>
-  <div>
-
-  <h3><a href="http://gpixer.com">Grainey Pictures</a></h3>
-  <a href="http://gpixer.com">
-    Colin Gray, Megan Raney Aarons, Sherry Daniel, Nathan McGuire, Will Henderson-Nold, Nicholas Lee, Nicole Ryan
-  </a>
+    Jeff Nusz,
+    Sabah Kosoy,
+    Alisha Jaeger,
+    Michael Chang,
+    Stewart Smith,
+    Gianluca Martini,
+    and special guests Christian Haas, 
+    Takashi Kawashima
   </div>
 </div>
 <div class="credits mod-thanks">
-  <p>Special thanks to the following folks at Google<br/>
-  <a href="http://haasmade.com/">
-    Christian Haas</a>,
-  <a href="http://takashikawashima.com/">
-    Takashi Kawashima</a>,
-  <a href="http://grow.io">
-    Jeremy Weinstein</a>
-  </p>
   <h3>Typeface<br/><a href="https://bold-decisions.biz/typefaces/lars">Lars by Bold Decisions</a></h3>
 </div>
+
+
+## Contact
+
+[Email us](mailto:dance.tonite.contact@gmail.com) or [download the press kit](https://storage.googleapis.com/you-move-me.appspot.com/presskit/DanceTonite_PressKit.zip).

@@ -5,52 +5,85 @@ import { sleep } from './utils/async';
 import settings from './settings';
 import pageVisibility from './utils/page-visibility';
 
+const logging = false;
+
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 let context;
 let source;
 let gainNode;
+let filter;
 let loopCount;
 let duration = 0;
 let lastTime = 0;
+let audioTime;
 let lastLoopProgress = 0;
 let startTime;
+let contextStartTime;
 let audioElement;
 let request;
 let onCanPlayThrough;
 let onPause;
 let onPlay;
-let onSeeked;
+let onSeeking;
 let pauseTime;
 let muted = false;
 
 const FADE_OUT_SECONDS = 2;
+const FADE_IN_SECONDS = 1;
 const ALMOST_ZERO = 1e-4;
+const FILTER_LOW = 2700.0;
+const FILTER_HIGH = 14000.0;
+
+// The allowable sync difference on android is higher, because for some reason
+// it is is much less accurate in reporting HTMLMediaElement.currentTime:
+const ALLOWED_SYNC_DIFFERENCE = (feature.isMobile && !feature.isIOs) ? 0.1 : 0.05;
 
 let scheduledTime;
 const audio = Object.assign(emitter(), {
   tick(staticTime) {
+    if (!context || !duration) return;
+
+    // If we don't have enough data to play the audio,
+    // pause playback by returning early:
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
+    if (audioElement && audioElement.readyState === 2) return;
+
+    const now = Date.now();
+
     const isStatic = staticTime !== undefined;
-    if ((!audioElement && !context && !isStatic) || (!startTime && !isStatic)) {
-      this.progress = 0;
-      this.time = 0;
-      this.totalTime = 0;
-      this.loopProgress = 0;
-      this.totalProgress = 0;
-      this.looped = false;
-      return;
+
+    if (!isStatic) {
+      // The time as reported by the context or audio element:
+      audioTime = (audioElement
+        ? audioElement.currentTime
+        : context.currentTime - contextStartTime) % audio.duration;
+      if (audioTime === 0) {
+        startTime = now;
+        return;
+      }
     }
-    let time = this.time = (staticTime !== undefined
+
+    this.time = (isStatic
       ? staticTime
-      : audioElement
-        ? (pauseTime || (Date.now() - startTime)) / 1000
-        : context.currentTime - startTime
-    ) % duration;
-    if (audioElement && Math.abs(time - audioElement.currentTime) > 0.05) {
-      time = audioElement.currentTime;
-      startTime = Date.now() - time * 1000;
+      : (pauseTime || (now - startTime)) / 1000
+    );
+
+    if (!isStatic) {
+      // If our animation time is running out of sync with the time reported
+      // by the audio element correct it:
+      const syncDiff = this.time - audioTime;
+      if (Math.abs(syncDiff) > ALLOWED_SYNC_DIFFERENCE) {
+        if (logging) {
+          const loopText = syncDiff > (0.9 * audio.duration) ? 'audio looped: ' : '';
+          console.log(`${loopText}syncing animation to audio by ${Math.round(syncDiff * 1000)} ms to ${audioTime}`);
+        }
+        this.time = audioTime;
+        startTime = now - audioTime * 1000;
+      }
     }
     const { loopDuration } = settings;
+    const time = this.time;
     // The position within the track as a multiple of loopDuration:
     this.progress = time > 0
       ? time / loopDuration
@@ -59,8 +92,7 @@ const audio = Object.assign(emitter(), {
     this.loopProgress = (time % loopDuration) / loopDuration;
 
     // True when the audio looped, false otherwise:
-    this.looped = time < lastTime;
-
+    this.looped = (time < lastTime) && Math.abs(time - lastTime) > (audio.duration * 0.9);
     if (this.looped) {
       // The index of the loop, used when the audio has more than one loops:
       this.loopIndex = Math.floor(this.progress * loopCount);
@@ -81,6 +113,10 @@ const audio = Object.assign(emitter(), {
       audio.reset();
       context = new AudioContext();
       gainNode = context.createGain();
+      filter = context.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = FILTER_HIGH;
+      filter.Q.value = 2;
       // Reset time, set loop count
       lastTime = 0;
       lastLoopProgress = 0;
@@ -90,6 +126,8 @@ const audio = Object.assign(emitter(), {
       this.loopCount = 0;
       const canPlay = () => {
         this.duration = duration;
+        gainNode.gain.value = ALMOST_ZERO;
+        audio.fadeIn();
         resolve(param.src);
       };
 
@@ -117,21 +155,21 @@ const audio = Object.assign(emitter(), {
           this.emit('pause');
         };
         onPlay = () => {
-          startTime = Date.now() - getAudioTime();
           this.paused = false;
           pauseTime = null;
           this.emit('play');
         };
-        onSeeked = () => {
+        onSeeking = () => {
           startTime = Date.now() - getAudioTime();
           if (pauseTime) {
             pauseTime = getAudioTime();
           }
+          this.time = audioElement.currentTime;
         };
         audioElement.addEventListener('canplaythrough', onCanPlayThrough);
         audioElement.addEventListener('pause', onPause);
-        audioElement.addEventListener('play', onPlay);
-        audioElement.addEventListener('seeked', onSeeked);
+        audioElement.addEventListener('playing', onPlay);
+        audioElement.addEventListener('seeking', onSeeking);
         source = context.createMediaElementSource(audioElement);
       } else {
         source = context.createBufferSource();
@@ -147,7 +185,8 @@ const audio = Object.assign(emitter(), {
               duration = source.buffer.duration;
               source.loop = param.loop === undefined ? true : param.loop;
               source.start(0);
-              startTime = context.currentTime;
+              contextStartTime = context.currentTime;
+              startTime = Date.now();
               canPlay();
             },
             reject
@@ -164,7 +203,9 @@ const audio = Object.assign(emitter(), {
   play() {
     this.paused = false;
     if (context) context.resume();
-    if (audioElement) audioElement.play();
+    if (audioElement) {
+      audioElement.play();
+    }
     if (!this.muted) {
       audio.fadeIn();
     }
@@ -173,7 +214,9 @@ const audio = Object.assign(emitter(), {
   pause() {
     this.paused = true;
     if (context) context.suspend();
-    if (audioElement) audioElement.pause();
+    if (audioElement) {
+      audioElement.pause();
+    }
   },
 
   toggle() {
@@ -182,7 +225,7 @@ const audio = Object.assign(emitter(), {
 
   gotoTime(time) {
     audioElement.currentTime = time;
-    startTime = Date.now() - time * 1000;
+    this.tick();
   },
 
   previousLoop() {
@@ -202,6 +245,8 @@ const audio = Object.assign(emitter(), {
     this.loopProgress = 0;
     this.totalProgress = 0;
     this.looped = false;
+    duration = 0;
+    lastTime = null;
   },
 
   reset() {
@@ -213,8 +258,8 @@ const audio = Object.assign(emitter(), {
     if (audioElement) {
       audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
       audioElement.removeEventListener('pause', onPause);
-      audioElement.removeEventListener('play', onPlay);
-      audioElement.removeEventListener('seeked', onSeeked);
+      audioElement.removeEventListener('playing', onPlay);
+      audioElement.removeEventListener('seeking', onSeeking);
       audioElement.pause();
       audioElement = null;
       onCanPlayThrough = null;
@@ -224,7 +269,8 @@ const audio = Object.assign(emitter(), {
       request.onload = null;
       request = null;
     }
-    pauseTime = startTime = null;
+    pauseTime = contextStartTime = null;
+    startTime = 0;
   },
 
   rewind() {
@@ -264,27 +310,53 @@ const audio = Object.assign(emitter(), {
     return muted;
   },
 
-  async fadeOut(fadeDuration = FADE_OUT_SECONDS) {
+  async dim(immediate = false) {
     if (!context) return;
-    if (scheduledTime) {
-      gainNode.gain.cancelScheduledValues(scheduledTime);
+
+    source.disconnect();
+    source.connect(filter);
+    filter.connect(gainNode);
+
+    if (immediate) {
+      filter.frequency.value = FILTER_LOW;
+    } else {
+      audio.fade(2, FILTER_LOW, filter.frequency);
     }
-    scheduledTime = context.currentTime;
-    gainNode.gain.exponentialRampToValueAtTime(
-      ALMOST_ZERO,
-      scheduledTime + fadeDuration
-    );
-    return sleep(fadeDuration * 1000);
+
+    await audio.fade(1, 0.5);
   },
 
-  async fadeIn(fadeDuration = FADE_OUT_SECONDS) {
+  async undim(immediate = false) {
+    if (!context) return;
+
+    if (immediate) {
+      filter.frequency.value = FILTER_HIGH;
+    } else {
+      audio.fade(2, FILTER_LOW, filter.frequency);
+    }
+    await audio.fade(1, 1);
+
+    filter.disconnect();
+    source.disconnect();
+    source.connect(gainNode);
+  },
+
+  async fadeOut(fadeDuration = FADE_OUT_SECONDS) {
+    await audio.fade(fadeDuration, ALMOST_ZERO);
+  },
+
+  async fadeIn(fadeDuration = FADE_IN_SECONDS) {
+    await audio.fade(fadeDuration, 1);
+  },
+
+  async fade(fadeDuration, targetValue, _property = gainNode.gain) {
     if (!context || muted) return;
     if (scheduledTime) {
-      gainNode.gain.cancelScheduledValues(scheduledTime);
+      _property.cancelScheduledValues(scheduledTime);
     }
     scheduledTime = context.currentTime;
-    gainNode.gain.exponentialRampToValueAtTime(
-      1,
+    _property.exponentialRampToValueAtTime(
+      targetValue,
       scheduledTime + fadeDuration
     );
     return sleep(fadeDuration * 1000);

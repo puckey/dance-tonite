@@ -38,6 +38,9 @@ export default class Playback extends Component {
       hoverHead: null,
       orb: true,
       colophon: this.props.colophon !== false,
+      loading: this.props.inContextOfRecording
+        ? null
+        : 'Moving dancers into position…',
     });
   }
 
@@ -53,10 +56,10 @@ export default class Playback extends Component {
     }
   }
 
-  onTitlesChanged(titles, colophon = true) {
+  onTitlesChanged({ titles, colophon }) {
     this.setState({
       orb: !titles,
-      colophon,
+      colophon: !!colophon,
     });
   }
 
@@ -95,9 +98,6 @@ export default class Playback extends Component {
 
   async asyncMount() {
     const { inContextOfRecording, roomId } = this.props;
-    if (!inContextOfRecording) {
-      this.setLoading('Moving dancers into position…');
-    }
 
     const audioLoadTime = Date.now();
     await audio.load({
@@ -161,9 +161,6 @@ export default class Playback extends Component {
             pathRoomId={roomId}
             orb={orb}
           />
-          <Menu
-            close={this.performExitPresent}
-          />
         </Container>
       );
     }
@@ -196,6 +193,7 @@ export default class Playback extends Component {
           orb={orb}
           stopped={stopped}
           fixedControllers={inContextOfRecording}
+          hideRoomCountdown={inContextOfRecording}
         />
         { process.env.FLAVOR !== 'cms'
           ? <Titles

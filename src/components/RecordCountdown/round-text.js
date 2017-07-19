@@ -1,4 +1,4 @@
-import { maxLayerCount } from '../../settings';
+import settings from '../../settings';
 
 const numberWords = [
   'one',
@@ -14,7 +14,7 @@ const numberWords = [
 ];
 
 export default (round) => (
-  round === (maxLayerCount - 1)
+  round === (settings.maxLayerCount - 1)
     ? 'last round'
     : `round ${numberWords[round] || (round + 1)}`
 );
