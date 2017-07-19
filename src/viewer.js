@@ -140,6 +140,7 @@ const viewer = Object.assign(emitter(), {
     viewer.animating = true;
     viewer.animate();
   },
+  isOrthographic: true,
   animate: (timestamp, staticTime) => {
     updateCull();
     const dt = clock.getDelta();
@@ -243,13 +244,8 @@ const viewer = Object.assign(emitter(), {
   },
 
   switchCamera: (name) => {
-    if (name === 'orthographic') {
-      InstancedItem.switch(name);
-      viewer.renderScene.fog = null;
-    } else {
-      InstancedItem.switch('perspective');
-      viewer.renderScene.fog = viewer.fog;
-    }
+    const isOrthographic = viewer.isOrthographic = name === 'orthographic';
+    InstancedItem.switch(isOrthographic ? name : 'perspective');
     viewer.camera = cameras[name];
   },
   vrEffect,
