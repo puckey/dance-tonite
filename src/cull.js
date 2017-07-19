@@ -42,6 +42,11 @@ export default (interval = 3000) => {
     }
   }
   settings.cullDistance = settings.cullDistance * 0.95 + cullDistance * 0.05;
-  viewer.fog.near = settings.cullDistance - settings.roomDepth;
-  viewer.fog.far = settings.cullDistance;
+  if (viewer.isOrthographic) {
+    viewer.fog.near = settings.cullDistance - settings.roomDepth;
+    viewer.fog.far = settings.cullDistance;
+  } else {
+    viewer.fog.near = 1000;
+    viewer.fog.far = 1000;
+  }
 };
