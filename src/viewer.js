@@ -142,7 +142,9 @@ const viewer = Object.assign(emitter(), {
   },
   isOrthographic: true,
   animate: (timestamp, staticTime) => {
-    updateCull();
+    if (!viewer.insideTransition) {
+      updateCull();
+    }
     const dt = clock.getDelta();
     if (viewer.animating) {
       vrEffect.requestAnimationFrame(viewer.animate);
