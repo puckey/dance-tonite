@@ -13,6 +13,13 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const FLAVOR = process.env.FLAVOR || 'website';
 const isProd = NODE_ENV === 'production';
 
+const content = {
+  title: 'Dance Tonite',
+  description: 'An interactive VR experience by LCD Soundsystem and their fans.',
+  sharedDescription: 'Check out my moves in this VR experience by LCD Soundsystem and their fans.',
+  image: '/public/social.png',
+};
+
 const extractSass = new ExtractTextPlugin({
   filename: 'style.css',
   disable: process.env.NODE_ENV === 'development',
@@ -123,14 +130,15 @@ const config = {
           filename: 'index.html',
           template: `templates/${FLAVOR === 'cms' ? 'cms.html' : 'index.ejs'}`,
           twitter: {
-            title: 'Dance Tonite',
-            description: 'The twitter description goes here',
+            title: content.title,
+            description: content.description,
+            image: content.image,
           },
           facebook: {
-            title: 'Dance Tonite',
-            description: 'The description for facebook goes here',
-            appId: 'The facebook app id goes here',
-            image: '/url/to/facebook/image.png',
+            appId: 305769256550344,
+            title: content.title,
+            description: content.description,
+            image: content.image,
           },
         },
         htmlSettings
@@ -144,14 +152,15 @@ const config = {
           filename: 'performance.html',
           template: 'templates/index.ejs',
           twitter: {
-            title: 'Dance Tonite',
-            description: 'The twitter description for the shared performance goes here',
+            title: content.title,
+            description: content.sharedDescription,
+            image: content.image,
           },
           facebook: {
-            title: 'Dance Tonite',
-            description: 'The facebook description for the shared performance goes here',
-            appId: 'The facebook app id goes here',
-            image: '/url/to/facebook/image.png',
+            appId: 305769256550344,
+            title: content.title,
+            description: content.sharedDescription,
+            image: content.image,
           },
         },
         htmlSettings
