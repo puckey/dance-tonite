@@ -16,7 +16,6 @@ import InstancedItem from './instanced-item';
 import feature from './utils/feature';
 import windowSize from './utils/windowSize';
 import audio from './audio';
-import postprocessing from './postprocessing';
 import Room from './room';
 import { backgroundColor } from './theme/colors';
 import updateCull from './cull';
@@ -75,8 +74,6 @@ const zoomCamera = (zoom) => {
 let renderer;
 let vrEffect;
 let controls;
-let renderPostProcessing;
-let resizePostProcessing;
 let clock;
 
 const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
@@ -111,8 +108,6 @@ const onResize = ({ width, height, aspectRatio }) => {
 
   renderer.domElement.style.width = `${width}px`;
   renderer.domElement.style.height = `${height}px`;
-
-  resizePostProcessing(width, height);
 
   Object
     .values(cameras)
@@ -170,11 +165,7 @@ const viewer = Object.assign(emitter(), {
 
     if (staticTime !== undefined) return;
 
-    if (!vrEffect.isPresenting && viewer.camera === cameras.default) {
-      renderPostProcessing();
-    } else {
-      vrEffect.render(viewer.renderScene, viewer.camera);
-    }
+    vrEffect.render(viewer.renderScene, viewer.camera);
 
     if (vrEffect.isPresenting && feature.hasExternalDisplay) {
       renderer.render(viewer.renderScene, viewer.camera);
@@ -209,13 +200,6 @@ const viewer = Object.assign(emitter(), {
       if (!vrEffect.isPresenting) viewer.switchCamera('orthographic');
     }, false);
 
-    const { render, resize } = postprocessing({
-      renderer,
-      camera: cameras.default,
-      scene,
-    });
-    renderPostProcessing = render;
-    resizePostProcessing = resize;
     windowSize.on('resize', onResize, false);
   },
 
