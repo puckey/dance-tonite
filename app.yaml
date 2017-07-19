@@ -3,12 +3,35 @@ api_version: 1
 threadsafe: true
 
 handlers:
+# if a shared link 
+- url: /([0-9]+)/([A-Za-z0-9-_]{6})\/?
+  static_files: dist/index.html
+  upload: dist/index.html
+  login: admin
+  secure: always
+
+# gallery
+- url: /gallery/(.*)
+  static_files: dist/index.html
+  upload: dist/index.html
+  login: admin
+  secure: always
+
+# recording mode
+- url: /record/(.*)
+  static_files: dist/index.html
+  upload: dist/index.html
+  login: admin
+  secure: always
+
+# site root
 - url: /
   static_files: dist/index.html
   upload: dist/index.html
   login: admin
   secure: always
 
+# all other files
 - url: /(.*)
   static_files: dist/\1
   upload: dist/(.*)
