@@ -101,7 +101,7 @@ export default class Record extends Component {
 
       setTimeout(() => {
         viewer.controllers.forEach(controller => {
-          const hapticActuator = controller.gamepad.hapticActuators[0];
+          const hapticActuator = controller.gamepad && controller.gamepad.hapticActuators[0];
           if (hapticActuator) {
             hapticActuator.pulse(1, 60);
           }
