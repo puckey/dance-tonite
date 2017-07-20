@@ -95,7 +95,7 @@ module.exports = function( THREE ){
 				//  because that call redundantly calls renderer.setSize()
 				//  and that can easily add 300ms overhead.
 				if (renderer.getPixelRatio() !== 1) renderer.setPixelRatio(1);
-				renderer.setSize( eyeParamsL.renderWidth * 2, eyeParamsL.renderHeight, false );
+				renderer.setSize( eyeParamsL.renderWidth * 2  * VRResolutionRatio, eyeParamsL.renderHeight  * VRResolutionRatio, false );
 
 			} else {
 
@@ -133,7 +133,7 @@ module.exports = function( THREE ){
 					//  because that call redundantly calls renderer.setSize()
 					//  and that can easily add 300ms overhead.
 					if (rendererPixelRatio !== 1) renderer.setPixelRatio(1);
-					renderer.setSize(eyeWidth * 2, eyeHeight, false);
+					renderer.setSize(eyeWidth * 2 * VRResolutionRatio, eyeHeight * VRResolutionRatio, false);
 
 					scope.setVRResolutionRatio(VRResolutionRatio)
 				}
