@@ -159,19 +159,25 @@ export default function create({ rooms, orb, offset = 0 }) {
     },
 
     setupInput: () => {
-      window.addEventListener('mousemove', onMouseMove);
-      window.addEventListener('mousedown', onMouseDown);
-      window.addEventListener('mouseup', onMouseUp);
-      window.addEventListener('touchstart', onMouseDown, false);
-      window.addEventListener('touchend', onMouseUp, false);
+      if (feature.isMobile) {
+        window.addEventListener('touchstart', onMouseDown, false);
+        window.addEventListener('touchend', onMouseUp, false);
+      } else {
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mouseup', onMouseUp);
+      }
     },
 
     removeInput: () => {
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mouseup', onMouseUp);
-      window.removeEventListener('touchstart', onMouseDown);
-      window.removeEventListener('touchend', onMouseUp);
+      if (feature.isMobile) {
+        window.removeEventListener('touchstart', onMouseDown);
+        window.removeEventListener('touchend', onMouseUp);
+      } else {
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mousedown', onMouseDown);
+        window.removeEventListener('mouseup', onMouseUp);
+      }
       window.removeEventListener('vrdisplaypresentchange', clearHighlights);
       audio.off('loop', onLoop);
     },
