@@ -233,7 +233,6 @@ const viewer = Object.assign(emitter(), {
     vrEffect.requestPresent();
     setTimeout(() => {
       viewer.switchCamera('default');
-      scene.add(viewer.camera);
     }, 10); // Delay switching 10ms to avoid flashing POV before overlay is displayed
   },
 
