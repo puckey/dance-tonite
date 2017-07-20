@@ -168,7 +168,7 @@ const transition = {
       if (logging) {
         console.log('transition.enter: fading out to black to hide viewer scene');
       }
-      await fadeOut();
+      await fadeOut(null, true);
     }
     insideTransition = true;
 
@@ -193,7 +193,7 @@ const transition = {
     textItem.updateLabel(param.text);
     await fadeIn(transitionSpaceFar);
     if (param.duration) {
-      await sleep(Math.max(0, param.duration - (Date.now() - then)))
+      await sleep(Math.max(0, param.duration - (Date.now() - then)));
     }
   },
 
@@ -217,7 +217,7 @@ const transition = {
           { version }
         );
       }
-      await fadeOut();
+      await fadeOut(null, true);
     }
     transition.reset(true, true);
     if (version === transitionVersion) {
