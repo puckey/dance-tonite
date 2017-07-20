@@ -62,6 +62,8 @@ const layout = rooms.filter(([,,, { type }]) => type !== 'EMPTY');
 
 const timelineLayout = rooms.filter(([,,, { timeline }]) => timeline !== false);
 
+const playlistLayout = layout.filter(([,,, { megagrid }]) => !megagrid);
+
 export default {
   getPosition(position, roomPosition, single) {
     let x = 0;
@@ -109,6 +111,14 @@ export default {
   getSynthIndex(index) {
     const synthIndex = layout[index][4];
     return synthIndex === undefined ? 3 : synthIndex;
+  },
+
+  playlistIndexToMegaGridIndex(index) {
+    return layout.indexOf(playlistLayout[index]);
+  },
+
+  getPlaylistIndex(index) {
+    return playlistLayout.indexOf(layout[index]);
   },
 
   getRoom(index) {

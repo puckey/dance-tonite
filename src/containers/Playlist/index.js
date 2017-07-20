@@ -93,6 +93,7 @@ export default class Playlist extends Component {
     for (let i = 0; i < entries.length; i++) {
       const isPathRecording = pathRecordingExists && i === pathRoomId - 1;
       const entry = entries[i];
+      if (!entry) continue;
       const room = new Room({
         id: isPathRecording
           ? pathRecordingId
