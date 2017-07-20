@@ -28,6 +28,7 @@ import InstancedItem from '../instanced-item';
 import Frames from './frames';
 import { createPose } from '../utils/serializer';
 import audio from '../audio';
+import feature from '../utils/feature';
 import { elasticIn } from '../utils/easing';
 
 let items;
@@ -175,7 +176,7 @@ export default class Room {
   gotoTime(seconds, maxLayers, highlightLast = false) {
     this.currentTime = seconds;
 
-    if (settings.shouldCull && this.cullRoom()) {
+    if (!feature.has6DOF && settings.shouldCull && this.cullRoom()) {
       return;
     }
     // In orthographic mode, scale up the meshes:

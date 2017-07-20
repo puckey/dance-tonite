@@ -13,6 +13,7 @@ import Orb from '../../orb';
 import settings from '../../settings';
 import transition from '../../transition';
 import router from '../../router';
+import feature from '../../utils/feature';
 import Frames from '../../room/frames';
 
 import BackgroundTimeline from '../../components/BackgroundTimeline';
@@ -20,6 +21,7 @@ import RoomLabels from '../../components/RoomLabels';
 import POV from '../../components/POV';
 import Align from '../../components/Align';
 import RoomCountdown from '../../components/RoomCountdown';
+import AutoCull from '../../components/AutoCull';
 
 export default class Playlist extends Component {
   constructor() {
@@ -187,6 +189,7 @@ export default class Playlist extends Component {
           />
           : null
         }
+        { !feature.has6DOF && <AutoCull /> }
         { !stopped && <BackgroundTimeline /> }
       </div>
     );

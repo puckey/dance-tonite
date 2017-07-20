@@ -19,7 +19,6 @@ import audio from './audio';
 import postprocessing from './postprocessing';
 import Room from './room';
 import { backgroundColor } from './theme/colors';
-import updateCull from './cull';
 
 const orthographicDistance = 4;
 // TODO: remove me:
@@ -142,9 +141,6 @@ const viewer = Object.assign(emitter(), {
   },
   isOrthographic: true,
   animate: (timestamp, staticTime) => {
-    if (!viewer.insideTransition) {
-      updateCull();
-    }
     const dt = clock.getDelta();
     if (viewer.animating) {
       vrEffect.requestAnimationFrame(viewer.animate);
