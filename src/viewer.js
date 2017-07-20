@@ -20,6 +20,7 @@ import postprocessing from './postprocessing';
 import Room from './room';
 import { backgroundColor } from './theme/colors';
 import updateCull from './cull';
+import { queryData } from './utils/url';
 
 const orthographicDistance = 4;
 // TODO: remove me:
@@ -203,8 +204,9 @@ const viewer = Object.assign(emitter(), {
     containerEl.appendChild(renderer.domElement);
     document.body.appendChild(containerEl);
 
+    const vrRes = queryData.res || 0.1;
     viewer.vrEffect = vrEffect = new THREE.VREffect(renderer);
-    viewer.vrEffect.setVRResolutionRatio(0.1);
+    viewer.vrEffect.setVRResolutionRatio(vrRes);
 
     viewer.controls = controls = new THREE.VRControls(cameras.default);
     controls.standing = true;
