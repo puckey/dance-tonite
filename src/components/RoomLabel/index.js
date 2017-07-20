@@ -38,7 +38,7 @@ export default class RoomLabel extends Component {
         }}
         onClick={this.navigateToChooser}
       >
-        <span>Room {room.index + 1}</span>
+        <span>Room {layout.getPlaylistIndex(room.index) + 1}</span>
         <span className="wrap">{title}</span>
         <span className="new-line">{featured}</span>
       </div>
