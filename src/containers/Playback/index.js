@@ -16,13 +16,14 @@ import Overlay from '../../components/Overlay';
 import Controllers from '../../components/Controllers';
 
 import audio from '../../audio';
-import audioSrcOgg from '../../public/sound/tonite.ogg';
-import audioSrcMp3 from '../../public/sound/tonite.mp3';
 import viewer from '../../viewer';
 import settings from '../../settings';
 import transition from '../../transition';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
+
+const audioSrcOgg = `${settings.assetsURL}sound/tonite.ogg`;
+const audioSrcMp3 = `${settings.assetsURL}sound/tonite.mp3`;
 
 export default class Playback extends Component {
   constructor() {
@@ -56,10 +57,10 @@ export default class Playback extends Component {
     }
   }
 
-  onTitlesChanged(titles, colophon = true) {
+  onTitlesChanged({ titles, colophon }) {
     this.setState({
       orb: !titles,
-      colophon,
+      colophon: !!colophon,
     });
   }
 
@@ -148,6 +149,9 @@ export default class Playback extends Component {
       colophon,
       takeOffHeadset,
       stopped,
+    },
+    {
+      presenting,
     }
   ) {
     const polyfillAndPresenting = feature.vrPolyfill
@@ -159,7 +163,7 @@ export default class Playback extends Component {
           <Playlist
             pathRecordingId={id}
             pathRoomId={roomId}
-            orb={orb}
+            orb={orb && !presenting}
           />
         </Container>
       );
@@ -190,7 +194,7 @@ export default class Playback extends Component {
         <Playlist
           pathRecordingId={id}
           pathRoomId={roomId}
-          orb={orb}
+          orb={orb && !presenting}
           stopped={stopped}
           fixedControllers={inContextOfRecording}
           hideRoomCountdown={inContextOfRecording}

@@ -5,9 +5,9 @@
 }
 
 .record-blinker {
-  animation: blink 2s infinite step-end;
+  animation: blink 1s infinite step-end;
   opacity: 1;
-  margin-right: 0.25rem;
+  margin-right: 0.35rem;
 }
 
 @keyframes blink {

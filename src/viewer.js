@@ -16,10 +16,8 @@ import InstancedItem from './instanced-item';
 import feature from './utils/feature';
 import windowSize from './utils/windowSize';
 import audio from './audio';
-import postprocessing from './postprocessing';
 import Room from './room';
 import { backgroundColor } from './theme/colors';
-import updateCull from './cull';
 
 const orthographicDistance = 4;
 // TODO: remove me:
@@ -35,7 +33,7 @@ const orthographicDistance = 4;
 
 const cameras = (function () {
   const { aspectRatio } = windowSize;
-  const perspective = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
+  const perspective = new THREE.PerspectiveCamera(70, aspectRatio, 0.01, 1000);
   perspective.lookAt(tempVector(0, 0, 1));
   perspective.position.y = settings.holeHeight;
 
@@ -75,8 +73,6 @@ const zoomCamera = (zoom) => {
 let renderer;
 let vrEffect;
 let controls;
-let renderPostProcessing;
-let resizePostProcessing;
 let clock;
 
 const sineInOut = t => -0.5 * (Math.cos(Math.PI * t) - 1);
@@ -112,8 +108,6 @@ const onResize = ({ width, height, aspectRatio }) => {
   renderer.domElement.style.width = `${width}px`;
   renderer.domElement.style.height = `${height}px`;
 
-  resizePostProcessing(width, height);
-
   Object
     .values(cameras)
     .forEach((camera) => {
@@ -140,8 +134,8 @@ const viewer = Object.assign(emitter(), {
     viewer.animating = true;
     viewer.animate();
   },
+  isOrthographic: true,
   animate: (timestamp, staticTime) => {
-    updateCull();
     const dt = clock.getDelta();
     if (viewer.animating) {
       vrEffect.requestAnimationFrame(viewer.animate);
@@ -170,11 +164,7 @@ const viewer = Object.assign(emitter(), {
 
     if (staticTime !== undefined) return;
 
-    if (!vrEffect.isPresenting && viewer.camera === cameras.default) {
-      renderPostProcessing();
-    } else {
-      vrEffect.render(viewer.renderScene, viewer.camera);
-    }
+    vrEffect.render(viewer.renderScene, viewer.camera);
 
     if (vrEffect.isPresenting && feature.hasExternalDisplay) {
       renderer.render(viewer.renderScene, viewer.camera);
@@ -209,13 +199,6 @@ const viewer = Object.assign(emitter(), {
       if (!vrEffect.isPresenting) viewer.switchCamera('orthographic');
     }, false);
 
-    const { render, resize } = postprocessing({
-      renderer,
-      camera: cameras.default,
-      scene,
-    });
-    renderPostProcessing = render;
-    resizePostProcessing = resize;
     windowSize.on('resize', onResize, false);
   },
 
@@ -230,11 +213,10 @@ const viewer = Object.assign(emitter(), {
     vrEffect.requestPresent();
     setTimeout(() => {
       viewer.switchCamera('default');
-      scene.add(viewer.camera);
     }, 10); // Delay switching 10ms to avoid flashing POV before overlay is displayed
   },
 
-  toggleVR: async () => {
+  toggleVR: () => {
     if (vrEffect.isPresenting) {
       viewer.exitPresent();
     } else {
@@ -243,13 +225,8 @@ const viewer = Object.assign(emitter(), {
   },
 
   switchCamera: (name) => {
-    if (name === 'orthographic') {
-      InstancedItem.switch(name);
-      viewer.renderScene.fog = null;
-    } else {
-      InstancedItem.switch('perspective');
-      viewer.renderScene.fog = viewer.fog;
-    }
+    const isOrthographic = viewer.isOrthographic = name === 'orthographic';
+    InstancedItem.switch(isOrthographic ? name : 'perspective');
     viewer.camera = cameras[name];
   },
   vrEffect,

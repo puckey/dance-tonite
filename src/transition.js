@@ -7,6 +7,7 @@ import { textColor, backgroundColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
 import deps from './deps';
 import settings from './settings';
+import { sleep } from './utils/async';
 
 const tween = createTweener();
 
@@ -50,15 +51,15 @@ const tick = (dt) => {
 };
 
 let tweener;
-const tweenFog = (from, to, duration = 2) => {
+const tweenFog = (from, to, duration = 1) => {
   if (!viewer.renderScene.fog) return;
-  viewer.renderScene.fog.near = from;
-  viewer.renderScene.fog.far = from === 0 ? 0 : from + settings.roomDepth;
+  viewer.renderScene.fog.near = from === 0 ? 0.01 : 5;
+  viewer.renderScene.fog.far = from === 0 ? 0.01 : from + settings.roomDepth;
   tweener = tween(
     viewer.renderScene.fog,
     {
-      near: to,
-      far: to === 0 ? 0 : to + settings.roomDepth,
+      near: to === 0 ? 0.01 : to,
+      far: to === 0 ? 0.01 : to + settings.roomDepth,
       ease: 'easeOutCubic',
       duration,
     }
@@ -67,6 +68,11 @@ const tweenFog = (from, to, duration = 2) => {
 };
 
 const fadeOut = (duration, fromWithin) => {
+  if (insideTransition) {
+    floatingOrb.fadeOut();
+  } else {
+    viewer.insideTransition = true;
+  }
   fadedOut = true;
   if (!fromWithin) {
     transitionVersion += 1;
@@ -148,10 +154,10 @@ const transition = {
   },
 
   async enter(param = {}) {
+    viewer.insideTransition = true;
+    const then = Date.now();
     transitionVersion += 1;
     const version = transitionVersion;
-
-    insideTransition = true;
 
     if (logging) {
       console.log('transition.enter', { transitionVersion, ...param, time: new Date() });
@@ -162,8 +168,14 @@ const transition = {
       if (logging) {
         console.log('transition.enter: fading out to black to hide viewer scene');
       }
-      await fadeOut();
+      await fadeOut(null, true);
     }
+    insideTransition = true;
+
+    floatingOrb.fadeIn();
+    floatingOrb.mesh.position.set(0, 0, -8);
+    floatingOrb.mesh.scale.set(2, 2, 2);
+
     if (version !== transitionVersion) {
       if (logging) {
         console.log('transition.enter returned early because of version difference',
@@ -177,12 +189,12 @@ const transition = {
     viewer.renderScene = transitionScene;
     transitionScene.fog = new THREE.Fog(backgroundColor, 0, 0);
 
-    floatingOrb.fadeIn();
     viewer.on('tick', tick);
     textItem.updateLabel(param.text);
-    floatingOrb.mesh.position.set(0, 0, -8);
-    floatingOrb.mesh.scale.set(2, 2, 2);
     await fadeIn(transitionSpaceFar);
+    if (param.duration) {
+      await sleep(Math.max(0, param.duration - (Date.now() - then)));
+    }
   },
 
   async exit() {
@@ -205,7 +217,7 @@ const transition = {
           { version }
         );
       }
-      await fadeOut();
+      await fadeOut(null, true);
     }
     transition.reset(true, true);
     if (version === transitionVersion) {
@@ -217,6 +229,7 @@ const transition = {
       }
       await fadeIn(settings.cullDistance);
     }
+    viewer.insideTransition = false;
   },
 
   reset(soft, fromWithin) {
@@ -247,6 +260,7 @@ const transition = {
       if (viewer.renderScene.fog) {
         viewer.renderScene.fog.near = settings.cullDistance;
       }
+      viewer.insideTransition = false;
     }
   },
 };

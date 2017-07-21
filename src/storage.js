@@ -20,27 +20,29 @@ const loadGallery = async () => {
 };
 
 const loadPlaylist = async () => {
+  let data;
   if (process.env.FLAVOR === 'cms') {
-    const { data } = await cms.getDraftPlaylist();
-    const { playlist } = data;
-    if (playlist.length > settings.roomCount) {
-      playlist.length = settings.roomCount;
-    }
-    return playlist;
-  }
-
-  if (process.env.FLAVOR !== 'cms') {
+    const response = await cms.getDraftPlaylist();
+    data = response.data;
+  } else {
     const response = await fetch(`${settings.playlistsUrl}playlist.json`);
-    const { playlist, megagrid } = await response.json();
-    const shuffled = shuffle(megagrid);
-    playlist.length = settings.roomCount;
-    const extra = [];
-    for (let i = 0, l = layout.roomCount - playlist.length; i < l; i++) {
-      extra.push(shuffled[i % shuffled.length]);
-    }
-    shuffle(extra);
-    return playlist.concat(extra);
+    data = await response.json();
   }
+  const playlist = data.playlist;
+  const megaGrid = data.megagrid
+    ? shuffle(data.megagrid)
+    : null;
+  const list = [];
+  let megaGridIndex = 0;
+  for (let i = 0; i < layout.roomCount; i++) {
+    const entry = layout.insideMegaGrid(i)
+      ? megaGrid
+        ? megaGrid[megaGridIndex++ % megaGrid.length]
+        : null
+      : playlist.shift();
+    list.push(entry);
+  }
+  return list;
 };
 
 export default {

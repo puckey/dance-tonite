@@ -41,31 +41,32 @@ export function createMaterial(color) {
   }));
 }
 
-const textScale = 0.00024;
+export const textScale = 0.00024;
 
 export function creator() {
   const font = parseASCII(Font.fnt());
 
   const colorMaterials = {};
 
-  function createText(str, fnt, color, scale, wrapWidth, align) {
+  function createText(str, fnt, color, scale, wrapWidth, align, lineHeight) {
     const geometry = createGeometry({
       text: str,
       align,
       width: wrapWidth,
       flipY: true,
       font: fnt,
+      lineHeight,
     });
 
 
     const layout = geometry.layout;
-
     let material = colorMaterials[color];
     if (material === undefined) {
       material = colorMaterials[color] = createMaterial(color);
     }
     const mesh = new THREE.Mesh(geometry, material);
     mesh.scale.multiply(new THREE.Vector3(1, -1, 1));
+    mesh.frustumCulled = false;
 
     const finalScale = scale * textScale;
 
@@ -77,22 +78,24 @@ export function creator() {
   }
 
 
-  function create(str = '', { color = 0xffffff, scale = 1.0, wrapWidth = undefined, align = 'left' } = {}) {
+  function create(str = '', { color = 0xffffff, scale = 1.0, wrapWidth = undefined, align = 'left', vAlign = 'bottom', lineHeight = undefined } = {}) {
     const group = new THREE.Group();
 
-    const mesh = createText(str.toUpperCase, font, color, scale, wrapWidth, align);
+    const mesh = createText(str.toUpperCase(), font, color, scale, wrapWidth, align, lineHeight);
     group.add(mesh);
     group.layout = mesh.geometry.layout;
 
     group.updateLabel = function (txt) {
       mesh.geometry.update(txt.toUpperCase());
 
-      if (align === 'center') {
-        //  center alignment doesn't seem to be working in BMFontText
-        mesh.geometry.computeBoundingBox();
-        const width = mesh.geometry.boundingBox.getSize().x;
+      group.layout = mesh.geometry.layout;
 
-        mesh.position.x = -width * 0.5 * textScale * scale;
+      if (align === 'center') {
+        mesh.position.x = -group.layout.width * 0.5 * scale * textScale;
+      }
+
+      if (vAlign === 'center') {
+        mesh.position.y = -group.layout.height * 0.5 * scale * textScale;
       }
     };
 

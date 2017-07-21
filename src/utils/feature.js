@@ -113,6 +113,7 @@ const checkHas6DOF = () => (
 const isAndroid = /android/i.test(userAgent);
 const isIOs = /iphone|ipod|ipad/i.test(userAgent);
 const isMobile = isIOs || /android|iemobile/i.test(userAgent);
+const isSamsungInternet = /SamsungBrowser/i.test(userAgent);
 const isTablet = (isAndroid && !/mobile/i.test(userAgent)) // https://stackoverflow.com/questions/5341637/how-do-detect-android-tablets-in-general-useragent
   || /ipad/i.test(userAgent);
 const vrPolyfill = isMobile && !isTablet && !isAndroid && (navigator.getVRDisplays === undefined);
@@ -123,6 +124,7 @@ const feature = {
   isMobile,
   isTablet,
   isAndroid,
+  isSamsungInternet,
   isChrome: /chrome/i.test(userAgent),
   vrPolyfill,
   hasWebGL: checkHasWebGL(),

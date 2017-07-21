@@ -62,6 +62,8 @@ const layout = rooms.filter(([,,, { type }]) => type !== 'EMPTY');
 
 const timelineLayout = rooms.filter(([,,, { timeline }]) => timeline !== false);
 
+const playlistLayout = layout.filter(([,,, { megagrid }]) => !megagrid);
+
 export default {
   getPosition(position, roomPosition, single) {
     let x = 0;
@@ -85,17 +87,12 @@ export default {
       : tempVector(x, y, z);
   },
 
-  loopIndex(roomIndex) {
-    const [, y, z] = layout[roomIndex % layout.length];
-    return (z + Math.abs(Math.round(y)));
-  },
-
   hasWall(index) {
     return !!layout[index][3].wall;
   },
 
-  isOdd(index) {
-    return this.loopIndex(index) % 2 === 0;
+  isEven(index) {
+    return index % 2 === 0;
   },
 
   getType(index) {
@@ -109,6 +106,14 @@ export default {
   getSynthIndex(index) {
     const synthIndex = layout[index][4];
     return synthIndex === undefined ? 3 : synthIndex;
+  },
+
+  playlistIndexToMegaGridIndex(index) {
+    return layout.indexOf(playlistLayout[index]);
+  },
+
+  getPlaylistIndex(index) {
+    return playlistLayout.indexOf(layout[index]);
   },
 
   getRoom(index) {

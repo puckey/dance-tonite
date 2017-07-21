@@ -98,7 +98,7 @@ const recording = {
   serialize() {
     return [{
       count: this.count,
-      loopIndex: layout.loopIndex(this.roomIndex + 1),
+      loopIndex: this.roomIndex + 1,
       hideHead: this.hideHead,
     }]
       .concat(this.frames);

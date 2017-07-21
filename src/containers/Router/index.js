@@ -3,11 +3,12 @@ import { h, Component } from 'preact';
 
 import router from '../../router';
 import audio from '../../audio';
-import settings from '../../settings';
 import feature from '../../utils/feature';
 import audioPool from '../../utils/audio-pool';
 import viewer from '../../viewer';
 import transition from '../../transition';
+import layout from '../../room/layout';
+import settings from '../../settings';
 
 import NotFound from '../NotFound';
 import PressPlayToStart from '../PressPlayToStart';
@@ -59,7 +60,7 @@ export default class Router extends Component {
     const { params } = req;
     if (event && event.parent()) return;
     transition.exit();
-    
+
     convertParams(params);
     if (this.state.route) {
       audio.fadeOut();
@@ -68,9 +69,10 @@ export default class Router extends Component {
     let notFound;
     const { roomId } = params;
     if (roomId !== undefined &&
-        isNaN(roomId) ||
-        roomId > settings.roomCount ||
-        roomId < 1
+      (
+        layout.playlistIndexToMegaGridIndex(roomId - 1) === -1 ||
+        layout.insideMegaGrid(layout.playlistIndexToMegaGridIndex(roomId - 1))
+      )
     ) {
       notFound = 'The selected room id is invalid.';
     }

@@ -4,6 +4,7 @@ import { h, Component } from 'preact';
 import audio from '../../audio';
 import viewer from '../../viewer';
 import Room from '../../room';
+import settings from '../../settings';
 import layout from '../../room/layout';
 import feature from '../../utils/feature';
 import recording from '../../recording';
@@ -95,9 +96,8 @@ export default class RoomComponent extends Component {
     }
 
     this.setState({ loading: true });
-
     await audio.load({
-      src: `/public/sound/room-${layout.loopIndex(roomId)}.${feature.isChrome ? 'ogg' : 'mp3'}`,
+      src: `${settings.assetsURL}sound/room-${roomId}.${feature.isChrome ? 'ogg' : 'mp3'}`,
       loops: 2,
       loopOffset: 0.5,
       progressive,

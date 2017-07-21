@@ -21,7 +21,7 @@ const things = [
   'Interpreting dance…',
   'Twiddling knobs…',
   'Googling “How to make a GIF”…',
-  'Glueing pixels…',
+  'Gluing pixels…',
   'Becoming self-aware…',
   'Coloring inside the lines…',
   'Raising expectations…',
@@ -91,7 +91,6 @@ export default class CreateGIF extends Component {
     audio.reset();
     const renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor(0x000000);
-    renderer.setPixelRatio(1); // window.devicePixelRatio
     renderer.setSize(this.width, this.height);
     renderer.sortObjects = false;
 

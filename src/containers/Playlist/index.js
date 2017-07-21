@@ -13,6 +13,7 @@ import Orb from '../../orb';
 import settings from '../../settings';
 import transition from '../../transition';
 import router from '../../router';
+import feature from '../../utils/feature';
 import Frames from '../../room/frames';
 
 import BackgroundTimeline from '../../components/BackgroundTimeline';
@@ -20,6 +21,7 @@ import RoomLabels from '../../components/RoomLabels';
 import POV from '../../components/POV';
 import Align from '../../components/Align';
 import RoomCountdown from '../../components/RoomCountdown';
+import AutoCull from '../../components/AutoCull';
 
 export default class Playlist extends Component {
   constructor() {
@@ -91,6 +93,7 @@ export default class Playlist extends Component {
     for (let i = 0; i < entries.length; i++) {
       const isPathRecording = pathRecordingExists && i === pathRoomId - 1;
       const entry = entries[i];
+      if (!entry) continue;
       const room = new Room({
         id: isPathRecording
           ? pathRecordingId
@@ -145,7 +148,7 @@ export default class Playlist extends Component {
     for (let i = 0; i < this.state.rooms.length; i++) {
       const room = this.state.rooms[i];
       let time = Math.min(audio.time, settings.dropTime);
-      if (layout.isOdd(room.index)) {
+      if (layout.isEven(room.index)) {
         time += settings.loopDuration;
       }
       room.gotoTime(time % (settings.loopDuration * 2));
@@ -187,6 +190,7 @@ export default class Playlist extends Component {
           />
           : null
         }
+        { !feature.has6DOF && <AutoCull /> }
         { !stopped && <BackgroundTimeline /> }
       </div>
     );

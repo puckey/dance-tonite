@@ -136,7 +136,9 @@ export default class Submissions extends Component {
         } ${
           recording.title === '' ? 'Unnamed ' + new Date(recording.timestamp).toLocaleString() : recording.title
         } ${
-          countryCodeToEmoji(recording.location.country_code)
+          recording.location
+            ? countryCodeToEmoji(recording.location.country_code)
+            : ''
         }`,
       })
     );

@@ -18,6 +18,17 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon" href="/public/favico.png">
     <link rel="manifest" href="/public/manifest.json">
+ 
+    <meta property="og:title" content="<%= htmlWebpackPlugin.options.facebook.title %>">
+    <meta property="og:description" content="<%= htmlWebpackPlugin.options.facebook.description %>">
+    <meta property="og:image" content="<%= htmlWebpackPlugin.options.facebook.image %>">
+    <meta property="fb:app_id" content="<%= htmlWebpackPlugin.options.facebook.appId %>">
+ 
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="<%= htmlWebpackPlugin.options.twitter.title %>">
+    <meta name="twitter:description" content="<%= htmlWebpackPlugin.options.twitter.description %>">
+    <meta name="twitter:image" content="<%= htmlWebpackPlugin.options.twitter.image %>">
+
     <script>
       window.WebVRConfig = {
         DEFER_INITIALIZATION: true,
