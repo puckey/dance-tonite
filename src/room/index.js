@@ -402,5 +402,3 @@ Room.setHighlight = (highlight) => {
     Room.highlight.performanceIndex = null;
   }
 };
-
-Room.getGroup = () => InstancedItem.group;

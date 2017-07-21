@@ -216,7 +216,7 @@ const viewer = Object.assign(emitter(), {
     }, 10); // Delay switching 10ms to avoid flashing POV before overlay is displayed
   },
 
-  toggleVR: async () => {
+  toggleVR: () => {
     if (vrEffect.isPresenting) {
       viewer.exitPresent();
     } else {

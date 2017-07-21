@@ -91,8 +91,8 @@ export default {
     return !!layout[index][3].wall;
   },
 
-  isOdd(index) {
-    return this.loopIndex(index) % 2 === 0;
+  isEven(index) {
+    return index % 2 === 0;
   },
 
   getType(index) {

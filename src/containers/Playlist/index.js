@@ -148,7 +148,7 @@ export default class Playlist extends Component {
     for (let i = 0; i < this.state.rooms.length; i++) {
       const room = this.state.rooms[i];
       let time = Math.min(audio.time, settings.dropTime);
-      if (layout.isOdd(room.index)) {
+      if (layout.isEven(room.index)) {
         time += settings.loopDuration;
       }
       room.gotoTime(time % (settings.loopDuration * 2));
