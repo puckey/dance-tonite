@@ -1,8 +1,9 @@
 @import './theme';
 @import './util';
 
-@font-face {  font-family: 'Lars';
-  src: url('./resources/LarsVRC-Light.woff') format('woff');
+@font-face {
+  font-family: 'Lars';
+  src: url('https://storage.googleapis.com/you-move-me.appspot.com/assets/font/LarsVRC-Light.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
