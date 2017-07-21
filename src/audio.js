@@ -145,8 +145,18 @@ const audio = Object.assign(emitter(), {
         audioElement.loop = param.loop === undefined ? true : param.loop;
         const getAudioTime = () => audioElement.currentTime * 1000;
         onCanPlayThrough = () => {
-          duration = audioElement.duration;
-          canPlay();
+          // On Samsung Internet the audio element doesn't have a duration
+          // yet when 'canplaythrough' is fired, therefore we check again (and again)
+          // using a timeout when duration === 0:
+          const checkHasDuration = () => {
+            duration = audioElement.duration;
+            if (duration === 0) {
+              setTimeout(checkHasDuration, 5);
+            } else {
+              canPlay();
+            }
+          };
+          checkHasDuration();
           audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
         };
         onPause = () => {
