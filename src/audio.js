@@ -4,6 +4,7 @@ import feature from './utils/feature';
 import { sleep } from './utils/async';
 import settings from './settings';
 import pageVisibility from './utils/page-visibility';
+import viewer from './viewer';
 
 const logging = false;
 
@@ -381,5 +382,13 @@ audio.resetValues();
 pageVisibility.on('change', (visible) => {
   audio[visible ? 'play' : 'pause']();
 });
+
+// Fix issue on Samsung Gear VR browser, where audio does not play anymore after
+// exiting VR:
+if (feature.isSamsungInternet) {
+  viewer.on('vr-present-change', () => {
+    setTimeout(() => audio.play(), 500);
+  });
+}
 
 export default audio;
