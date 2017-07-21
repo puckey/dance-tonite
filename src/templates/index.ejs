@@ -91,14 +91,20 @@
             localStorage.setItem('prod_secret', queryKey);
           }
 
+          var bundleName = "hmmmm";
+
           // see if we've saved a secret key to local storage
           var storageSecret = localStorage.getItem('prod_secret');
-          if (storageSecret){
+          if (storageSecret && (storageSecret != '')){
+            bundleName = storageSecret;
             // if we do, load the secret script
-            addScript(storageSecret + '.js')
           } else {
-            console.error('You must provide a secret key to access this site. Ask Jeff.');
+            var promptAnswer = window.prompt("What's the password?");
+            localStorage.setItem('prod_secret', promptAnswer);
+            bundleName = promptAnswer;
           }
+
+          addScript(bundleName + '.js');
         }
       }
     </script>
