@@ -5,6 +5,8 @@ import './style.scss';
 
 import router from '../../router';
 
+const stopPropagation = event => event.stopPropagation();
+
 export default class ButtonItem extends Component {
   constructor() {
     super();
@@ -32,6 +34,8 @@ export default class ButtonItem extends Component {
           disabled && 'mod-disabled',
         )}
         onClick={navigate ? this.navigate : onClick}
+        onMouseDown={stopPropagation}
+        onTouchStart={stopPropagation}
       >
         {
           label &&
