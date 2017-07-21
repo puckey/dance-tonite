@@ -14,6 +14,13 @@ handlers:
   static_files: dist/\1
   upload: dist/(.+\.(css|js|xml|txt|json|md))
 
+# if a shared link 
+- url: /([0-9]+)/([A-Za-z0-9-_]{6})\/?
+  static_files: dist/performance.html
+  upload: dist/performance.html
+  login: admin
+  secure: always
+
 # all other requests, get index.html
 - url: /(.*)
   static_files: dist/index.html
