@@ -9,6 +9,7 @@ import recording from '../../recording';
 import transition from '../../transition';
 import { sleep } from '../../utils/async';
 import storage from '../../storage';
+import feature from '../../utils/feature';
 
 export default class Review extends Component {
   constructor() {
@@ -44,7 +45,7 @@ export default class Review extends Component {
     if (!this.mounted) return;
 
     await audio.load({
-      src: `/public/sound/room-${this.props.roomId}.ogg`,
+      src: `/public/sound/room-${this.props.roomId}.${feature.isChrome ? 'ogg' : 'mp3'}`,
       loops: 2,
     });
     if (!this.mounted) return;

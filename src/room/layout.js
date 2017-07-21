@@ -87,11 +87,6 @@ export default {
       : tempVector(x, y, z);
   },
 
-  loopIndex(roomIndex) {
-    const [, y, z] = layout[roomIndex % layout.length];
-    return (z + Math.abs(Math.round(y)));
-  },
-
   hasWall(index) {
     return !!layout[index][3].wall;
   },
