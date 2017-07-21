@@ -344,18 +344,18 @@ Room.reset = () => {
 
   if (!items) {
     items = {
+      room: new InstancedItem(
+        'rooms',
+        layout.roomCount,
+        props.perspectiveRoom,
+        props.orthographicRoom,
+      ),
       wall: new InstancedItem(
         'walls',
         layout.roomCount,
         props.perspectiveWall,
         props.orthographicWall,
   // if (!Room.isGiffing) viewer.scene.add(roomsGroup);
-      ),
-      room: new InstancedItem(
-        'rooms',
-        layout.roomCount,
-        props.perspectiveRoom,
-        props.orthographicRoom,
       ),
       head: new InstancedItem(
         'heads',
