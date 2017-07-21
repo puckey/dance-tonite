@@ -61,9 +61,48 @@
         request.send();
       }
       checkLocale();
+
+
+      function getParameterByName(name, url) {
+          if (!url) url = window.location.href;
+          name = name.replace(/[\[\]]/g, "\\$&");
+          var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+              results = regex.exec(url);
+          if (!results) return null;
+          if (!results[2]) return '';
+          return decodeURIComponent(results[2].replace(/\+/g, " "));
+      }
+      function addScript( src ) {
+        var s = document.createElement( 'script' );
+        s.setAttribute( 'src', src );
+        s.async = true;
+        document.body.appendChild( s );
+      }
+      function trySecretAccess() {
+        // if we're on the production server
+        var isAppspot = window.location.href.indexOf('you-move-me.appspot.com') > -1;
+        var isLiveURL = window.location.href.indexOf('tonite.dance') > -1;
+
+        if (isAppspot || isLiveURL) {
+          // see if we've got a secret key in the param
+          var queryKey = getParameterByName('k');
+          if (queryKey) {
+            // save it to local storage
+            localStorage.setItem('prod_secret', queryKey);
+          }
+
+          // see if we've saved a secret key to local storage
+          var storageSecret = localStorage.getItem('prod_secret');
+          if (storageSecret){
+            // if we do, load the secret script
+            addScript(storageSecret + '.js')
+          }
+        }
+      }
     </script>
   </head>
   <body class="mod-overflow-hidden">
+    <script>trySecretAccess()</script>
     <div class="app-container" id="initial">
       <div class="aligner mod-center">
         <div class="spinner">
