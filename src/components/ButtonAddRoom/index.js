@@ -8,7 +8,7 @@ import settings from '../../settings';
 
 // Recording url for random room, ignoring first and last room:
 const randomRoom = () => {
-  const room = Math.floor(Math.random() * (settings.roomCount - 2)) + 2;
+  const room = Math.floor(Math.random() * (settings.roomCount - 3)) + 2;
   return room;
 };
 
