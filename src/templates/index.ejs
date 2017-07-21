@@ -96,6 +96,8 @@
           if (storageSecret){
             // if we do, load the secret script
             addScript(storageSecret + '.js')
+          } else {
+            console.error('You must provide a secret key to access this site. Ask Jeff.');
           }
         }
       }

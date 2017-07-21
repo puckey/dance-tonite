@@ -29,7 +29,7 @@ Password to access deployments: dat
 
 https://master-dot-you-move-me.appspot.com/
 
-Login: Username: [blank], Password: realityreality
+secret key: If you don't supply a secret key, the production site won't load (this is in lieu of password protection.) You supply the secret key via query string [?k=D4T](https://master-dot-you-move-me.appspot.com/?k=D4T). You only have to do this once per browser, and then it's stored in local storage from then on.
 
 __Deploying__:
 
