@@ -148,6 +148,9 @@ export default class Playback extends Component {
       colophon,
       takeOffHeadset,
       stopped,
+    },
+    {
+      presenting,
     }
   ) {
     const polyfillAndPresenting = feature.vrPolyfill
@@ -159,7 +162,7 @@ export default class Playback extends Component {
           <Playlist
             pathRecordingId={id}
             pathRoomId={roomId}
-            orb={orb}
+            orb={orb && !presenting}
           />
         </Container>
       );
@@ -190,7 +193,7 @@ export default class Playback extends Component {
         <Playlist
           pathRecordingId={id}
           pathRoomId={roomId}
-          orb={orb}
+          orb={orb && !presenting}
           stopped={stopped}
           fixedControllers={inContextOfRecording}
           hideRoomCountdown={inContextOfRecording}
