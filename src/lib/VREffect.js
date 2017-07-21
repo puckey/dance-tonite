@@ -398,6 +398,8 @@ module.exports = function( THREE ){
 
 				}
 
+				var blackBorderSize = 50;
+
 				// render left eye
 				if ( renderTarget ) {
 					
@@ -406,8 +408,8 @@ module.exports = function( THREE ){
 
 				} else {
 
-					renderer.setViewport( renderRectL.x, renderRectL.y + (size.height - renderRectL.height), renderRectL.width, renderRectL.height );
-					renderer.setScissor( renderRectL.x, renderRectL.y + (size.height - renderRectL.height), renderRectL.width, renderRectL.height );
+					renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
+					renderer.setScissor( renderRectL.x + blackBorderSize, renderRectL.y + blackBorderSize, renderRectL.width - blackBorderSize * 2, renderRectL.height - blackBorderSize * 2 );
 
 				}
 				renderer.render( scene, cameraL, renderTarget, forceClear );
@@ -420,9 +422,8 @@ module.exports = function( THREE ){
 
 				} else {
 
-					renderer.setViewport( renderRectR.x, renderRectR.y + (size.height - renderRectR.height), renderRectR.width, renderRectR.height );
-					renderer.setScissor( renderRectR.x, renderRectR.y + (size.height - renderRectR.height), renderRectR.width, renderRectR.height );
-
+					renderer.setViewport( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
+					renderer.setScissor( renderRectR.x + blackBorderSize, renderRectR.y + blackBorderSize, renderRectR.width - blackBorderSize * 2, renderRectR.height - blackBorderSize * 2 );
 
 				}
 				renderer.render( scene, cameraR, renderTarget, forceClear );
