@@ -29,18 +29,20 @@ const changeInstanceColor = (mesh, index, color) => {
 };
 
 class InstancedItem {
-  constructor(count, perspectiveMesh, orthographicMesh) {
+  constructor(name, count, perspectiveMesh, orthographicMesh) {
     items.push(this);
     this.perspectiveMesh = createInstancedMesh({
       count,
       geometry: perspectiveMesh.geometry,
       material: perspectiveMesh.material,
+      name,
     });
     if (orthographicMesh) {
       this.orthographicMesh = createInstancedMesh({
         count,
         geometry: orthographicMesh.geometry,
         material: orthographicMesh.material,
+        name: `${name} orthographic`,
       });
     }
     this.mesh = (InstancedItem.perspectiveMode || !orthographicMesh)

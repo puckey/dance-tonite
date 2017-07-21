@@ -345,21 +345,25 @@ Room.reset = () => {
   if (!items) {
     items = {
       wall: new InstancedItem(
+        'walls',
         layout.roomCount,
         props.perspectiveWall,
-        props.orthographicWall
+        props.orthographicWall,
   // if (!Room.isGiffing) viewer.scene.add(roomsGroup);
       ),
       room: new InstancedItem(
+        'rooms',
         layout.roomCount,
         props.perspectiveRoom,
-        props.orthographicRoom
+        props.orthographicRoom,
       ),
       head: new InstancedItem(
+        'heads',
         layout.roomCount * 10,
         props.head,
       ),
       hand: new InstancedItem(
+        'hands',
         layout.roomCount * 10 * 2,
         props.hand,
       ),
@@ -367,6 +371,7 @@ Room.reset = () => {
 
     if (settings.useShadow) {
       items.shadow = new InstancedItem(
+        'shadows',
         layout.roomCount * 30,
         props.shadow,
       );
