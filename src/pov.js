@@ -32,6 +32,7 @@ export default function create({ rooms, orb, offset = 0 }) {
       hoverPerformance = null;
       hoverOrb = false;
       viewer.switchCamera('orthographic');
+      InstancedItem.group.remove(viewer.camera);
       inPOV = false;
       return;
     }
@@ -76,6 +77,7 @@ export default function create({ rooms, orb, offset = 0 }) {
     hoverPerformance = null;
     hoverOrb = false;
     viewer.switchCamera('orthographic');
+    InstancedItem.group.remove(viewer.camera);
 
     inPOV = false;
   };
