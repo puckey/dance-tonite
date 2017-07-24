@@ -133,7 +133,10 @@ export default class Record extends Component {
     });
     await transition.enter({
       text: 'Let’s try that again...',
+      duration: 3000,
     });
+    audio.fadeOut();
+    await transition.fadeOut();
     if (this.mounted) this.props.goto('record');
   }
 
