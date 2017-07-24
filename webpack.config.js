@@ -35,7 +35,7 @@ const htmlSettings = {
 
 const config = {
   devtool: process.env.NODE_ENV === 'production'
-    ? false
+    ? 'source-map'
     : 'eval-source-map',
   entry: {
     jsx: './index.js',
