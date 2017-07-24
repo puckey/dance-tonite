@@ -78,6 +78,23 @@
         s.async = true;
         document.body.appendChild( s );
       }
+      function attemptToLoadScript(filename){
+        var request = new XMLHttpRequest();
+        request.open('GET', filename, true);
+
+        request.onload = function() {
+          if (request.status >= 200 && request.status < 400) {
+            addScript(filename);
+          } else {
+            // that script doesn't exist. Prompt and save their answer
+            var promptAnswer = window.prompt("What's the password?");
+            localStorage.setItem('prod_secret', promptAnswer);
+            
+            trySecretAccess();
+          }
+        };
+        request.send();
+      }
       function trySecretAccess() {
         // if we're on the production server
         var isAppspot = window.location.href.indexOf('you-move-me.appspot.com') > -1;
@@ -98,13 +115,9 @@
           if (storageSecret && (storageSecret != '')){
             bundleName = storageSecret;
             // if we do, load the secret script
-          } else {
-            var promptAnswer = window.prompt("What's the password?");
-            localStorage.setItem('prod_secret', promptAnswer);
-            bundleName = promptAnswer;
           }
 
-          addScript(bundleName + '.js');
+          attemptToLoadScript(bundleName + '.js');
         }
       }
     </script>
