@@ -143,6 +143,7 @@ const audio = Object.assign(emitter(), {
         audioElement.addEventListener('ended', () => audio.emit('ended'));
         audioElement.autoplay = true;
         audioElement.src = param.src;
+        audioElement.crossOrigin = 'anonymous';
         audioElement.loop = param.loop === undefined ? true : param.loop;
         const getAudioTime = () => audioElement.currentTime * 1000;
         onCanPlayThrough = () => {

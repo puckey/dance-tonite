@@ -16,13 +16,14 @@ import Overlay from '../../components/Overlay';
 import Controllers from '../../components/Controllers';
 
 import audio from '../../audio';
-import audioSrcOgg from '../../public/sound/tonite.ogg';
-import audioSrcMp3 from '../../public/sound/tonite.mp3';
 import viewer from '../../viewer';
 import settings from '../../settings';
 import transition from '../../transition';
 import feature from '../../utils/feature';
 import { sleep } from '../../utils/async';
+
+const audioSrcOgg = `${settings.assetsURL}sound/tonite.ogg`;
+const audioSrcMp3 = `${settings.assetsURL}sound/tonite.mp3`;
 
 export default class Playback extends Component {
   constructor() {
