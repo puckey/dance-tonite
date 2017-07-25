@@ -28,8 +28,9 @@ Password to access deployments: dat
 ### __App Engine__
 
 https://master-dot-you-move-me.appspot.com/
+password: dat
 
-Login: Username: [blank], Password: realityreality
+secret key: you can supply a secret key rather than enter it in the prompt, via query string [?k=dat](https://master-dot-you-move-me.appspot.com/?k=dat). You only have to do this once per browser, and then it's stored in local storage from then on.
 
 __Deploying__:
 

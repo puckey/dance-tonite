@@ -132,7 +132,13 @@ module.exports = function( THREE ){
 
 						object.updateMatrix();
 
-						standingMatrix.fromArray( vrDisplay.stageParameters.sittingToStandingTransform );
+						const { sittingToStandingTransform } = vrDisplay.stageParameters;
+						if( isIdentityMatrix( sittingToStandingTransform ) ){
+							standingMatrix.identity().makeTranslation( 0, AVERAGE_USER_HEIGHT, 0 );
+						}
+						else{
+							standingMatrix.fromArray( sittingToStandingTransform );
+						}
 						object.applyMatrix( standingMatrix );
 
 					} else {
@@ -180,4 +186,17 @@ module.exports = function( THREE ){
 		};
 
 	};
+}
+
+const AVERAGE_USER_HEIGHT = 1.6;
+
+const identityMatrixArray = [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
+function isIdentityMatrix( matrixArray ){
+	for( let i=0; i<matrixArray.length; i++ ){
+		if( matrixArray[ i ] !== identityMatrixArray[ i ] ){
+			return false;
+		}
+	}
+	return true;
 }

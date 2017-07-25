@@ -18,7 +18,6 @@ handlers:
 - url: /([0-9]+)/([A-Za-z0-9-_]{6})\/?
   static_files: dist/performance.html
   upload: dist/performance.html
-  login: admin
   secure: always
 
 # all other requests, get index.html
