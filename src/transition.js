@@ -8,6 +8,7 @@ import dummyTextureUrl from './public/dummy.png';
 import deps from './deps';
 import settings from './settings';
 import { sleep } from './utils/async';
+import cull from './cull';
 
 const tween = createTweener();
 
@@ -50,24 +51,7 @@ const tick = (dt) => {
   pivot.position.copy(viewer.camera.position);
 };
 
-let tweener;
-const tweenFog = (from, to, duration = 1) => {
-  if (!viewer.renderScene.fog) return;
-  viewer.renderScene.fog.near = from === 0 ? 0.01 : 5;
-  viewer.renderScene.fog.far = from === 0 ? 0.01 : from + settings.roomDepth;
-  tweener = tween(
-    viewer.renderScene.fog,
-    {
-      near: to === 0 ? 0.01 : to,
-      far: to === 0 ? 0.01 : to + settings.roomDepth,
-      ease: 'easeOutCubic',
-      duration,
-    }
-  );
-  return tweener.promise;
-};
-
-const fadeOut = (duration, fromWithin) => {
+const fadeOut = async (fromWithin) => {
   if (insideTransition) {
     floatingOrb.fadeOut();
   } else {
@@ -79,25 +63,52 @@ const fadeOut = (duration, fromWithin) => {
   }
   const version = transitionVersion;
   if (logging) {
-    console.log('fadeOut', { version, duration, time: new Date() });
+    console.log('fadeOut', { version, time: new Date() });
   }
-  setTimeout(() => {
-    if (version === transitionVersion) {
-      if (logging) {
-        console.log('removing label', { version, duration, time: new Date() });
-      }
-      textItem.updateLabel('');
+  await tween(
+    viewer.renderScene.fog,
+    {
+      near: 0.01,
+      ease: 'easeInCubic',
+      duration: 1,
     }
-  }, duration * 0.5);
-  return tweenFog(25, 0, duration);
+  ).promise;
+  textItem.updateLabel('');
+  if (version !== transitionVersion) return;
+  await tween(
+    viewer.renderScene.fog,
+    {
+      near: 0.01,
+      far: 0.01,
+      ease: 'easeOutCubic',
+      duration: 1,
+    }
+  ).promise;
 };
 
-const fadeIn = (maxFogDistance, duration) => {
+const fadeIn = async (distance) => {
   if (logging) {
-    console.log('fadeIn', { transitionVersion, maxFogDistance, duration, time: new Date() });
+    console.log('fadeIn', { transitionVersion, distance, time: new Date() });
   }
   fadedOut = false;
-  return tweenFog(0, maxFogDistance, duration);
+  const far = distance + settings.roomDepth;
+  await tween(
+    viewer.renderScene.fog,
+    {
+      far: Math.min(distance, transitionSpaceFar),
+      ease: 'easeInCubic',
+      duration: 1,
+    }
+  ).promise;
+  await tween(
+    viewer.renderScene.fog,
+    {
+      near: distance,
+      far,
+      ease: 'easeOutCubic',
+      duration: 1,
+    }
+  ).promise;
 };
 
 const transitionSpaceFar = 25;
@@ -168,7 +179,7 @@ const transition = {
       if (logging) {
         console.log('transition.enter: fading out to black to hide viewer scene');
       }
-      await fadeOut(null, true);
+      await fadeOut(true);
     }
     insideTransition = true;
 
@@ -217,9 +228,9 @@ const transition = {
           { version }
         );
       }
-      await fadeOut(null, true);
+      await fadeOut(true);
     }
-    transition.reset(true, true);
+    transition.reset(true);
     if (version === transitionVersion) {
       if (logging) {
         console.log(
@@ -227,38 +238,31 @@ const transition = {
           { version }
         );
       }
-      await fadeIn(settings.cullDistance);
+      const distance = settings.maxCullDistance;
+      cull.setDistance(distance);
+      await fadeIn(distance);
     }
     viewer.insideTransition = false;
   },
 
-  reset(soft, fromWithin) {
+  reset(fromWithin) {
     if (!fromWithin) {
       transitionVersion += 1;
     }
     if (logging) {
       console.log(
         'transition.reset',
-        { soft, time: new Date() }
+        { fromWithin, time: new Date() }
       );
     }
     insideTransition = false;
     fadedOut = false;
     viewer.off('tick', tick);
     viewer.renderScene = viewer.scene;
-    if (tweener) {
-      if (logging) {
-        console.log('transition.reset: cancelling tweener');
-      }
-      tweener.cancel();
-    }
     insideTransition = false;
-    if (!soft) {
+    if (!fromWithin) {
       if (logging) {
         console.log('transition.reset: hard reveal of viewer scene');
-      }
-      if (viewer.renderScene.fog) {
-        viewer.renderScene.fog.near = settings.cullDistance;
       }
       viewer.insideTransition = false;
     }

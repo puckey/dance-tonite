@@ -10,6 +10,7 @@ import ShareButtons from '../../components/ShareButtons';
 import ThanksTimeline from '../../components/ThanksTimeline';
 import audio from '../../audio';
 import viewer from '../../viewer';
+import settings from '../../settings';
 
 import transition from '../../transition';
 
@@ -51,6 +52,8 @@ export default class Submission extends Component {
   async asyncMount() {
     viewer.exitPresent();
     transition.reset();
+    viewer.fog.near = settings.maxCullDistance;
+    viewer.fog.far = settings.maxCullDistance;
   }
 
   render({ roomId, id, fromRecording }) {

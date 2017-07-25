@@ -29,27 +29,31 @@ export default {
       frames = 0;
       prevTime = time;
       const lastCullDistance = cullDistance;
-      cullDistance = fps <= 50
+      settings.cullDistance = fps <= 50
         ? Math.max(
           settings.minCullDistance,
-          cullDistance - settings.roomDepth
+          settings.cullDistance - settings.roomDepth
         )
         : Math.min(
           settings.maxCullDistance,
-          cullDistance + settings.roomDepth
+          settings.cullDistance + settings.roomDepth
         );
       if (logging && lastCullDistance !== cullDistance) {
         console.log(`${lastCullDistance > cullDistance ? 'Lowering' : 'Upping'} cull distance to`, cullDistance);
       }
     }
-    settings.cullDistance = settings.cullDistance * 0.95 + cullDistance * 0.05;
+    cullDistance = cullDistance * 0.95 + settings.cullDistance * 0.05;
     if (viewer.isOrthographic) {
-      viewer.fog.near = 1000;
-      viewer.fog.far = 1000;
+      viewer.fog.near = settings.maxCullDistance;
+      viewer.fog.far = settings.maxCullDistance;
     } else if (!viewer.isInsideTransition) {
-      viewer.fog.near = settings.cullDistance - settings.roomDepth;
-      viewer.fog.far = settings.cullDistance;
+      viewer.fog.near = cullDistance - settings.roomDepth;
+      viewer.fog.far = cullDistance;
     }
+  },
+
+  setDistance: (distance) => {
+    settings.cullDistance = cullDistance = distance;
   },
 
   reset: () => {
