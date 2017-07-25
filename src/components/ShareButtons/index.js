@@ -29,7 +29,7 @@ export default class Submission extends Component {
     this.setState({
       link,
       deepLink: `https://tonite.dance${link}`,
-      description: `Check out my dance in Room ${roomId} of LCD Soundsystem’s Dance Tonite: `,
+      description: `Check out my dance in room ${roomId} of @LCDSoundsystem’s Dance Tonite: `,
     });
   }
 
@@ -38,8 +38,8 @@ export default class Submission extends Component {
   }
 
   share(service) {
-    let description = this.state.description;
-    if (service === 'twitter') description = description.replace('LCD Soundsystem', '@LCDSoundsystem');
+    const description = service === 'twitter' ? this.state.description : '';
+    // if (service === 'twitter') description = description.replace('LCD Soundsystem', '@LCDSoundsystem');
     window.open(
       `${this.shareURL[service]}${description}${this.state.deepLink}`,
       '',
