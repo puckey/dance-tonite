@@ -190,7 +190,7 @@ export default class Playlist extends Component {
           />
           : null
         }
-        { !feature.has6DOF && <AutoCull /> }
+        <AutoCull />
         { !stopped && <BackgroundTimeline /> }
       </div>
     );

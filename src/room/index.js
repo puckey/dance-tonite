@@ -176,7 +176,7 @@ export default class Room {
   gotoTime(seconds, maxLayers, highlightLast = false) {
     this.currentTime = seconds;
 
-    if (!feature.has6DOF && settings.shouldCull && this.cullRoom()) {
+    if (settings.shouldCull && this.cullRoom()) {
       return;
     }
     // In orthographic mode, scale up the meshes:
