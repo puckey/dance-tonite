@@ -19,7 +19,7 @@ const content = {
   descriptionTwitter: 'Step into Dance Tonite, an ever-changing VR collaboration by @LCDSoundsystem and their fans: https://tonite.dance',
   descriptionFacebook: 'Step into Dance Tonite, an ever-changing VR collaboration by LCD Soundsystem and their fans. Produced by Jonathan Puckey, Moniker, and the Google Data Arts Team.',
   sharedDescription: 'Check out my moves in this VR experience by LCD Soundsystem and their fans.',
-  image: '/public/social.png',
+  image: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/sharing/social.png',
 };
 
 const extractSass = new ExtractTextPlugin({
