@@ -18,6 +18,7 @@ import windowSize from './utils/windowSize';
 import audio from './audio';
 import Room from './room';
 import { backgroundColor } from './theme/colors';
+import { queryData } from './utils/url';
 
 const orthographicDistance = 4;
 // TODO: remove me:
