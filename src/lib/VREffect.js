@@ -278,35 +278,6 @@ module.exports = function( THREE ){
 
 		this.autoSubmitFrame = true;
 
-		this.useStencil = true;
-		this.sceneStencil = new THREE.Scene();
-		function _renderWithStencil(renderer, scene, camera, renderTarget, forceClear) {
-			if (!this.useStencil) {
-				renderer.render( scene, camera, renderTarget, forceClear );
-				return;
-			};
-
-			renderer.state.buffers.stencil.setTest( true );
-
-			// config the stencil buffer to collect data for testing
-			renderer.state.buffers.stencil.setFunc( renderer.context.ALWAYS, 1, 0xff );
-			renderer.state.buffers.stencil.setOp( renderer.context.REPLACE, renderer.context.REPLACE, renderer.context.REPLACE );
-
-			// render shape for stencil test
-			renderer.render( this.sceneStencil, camera );
-
-			// set stencil buffer for testing
-			renderer.state.buffers.stencil.setFunc( renderer.context.EQUAL, 1, 0xff );
-			renderer.state.buffers.stencil.setOp( renderer.context.KEEP, renderer.context.KEEP, renderer.context.KEEP );
-
-			// render actual scene
-			renderer.render( scene, camera, renderTarget, forceClear );
-
-			// disable stencil test
-			renderer.state.buffers.stencil.setTest( false );
-		}
-
-
 		// render
 
 		var cameraL = new THREE.PerspectiveCamera();
@@ -441,8 +412,7 @@ module.exports = function( THREE ){
 					renderer.setScissor( renderRectL.x + blackBorderSize, renderRectL.y + blackBorderSize, renderRectL.width - blackBorderSize * 2, renderRectL.height - blackBorderSize * 2 );
 
 				}
-				//renderer.render( scene, cameraL, renderTarget, forceClear );
-				_renderWithStencil( renderer, scene, cameraL, renderTarget, forceClear);
+				renderer.render( scene, cameraL, renderTarget, forceClear );
 
 				// render right eye
 				if ( renderTarget ) {
@@ -456,8 +426,7 @@ module.exports = function( THREE ){
 					renderer.setScissor( renderRectR.x + blackBorderSize, renderRectR.y + blackBorderSize, renderRectR.width - blackBorderSize * 2, renderRectR.height - blackBorderSize * 2 );
 
 				}
-				//renderer.render( scene, cameraR, renderTarget, forceClear );
-				_renderWithStencil( renderer, scene, cameraR, renderTarget, forceClear);
+				renderer.render( scene, cameraR, renderTarget, forceClear );
 				
 				if ( renderTarget ) {
 
@@ -490,8 +459,7 @@ module.exports = function( THREE ){
 			}
 
 			// Regular render mode if not HMD
-			//renderer.render( scene, camera, renderTarget, forceClear );
-			_renderWithStencil( renderer, scene, camera, renderTarget, forceClear);
+			renderer.render( scene, camera, renderTarget, forceClear );
 			
 		};
 
