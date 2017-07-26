@@ -204,9 +204,13 @@ const viewer = Object.assign(emitter(), {
     containerEl.appendChild(renderer.domElement);
     document.body.appendChild(containerEl);
 
-    const vrRes = queryData.res || 0.1;
     viewer.vrEffect = vrEffect = new THREE.VREffect(renderer);
+
+    const vrRes = queryData.res || 0.1;
     viewer.vrEffect.setVRResolutionRatio(vrRes);
+
+    const vrFOV = queryData.fov || 0.8;
+    viewer.vrEffect.setFOVRenderRatio(vrFOV);
 
     viewer.controls = controls = new THREE.VRControls(cameras.default);
     controls.standing = true;

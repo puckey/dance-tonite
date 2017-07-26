@@ -112,6 +112,7 @@ module.exports = function( THREE ){
 		var defaultLeftBounds = [ 0.0, 0.0, 0.5, 1.0 ];
 		var defaultRightBounds = [ 0.5, 0.0, 0.5, 1.0 ];
 		var VRResolutionRatio = 1.0;
+		var FOVRenderRatio = 1.0;
 
 		function onVRDisplayPresentChange() {
 
@@ -172,6 +173,10 @@ module.exports = function( THREE ){
 		        }
 			}
 
+		}
+
+		this.setFOVRenderRatio = function (ratio) {
+			FOVRenderRatio = Math.max(Math.min(ratio, 1), 0);
 		}
 
 		function requestPresentToVRDisplay() {
@@ -398,8 +403,6 @@ module.exports = function( THREE ){
 
 				}
 
-				var blackBorderSize = 50;
-
 				// render left eye
 				if ( renderTarget ) {
 					
@@ -408,8 +411,11 @@ module.exports = function( THREE ){
 
 				} else {
 
+					const FOVReductionBorderRW = renderRectL.width * (1 - FOVRenderRatio);
+					const FOVReductionBorderRH = renderRectL.height * (1 - FOVRenderRatio);
+
 					renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
-					renderer.setScissor( renderRectL.x + blackBorderSize, renderRectL.y + blackBorderSize, renderRectL.width - blackBorderSize * 2, renderRectL.height - blackBorderSize * 2 );
+					renderer.setScissor( renderRectL.x + FOVReductionBorderRW, renderRectL.y + FOVReductionBorderRH, renderRectL.width - FOVReductionBorderRW * 2, renderRectL.height - FOVReductionBorderRH * 2 );
 
 				}
 				renderer.render( scene, cameraL, renderTarget, forceClear );
@@ -422,8 +428,11 @@ module.exports = function( THREE ){
 
 				} else {
 
+					const FOVReductionBorderLW = renderRectL.width * (1 - FOVRenderRatio);
+					const FOVReductionBorderLH = renderRectL.height * (1 - FOVRenderRatio);
+
 					renderer.setViewport( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
-					renderer.setScissor( renderRectR.x + blackBorderSize, renderRectR.y + blackBorderSize, renderRectR.width - blackBorderSize * 2, renderRectR.height - blackBorderSize * 2 );
+					renderer.setScissor( renderRectR.x + FOVReductionBorderLW, renderRectR.y + FOVReductionBorderLH, renderRectR.width - FOVReductionBorderLW * 2, renderRectR.height - FOVReductionBorderLH * 2 );
 
 				}
 				renderer.render( scene, cameraR, renderTarget, forceClear );
