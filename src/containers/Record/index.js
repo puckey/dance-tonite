@@ -101,7 +101,7 @@ export default class Record extends Component {
 
       setTimeout(() => {
         viewer.controllers.forEach(controller => {
-          const hapticActuator = controller.gamepad.hapticActuators[0];
+          const hapticActuator = controller.gamepad && controller.gamepad.hapticActuators[0];
           if (hapticActuator) {
             hapticActuator.pulse(1, 60);
           }
@@ -133,7 +133,10 @@ export default class Record extends Component {
     });
     await transition.enter({
       text: 'Let’s try that again...',
+      duration: 3000,
     });
+    audio.fadeOut();
+    await transition.fadeOut();
     if (this.mounted) this.props.goto('record');
   }
 

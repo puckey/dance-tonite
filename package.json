@@ -10,7 +10,7 @@
     "build": "cross-env NODE_ENV=production webpack -p --progress --colors",
     "build-cms": "cross-env NODE_ENV=production FLAVOR=cms webpack --progress --colors",
     "deploy": "npm run build && npm run deploy-app-engine",
-    "deploy-app-engine": "appcfg.py update -A you-move-me -V master .",
+    "deploy-app-engine": "mv dist/bundle.js dist/dat.js && appcfg.py update -A you-move-me -V master . && mv dist/dat.js dist/bundle.js",
     "analyze": "cross-env NODE_ENV=production ANALYZE_BUNDLE=true webpack -p --progress --colors"
   },
   "postcss": {
@@ -35,6 +35,7 @@
     "grapnel": "^0.6.4",
     "just-shuffle": "^1.0.0",
     "mitt": "^1.1.0",
+    "pad-number": "0.0.4",
     "parse-bmfont-ascii": "^1.0.6",
     "preact": "^8.1.0",
     "preact-portal": "^1.1.2",

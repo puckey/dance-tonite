@@ -28,6 +28,7 @@ import InstancedItem from '../instanced-item';
 import Frames from './frames';
 import { createPose } from '../utils/serializer';
 import audio from '../audio';
+import feature from '../utils/feature';
 import { elasticIn } from '../utils/easing';
 
 let items;
@@ -343,22 +344,26 @@ Room.reset = () => {
 
   if (!items) {
     items = {
-      wall: new InstancedItem(
-        layout.roomCount,
-        props.perspectiveWall,
-        props.orthographicWall
-  // if (!Room.isGiffing) viewer.scene.add(roomsGroup);
-      ),
       room: new InstancedItem(
+        'rooms',
         layout.roomCount,
         props.perspectiveRoom,
-        props.orthographicRoom
+        props.orthographicRoom,
+      ),
+      wall: new InstancedItem(
+        'walls',
+        layout.roomCount,
+        props.perspectiveWall,
+        props.orthographicWall,
+  // if (!Room.isGiffing) viewer.scene.add(roomsGroup);
       ),
       head: new InstancedItem(
+        'heads',
         layout.roomCount * 10,
         props.head,
       ),
       hand: new InstancedItem(
+        'hands',
         layout.roomCount * 10 * 2,
         props.hand,
       ),
@@ -366,6 +371,7 @@ Room.reset = () => {
 
     if (settings.useShadow) {
       items.shadow = new InstancedItem(
+        'shadows',
         layout.roomCount * 30,
         props.shadow,
       );
@@ -396,5 +402,3 @@ Room.setHighlight = (highlight) => {
     Room.highlight.performanceIndex = null;
   }
 };
-
-Room.getGroup = () => InstancedItem.group;

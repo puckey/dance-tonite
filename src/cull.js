@@ -12,43 +12,52 @@ document.addEventListener('visibilitychange', () => {
   hidden = document.hidden;
 });
 
-export default (interval = 3000) => {
-  if (hidden) {
+export default {
+  tick: (interval = 3000) => {
+    if (hidden) {
+      prevTime = null;
+      frames = 0;
+      return fps;
+    }
+    frames++;
+    const time = (performance || Date).now();
+    if (prevTime == null) prevTime = time;
+    if (time > prevTime + interval) {
+      fps = (frames * 1000) / (time - prevTime);
+      // Change FPS to multiples of 50 in order to ignore slight fluctuations:
+      fps = Math.min(55, Math.round(fps * 0.2) * 5);
+      frames = 0;
+      prevTime = time;
+      const lastCullDistance = cullDistance;
+      settings.cullDistance = fps <= 50
+        ? Math.max(
+          settings.minCullDistance,
+          settings.cullDistance - settings.roomDepth
+        )
+        : Math.min(
+          settings.maxCullDistance,
+          settings.cullDistance + settings.roomDepth
+        );
+      if (logging && lastCullDistance !== cullDistance) {
+        console.log(`${lastCullDistance > cullDistance ? 'Lowering' : 'Upping'} cull distance to`, cullDistance);
+      }
+    }
+    cullDistance = cullDistance * 0.95 + settings.cullDistance * 0.05;
+    if (viewer.isOrthographic) {
+      viewer.fog.near = settings.maxCullDistance;
+      viewer.fog.far = settings.maxCullDistance;
+    } else if (!viewer.isInsideTransition) {
+      viewer.fog.near = cullDistance - settings.roomDepth;
+      viewer.fog.far = cullDistance;
+    }
+  },
+
+  setDistance: (distance) => {
+    settings.cullDistance = cullDistance = distance;
+  },
+
+  reset: () => {
     prevTime = null;
     frames = 0;
-    return fps;
-  }
-  frames++;
-  const time = (performance || Date).now();
-  if (prevTime == null) prevTime = time;
-  if (time > prevTime + interval) {
-    fps = (frames * 1000) / (time - prevTime);
-    // Change FPS to multiples of 50 in order to ignore slight fluctuations:
-    fps = Math.min(55, Math.round(fps * 0.2) * 5);
-    frames = 0;
-    prevTime = time;
-    const lastCullDistance = cullDistance;
-    cullDistance = fps <= 50
-      ? Math.max(
-        settings.minCullDistance,
-        cullDistance - settings.roomDepth
-      )
-      : Math.min(
-        settings.maxCullDistance,
-        cullDistance + settings.roomDepth
-      );
-    if (logging && lastCullDistance !== cullDistance) {
-      console.log(`${lastCullDistance > cullDistance ? 'Lowering' : 'Upping'} cull distance to`, cullDistance);
-    }
-  }
-  settings.cullDistance = settings.cullDistance * 0.95 + cullDistance * 0.05;
-  if (viewer.isOrthographic) {
-    viewer.fog.near = 1000;
-    viewer.fog.far = 1000;
-  } else {
-    if (!viewer.isInsideTransition) {
-      viewer.fog.near = settings.cullDistance - settings.roomDepth;
-      viewer.fog.far = settings.cullDistance;
-    }
-  }
+  },
 };

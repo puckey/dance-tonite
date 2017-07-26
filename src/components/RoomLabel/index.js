@@ -3,6 +3,7 @@ import { h, Component } from 'preact';
 import './style.scss';
 
 import router from '../../router';
+import layout from '../../room/layout';
 
 export default class RoomLabel extends Component {
   constructor() {
@@ -18,7 +19,7 @@ export default class RoomLabel extends Component {
   }
 
   navigateToChooser(event) {
-    router.navigate(`/choose/${this.props.room.index + 1}`);
+    router.navigate(`/choose/${layout.getPlaylistIndex(this.props.room.index) + 1}`);
     event.stopPropagation();
   }
 
@@ -37,7 +38,7 @@ export default class RoomLabel extends Component {
         }}
         onClick={this.navigateToChooser}
       >
-        <span>Room {room.index + 1}</span>
+        <span>Room {layout.getPlaylistIndex(room.index) + 1}</span>
         <span className="wrap">{title}</span>
         <span className="new-line">{featured}</span>
       </div>

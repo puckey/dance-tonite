@@ -4,6 +4,7 @@ import feature from './utils/feature';
 import { sleep } from './utils/async';
 import settings from './settings';
 import pageVisibility from './utils/page-visibility';
+import viewer from './viewer';
 
 const logging = false;
 
@@ -32,7 +33,7 @@ let muted = false;
 const FADE_OUT_SECONDS = 2;
 const FADE_IN_SECONDS = 1;
 const ALMOST_ZERO = 1e-4;
-const FILTER_LOW = 2700.0;
+const FILTER_LOW = 6600.0;
 const FILTER_HIGH = 14000.0;
 
 // The allowable sync difference on android is higher, because for some reason
@@ -142,11 +143,22 @@ const audio = Object.assign(emitter(), {
         audioElement.addEventListener('ended', () => audio.emit('ended'));
         audioElement.autoplay = true;
         audioElement.src = param.src;
+        audioElement.crossOrigin = 'anonymous';
         audioElement.loop = param.loop === undefined ? true : param.loop;
         const getAudioTime = () => audioElement.currentTime * 1000;
         onCanPlayThrough = () => {
-          duration = audioElement.duration;
-          canPlay();
+          // On Samsung Internet the audio element doesn't have a duration
+          // yet when 'canplaythrough' is fired, therefore we check again (and again)
+          // using a timeout when duration === 0:
+          const checkHasDuration = () => {
+            duration = audioElement.duration;
+            if (duration === 0) {
+              setTimeout(checkHasDuration, 5);
+            } else {
+              canPlay();
+            }
+          };
+          checkHasDuration();
           audioElement.removeEventListener('canplaythrough', onCanPlayThrough);
         };
         onPause = () => {
@@ -323,7 +335,7 @@ const audio = Object.assign(emitter(), {
       audio.fade(2, FILTER_LOW, filter.frequency);
     }
 
-    await audio.fade(1, 0.5);
+    await audio.fade(1, 0.85);
   },
 
   async undim(immediate = false) {
@@ -371,5 +383,13 @@ audio.resetValues();
 pageVisibility.on('change', (visible) => {
   audio[visible ? 'play' : 'pause']();
 });
+
+// Fix issue on Samsung Gear VR browser, where audio does not play anymore after
+// exiting VR:
+if (feature.isSamsungInternet) {
+  viewer.on('vr-present-change', () => {
+    setTimeout(() => audio.play(), 500);
+  });
+}
 
 export default audio;

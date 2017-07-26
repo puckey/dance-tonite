@@ -4,7 +4,6 @@ import { tempVector } from '../utils/three';
 const { roomWidth, roomHeight, roomDepth, roomOffset } = settings;
 const ph = { type: 'PLANE', timeline: false, megagrid: true };
 const plh = { type: 'PLANE', megagrid: true };
-const plr = { type: 'PLANE' };
 const em = { type: 'EMPTY' };
 const ho = { type: 'HORIZONTAL' };
 const hw = { type: 'HORIZONTAL', wall: true };
@@ -35,7 +34,7 @@ let rooms = [
   [-3, 0, 19, ph, 3], [-2, 0, 19, ph, 4], [-1, 0, 19, ph, 5], [0, 0, 19, plh, 8], [1, 0, 19, ph, 5], [2, 0, 19, ph, 4], [3, 0, 19, ph, 3],
   [-3, 0, 20, ph, 2], [-2, 0, 20, ph, 3], [-1, 0, 20, ph, 2], [0, 0, 20, plh, 1], [1, 0, 20, ph, 2], [2, 0, 20, ph, 3], [3, 0, 20, ph, 2],
   [-3, 0, 21, ph, 3], [-2, 0, 21, ph, 6], [-1, 0, 21, ph, 1], [0, 0, 21, plh, 0], [1, 0, 21, ph, 1], [2, 0, 21, ph, 6], [3, 0, 21, ph, 3],
-  [-3, 0, 22, ph, 5], [-2, 0, 22, ph, 2], [-1, 0, 22, ph, 3], [0, 0, 22, plr], [1, 0, 22, ph, 3], [2, 0, 22, ph, 2], [3, 0, 22, ph, 5],
+  [-3, 0, 22, ph, 5], [-2, 0, 22, ph, 2], [-1, 0, 22, ph, 3], [0, 0, 22, plh, 6], [1, 0, 22, ph, 3], [2, 0, 22, ph, 2], [3, 0, 22, ph, 5],
   [-3, 0, 23, ph, 4], [-2, 0, 23, ph, 3], [-1, 0, 23, ph, 2], [0, 0, 23, plh, 3], [1, 0, 23, ph, 3], [2, 0, 23, ph, 3], [3, 0, 23, ph, 4],
   [-3, 0, 24, ph, 3], [-2, 0, 24, ph, 4], [-1, 0, 24, ph, 4], [0, 0, 24, plh, 2], [1, 0, 24, ph, 4], [2, 0, 24, ph, 4], [3, 0, 24, ph, 3],
   [-3, 0, 25, ph, 6], [-2, 0, 25, ph, 5], [-1, 0, 25, ph, 5], [0, 0, 25, plh, 4], [1, 0, 25, ph, 5], [2, 0, 25, ph, 5], [3, 0, 25, ph, 6],
@@ -62,6 +61,8 @@ const layout = rooms.filter(([,,, { type }]) => type !== 'EMPTY');
 
 const timelineLayout = rooms.filter(([,,, { timeline }]) => timeline !== false);
 
+const playlistLayout = layout.filter(([,,, { megagrid }]) => !megagrid);
+
 export default {
   getPosition(position, roomPosition, single) {
     let x = 0;
@@ -85,17 +86,12 @@ export default {
       : tempVector(x, y, z);
   },
 
-  loopIndex(roomIndex) {
-    const [, y, z] = layout[roomIndex % layout.length];
-    return (z + Math.abs(Math.round(y)));
-  },
-
   hasWall(index) {
     return !!layout[index][3].wall;
   },
 
-  isOdd(index) {
-    return this.loopIndex(index) % 2 === 0;
+  isEven(index) {
+    return index % 2 === 0;
   },
 
   getType(index) {
@@ -109,6 +105,14 @@ export default {
   getSynthIndex(index) {
     const synthIndex = layout[index][4];
     return synthIndex === undefined ? 3 : synthIndex;
+  },
+
+  playlistIndexToMegaGridIndex(index) {
+    return layout.indexOf(playlistLayout[index]);
+  },
+
+  getPlaylistIndex(index) {
+    return playlistLayout.indexOf(layout[index]);
   },
 
   getRoom(index) {
