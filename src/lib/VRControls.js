@@ -134,12 +134,13 @@ module.exports = function( THREE ){
 
 						const { sittingToStandingTransform } = vrDisplay.stageParameters;
 						if( isIdentityMatrix( sittingToStandingTransform ) ){
-							standingMatrix.identity().makeTranslation( 0, AVERAGE_USER_HEIGHT, 0 );
+							object.matrix.identity();
+							object.applyMatrix( defaultMatrix );
 						}
 						else{
 							standingMatrix.fromArray( sittingToStandingTransform );
+							object.applyMatrix( standingMatrix );
 						}
-						object.applyMatrix( standingMatrix );
 
 					} else {
 
@@ -189,6 +190,9 @@ module.exports = function( THREE ){
 }
 
 const AVERAGE_USER_HEIGHT = 1.6;
+const translation = new THREE.Matrix4().makeTranslation( 0, AVERAGE_USER_HEIGHT, 0 );
+const rotation = new THREE.Matrix4().makeRotationY( 0 );
+const defaultMatrix = new THREE.Matrix4().multiplyMatrices( translation, rotation );
 
 const identityMatrixArray = [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 

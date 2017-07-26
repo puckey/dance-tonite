@@ -16,8 +16,10 @@ const isProd = NODE_ENV === 'production';
 const content = {
   title: 'Dance Tonite',
   description: 'An interactive VR experience by LCD Soundsystem and their fans.',
+  descriptionTwitter: 'Step into Dance Tonite, an ever-changing VR collaboration by @LCDSoundsystem and their fans: https://tonite.dance',
+  descriptionFacebook: 'Step into Dance Tonite, an ever-changing VR collaboration by LCD Soundsystem and their fans. Produced by Jonathan Puckey, Moniker, and the Google Data Arts Team.',
   sharedDescription: 'Check out my moves in this VR experience by LCD Soundsystem and their fans.',
-  image: '/public/social.png',
+  image: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/sharing/social.png',
 };
 
 const extractSass = new ExtractTextPlugin({
@@ -131,13 +133,13 @@ const config = {
           template: `templates/${FLAVOR === 'cms' ? 'cms.html' : 'index.ejs'}`,
           twitter: {
             title: content.title,
-            description: content.description,
+            description: content.descriptionTwitter,
             image: content.image,
           },
           facebook: {
             appId: 305769256550344,
             title: content.title,
-            description: content.description,
+            description: content.descriptionFacebook,
             image: content.image,
           },
         },

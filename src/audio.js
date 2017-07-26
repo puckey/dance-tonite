@@ -33,7 +33,7 @@ let muted = false;
 const FADE_OUT_SECONDS = 2;
 const FADE_IN_SECONDS = 1;
 const ALMOST_ZERO = 1e-4;
-const FILTER_LOW = 2700.0;
+const FILTER_LOW = 6600.0;
 const FILTER_HIGH = 14000.0;
 
 // The allowable sync difference on android is higher, because for some reason
@@ -335,7 +335,7 @@ const audio = Object.assign(emitter(), {
       audio.fade(2, FILTER_LOW, filter.frequency);
     }
 
-    await audio.fade(1, 0.5);
+    await audio.fade(1, 0.85);
   },
 
   async undim(immediate = false) {
