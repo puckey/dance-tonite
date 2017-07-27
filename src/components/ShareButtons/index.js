@@ -39,7 +39,6 @@ export default class Submission extends Component {
 
   share(service) {
     const description = service === 'twitter' ? this.state.description : '';
-    // if (service === 'twitter') description = description.replace('LCD Soundsystem', '@LCDSoundsystem');
     window.open(
       `${this.shareURL[service]}${description}${this.state.deepLink}`,
       '',
