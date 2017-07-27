@@ -193,10 +193,17 @@ const viewer = Object.assign(emitter(), {
 
     viewer.vrEffect = vrEffect = new THREE.VREffect(renderer);
 
-    const vrRes = queryData.res || 0.1;
+    const defaultVRRes =  1.0;
+    if (feature.isMobile) {
+      const pixelOnScreen = window.screen.width * window.screen.height * window.devicePixelRatio;
+      if (pixelOnScreen > 1000000) defaultVRRes = 0.85;
+      else defaultVRRes = 0.90;
+    } 
+    const vrRes = queryData.res || defaultVRRes;
     viewer.vrEffect.setVRResolutionRatio(vrRes);
 
-    const vrFOV = queryData.fov || 0.8;
+    const defaultVRFOV = feature.isMobile ? 0.9 : 1.0;
+    const vrFOV = queryData.fov || defaultVRFOV;
     viewer.vrEffect.setFOVRenderRatio(vrFOV);
 
     viewer.controls = controls = new THREE.VRControls(cameras.default);
