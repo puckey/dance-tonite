@@ -177,6 +177,7 @@ const audio = Object.assign(emitter(), {
             pauseTime = getAudioTime();
           }
           this.time = audioElement.currentTime;
+          onPause();
         };
         audioElement.addEventListener('canplaythrough', onCanPlayThrough);
         audioElement.addEventListener('pause', onPause);
