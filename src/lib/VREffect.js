@@ -96,7 +96,7 @@ module.exports = function( THREE ){
 				//  because that call redundantly calls renderer.setSize()
 				//  and that can easily add 300ms overhead.
 				if (renderer.getPixelRatio() !== 1) renderer.setPixelRatio(1);
-				renderer.setSize( eyeParamsL.renderWidth * 2  * VRResolutionRatio, eyeParamsL.renderHeight  * VRResolutionRatio, false );
+				renderer.setSize( eyeParamsL.renderWidth * 2  * vrResolutionRatio, eyeParamsL.renderHeight  * vrResolutionRatio, false );
 
 			} else {
 
@@ -112,8 +112,8 @@ module.exports = function( THREE ){
 		var canvas = renderer.domElement;
 		var defaultLeftBounds = [ 0.0, 0.0, 0.5, 1.0 ];
 		var defaultRightBounds = [ 0.5, 0.0, 0.5, 1.0 ];
-		var VRResolutionRatio = 1.0;
-		var FOVRenderRatio = 1.0;
+		var vrResolutionRatio = 1.0;
+		var fovRenderRatio = 1.0;
 
 		function onVRDisplayPresentChange() {
 
@@ -135,9 +135,9 @@ module.exports = function( THREE ){
 					//  because that call redundantly calls renderer.setSize()
 					//  and that can easily add 300ms overhead.
 					if (rendererPixelRatio !== 1) renderer.setPixelRatio(1);
-					renderer.setSize(eyeWidth * 2 * VRResolutionRatio, eyeHeight * VRResolutionRatio, false);
+					renderer.setSize(eyeWidth * 2 * vrResolutionRatio, eyeHeight * vrResolutionRatio, false);
 
-					scope.setVRResolutionRatio(VRResolutionRatio)
+					scope.setVRResolutionRatio(vrResolutionRatio)
 				}
 
 			} else if ( wasPresenting ) {
@@ -154,11 +154,11 @@ module.exports = function( THREE ){
 
 		window.addEventListener( 'vrdisplaypresentchange', onVRDisplayPresentChange, false );
 
-		// Set the resolution draw and presented in VR. This ratio only affects the area of the
-		// canvas we render to and submit to VRDisplay (no canvas resizing required), so 
-		// this function is fast enough to call every frame
+		// Set the resolution draw and presented in VR. Changing this ratio will trigger a 
+		// canvas resize which takes a bit of time. So don't call this function everyframe.
 		this.setVRResolutionRatio = function (ratio) {
-			VRResolutionRatio = THREE.Math.clamp(ratio, 0, 1.0);
+
+			vrResolutionRatio = THREE.Math.clamp(ratio, 0, 1.0);
 
 			if ( vrDisplay !== undefined && vrDisplay.isPresenting ) {
 
@@ -168,7 +168,7 @@ module.exports = function( THREE ){
 					var eyeWidth = eyeParamsL.renderWidth;
 					var eyeHeight = eyeParamsL.renderHeight;
 
-					renderer.setSize(eyeWidth * 2 * VRResolutionRatio, eyeHeight * VRResolutionRatio, false);
+					renderer.setSize(eyeWidth * 2 * vrResolutionRatio, eyeHeight * vrResolutionRatio, false);
 				}
 
 				// since we're already presenting, this doesn't need to be initiated by user interaction
@@ -176,19 +176,35 @@ module.exports = function( THREE ){
 			}
 
 		}
+		this.getVRResolutionRatio = function () {
 
+			return vrResolutionRatio;
+		
+		}
+
+		// Set the ratio of the eye FOV you want to render. This basically adds a black border to the outside
+		// of the view, reducing the amount of pixels that need to be rendered each frame
 		this.setFOVRenderRatio = function (ratio) {
-			FOVRenderRatio = Math.max(Math.min(ratio, 1), 0);
+
+			fovRenderRatio = THREE.Math.clamp(ratio, 0, 1.0);
+
+		}
+		this.getFOVRenderRatio = function () {
+
+			return fovRenderRatio;
+
 		}
 
 		function requestPresentToVRDisplay() {
+
 			var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
 
-			console.log("VR Effect VRResolutionRatio: ", VRResolutionRatio, " ", eyeParamsL.renderWidth * VRResolutionRatio, "x", eyeParamsL.renderHeight * VRResolutionRatio);
+			console.log("VR Effect vrResolutionRatio: ", vrResolutionRatio, " ", eyeParamsL.renderWidth * vrResolutionRatio, "x", eyeParamsL.renderHeight * vrResolutionRatio);
 
 			return vrDisplay.requestPresent([{
 	         	source: canvas
 	        }]);
+
 		}
 
 
@@ -407,8 +423,8 @@ module.exports = function( THREE ){
 
 				} else {
 
-					const FOVReductionBorderRW = renderRectL.width * (1 - FOVRenderRatio) * 0.5;
-					const FOVReductionBorderRH = renderRectL.height * (1 - FOVRenderRatio) * 0.5;
+					const FOVReductionBorderRW = renderRectL.width * (1 - fovRenderRatio) * 0.5;
+					const FOVReductionBorderRH = renderRectL.height * (1 - fovRenderRatio) * 0.5;
 
 					renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
 					renderer.setScissor( renderRectL.x + FOVReductionBorderRW, renderRectL.y + FOVReductionBorderRH, renderRectL.width - FOVReductionBorderRW * 2, renderRectL.height - FOVReductionBorderRH * 2 );
@@ -424,8 +440,8 @@ module.exports = function( THREE ){
 
 				} else {
 
-					const FOVReductionBorderLW = renderRectL.width * (1 - FOVRenderRatio) * 0.5;
-					const FOVReductionBorderLH = renderRectL.height * (1 - FOVRenderRatio) * 0.5;
+					const FOVReductionBorderLW = renderRectL.width * (1 - fovRenderRatio) * 0.5;
+					const FOVReductionBorderLH = renderRectL.height * (1 - fovRenderRatio) * 0.5;
 
 					renderer.setViewport( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
 					renderer.setScissor( renderRectR.x + FOVReductionBorderLW, renderRectR.y + FOVReductionBorderLH, renderRectR.width - FOVReductionBorderLW * 2, renderRectR.height - FOVReductionBorderLH * 2 );
