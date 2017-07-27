@@ -6,7 +6,7 @@ let frames = 0;
 let fps = 60;
 let hidden = false;
 let cullDistance = settings.cullDistance;
-const logging = true;
+const logging = false;
 
 document.addEventListener('visibilitychange', () => {
   hidden = document.hidden;

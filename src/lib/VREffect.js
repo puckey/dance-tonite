@@ -20,6 +20,7 @@ module.exports = function( THREE ){
 		var headMatrix = new THREE.Matrix4();
 		var eyeMatrixL = new THREE.Matrix4();
 		var eyeMatrixR = new THREE.Matrix4();
+		var logging = false;
 
 		var frameData = null;
 
@@ -147,9 +148,6 @@ module.exports = function( THREE ){
 
 			}
 			
-
-			//renderer.domElement.style.width = rendererSize.width + "px";
-			//renderer.domElement.style.height = rendererSize.height + "px";
 		}
 
 		window.addEventListener( 'vrdisplaypresentchange', onVRDisplayPresentChange, false );
@@ -196,14 +194,12 @@ module.exports = function( THREE ){
 		}
 
 		function requestPresentToVRDisplay() {
-
-			var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
-
-			console.log("VR Effect vrResolutionRatio: ", vrResolutionRatio, " ", eyeParamsL.renderWidth * vrResolutionRatio, "x", eyeParamsL.renderHeight * vrResolutionRatio);
-
-			return vrDisplay.requestPresent([{
-	         	source: canvas
-	        }]);
+			if (logging) {
+				var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
+				console.log("VR Effect vrResolutionRatio: ", vrResolutionRatio, " ", eyeParamsL.renderWidth * vrResolutionRatio, "x", eyeParamsL.renderHeight * vrResolutionRatio);
+			}
+			
+			return vrDisplay.requestPresent([{ source: canvas }]);
 
 		}
 
@@ -489,6 +485,12 @@ module.exports = function( THREE ){
 			window.removeEventListener( 'vrdisplaypresentchange', onVRDisplayPresentChange, false );
 
 		};
+
+		this.setLogging = function(bool) {
+
+			logging = bool;
+			
+		}
 
 		//
 
