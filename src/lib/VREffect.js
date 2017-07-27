@@ -1,6 +1,7 @@
 /**
  * @author dmarcos / https://github.com/dmarcos
  * @author mrdoob / http://mrdoob.com
+ * @author customlogic / http://custom-logic.com
  *
  * WebVR Spec: http://mozvr.github.io/webvr-spec/webvr.html
  *
@@ -163,14 +164,6 @@ module.exports = function( THREE ){
 
 				// since we're already presenting, this doesn't need to be initiated by user interaction
 				requestPresentToVRDisplay();
-
-		        if (vrDisplay.capabilities.hasExternalDisplay) {
-
-		          // scale mirrored content up to fill the screen (even if we're just drawing to 
-		          // a small part of it)
-		          canvas.style.width = (1.0/VRResolutionRatio) * 100 + "%";
-		          canvas.style.height = (1.0/VRResolutionRatio) * 100 + "%";
-		        }
 			}
 
 		}
@@ -411,8 +404,8 @@ module.exports = function( THREE ){
 
 				} else {
 
-					const FOVReductionBorderRW = renderRectL.width * (1 - FOVRenderRatio);
-					const FOVReductionBorderRH = renderRectL.height * (1 - FOVRenderRatio);
+					const FOVReductionBorderRW = renderRectL.width * (1 - FOVRenderRatio) * 0.5;
+					const FOVReductionBorderRH = renderRectL.height * (1 - FOVRenderRatio) * 0.5;
 
 					renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
 					renderer.setScissor( renderRectL.x + FOVReductionBorderRW, renderRectL.y + FOVReductionBorderRH, renderRectL.width - FOVReductionBorderRW * 2, renderRectL.height - FOVReductionBorderRH * 2 );
@@ -428,8 +421,8 @@ module.exports = function( THREE ){
 
 				} else {
 
-					const FOVReductionBorderLW = renderRectL.width * (1 - FOVRenderRatio);
-					const FOVReductionBorderLH = renderRectL.height * (1 - FOVRenderRatio);
+					const FOVReductionBorderLW = renderRectL.width * (1 - FOVRenderRatio) * 0.5;
+					const FOVReductionBorderLH = renderRectL.height * (1 - FOVRenderRatio) * 0.5;
 
 					renderer.setViewport( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
 					renderer.setScissor( renderRectR.x + FOVReductionBorderLW, renderRectR.y + FOVReductionBorderLH, renderRectR.width - FOVReductionBorderLW * 2, renderRectR.height - FOVReductionBorderLH * 2 );
