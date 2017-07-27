@@ -197,7 +197,6 @@ export default class CreateGIF extends Component {
     const time = this.count * (1 / this.fps) + this.startTime;
     viewer.animate(null, time);
     this.renderer.render(viewer.renderScene, this.camera);
-    document.body.appendChild(this.renderer.domElement);
     this.diffPixels(this.renderer.domElement);
     if (time > this.endTime) {
       callback();
