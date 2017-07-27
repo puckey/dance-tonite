@@ -162,6 +162,15 @@ module.exports = function( THREE ){
 
 			if ( vrDisplay !== undefined && vrDisplay.isPresenting ) {
 
+				const resizeCanvas = true; // TODO: allow dynamic resize without resizing the canvas
+				if ( scope.isPresenting && resizeCanvas ) {
+					var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
+					var eyeWidth = eyeParamsL.renderWidth;
+					var eyeHeight = eyeParamsL.renderHeight;
+
+					renderer.setSize(eyeWidth * 2 * VRResolutionRatio, eyeHeight * VRResolutionRatio, false);
+				}
+
 				// since we're already presenting, this doesn't need to be initiated by user interaction
 				requestPresentToVRDisplay();
 			}
@@ -175,16 +184,10 @@ module.exports = function( THREE ){
 		function requestPresentToVRDisplay() {
 			var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
 
-			// render size of each divided by total canvas size 
-			var boundsWidth = Math.floor(eyeParamsL.renderWidth * VRResolutionRatio) / canvas.width;
-			var boundsHeight = Math.floor(eyeParamsL.renderHeight * VRResolutionRatio) / canvas.height;
-
 			console.log("VR Effect VRResolutionRatio: ", VRResolutionRatio, " ", eyeParamsL.renderWidth * VRResolutionRatio, "x", eyeParamsL.renderHeight * VRResolutionRatio);
 
 			return vrDisplay.requestPresent([{
-	         	source: canvas,
-	      	 	leftBounds: [0.0, 0.0, boundsWidth, boundsHeight],
-	      	 	rightBounds: [boundsWidth, 0.0, boundsWidth, boundsHeight]
+	         	source: canvas
 	        }]);
 		}
 
