@@ -193,11 +193,11 @@ const viewer = Object.assign(emitter(), {
 
     viewer.vrEffect = vrEffect = new THREE.VREffect(renderer);
 
-    const defaultVRRes =  1.0;
+    let defaultVRRes =  1.0;
     if (feature.isMobile) {
       const pixelOnScreen = window.screen.width * window.screen.height * window.devicePixelRatio;
       if (pixelOnScreen > 1000000) defaultVRRes = 0.85;
-      else defaultVRRes = 0.90;
+      else defaultVRRes = 1.0;
     } 
     const vrRes = queryData.res || defaultVRRes;
     viewer.vrEffect.setVRResolutionRatio(vrRes);

@@ -38,17 +38,6 @@ export default {
           settings.maxCullDistance,
           settings.cullDistance + settings.roomDepth
         );
-      // if we're in VR at full cull distance with a good FPS
-      if ((viewer.vrEffect.isPresenting) 
-        && (lastCullDistance == settings.cullDistance) 
-        && (settings.cullDistance == settings.maxCullDistance) 
-        && (fps >= 55)) {
-        const currentRenderRatio = viewer.vrEffect.getVRResolutionRatio();
-        if (currentRenderRatio < 1.0) {
-          viewer.vrEffect.setVRResolutionRatio(Math.min(currentRenderRatio + 0.025, 1));
-          if (logging) console.log("increasing res to " + (currentRenderRatio + 0.025));
-        }
-      } 
       if (logging && lastCullDistance !== settings.cullDistance) {
         console.log(`${lastCullDistance > settings.cullDistance ? 'Lowering' : 'Upping'} cull distance to`, settings.cullDistance);
       }
