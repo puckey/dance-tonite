@@ -16,7 +16,9 @@ import ButtonItem from '../../components/ButtonItem';
 import Spinner from '../../components/Spinner';
 import Title from '../../components/Title';
 
-const things = [
+const logging = false;
+
+const activities = [
   'Counting cones…',
   'Interpreting dance…',
   'Twiddling knobs…',
@@ -69,7 +71,7 @@ export default class CreateGIF extends Component {
   setFrameProgress(frame, total) {
     const progress = frame / total;
     this.setState({
-      progress: `${things[Math.floor(progress * 10)]}`,
+      progress: `${activities[Math.floor(progress * 10)]}`,
     });
   }
 
@@ -90,7 +92,7 @@ export default class CreateGIF extends Component {
   async asyncMount() {
     audio.reset();
     const renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setClearColor(0x000000);
+    renderer.setClearColor(0xFFFFFF);
     renderer.setSize(this.width, this.height);
     renderer.sortObjects = false;
 
@@ -179,7 +181,7 @@ export default class CreateGIF extends Component {
       this.gif.on('progress', this.setEncodeProgress);
       this.gif.on('finished', (blob) => {
         if (!this.mounted) return;
-        console.log(`Encoding took: ${Date.now() - then}`);
+        if (logging) console.log(`Encoding took: ${Date.now() - then}`);
         this.setState({
           progress: null,
           gifData: blob,
@@ -197,7 +199,6 @@ export default class CreateGIF extends Component {
     const time = this.count * (1 / this.fps) + this.startTime;
     viewer.animate(null, time);
     this.renderer.render(viewer.renderScene, this.camera);
-    document.body.appendChild(this.renderer.domElement);
     this.diffPixels(this.renderer.domElement);
     if (time > this.endTime) {
       callback();

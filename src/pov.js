@@ -76,13 +76,14 @@ export default function create({ rooms, orb, offset = 0 }) {
     else if (hoverOrb) analytics.recordOrbSelectStop();
     hoverPerformance = null;
     hoverOrb = false;
-    viewer.switchCamera('orthographic');
     InstancedItem.group.remove(viewer.camera);
+    viewer.switchCamera('orthographic');
 
     inPOV = false;
   };
 
   const clearHighlights = () => {
+    InstancedItem.group.remove(viewer.camera);
     hoverPerformance = null;
     hoverOrb = false;
     if (orb) {

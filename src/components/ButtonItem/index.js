@@ -4,8 +4,7 @@ import classNames from 'classnames';
 import './style.scss';
 
 import router from '../../router';
-
-const stopPropagation = event => event.stopPropagation();
+import stopPropagation from '../../utils/stop-propagation';
 
 export default class ButtonItem extends Component {
   constructor() {

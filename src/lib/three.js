@@ -5559,7 +5559,7 @@ var envmap_pars_vertex = "#ifdef USE_ENVMAP\n\t#if defined( USE_BUMPMAP ) || def
 
 var envmap_vertex = "#ifdef USE_ENVMAP\n\t#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )\n\t\tvWorldPosition = worldPosition.xyz;\n\t#else\n\t\tvec3 cameraToVertex = normalize( worldPosition.xyz - cameraPosition );\n\t\tvec3 worldNormal = inverseTransformDirection( transformedNormal, viewMatrix );\n\t\t#ifdef ENVMAP_MODE_REFLECTION\n\t\t\tvReflect = reflect( cameraToVertex, worldNormal );\n\t\t#else\n\t\t\tvReflect = refract( cameraToVertex, worldNormal, refractionRatio );\n\t\t#endif\n\t#endif\n#endif\n";
 
-var fog_vertex = "\n#ifdef USE_FOG\nfogDepth = length(mvPosition);\n#endif";
+var fog_vertex = "\n#ifdef FOG_ZDEPTH\nfogDepth = -mvPosition.z;\n#else\nfogDepth = length(mvPosition);\n#endif";
 
 var fog_pars_vertex = "#ifdef USE_FOG\n  varying float fogDepth;\n#endif\n";
 
@@ -15897,6 +15897,7 @@ function WebGLProgram( renderer, code, material, parameters ) {
 
 			'#define MAX_BONES ' + parameters.maxBones,
 			( parameters.useFog && parameters.fog ) ? '#define USE_FOG' : '',
+			( parameters.useFog && parameters.fogZDepth ) ? '#define FOG_ZDEPTH' : '',
 			( parameters.useFog && parameters.fogExp ) ? '#define FOG_EXP2' : '',
 
 			parameters.map ? '#define USE_MAP' : '',
@@ -16404,6 +16405,7 @@ function WebGLPrograms( renderer, capabilities ) {
 			fog: !! fog,
 			useFog: material.fog,
 			fogExp: ( fog && fog.isFogExp2 ),
+			fogZDepth: ( fog && fog.useZDepth ),
 
 			flatShading: material.shading === FlatShading,
 

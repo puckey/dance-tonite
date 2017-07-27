@@ -2,7 +2,9 @@
 import { h, Component } from 'preact';
 
 import Controllers from '../../components/Controllers';
+import Error from '../../components/Error';
 import Playlist from '../../containers/Playlist';
+import Overlay from '../../components/Overlay';
 
 import audio from '../../audio';
 import recording from '../../recording';
@@ -21,6 +23,7 @@ export default class Review extends Component {
     };
     this.performSubmit = this.performSubmit.bind(this);
     this.performRedo = this.performRedo.bind(this);
+    this.performGoHome = this.performGoHome.bind(this);
   }
 
   componentDidMount() {
@@ -73,20 +76,26 @@ export default class Review extends Component {
     });
     if (!this.mounted) return;
 
-    const [recordingSrc] = await Promise.all([
-      storage.persist(
-        recording.serialize(),
-        recording.roomIndex + 1
-      ),
-      sleep(5000),
-    ]);
-    if (!this.mounted) return;
+    try {
+      const [recordingSrc] = await Promise.all([
+        storage.persist(
+          recording.serialize(),
+          recording.roomIndex + 1
+        ),
+        sleep(5000),
+      ]);
+      if (!this.mounted) return;
 
-    await transition.fadeOut();
-    if (!this.mounted) return;
+      await transition.fadeOut();
+      if (!this.mounted) return;
 
-    const id = recordingSrc.replace('.json', '');
-    this.props.goto(`/${recording.roomIndex + 1}/${id}`);
+      const id = recordingSrc.replace('.json', '');
+      this.props.goto(`/${recording.roomIndex + 1}/${id}`);
+    } catch (error) {
+      this.setState({
+        error,
+      });
+    }
   }
 
   async performRedo() {
@@ -107,7 +116,21 @@ export default class Review extends Component {
     this.props.goto('record');
   }
 
-  render({ id, roomId }, { visible }) {
+  performGoHome() {
+    window.location = '/';
+  }
+
+  render({ id, roomId }, { visible, error }) {
+    if (error) {
+      return (
+        <Overlay opaque>
+          <Error>Oops, an error occurred: {error}.</Error>
+          <p>
+            <a onClick={this.performGoHome}><span>Go home</span></a>
+          </p>
+        </Overlay>
+      );
+    }
     return visible ? (
       <div>
         <Controllers
