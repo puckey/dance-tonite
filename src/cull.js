@@ -6,7 +6,7 @@ let frames = 0;
 let fps = 60;
 let hidden = false;
 let cullDistance = settings.cullDistance;
-const logging = false;
+const logging = true;
 
 document.addEventListener('visibilitychange', () => {
   hidden = document.hidden;
@@ -28,7 +28,7 @@ export default {
       fps = Math.min(55, Math.round(fps * 0.2) * 5);
       frames = 0;
       prevTime = time;
-      const lastCullDistance = cullDistance;
+      const lastCullDistance = settings.cullDistance;
       settings.cullDistance = fps <= 50
         ? Math.max(
           settings.minCullDistance,
@@ -38,8 +38,19 @@ export default {
           settings.maxCullDistance,
           settings.cullDistance + settings.roomDepth
         );
-      if (logging && lastCullDistance !== cullDistance) {
-        console.log(`${lastCullDistance > cullDistance ? 'Lowering' : 'Upping'} cull distance to`, cullDistance);
+      // if we're in VR at full cull distance with a good FPS
+      if ((viewer.vrEffect.isPresenting) 
+        && (lastCullDistance == settings.cullDistance) 
+        && (settings.cullDistance == settings.maxCullDistance) 
+        && (fps >= 55)) {
+        const currentRenderRatio = viewer.vrEffect.getVRResolutionRatio();
+        if (currentRenderRatio < 1.0) {
+          viewer.vrEffect.setVRResolutionRatio(Math.min(currentRenderRatio + 0.025, 1));
+          if (logging) console.log("increasing res to " + (currentRenderRatio + 0.025));
+        }
+      } 
+      if (logging && lastCullDistance !== settings.cullDistance) {
+        console.log(`${lastCullDistance > settings.cullDistance ? 'Lowering' : 'Upping'} cull distance to`, settings.cullDistance);
       }
     }
     cullDistance = cullDistance * 0.95 + settings.cullDistance * 0.05;
