@@ -111,7 +111,7 @@ Choreography on the website is curated by hand. Please be patient as we review a
   </a>
 </div>
 <div>
-  <h3><a href="http://studiomoniker.com">Studio Moniker</a></h3>
+  <h3><a href="http://studiomoniker.com">Moniker</a></h3>
   <a href="http://studiomoniker.com">
     Roel Wouters
   </a>
