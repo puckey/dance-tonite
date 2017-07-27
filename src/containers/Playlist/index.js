@@ -15,6 +15,7 @@ import transition from '../../transition';
 import router from '../../router';
 import feature from '../../utils/feature';
 import Frames from '../../room/frames';
+import { getRoomColorByIndex } from '../../theme/colors';
 
 import BackgroundTimeline from '../../components/BackgroundTimeline';
 import RoomLabels from '../../components/RoomLabels';
@@ -163,6 +164,7 @@ export default class Playlist extends Component {
     { recording, stopped, orb, pathRoomId, hideRoomCountdown },
     { rooms, entries, currentRoomID }
   ) {
+    const roomColorName = getRoomColorByIndex(pathRoomId - 1).name;
     return (
       <div>
         {!stopped && <POV
@@ -178,7 +180,7 @@ export default class Playlist extends Component {
         {
           !hideRoomCountdown && pathRoomId !== undefined && !!currentRoomID && (
             <Align type="bottom-left">
-              <RoomCountdown target={pathRoomId} current={currentRoomID} />
+              <RoomCountdown target={pathRoomId} current={currentRoomID} color={roomColorName} />
             </Align>
           )
         }
