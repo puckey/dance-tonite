@@ -111,7 +111,7 @@ const fadeIn = async (distance) => {
   ).promise;
 };
 
-const transitionSpaceFar = 25;
+const transitionSpaceFar = 15;
 
 const transition = {
   prepare: () => {
@@ -199,6 +199,7 @@ const transition = {
     }
     viewer.renderScene = transitionScene;
     transitionScene.fog = new THREE.Fog(backgroundColor, 0, 0);
+    transitionScene.fog.useZDepth = true;
 
     viewer.on('tick', tick);
     textItem.updateLabel(param.text);
