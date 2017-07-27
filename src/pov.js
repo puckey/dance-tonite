@@ -83,6 +83,7 @@ export default function create({ rooms, orb, offset = 0 }) {
   };
 
   const clearHighlights = () => {
+    InstancedItem.group.remove(viewer.camera);
     hoverPerformance = null;
     hoverOrb = false;
     if (orb) {
