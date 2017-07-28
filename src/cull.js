@@ -24,20 +24,24 @@ export default {
     if (prevTime == null) prevTime = time;
     if (time > prevTime + interval) {
       fps = (frames * 1000) / (time - prevTime);
-      // Change FPS to multiples of 50 in order to ignore slight fluctuations:
-      fps = Math.min(55, Math.round(fps * 0.2) * 5);
+      // Change FPS to multiples of 2.5 in order to ignore slight fluctuations:
+      fps = Math.min(55, Math.round(fps * 0.4) * 2.5);
       frames = 0;
       prevTime = time;
       const lastCullDistance = settings.cullDistance;
-      settings.cullDistance = fps <= 50
-        ? Math.max(
+
+      // if the fps is between 50 and 55, don't do anything
+      if (fps < 50) {
+        settings.cullDistance = Math.max(
           settings.minCullDistance,
           settings.cullDistance - settings.roomDepth
         )
-        : Math.min(
+      } else if (fps >= 55) {
+        settings.cullDistance = Math.min(
           settings.maxCullDistance,
           settings.cullDistance + settings.roomDepth
-        );
+        )
+      }
       if (logging && lastCullDistance !== settings.cullDistance) {
         console.log(`${lastCullDistance > settings.cullDistance ? 'Lowering' : 'Upping'} cull distance to`, settings.cullDistance);
       }
