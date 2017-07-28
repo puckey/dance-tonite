@@ -1,6 +1,7 @@
 import * as THREE from '../lib/three';
 import { loadModel } from '../utils/three';
 import settings from '../settings';
+import feature from '../utils/feature';
 
 import { recordCostumeColor, orbColor, controllerButtonColor } from '../theme/colors';
 
@@ -24,10 +25,11 @@ const {
 } = THREE;
 
 const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor });
+const enableRoomTexturesInVR = feature.isMobile ? false : true;
 
 const props = {
   perspectiveWall: [wallUrl],
-  perspectiveRoom: [roomUrl, roomTextureUrl, true],
+  perspectiveRoom: [roomUrl, enableRoomTexturesInVR ? roomTextureUrl : undefined, true],
   orthographicWall: [isometricWallUrl],
   orthographicRoom: [isometricRoomUrl, isometricRoomTextureUrl],
   hand: (function createHand() {

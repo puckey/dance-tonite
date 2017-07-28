@@ -18,6 +18,7 @@ import windowSize from './utils/windowSize';
 import audio from './audio';
 import Room from './room';
 import { backgroundColor } from './theme/colors';
+import { queryData } from './utils/url';
 
 const orthographicDistance = 4;
 // TODO: remove me:
@@ -191,6 +192,21 @@ const viewer = Object.assign(emitter(), {
     document.body.appendChild(containerEl);
 
     viewer.vrEffect = vrEffect = new THREE.VREffect(renderer);
+    viewer.vrEffect.setLogging(true);
+
+    let defaultVRRes =  1.0;
+    if (feature.isMobile) {
+      const pixelOnScreen = window.screen.width * window.screen.height * window.devicePixelRatio;
+      if (pixelOnScreen > 1000000) defaultVRRes = 0.85;
+      else defaultVRRes = 1.0;
+    } 
+    const vrRes = queryData.res || defaultVRRes;
+    viewer.vrEffect.setVRResolutionRatio(vrRes);
+
+    const defaultVRFOV = feature.isMobile ? 0.9 : 1.0;
+    const vrFOV = queryData.fov || defaultVRFOV;
+    viewer.vrEffect.setFOVRenderRatio(vrFOV);
+
     viewer.controls = controls = new THREE.VRControls(cameras.default);
     controls.standing = true;
 
