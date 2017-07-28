@@ -1,3 +1,5 @@
+import { queryData } from './utils/url';
+
 export default {
   // Room dimensions:
   roomDepth: 6,
@@ -36,4 +38,17 @@ export default {
   dropTime: 216.624266,
 
   loopDuration: 8,
+
+  shouldCull: (queryData.cull === undefined) ? true : queryData.cull, // URL?cull=false
+  cullDistance: 18,
+  minCullDistance: 18,
+  maxCullDistance: 48,
+
+  useShadow: (queryData.shadows === undefined) ? true : queryData.shadows, // URL?shadows=false
+
+  maxPixelRatio: queryData.dpr || 4, // URL?dpr=1
+
+  stats: /fps/.test(window.location.hash) || queryData.fps, // URL#fps or URL?fps=1
+
+  assetsURL: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/',
 };

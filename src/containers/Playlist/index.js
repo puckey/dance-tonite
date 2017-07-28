@@ -1,6 +1,5 @@
 /** @jsx h */
 import { h, Component } from 'preact';
-import shuffle from 'just-shuffle';
 import asyncEach from 'async/eachLimit';
 
 import './style.scss';
@@ -14,10 +13,16 @@ import Orb from '../../orb';
 import settings from '../../settings';
 import transition from '../../transition';
 import router from '../../router';
+import feature from '../../utils/feature';
+import Frames from '../../room/frames';
+import { getRoomColorByIndex } from '../../theme/colors';
 
 import BackgroundTimeline from '../../components/BackgroundTimeline';
 import RoomLabels from '../../components/RoomLabels';
 import POV from '../../components/POV';
+import Align from '../../components/Align';
+import RoomCountdown from '../../components/RoomCountdown';
+import AutoCull from '../../components/AutoCull';
 
 export default class Playlist extends Component {
   constructor() {
@@ -31,29 +36,31 @@ export default class Playlist extends Component {
 
   componentWillMount() {
     this.mounted = true;
-    Room.reset();
-    Room.rotate180();
+    // Do all this in the next frame, to hide the initial play button on mobile faster
+    setTimeout(() => {
+      Room.reset();
+      Room.rotate180();
+      const { recording, pathRoomId, orb } = this.props;
+      const { rooms } = this.state;
+      this.orb.visible = !!orb;
 
-    const { recording, pathRoomId, orb } = this.props;
-    const { rooms } = this.state;
-    this.orb.visible = !!orb;
-
-    if (recording) {
-      for (let index = 1; index < 18; index += 2) {
-        const room = new Room({
-          recording,
-          index,
-          colorIndex: pathRoomId - 1,
-          wall: true,
-        });
-        rooms.push(room);
+      if (recording) {
+        for (let index = 1; index < 18; index += 2) {
+          const room = new Room({
+            recording,
+            index,
+            colorIndex: pathRoomId - 1,
+            wall: true,
+          });
+          rooms.push(room);
+        }
       }
-    }
 
-    this.moveOrb(0);
+      this.moveOrb(0);
 
-    this.asyncMount();
-    viewer.on('tick', this.tick);
+      this.asyncMount();
+      viewer.on('tick', this.tick);
+    });
   }
 
   componentWillReceiveProps({ orb, stopped }) {
@@ -72,15 +79,22 @@ export default class Playlist extends Component {
   async asyncMount() {
     const { pathRecordingId, pathRoomId, recording } = this.props;
     if (recording) return;
-    const entries = this.entries = await storage.loadPlaylist();
 
+    const entries = this.entries = await storage.loadPlaylist();
     if (!this.mounted) return;
 
     const rooms = this.state.rooms;
 
+    let pathRecordingExists;
+    if (pathRecordingId) {
+      pathRecordingExists = await Frames.testUrl(pathRecordingId);
+      if (!this.mounted) return;
+    }
+
     for (let i = 0; i < entries.length; i++) {
-      const isPathRecording = i === pathRoomId - 1;
+      const isPathRecording = pathRecordingExists && i === pathRoomId - 1;
       const entry = entries[i];
+      if (!entry) continue;
       const room = new Room({
         id: isPathRecording
           ? pathRecordingId
@@ -109,7 +123,7 @@ export default class Playlist extends Component {
         },
         (error) => {
           if (error && error.name !== destroyedErrorName) {
-            this.onError(error);
+            if (this.props.onError) this.props.onError(error);
           }
           resolve();
         },
@@ -126,12 +140,16 @@ export default class Playlist extends Component {
 
   tick() {
     if (!this.state.rooms || transition.isInside()) return;
+    const currentRoomID = audio.progress > 0.7 && Math.floor(audio.progress) - 1;
+    if (this.state.currentRoomID !== currentRoomID) {
+      this.setState({ currentRoomID });
+    }
     this.moveOrb(audio.progress || 0);
 
     for (let i = 0; i < this.state.rooms.length; i++) {
       const room = this.state.rooms[i];
       let time = Math.min(audio.time, settings.dropTime);
-      if (layout.isOdd(room.index)) {
+      if (layout.isEven(room.index)) {
         time += settings.loopDuration;
       }
       room.gotoTime(time % (settings.loopDuration * 2));
@@ -142,7 +160,10 @@ export default class Playlist extends Component {
     router.navigate(`/choose/${room.index}/`);
   }
 
-  render({ recording, stopped, orb }, { rooms, entries }) {
+  render(
+    { recording, stopped, orb, pathRoomId, hideRoomCountdown },
+    { rooms, entries, currentRoomID }
+  ) {
     return (
       <div>
         {!stopped && <POV
@@ -156,6 +177,13 @@ export default class Playlist extends Component {
         />
         }
         {
+          !hideRoomCountdown && pathRoomId !== undefined && !!currentRoomID && (
+            <Align type="bottom-left">
+              <RoomCountdown target={pathRoomId} current={currentRoomID} color={getRoomColorByIndex(pathRoomId - 1).name} />
+            </Align>
+          )
+        }
+        {
           (process.env.FLAVOR === 'cms' && !viewer.vrEffect.isPresenting)
           ? <RoomLabels
             rooms={rooms}
@@ -163,6 +191,7 @@ export default class Playlist extends Component {
           />
           : null
         }
+        <AutoCull />
         { !stopped && <BackgroundTimeline /> }
       </div>
     );

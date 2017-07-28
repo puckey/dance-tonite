@@ -22,9 +22,7 @@ export default class PlaybackFlow extends Component {
     const fromRecording = recording.exists() && hasRoomId;
 
     this.state = {
-      mode: (!hasRoomId || fromRecording)
-        ? 'playback'
-        : 'submission',
+      mode: 'playback',
       fromRecording,
       count: 0,
     };
@@ -70,7 +68,9 @@ export default class PlaybackFlow extends Component {
         submissions inbox publish
       />
       : (presenting && feature.vrPolyfill)
-        ? <Menu />
+        ? <Menu
+          close={this.performExitPresent}
+        />
         : (
           fromRecording || /submission|gif/.test(mode)
             ? <Menu about mute />

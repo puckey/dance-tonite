@@ -1,4 +1,4 @@
-import { serializeMatrix } from './utils/serializer';
+import { serializeMatrix, count } from './utils/serializer';
 
 import audio from './audio';
 import viewer from './viewer';
@@ -11,6 +11,8 @@ let frameNumber;
 
 let left = serializeMatrix(new Matrix4());
 let right = serializeMatrix(new Matrix4());
+
+const secondsToFrames = (seconds) => Math.floor(seconds * 90);
 
 const addFrame = (head) => {
   if (frames.length <= frameNumber) {
@@ -30,13 +32,11 @@ const addFrame = (head) => {
 };
 
 const fillMissingFrames = (time, head) => {
-  const totalFrames = Math.round(time * 90);
+  const totalFrames = secondsToFrames(time);
   const diff = totalFrames - frameNumber;
-  if (diff > 1) {
-    for (let i = 0; i < (diff - 1); i++) {
-      frameNumber++;
-      addFrame(head);
-    }
+  for (let i = 0; i < diff; i++) {
+    frameNumber++;
+    addFrame(head);
   }
 };
 
@@ -48,7 +48,7 @@ const recording = {
     frameNumber = null;
     stopped = false;
     this.hideHead = hideHead;
-    this.totalFrames = Math.round(audio.duration * 90);
+    this.count = null;
   },
 
   tick() {
@@ -74,6 +74,8 @@ const recording = {
       }
       frames = [];
     } else {
+      const framesNeeded = secondsToFrames(audio.time);
+      if (framesNeeded - frameNumber < 0) return;
       frameNumber++;
     }
     addFrame(head);
@@ -82,6 +84,7 @@ const recording = {
 
   stop() {
     stopped = true;
+    this.count = this.frames[0] ? count(this.frames[0]) : 0;
   },
 
   exists() {
@@ -94,8 +97,8 @@ const recording = {
 
   serialize() {
     return [{
-      count: this.frames[0] ? (this.frames[0].length / 21) : 0,
-      loopIndex: layout.loopIndex(this.roomIndex + 1),
+      count: this.count,
+      loopIndex: this.roomIndex + 1,
       hideHead: this.hideHead,
     }]
       .concat(this.frames);

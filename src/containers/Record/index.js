@@ -98,6 +98,15 @@ export default class Record extends Component {
           },
         },
       });
+
+      setTimeout(() => {
+        viewer.controllers.forEach(controller => {
+          const hapticActuator = controller.gamepad && controller.gamepad.hapticActuators[0];
+          if (hapticActuator) {
+            hapticActuator.pulse(1, 60);
+          }
+        });
+      }, 500);
     }
     const round = Math.floor(audio.totalProgress / 2);
     this.setState({ round });
@@ -111,6 +120,7 @@ export default class Record extends Component {
       mode: 'recording',
     });
     this.performWaitRoom();
+    audio.dim(true);
     audio.play();
     viewer.on('tick', this.tick);
     analytics.recordDanceSessionStart();
@@ -123,7 +133,10 @@ export default class Record extends Component {
     });
     await transition.enter({
       text: 'Let’s try that again...',
+      duration: 3000,
     });
+    audio.fadeOut();
+    await transition.fadeOut();
     if (this.mounted) this.props.goto('record');
   }
 

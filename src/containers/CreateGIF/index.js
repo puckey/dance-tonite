@@ -8,6 +8,7 @@ import deps from '../../deps';
 import * as THREE from '../../lib/three';
 import viewer from '../../viewer';
 import settings from '../../settings';
+import audio from '../../audio';
 
 import Room from '../../components/Room';
 import Align from '../../components/Align';
@@ -15,12 +16,14 @@ import ButtonItem from '../../components/ButtonItem';
 import Spinner from '../../components/Spinner';
 import Title from '../../components/Title';
 
-const things = [
+const logging = false;
+
+const activities = [
   'Counting cones…',
   'Interpreting dance…',
   'Twiddling knobs…',
   'Googling “How to make a GIF”…',
-  'Glueing pixels…',
+  'Gluing pixels…',
   'Becoming self-aware…',
   'Coloring inside the lines…',
   'Raising expectations…',
@@ -68,7 +71,7 @@ export default class CreateGIF extends Component {
   setFrameProgress(frame, total) {
     const progress = frame / total;
     this.setState({
-      progress: `${things[Math.floor(progress * 10)]}`,
+      progress: `${activities[Math.floor(progress * 10)]}`,
     });
   }
 
@@ -87,9 +90,9 @@ export default class CreateGIF extends Component {
   }
 
   async asyncMount() {
+    audio.reset();
     const renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setClearColor(0x000000);
-    renderer.setPixelRatio(1); // window.devicePixelRatio
+    renderer.setClearColor(0xFFFFFF);
     renderer.setSize(this.width, this.height);
     renderer.sortObjects = false;
 
@@ -115,7 +118,9 @@ export default class CreateGIF extends Component {
     this.setState({ scene });
 
     this.gif = new deps.GIF({
-      workers: (window.navigator.hardwareConcurrency - 1) || 2,
+      workers: window.navigator.hardwareConcurrency
+        ? (Math.min(4, window.navigator.hardwareConcurrency))
+        : 2,
       quality: 1,
       workerScript: '/public/gif.worker.js',
       globalPalette: true,
@@ -170,29 +175,13 @@ export default class CreateGIF extends Component {
     this.ctx.drawImage(this.sourceCanvas, 0, 0);
   }
 
-  renderFrame(callback) {
-    if (!this.mounted) return;
-    this.count++;
-    this.setFrameProgress(this.count, this.duration * this.fps);
-    const time = this.count * (1 / this.fps) + this.startTime;
-    viewer.animate(null, time);
-    this.renderer.render(viewer.renderScene, this.camera);
-    document.body.appendChild(this.renderer.domElement);
-    this.diffPixels(this.renderer.domElement);
-    if (time > this.endTime) {
-      callback();
-    } else {
-      setTimeout(this.renderFrame.bind(this, callback), 1);
-    }
-  }
-
   startRender() {
     const then = Date.now();
     setTimeout(this.renderFrame.bind(this, () => {
       this.gif.on('progress', this.setEncodeProgress);
       this.gif.on('finished', (blob) => {
         if (!this.mounted) return;
-        console.log(`Encoding took: ${Date.now() - then}`);
+        if (logging) console.log(`Encoding took: ${Date.now() - then}`);
         this.setState({
           progress: null,
           gifData: blob,
@@ -201,6 +190,21 @@ export default class CreateGIF extends Component {
       });
       this.gif.render();
     }), 100);
+  }
+
+  renderFrame(callback) {
+    if (!this.mounted) return;
+    this.count++;
+    this.setFrameProgress(this.count, this.duration * this.fps);
+    const time = this.count * (1 / this.fps) + this.startTime;
+    viewer.animate(null, time);
+    this.renderer.render(viewer.renderScene, this.camera);
+    this.diffPixels(this.renderer.domElement);
+    if (time > this.endTime) {
+      callback();
+    } else {
+      setTimeout(this.renderFrame.bind(this, callback), 1);
+    }
   }
 
   render({ roomId, id }, { scene, progress, gifData, gifUrl }) {

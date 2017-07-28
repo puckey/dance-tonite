@@ -11,6 +11,17 @@ const white = new Color(0xffffff);
 const yellow = new Color(0xffff00);
 const gray = new Color(0x646262);
 
+// Quick fix for later calling out the color name.
+green.name = 'green';
+red.name = 'red';
+orange.name = 'orange';
+purple.name = 'purple';
+blue.name = 'blue';
+pink.name = 'pink';
+white.name = 'white';
+yellow.name = 'yellow';
+gray.name = 'gray';
+
 const pairs = ([
   [green, red],
   [orange, purple],
@@ -43,3 +54,4 @@ export const orbColor = yellow;
 export const highlightColor = white;
 export const textColor = yellow;
 export const controllerButtonColor = yellow;
+export const backgroundColor = new Color(0x000000);

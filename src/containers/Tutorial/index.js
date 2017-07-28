@@ -14,6 +14,7 @@ import { sleep } from '../../utils/async';
 import router from '../../router';
 
 import analytics from '../../utils/analytics';
+import stopPropagation from '../../utils/stop-propagation';
 
 export default class Tutorial extends Component {
   constructor() {
@@ -80,7 +81,12 @@ export default class Tutorial extends Component {
               To add your dance, you will need a room-scale VR
               device and a WebVR-enabled browser.
             </p>
-            <a href="https://webvr.info" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://webvr.info"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={stopPropagation}
+            >
               <span>Learn more</span>
             </a> or <a onClick={() => router.navigate('/')}>
               <span>go back to the experience</span>
@@ -93,7 +99,10 @@ export default class Tutorial extends Component {
             goto={this.props.goto}
             onClose={this.performHideOverlay}
           >
-            <a onClick={this.performAddPerformance}><span>Add your performance</span></a>
+            <a
+              className="add-your-performance"
+              onClick={this.performAddPerformance}
+            ><span>Add your performance</span></a>
           </Overlay>
         }
         <Room
@@ -103,6 +112,7 @@ export default class Tutorial extends Component {
           tutorialLayers={layers}
           highlightLast={layers < 6}
           morph={false}
+          progressive={feature.isIOs}
         >
           <TutorialTimeline
             onUpdateLayers={this.setLayers}

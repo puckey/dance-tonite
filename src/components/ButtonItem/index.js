@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import './style.scss';
 
 import router from '../../router';
+import stopPropagation from '../../utils/stop-propagation';
 
 export default class ButtonItem extends Component {
   constructor() {
@@ -32,6 +33,8 @@ export default class ButtonItem extends Component {
           disabled && 'mod-disabled',
         )}
         onClick={navigate ? this.navigate : onClick}
+        onMouseDown={stopPropagation}
+        onTouchStart={stopPropagation}
       >
         {
           label &&

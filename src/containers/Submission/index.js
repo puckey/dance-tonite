@@ -10,6 +10,7 @@ import ShareButtons from '../../components/ShareButtons';
 import ThanksTimeline from '../../components/ThanksTimeline';
 import audio from '../../audio';
 import viewer from '../../viewer';
+import settings from '../../settings';
 
 import transition from '../../transition';
 
@@ -26,7 +27,6 @@ export default class Submission extends Component {
       facebook: 'https://www.facebook.com/sharer/sharer.php?u=',
     };
 
-    this.gotoPlayback = this.gotoPlayback.bind(this);
     this.onRoomLoadError = this.onRoomLoadError.bind(this);
     this.gotoCreateGif = this.gotoCreateGif.bind(this);
   }
@@ -52,10 +52,8 @@ export default class Submission extends Component {
   async asyncMount() {
     viewer.exitPresent();
     transition.reset();
-  }
-
-  gotoPlayback() {
-    this.props.goto('playback');
+    viewer.fog.near = settings.maxCullDistance;
+    viewer.fog.far = settings.maxCullDistance;
   }
 
   render({ roomId, id, fromRecording }) {
@@ -76,7 +74,7 @@ export default class Submission extends Component {
 full experience`
               : 'Watch in full experience'
             }
-            onClick={this.gotoPlayback}
+            onClick={this.props.onGotoFullExperience}
             underline
           />
         </Align>

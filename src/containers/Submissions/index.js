@@ -6,6 +6,7 @@ import { debounce } from 'throttle-debounce';
 import './style.scss';
 
 import cms from '../../utils/firebase/cms';
+import countryCodeToEmoji from '../../utils/countryCodeToEmoji';
 
 import CMSMenu from '../../components/CMSMenu';
 import POVRoom from '../../components/POVRoom';
@@ -125,14 +126,19 @@ export default class Submissions extends Component {
     const items = recordings
       .map((recording, index) => ({
         index,
-        title: `${recording.is_universal ? '🌎' : padNumber(recording.room, 2)} – ${
-          recording.title === '' ? 'Unnamed' : recording.title} ${
+        title: `${recording.is_universal ? '🌎 ' : padNumber(recording.room, 2)} – ${
           recording.rating !== 0
             ? recording.rating === -1
               ? '👎'
               : '⭐'
             : '🆕'} ${
           recording.is_megagrid_worthy ? '🎉' : ''
+        } ${
+          recording.title === '' ? 'Unnamed ' + new Date(recording.timestamp).toLocaleString() : recording.title
+        } ${
+          recording.location
+            ? countryCodeToEmoji(recording.location.country_code)
+            : ''
         }`,
       })
     );

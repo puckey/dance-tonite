@@ -5,6 +5,7 @@ import viewer from '../../viewer';
 import createPov from '../../pov';
 import audio from '../../audio';
 import Align from '../Align';
+import RecordBlinker from '../RecordBlinker';
 
 export default class POV extends Component {
   constructor() {
@@ -45,7 +46,7 @@ export default class POV extends Component {
   render() {
     return this.state.inPOV ? (
       <Align type="top-right">
-        POV CAM
+        <RecordBlinker />
       </Align>
     ) : null;
   }

@@ -23,6 +23,7 @@
     "guard-for-in": 0,
     "no-mixed-operators": 0,
     "no-continue": 0,
+    "prefer-template": 0,
     "comma-dangle": ["error", {
       "arrays": "always-multiline",
       "objects": "always-multiline",

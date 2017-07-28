@@ -1,5 +1,6 @@
 import closestHead from './utils/closestHead';
 import intersectOrb from './utils/intersectcenter';
+import feature from './utils/feature';
 import viewer from './viewer';
 import InstancedItem from './instanced-item';
 import Room from './room';
@@ -26,13 +27,23 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const onMouseDown = ({ clientX, clientY, touches }) => {
     if (viewer.vrEffect.isPresenting) return;
+
+    if (feature.isMobile && (hoverPerformance || hoverOrb)) {
+      hoverPerformance = null;
+      hoverOrb = false;
+      viewer.switchCamera('orthographic');
+      InstancedItem.group.remove(viewer.camera);
+      inPOV = false;
+      return;
+    }
+
     if (hoverPerformance || hoverOrb) {
       return;
     }
 
     let x = clientX;
     let y = clientY;
-    if (touches && touches.length > 0) {
+    if (touches && touches.length === 1) {
       x = touches[0].pageX;
       y = touches[0].pageY;
     }
@@ -53,6 +64,10 @@ export default function create({ rooms, orb, offset = 0 }) {
   const onMouseUp = ({ touches }) => {
     if (viewer.vrEffect.isPresenting) return;
 
+    if (feature.isMobile) {
+      return;
+    }
+
     if (touches && touches.length >= 1) {
       return;
     }
@@ -61,12 +76,14 @@ export default function create({ rooms, orb, offset = 0 }) {
     else if (hoverOrb) analytics.recordOrbSelectStop();
     hoverPerformance = null;
     hoverOrb = false;
+    InstancedItem.group.remove(viewer.camera);
     viewer.switchCamera('orthographic');
 
     inPOV = false;
   };
 
   const clearHighlights = () => {
+    InstancedItem.group.remove(viewer.camera);
     hoverPerformance = null;
     hoverOrb = false;
     if (orb) {
@@ -94,8 +111,8 @@ export default function create({ rooms, orb, offset = 0 }) {
 
   const POV = {
     update: (progress = 0, fixedControllers = false) => {
-      if (!viewer.vrEffect.isPresenting && !inPOV) {
-        if (intersectOrb(pointerX, pointerY)) {
+      if (!viewer.vrEffect.isPresenting && !feature.isMobile) {
+        if (intersectOrb(pointerX, pointerY) && !inPOV) {
           if (orb) {
             orb.highlight();
           }
@@ -113,6 +130,15 @@ export default function create({ rooms, orb, offset = 0 }) {
               )
             );
           }
+        }
+      }
+
+      //  unfortunately mobile needs to be handled a bit differently
+      if (!viewer.vrEffect.isPresenting && feature.isMobile) {
+        if (inPOV && hoverPerformance) {
+          Room.setHighlight(hoverPerformance);
+        } else {
+          Room.setHighlight();
         }
       }
 
@@ -136,19 +162,25 @@ export default function create({ rooms, orb, offset = 0 }) {
     },
 
     setupInput: () => {
-      window.addEventListener('mousemove', onMouseMove);
-      window.addEventListener('mousedown', onMouseDown);
-      window.addEventListener('mouseup', onMouseUp);
-      window.addEventListener('touchstart', onMouseDown, false);
-      window.addEventListener('touchend', onMouseUp, false);
+      if (feature.isMobile) {
+        window.addEventListener('touchstart', onMouseDown, false);
+        window.addEventListener('touchend', onMouseUp, false);
+      } else {
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mouseup', onMouseUp);
+      }
     },
 
     removeInput: () => {
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mouseup', onMouseUp);
-      window.removeEventListener('touchstart', onMouseDown);
-      window.removeEventListener('touchend', onMouseUp);
+      if (feature.isMobile) {
+        window.removeEventListener('touchstart', onMouseDown);
+        window.removeEventListener('touchend', onMouseUp);
+      } else {
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mousedown', onMouseDown);
+        window.removeEventListener('mouseup', onMouseUp);
+      }
       window.removeEventListener('vrdisplaypresentchange', clearHighlights);
       audio.off('loop', onLoop);
     },

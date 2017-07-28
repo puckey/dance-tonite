@@ -2,13 +2,17 @@
 import { h, Component } from 'preact';
 
 import Controllers from '../../components/Controllers';
+import Error from '../../components/Error';
 import Playlist from '../../containers/Playlist';
+import Overlay from '../../components/Overlay';
 
 import audio from '../../audio';
 import recording from '../../recording';
 import transition from '../../transition';
 import { sleep } from '../../utils/async';
 import storage from '../../storage';
+import settings from '../../settings';
+import feature from '../../utils/feature';
 
 export default class Review extends Component {
   constructor() {
@@ -19,6 +23,7 @@ export default class Review extends Component {
     };
     this.performSubmit = this.performSubmit.bind(this);
     this.performRedo = this.performRedo.bind(this);
+    this.performGoHome = this.performGoHome.bind(this);
   }
 
   componentDidMount() {
@@ -36,51 +41,61 @@ export default class Review extends Component {
       transition.enter({
         text: 'Time to review your performance',
       }),
-      audio.load({
-        src: `/public/sound/room-${this.props.roomId}.ogg`,
-        loops: 2,
-      }),
       sleep(5000),
     ]);
     if (!this.mounted) return;
 
     await transition.fadeOut();
+    if (!this.mounted) return;
+
+    await audio.load({
+      src: `${settings.assetsURL}sound/room-${this.props.roomId}.${feature.isChrome ? 'ogg' : 'mp3'}`,
+      loops: 2,
+    });
     if (!this.mounted) return;
 
     this.setState({
       visible: true,
     });
-    audio.play();
     transition.exit();
   }
 
   async performSubmit() {
-    const persisting = storage.persist(
-      recording.serialize(),
-      recording.roomIndex + 1
-    );
-    audio.fadeOut();
-
-    await transition.fadeOut();
-    this.setState({
-      visible: false,
-    });
-    if (!this.mounted) return;
-
-    const [recordingSrc] = await Promise.all([
-      persisting,
-      transition.enter({
-        text: 'Submitting your recording. Please wait.',
-      }),
-      sleep(5000),
+    await Promise.all([
+      transition.fadeOut(),
+      audio.fadeOut(),
     ]);
     if (!this.mounted) return;
 
-    await transition.fadeOut();
+    this.setState({
+      visible: false,
+    });
+
+    await transition.enter({
+      text: 'Submitting your recording. Please wait.',
+    });
     if (!this.mounted) return;
 
-    const id = recordingSrc.replace('.json', '');
-    this.props.goto(`/${recording.roomIndex + 1}/${id}`);
+    try {
+      const [recordingSrc] = await Promise.all([
+        storage.persist(
+          recording.serialize(),
+          recording.roomIndex + 1
+        ),
+        sleep(5000),
+      ]);
+      if (!this.mounted) return;
+
+      await transition.fadeOut();
+      if (!this.mounted) return;
+
+      const id = recordingSrc.replace('.json', '');
+      this.props.goto(`/${recording.roomIndex + 1}/${id}`);
+    } catch (error) {
+      this.setState({
+        error,
+      });
+    }
   }
 
   async performRedo() {
@@ -101,7 +116,21 @@ export default class Review extends Component {
     this.props.goto('record');
   }
 
-  render({ id, roomId }, { visible }) {
+  performGoHome() {
+    window.location = '/';
+  }
+
+  render({ id, roomId }, { visible, error }) {
+    if (error) {
+      return (
+        <Overlay opaque>
+          <Error>Oops, an error occurred: {error}.</Error>
+          <p>
+            <a onClick={this.performGoHome}><span>Go home</span></a>
+          </p>
+        </Overlay>
+      );
+    }
     return visible ? (
       <div>
         <Controllers
@@ -122,6 +151,7 @@ export default class Review extends Component {
           review
           totalProgress
           fixedControllers
+          hideRoomCountdown
           recording={recording}
           pathRecordingId={id}
           pathRoomId={roomId}

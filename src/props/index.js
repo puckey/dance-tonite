@@ -1,6 +1,7 @@
 import * as THREE from '../lib/three';
 import { loadModel } from '../utils/three';
 import settings from '../settings';
+import feature from '../utils/feature';
 
 import { recordCostumeColor, orbColor, controllerButtonColor } from '../theme/colors';
 
@@ -12,6 +13,7 @@ import isometricRoomUrl from './models/space-isometric.obj';
 //import roomTextureUrl from './models/bake/VR_AOMap.png';
 import roomTextureUrl from './models/bake/horizontal-room-AOMap.jpg';
 import isometricRoomTextureUrl from './models/bake/ISO_AOMap.png';
+import shadowTextureUrl from './shadow.png';
 
 const {
   Mesh,
@@ -25,10 +27,11 @@ const {
 } = THREE;
 
 const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor });
+const enableRoomTexturesInVR = feature.isMobile ? false : true;
 
 const props = {
   perspectiveWall: [wallUrl],
-  perspectiveRoom: [roomUrl, roomTextureUrl, true],
+  perspectiveRoom: [roomUrl, enableRoomTexturesInVR ? roomTextureUrl : undefined, true],
   orthographicWall: [isometricWallUrl],
   orthographicRoom: [isometricRoomUrl, isometricRoomTextureUrl],
   hand: (function createHand() {
@@ -43,7 +46,6 @@ const props = {
     cylinder.rotation.x = Math.PI * 0.5 * 7;
     cylinder.updateMatrix();
     cylinder.geometry.applyMatrix(cylinder.matrix);
-    cylinder.castShadow = true;
     return cylinder;
   }()),
 
@@ -88,7 +90,6 @@ const props = {
     cone.rotation.x = Math.PI * 0.5 * 7;
     cone.updateMatrix();
     cone.geometry.applyMatrix(cone.matrix);
-    cone.castShadow = true;
     return cone;
   }()),
 
@@ -108,6 +109,20 @@ const props = {
 
   grid: (function createGrid() {
     return new GridHelper(50, 50, 0xaaaa00, 0xaaaa00);
+  }()),
+
+  shadow: (function createShadow() {
+    const texture = new THREE.TextureLoader().load(shadowTextureUrl);
+    const material = new THREE.MeshLambertMaterial({
+      map: texture,
+      transparent: true,
+      side: THREE.BackSide,
+      depthWrite: false,
+      blending: THREE.SubtractiveBlending,
+    });
+    const geometry = new THREE.PlaneBufferGeometry(0.5, 0.5, 1, 1);
+    const plane = new THREE.Mesh(geometry, material);
+    return plane;
   }()),
 
   prepare: () => Promise.all(

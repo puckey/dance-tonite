@@ -3,10 +3,13 @@ import { h, Component } from 'preact';
 
 import router from '../../router';
 import audio from '../../audio';
-import settings from '../../settings';
 import feature from '../../utils/feature';
 import audioPool from '../../utils/audio-pool';
+import NoSleep from '../../lib/no-sleep';
 import viewer from '../../viewer';
+import transition from '../../transition';
+import layout from '../../room/layout';
+import settings from '../../settings';
 
 import NotFound from '../NotFound';
 import PressPlayToStart from '../PressPlayToStart';
@@ -16,6 +19,13 @@ const componentByRoute = require(`./routes-${
 }`).default;
 
 componentByRoute['/*'] = NotFound;
+
+let animationStarted = false;
+
+let noSleep;
+if (feature.isMobile) {
+  noSleep = new NoSleep();
+}
 
 const convertParams = (params) => {
   if (params.roomId) {
@@ -55,6 +65,8 @@ export default class Router extends Component {
   onRouteChanged(req = {}, event) {
     const { params } = req;
     if (event && event.parent()) return;
+    transition.exit();
+
     convertParams(params);
     if (this.state.route) {
       audio.fadeOut();
@@ -63,9 +75,10 @@ export default class Router extends Component {
     let notFound;
     const { roomId } = params;
     if (roomId !== undefined &&
-        isNaN(roomId) ||
-        roomId > settings.roomCount ||
-        roomId < 1
+      (
+        layout.playlistIndexToMegaGridIndex(roomId - 1) === -1 ||
+        layout.insideMegaGrid(layout.playlistIndexToMegaGridIndex(roomId - 1))
+      )
     ) {
       notFound = 'The selected room id is invalid.';
     }
@@ -86,6 +99,8 @@ export default class Router extends Component {
   }
 
   performFillPool() {
+    // Stop mobile devices from going to sleep:
+    noSleep.enable();
     audioPool.fill();
     this.setState({
       needsFillPool: false,
@@ -93,6 +108,10 @@ export default class Router extends Component {
   }
 
   render(props, { route, params, notFound, needsFillPool }) {
+    if (!animationStarted && !needsFillPool) {
+      viewer.startAnimating();
+      animationStarted = true;
+    }
     const RouteComponent = componentByRoute[route];
     return (
       needsFillPool

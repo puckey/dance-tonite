@@ -21,6 +21,7 @@ export const createInstancedMesh = ({
   count,
   geometry,
   material = LAMBERT_MATERIAL,
+  name,
 }) => {
   const instancedMesh = new THREE.InstancedMesh(
     geometry,
@@ -38,6 +39,7 @@ export const createInstancedMesh = ({
   instancedMesh.castShadow = false;
   instancedMesh.receiveShadow = false;
   instancedMesh.geometry.maxInstancedCount = 0;
+  instancedMesh.name = name;
   return instancedMesh;
 };
 
@@ -62,7 +64,7 @@ export const loadModel = async ([objUrl, textureUrl, doubleSided]) => {
     textureUrl ? loadTexture(textureUrl) : null,
   ]);
   object.material = new THREE.MeshLambertMaterial({
-    side: doubleSided ? THREE.DoubleSide : undefined,
+    side: doubleSided ? THREE.DoubleSide : THREE.FrontSide,
   });
   if (texture) {
     object.material.map = texture;

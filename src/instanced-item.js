@@ -28,21 +28,21 @@ const changeInstanceColor = (mesh, index, color) => {
   mesh.needsUpdate('color');
 };
 
-const addInstance = mesh => mesh.geometry.maxInstancedCount++;
-
 class InstancedItem {
-  constructor(count, perspectiveMesh, orthographicMesh) {
+  constructor(name, count, perspectiveMesh, orthographicMesh) {
     items.push(this);
     this.perspectiveMesh = createInstancedMesh({
       count,
       geometry: perspectiveMesh.geometry,
       material: perspectiveMesh.material,
+      name,
     });
     if (orthographicMesh) {
       this.orthographicMesh = createInstancedMesh({
         count,
         geometry: orthographicMesh.geometry,
         material: orthographicMesh.material,
+        name: `${name} orthographic`,
       });
     }
     this.mesh = (InstancedItem.perspectiveMode || !orthographicMesh)
@@ -53,8 +53,9 @@ class InstancedItem {
 
   empty() {
     this.perspectiveMesh.geometry.maxInstancedCount = 0;
-    if (this.orthographicMesh) {
-      this.orthographicMesh.geometry.maxInstancedCount = 0;
+    const { orthographicMesh } = this;
+    if (orthographicMesh) {
+      orthographicMesh.geometry.maxInstancedCount = 0;
     }
   }
 
@@ -65,22 +66,25 @@ class InstancedItem {
 
   changeColor(index, color) {
     changeInstanceColor(this.perspectiveMesh, index, color);
-    if (this.orthographicMesh) {
-      changeInstanceColor(this.orthographicMesh, index, color);
+    const { orthographicMesh } = this;
+    if (orthographicMesh) {
+      changeInstanceColor(orthographicMesh, index, color);
     }
   }
 
   change(index, pose, color, scale = 1) {
     changeInstance(this.perspectiveMesh, index, pose, color, scale);
-    if (this.orthographicMesh) {
-      changeInstance(this.orthographicMesh, index, pose, color, scale);
+    const { orthographicMesh } = this;
+    if (orthographicMesh) {
+      changeInstance(orthographicMesh, index, pose, color, scale);
     }
   }
 
   add(pose, color, scale) {
-    const index = addInstance(this.perspectiveMesh);
-    if (this.orthographicMesh) {
-      addInstance(this.orthographicMesh);
+    const index = this.perspectiveMesh.geometry.maxInstancedCount++;
+    const { orthographicMesh } = this;
+    if (orthographicMesh) {
+      orthographicMesh.geometry.maxInstancedCount++;
     }
     this.change(index, pose, color, scale);
   }
