@@ -137,11 +137,8 @@ const viewer = Object.assign(emitter(), {
   },
   isOrthographic: true,
   animate: (timestamp, staticTime) => {
+    const startTime = (performance || Date).now();
     const dt = clock.getDelta();
-    if (viewer.animating) {
-      vrEffect.requestAnimationFrame(viewer.animate);
-    }
-
     if (feature.has6DOF) {
       THREE.VRController.update();
     }
@@ -165,6 +162,9 @@ const viewer = Object.assign(emitter(), {
 
     if (staticTime !== undefined) return;
 
+
+    vrEffect.autoSubmitFrame = false;
+
     vrEffect.render(viewer.renderScene, viewer.camera);
 
     if (vrEffect.isPresenting && feature.hasExternalDisplay) {
@@ -173,6 +173,24 @@ const viewer = Object.assign(emitter(), {
 
     viewer.emit('render', dt);
     if (settings.stats) stats(renderer);
+
+
+    //const jsProcessTime = (performance || Date).now() - startTime;
+    //const sleepTime = Math.max(0, (10 - jsProcessTime));
+
+    while ((performance || Date).now() < (startTime + 6)) {
+      // DO SOME FAKE WORK
+      var m = new THREE.Matrix4();
+      m.makeRotationZ(Math.random());
+    }
+
+    vrEffect.submitFrame();
+
+    if (viewer.animating) {
+      vrEffect.requestAnimationFrame(viewer.animate);
+    }
+
+
   },
   prepare: () => {
     clock = new THREE.Clock();
