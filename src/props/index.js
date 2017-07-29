@@ -6,11 +6,9 @@ import feature from '../utils/feature';
 import { recordCostumeColor, orbColor, controllerButtonColor } from '../theme/colors';
 
 import wallUrl from './models/first-wall.obj';
-import roomUrl from './models/horizontal-room.obj';
-//import roomUrl from './models/space-bigger-holes.obj';
+import roomUrl from './models/horizontal-room-simplified.obj';
 import isometricWallUrl from './models/first-wall-isometric.obj';
 import isometricRoomUrl from './models/space-isometric.obj';
-//import roomTextureUrl from './models/bake/VR_AOMap.png';
 import roomTextureUrl from './models/bake/horizontal-room-AOMap.jpg';
 import isometricRoomTextureUrl from './models/bake/ISO_AOMap.png';
 import shadowTextureUrl from './shadow.png';
