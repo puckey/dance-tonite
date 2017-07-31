@@ -10,9 +10,9 @@ handlers:
   upload: dist/(.+\.(woff|obj|gif|ico|jpe?g|png|svgz?|ogg|mp3))
 
 # CSS, Javascript, text and other file types
-- url: /(.+\.(css|js|xml|txt|json|md))
+- url: /(.+\.(css|js|xml|txt|json|md|map))
   static_files: dist/\1
-  upload: dist/(.+\.(css|js|xml|txt|json|md))
+  upload: dist/(.+\.(css|js|xml|txt|json|md|map))
 
 # if a shared link 
 - url: /([0-9]+)/([A-Za-z0-9-_]{6})\/?
