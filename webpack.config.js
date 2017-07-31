@@ -163,7 +163,7 @@ const config = {
             appId: 305769256550344,
             title: content.title,
             description: content.sharedDescription,
-            image: content.image,
+            image: content.imageFacebook,
           },
         },
         htmlSettings
