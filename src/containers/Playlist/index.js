@@ -177,7 +177,7 @@ export default class Playlist extends Component {
         />
         }
         {
-          !hideRoomCountdown && pathRoomId !== undefined && !!currentRoomID && (
+          !hideRoomCountdown && pathRoomId !== undefined && currentRoomID > 0 && (
             <Align type="bottom-left">
               <RoomCountdown target={pathRoomId} current={currentRoomID} color={getRoomColorByIndex(pathRoomId - 1).name} />
             </Align>

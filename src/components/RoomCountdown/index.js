@@ -11,7 +11,7 @@ export default ({ target, current, color }) => {
   return left >= 0 && (
     <div className="room-countdown">
       {
-        current < 1
+        current < 2
         ? `Stay tuned for the shared performance in room ${target}.`
         : target === current
           ? `The shared performance is in the ${color} room.`
