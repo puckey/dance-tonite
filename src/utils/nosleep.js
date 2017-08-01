@@ -1,18 +1,19 @@
 import NoSleep from '../lib/no-sleep';
 
 let noSleep;
+const logging = false;
 
 const nosleep = {
   create: () => {
-    console.log('nosleep created')
+    if (logging) console.log('nosleep created')
     noSleep = new NoSleep();
   },
   enable: () => {
-    console.log('nosleep enable')
+    if (logging) console.log('nosleep enable')
     if (NoSleep) noSleep.enable();
   },
   disable: () => {
-    console.log('nosleep disable')
+    if (logging) console.log('nosleep disable')
     if (NoSleep) noSleep.disable();
   },
 };
