@@ -5,7 +5,7 @@ import router from '../../router';
 import audio from '../../audio';
 import feature from '../../utils/feature';
 import audioPool from '../../utils/audio-pool';
-import NoSleep from '../../lib/no-sleep';
+import nosleep from '../../utils/nosleep';
 import viewer from '../../viewer';
 import transition from '../../transition';
 import layout from '../../room/layout';
@@ -21,11 +21,6 @@ const componentByRoute = require(`./routes-${
 componentByRoute['/*'] = NotFound;
 
 let animationStarted = false;
-
-let noSleep;
-if (feature.isMobile) {
-  noSleep = new NoSleep();
-}
 
 const convertParams = (params) => {
   if (params.roomId) {
@@ -100,7 +95,7 @@ export default class Router extends Component {
 
   performFillPool() {
     // Stop mobile devices from going to sleep:
-    noSleep.enable();
+    nosleep.enable();
     audioPool.fill();
     this.setState({
       needsFillPool: false,

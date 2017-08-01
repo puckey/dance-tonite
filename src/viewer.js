@@ -19,6 +19,7 @@ import audio from './audio';
 import Room from './room';
 import { backgroundColor } from './theme/colors';
 import { queryData } from './utils/url';
+import nosleep from './utils/nosleep';
 
 const orthographicDistance = 4;
 // TODO: remove me:
@@ -212,7 +213,10 @@ const viewer = Object.assign(emitter(), {
 
     window.addEventListener('vrdisplaypresentchange', () => {
       viewer.emit('vr-present-change', vrEffect.isPresenting);
-      if (!vrEffect.isPresenting) viewer.switchCamera('orthographic');
+      if (!vrEffect.isPresenting) {
+        viewer.switchCamera('orthographic');
+        nosleep.enable();
+      }
     }, false);
 
     windowSize.on('resize', onResize, false);
@@ -226,6 +230,7 @@ const viewer = Object.assign(emitter(), {
 
   enterPresent() {
     if (vrEffect.isPresenting) return;
+    if (feature.isMobile && !feature.vrPolyfill) nosleep.disable();
     vrEffect.requestPresent();
     setTimeout(() => {
       viewer.switchCamera('default');
