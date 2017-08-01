@@ -92,7 +92,7 @@ export default class CreateGIF extends Component {
   async asyncMount() {
     audio.reset();
     const renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setClearColor(0xFFFFFF);
+    renderer.setClearColor(0x000000);
     renderer.setSize(this.width, this.height);
     renderer.sortObjects = false;
 

@@ -163,7 +163,7 @@ const config = {
             appId: 305769256550344,
             title: content.title,
             description: content.sharedDescription,
-            image: content.image,
+            image: content.imageFacebook,
           },
         },
         htmlSettings
@@ -202,6 +202,31 @@ if (!isProd) {
   );
 }
 
+if (isProd) {
+  const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
+  config.plugins.push(
+    new SWPrecacheWebpackPlugin({
+      dontCacheBustUrlsMatching: /\.\w{8}\./,
+      filename: 'service-worker.js',
+      minify: true,
+      navigateFallback: 'index.html',
+      staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/],
+      runtimeCaching: [{
+        urlPattern: /playlist\.json$/,
+        handler: 'networkFirst',
+      }, {
+        urlPattern: /\/recordings\//,
+        handler: 'cacheFirst',
+        options: {
+          cache: {
+            maxEntries: 120,
+            name: 'recordings',
+          },
+        },
+      }],
+    })
+  );
+}
 
 if (process.env.ANALYZE_BUNDLE) {
   config.plugins.push(
