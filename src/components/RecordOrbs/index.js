@@ -51,6 +51,8 @@ export default class RecordOrbs extends Component {
     const progress = audio.progress - 1; // value between -1 and 1
     const z = ((progress - 0.5) * roomDepth + roomOffset) * multiplier;
     this.orb.position.z = z;
+    this.orb.scaleFromAudioTime(audio.time);
+
     if (audio.totalProgress > 1) {
       this.orb2.position.z = z + roomDepth * 2 * multiplier;
     }

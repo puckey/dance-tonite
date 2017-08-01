@@ -8,6 +8,11 @@ import { orbColor, highlightColor } from './theme/colors';
 
 const BLACK = new Color(0, 0, 0);
 
+const pulseBeats = [
+  0.00, 0.125, 0.50, 0.750,
+  1.00, 1.125, 1.50, 1.750
+];
+
 export default class Orb {
   constructor(scene) {
     this.mesh = props.sphere.clone();
@@ -19,8 +24,6 @@ export default class Orb {
     position.z = 1000;
     (scene || viewer.scene).add(this.mesh);
     this.tween = createTweener();
-
-    const scale = this.scale = this.mesh.scale;
   }
 
   _fade(from, to) {
@@ -55,5 +58,30 @@ export default class Orb {
 
   unhighlight() {
     this.mesh.material.color.setHex(this.defaultColor);
+  }
+
+  scaleFromAudioTime(time) {
+    const loopProgress = time % (settings.loopDuration / 4)
+
+    let scale = 1;
+    const pulseLength = 0.15;
+    const pulseScale = 0.75;
+
+    for (let i = 0; i < pulseBeats.length; i++) {
+      if (loopProgress < pulseBeats[i]) break;
+
+      if ((loopProgress - pulseBeats[i]) < pulseLength) {
+        let scaleIncrease = 0.10;
+        if (i === 7) scaleIncrease = 0.20;
+
+        // linear fade out
+        const ratio = 1 - ((loopProgress - pulseBeats[i]) / pulseLength);
+
+        scale = 1 + (scaleIncrease * pulseScale * ratio);
+
+        break;
+      }
+    }
+    this.mesh.scale.setScalar(scale);
   }
 }
