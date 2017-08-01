@@ -4,6 +4,12 @@ threadsafe: true
 
 handlers:
 
+# service worker
+- url: /service-worker.js
+  static_files: dist/service-worker.js
+  expiration: 0m
+  upload: dist/service-worker.js
+
 # Fonts, images, media
 - url: /(.+\.(woff|obj|gif|ico|jpe?g|png|svgz?|ogg|mp3))
   static_files: dist/\1

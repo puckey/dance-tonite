@@ -219,7 +219,7 @@ if (isProd) {
         handler: 'cacheFirst',
         options: {
           cache: {
-            maxEntries: 50,
+            maxEntries: 120,
             name: 'recordings',
           },
         },
