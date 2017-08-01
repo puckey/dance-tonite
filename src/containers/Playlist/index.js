@@ -24,6 +24,11 @@ import Align from '../../components/Align';
 import RoomCountdown from '../../components/RoomCountdown';
 import AutoCull from '../../components/AutoCull';
 
+const loopBeats = [
+  0.00, 0.125, 0.50, 0.750,
+  1.00, 1.125, 1.50, 1.750
+];
+
 export default class Playlist extends Component {
   constructor() {
     super();
@@ -138,6 +143,30 @@ export default class Playlist extends Component {
     this.orb.position.copy(position);
   }
 
+  scaleOrb(loopProgress) {
+    let scale = 1;
+    const pulseLength = 0.15;
+    const pulseScale = 0.75;
+
+    for (let i = 0; i < loopBeats.length; i++) {
+      if (loopProgress < loopBeats[i]) break;
+
+      if ((loopProgress - loopBeats[i]) < pulseLength) {
+        let scaleIncrease = 0.10;
+        if (i === 7) scaleIncrease = 0.20;
+
+        // linear fade out
+        const ratio = 1 - ((loopProgress - loopBeats[i]) / pulseLength);
+
+        scale = 1 + (scaleIncrease * pulseScale * ratio);
+
+        break;
+      }
+    }
+
+    this.orb.scale.setScalar(scale);
+  }
+
   tick() {
     if (!this.state.rooms || transition.isInside()) return;
     const currentRoomID = audio.progress > 0.7 && Math.floor(audio.progress) - 1;
@@ -154,6 +183,7 @@ export default class Playlist extends Component {
       }
       room.gotoTime(time % (settings.loopDuration * 2));
     }
+    this.scaleOrb(Math.max(0.7, Math.min(audio.time, settings.dropTime)) % (settings.loopDuration / 4));
   }
 
   navigateToChooser(room) {

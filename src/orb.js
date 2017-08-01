@@ -19,6 +19,8 @@ export default class Orb {
     position.z = 1000;
     (scene || viewer.scene).add(this.mesh);
     this.tween = createTweener();
+
+    const scale = this.scale = this.mesh.scale;
   }
 
   _fade(from, to) {
