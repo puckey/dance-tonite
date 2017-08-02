@@ -8,7 +8,7 @@ let hidden = false;
 let cullDistance = settings.cullDistance;
 let resIncreaseEnabled = true;
 let resIncreaseCount = 0;
-const resIncreaseDelta = 0.025;
+const resIncreaseDelta = 0.05;
 const logging = true;
 
 document.addEventListener('visibilitychange', () => {
@@ -26,20 +26,18 @@ export default {
     const time = (performance || Date).now();
     if (prevTime == null) prevTime = time;
     if (time > prevTime + interval) {
-      fps = (frames * 1000) / (time - prevTime);
-      // Change FPS to multiples of 2.5 in order to ignore slight fluctuations:
-      fps = Math.min(55, Math.round(fps * 0.4) * 2.5);
+      fps = Math.round((frames * 1000) / (time - prevTime));
       frames = 0;
       prevTime = time;
       const lastCullDistance = settings.cullDistance;
 
-      // if the fps is between 50 and 55, don't do anything
-      if (fps < 50) {
+      // if the fps is between 52 and 56, don't do anything
+      if (fps <= 52) {
         settings.cullDistance = Math.max(
           settings.minCullDistance,
           settings.cullDistance - settings.roomDepth
         )
-      } else if (fps >= 55) {
+      } else if (fps > 56) {
         settings.cullDistance = Math.min(
           settings.maxCullDistance,
           settings.cullDistance + settings.roomDepth
@@ -50,8 +48,8 @@ export default {
       if (viewer.vrEffect.isPresenting) {
         const currentRenderRatio = viewer.vrEffect.getVRResolutionRatio();
 
-        // if the fps is between 50 and 55, don't do anything
-        if (fps < 50) {
+        // if the fps is between 55 and 60, don't do anything
+        if (fps <= 55) {
           // if we've done an increase, but FPS has dropped, then we've hit a wall
           // and further tweaks will fight with the room culling. Revert resolution
           // and stop changing it
@@ -64,7 +62,7 @@ export default {
             if (logging) console.log("reverting res to " + (currentRenderRatio - resIncreaseDelta));
           }
         }
-        else if (fps >= 55) {
+        else if (fps >= 60) {
           // if currently full cull distance
           if ( resIncreaseEnabled 
             && (lastCullDistance == settings.cullDistance) 
