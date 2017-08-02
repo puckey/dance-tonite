@@ -11,6 +11,8 @@ import './style.scss';
 
 const getRatio = event => event.clientX / windowSize.width;
 
+const updateRate = 250;
+
 export default class ProgressBar extends Component {
   constructor() {
     super();
@@ -22,6 +24,7 @@ export default class ProgressBar extends Component {
     this.onClick = this.onClick.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.tick = this.tick.bind(this);
+    this.lastUpdate = Date.now();
   }
 
   componentDidMount() {
@@ -56,9 +59,15 @@ export default class ProgressBar extends Component {
 
   tick() {
     if (audio.progress === undefined) return;
+    if (Date.now() - this.lastUpdate < updateRate) return;
+
     const ratio = this.moveRatio || (audio.progress / settings.totalLoopCount);
-    const targetRatio = this.targetRatio = this.targetRatio * 0.8 + ratio * 0.2;
-    this.progressEl.style.transform = `scaleX(${targetRatio})`;
+    // const targetRatio = this.targetRatio = this.targetRatio * 0.8 + ratio * 0.2;
+
+    //  css transform causes re-layout which is expensive
+    //  putting this on a throttle
+    this.progressEl.style.transform = `scaleX(${ratio})`;
+    this.lastUpdate = Date.now();
   }
 
   render() {

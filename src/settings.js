@@ -40,8 +40,8 @@ export default {
   loopDuration: 8,
 
   shouldCull: (queryData.cull === undefined) ? true : queryData.cull, // URL?cull=false
-  cullDistance: 18,
-  minCullDistance: 18,
+  cullDistance: 12,
+  minCullDistance: 12,
   maxCullDistance: 48,
 
   useShadow: (queryData.shadows === undefined) ? true : queryData.shadows, // URL?shadows=false

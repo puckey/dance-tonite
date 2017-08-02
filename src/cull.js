@@ -66,9 +66,9 @@ export default {
         }
         else if (fps >= 55) {
           // if currently full cull distance
-          if ( resIncreaseEnabled 
-            && (lastCullDistance == settings.cullDistance) 
-            && (settings.cullDistance == settings.maxCullDistance) 
+          if ( resIncreaseEnabled
+            && (lastCullDistance == settings.cullDistance)
+            && (settings.cullDistance == settings.maxCullDistance)
             && (currentRenderRatio < 1.0) ) {
 
             // increase the resolution
@@ -78,7 +78,7 @@ export default {
             if (logging) console.log("increasing res to " + (currentRenderRatio + resIncreaseDelta));
           }
         }
-      } 
+      }
       if (logging && lastCullDistance !== settings.cullDistance) {
         console.log(`${lastCullDistance > settings.cullDistance ? 'Lowering' : 'Upping'} cull distance to`, settings.cullDistance);
       }

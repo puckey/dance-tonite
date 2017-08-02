@@ -95,7 +95,7 @@ export default class Router extends Component {
 
   performFillPool() {
     // Stop mobile devices from going to sleep:
-    nosleep.enable();
+    // nosleep.enable();
     audioPool.fill();
     this.setState({
       needsFillPool: false,
