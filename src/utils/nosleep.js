@@ -10,11 +10,11 @@ const nosleep = {
   },
   enable: () => {
     if (logging) console.log('nosleep enable')
-    if (NoSleep) noSleep.enable();
+    if (noSleep) noSleep.enable();
   },
   disable: () => {
     if (logging) console.log('nosleep disable')
-    if (NoSleep) noSleep.disable();
+    if (noSleep) noSleep.disable();
   },
 };
 
