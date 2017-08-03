@@ -228,7 +228,15 @@ const viewer = Object.assign(emitter(), {
 
   enterPresent() {
     if (vrEffect.isPresenting) return;
-    if (feature.isMobile && !feature.vrPolyfill) nosleep.disable();
+    if (feature.isMobile) {
+      if (feature.vrPolyfill) {
+        // the wake lock feature of webvr polyfill is broken. use nosleep instead
+        vrEffect.getVRDisplay().wakelock_ = { request: () => {}, release: () => {} };
+        nosleep.enable();
+      } else {
+        nosleep.disable();
+      }
+    }
     vrEffect.requestPresent();
     setTimeout(() => {
       viewer.switchCamera('default');
