@@ -28,7 +28,6 @@ import InstancedItem from '../instanced-item';
 import Frames from './frames';
 import { createPose } from '../utils/serializer';
 import audio from '../audio';
-import feature from '../utils/feature';
 import { elasticIn } from '../utils/easing';
 
 let items;
@@ -84,6 +83,7 @@ export default class Room {
     this.index = params.single ? 0 : index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
     this.single = single;
+    this.wall = wall;
     const frames = this.frames = new Frames(id, recording);
     this.firstFrame = frames.getFrame(0);
     this.lastFrame = frames.getFrame((settings.loopDuration * 2) - 0.001);
@@ -102,7 +102,11 @@ export default class Room {
       .add(roomOffset);
     position.y -= 1;
 
+    this.roomPosition = position.clone();
+    this.roomColor = roomColor;
+
     const type = layout.getType(index);
+    this.type = type;
     if (type !== 'PLANE') {
       items.room.add([position, null], roomColor);
       if (single || wall || layout.hasWall(index)) {
@@ -179,6 +183,14 @@ export default class Room {
     if (settings.shouldCull && this.cullRoom()) {
       return;
     }
+
+    if (this.type !== 'PLANE') {
+      items.room.add([this.roomPosition, null], this.roomColor);
+      if (this.single || this.wall || layout.hasWall(this.index)) {
+        items.wall.add([this.roomPosition, null], this.roomColor);
+      }
+    }
+
     // In orthographic mode, scale up the meshes:
     const scale = InstancedItem.perspectiveMode ? 1 : 1.5;
 
@@ -324,6 +336,8 @@ export default class Room {
 
 Room.clear = () => {
   if (!items) return;
+  items.room.empty();
+  items.wall.empty();
   items.hand.empty();
   items.head.empty();
   if (settings.useShadow) {
