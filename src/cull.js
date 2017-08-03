@@ -36,12 +36,12 @@ export default {
         settings.cullDistance = Math.max(
           settings.minCullDistance,
           settings.cullDistance - settings.roomDepth
-        )
+        );
       } else if (fps > 56) {
         settings.cullDistance = Math.min(
           settings.maxCullDistance,
           settings.cullDistance + settings.roomDepth
-        )
+        );
       }
 
       // if we're in VR and doing resolution increases
@@ -53,30 +53,28 @@ export default {
           // if we've done an increase, but FPS has dropped, then we've hit a wall
           // and further tweaks will fight with the room culling. Revert resolution
           // and stop changing it
-          if (resIncreaseCount > 0 ) {
+          if (resIncreaseCount > 0) {
             // undo last increase and stop increasing
             viewer.vrEffect.setVRResolutionRatio(currentRenderRatio - resIncreaseDelta);
             resIncreaseCount--;
             resIncreaseEnabled = false; // don't do any more increases
 
-            if (logging) console.log("reverting res to " + (currentRenderRatio - resIncreaseDelta));
+            if (logging) console.log(`reverting res to ${(currentRenderRatio - resIncreaseDelta)}`);
           }
-        }
-        else if (fps >= 60) {
+        } else if (fps >= 60) {
           // if currently full cull distance
-          if ( resIncreaseEnabled 
-            && (lastCullDistance == settings.cullDistance) 
-            && (settings.cullDistance == settings.maxCullDistance) 
-            && (currentRenderRatio < 1.0) ) {
-
+          if (resIncreaseEnabled
+            && (lastCullDistance === settings.cullDistance)
+            && (settings.cullDistance === settings.maxCullDistance)
+            && (currentRenderRatio < 1.0)) {
             // increase the resolution
             viewer.vrEffect.setVRResolutionRatio(Math.min(currentRenderRatio + resIncreaseDelta, 1));
             resIncreaseCount++;
 
-            if (logging) console.log("increasing res to " + (currentRenderRatio + resIncreaseDelta));
+            if (logging) console.log(`increasing res to ${(currentRenderRatio + resIncreaseDelta)}`);
           }
         }
-      } 
+      }
       if (logging && lastCullDistance !== settings.cullDistance) {
         console.log(`${lastCullDistance > settings.cullDistance ? 'Lowering' : 'Upping'} cull distance to`, settings.cullDistance);
       }
