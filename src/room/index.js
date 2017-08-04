@@ -3,7 +3,7 @@ import easeSineInOut from 'eases/sine-in-out';
 import easeBounceOut from 'eases/bounce-out';
 import easeBackOut from 'eases/back-out';
 
-import * as THREE from '../lib/three';
+import * as THREE from '../third_party/three';
 
 import props from '../props';
 import {

@@ -2,7 +2,7 @@ import createTweener from './utils/tween';
 import Orb from './orb';
 import viewer from './viewer';
 import props from './props';
-import * as THREE from './lib/three';
+import * as THREE from './third_party/three';
 import { textColor, backgroundColor } from './theme/colors';
 import dummyTextureUrl from './public/dummy.png';
 import deps from './deps';

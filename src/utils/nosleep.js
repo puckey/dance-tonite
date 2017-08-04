@@ -1,4 +1,4 @@
-import NoSleep from '../lib/no-sleep';
+import NoSleep from '../third_party/no-sleep';
 
 let noSleep;
 const logging = false;

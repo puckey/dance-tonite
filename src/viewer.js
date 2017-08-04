@@ -5,11 +5,11 @@
 
 import emitter from 'mitt';
 
-import * as THREE from './lib/three';
-import installVREffect from './lib/VREffect';
-import installVRControls from './lib/VRControls';
-import installVRController from './lib/VRController';
-import stats from './lib/stats';
+import * as THREE from './third_party/three';
+import installVREffect from './third_party/VREffect';
+import installVRControls from './third_party/VRControls';
+import installVRController from './third_party/VRController';
+import stats from './third_party/stats';
 import { tempVector } from './utils/three';
 import settings from './settings';
 import InstancedItem from './instanced-item';

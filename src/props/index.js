@@ -1,4 +1,4 @@
-import * as THREE from '../lib/three';
+import * as THREE from '../third_party/three';
 import { loadModel } from '../utils/three';
 import settings from '../settings';
 import feature from '../utils/feature';

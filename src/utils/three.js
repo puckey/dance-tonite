@@ -1,7 +1,7 @@
-import * as THREE from '../lib/three';
+import * as THREE from '../third_party/three';
 import windowSize from '../utils/windowSize';
 
-require('../lib/OBJLoader')(THREE);
+require('../third_party/OBJLoader')(THREE);
 
 const VECTOR = new THREE.Vector3();
 const QUATERNION = new THREE.Quaternion();

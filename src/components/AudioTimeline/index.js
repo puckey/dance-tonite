@@ -3,7 +3,7 @@ import { Component } from 'preact';
 
 import viewer from '../../viewer';
 import audio from '../../audio';
-import createTimeline from '../../lib/timeline';
+import createTimeline from '../../third_party/timeline';
 
 export default class AudioTimeline extends Component {
   constructor() {

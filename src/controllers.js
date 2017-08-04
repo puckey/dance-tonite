@@ -1,7 +1,7 @@
 import emitter from 'mitt';
 import Props from './props';
 import viewer from './viewer';
-import * as THREE from './lib/three';
+import * as THREE from './third_party/three';
 import { textColor } from './theme/colors';
 import deps from './deps';
 

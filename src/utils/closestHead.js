@@ -1,4 +1,4 @@
-import * as THREE from '../lib/three';
+import * as THREE from '../third_party/three';
 import viewer from '../viewer';
 import windowSize from './windowSize';
 import { worldToScreen } from './three';

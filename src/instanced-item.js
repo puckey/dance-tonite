@@ -1,4 +1,4 @@
-import { Group, Vector3 } from './lib/three';
+import { Group, Vector3 } from './third_party/three';
 import { createInstancedMesh } from './utils/three';
 import viewer from './viewer';
 

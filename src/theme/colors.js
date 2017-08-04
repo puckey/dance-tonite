@@ -1,4 +1,4 @@
-import { Color } from '../lib/three';
+import { Color } from '../third_party/three';
 import layout from '../room/layout';
 
 const green = new Color(0x55b848);

@@ -3,7 +3,7 @@ import createTweener from './utils/tween';
 import props from './props';
 import viewer from './viewer';
 import settings from './settings';
-import { Color } from './lib/three';
+import { Color } from './third_party/three';
 import { orbColor, highlightColor } from './theme/colors';
 
 const BLACK = new Color(0, 0, 0);

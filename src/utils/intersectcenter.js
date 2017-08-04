@@ -1,4 +1,4 @@
-import * as THREE from '../lib/three';
+import * as THREE from '../third_party/three';
 import windowSize from '../utils/windowSize';
 
 const mouse = new THREE.Vector2();

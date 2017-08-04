@@ -20,7 +20,7 @@
 import SDFShader from 'three-bmfont-text/shaders/sdf';
 import createGeometry from 'three-bmfont-text';
 import parseASCII from 'parse-bmfont-ascii';
-import * as THREE from '../lib/three';
+import * as THREE from '../third_party/three';
 
 import * as Font from './font';
 

@@ -1,5 +1,5 @@
 import { queryData } from '../utils/url';
-import streamJSON from '../lib/stream-json';
+import streamJSON from '../third_party/stream-json';
 import feature from '../utils/feature';
 import Frame from './frame';
 

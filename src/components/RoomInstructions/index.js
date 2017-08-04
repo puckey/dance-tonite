@@ -1,7 +1,7 @@
 /** @jsx h */
 import { Component } from 'preact';
 
-import { Group } from '../../lib/three';
+import { Group } from '../../third_party/three';
 import viewer from '../../viewer';
 import { textColor } from '../../theme/colors';
 import deps from '../../deps';

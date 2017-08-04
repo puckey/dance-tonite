@@ -1,5 +1,5 @@
 import { tempVector } from './three';
-import * as THREE from '../lib/three';
+import * as THREE from '../third_party/three';
 import settings from '../settings';
 
 export const PERFORMANCE_ELEMENT_COUNT = 21;
