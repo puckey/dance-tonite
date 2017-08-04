@@ -29,7 +29,7 @@ export default class Submission extends Component {
     this.setState({
       link,
       deepLink: `https://tonite.dance${link}`,
-      description: `Check out my dance in room ${roomId} of @LCDSoundsystem’s Dance Tonite: `,
+      description: `I'm in room ${roomId} of @LCDSoundsystem’s Dance Tonite `,
     });
   }
 
