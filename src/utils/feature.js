@@ -134,7 +134,6 @@ const feature = {
     Promise.all([
       checkHasVR()
         .then((hasVR) => {
-          console.log(userAgent);
           feature.hasVR = hasVR;
           if (verbosity > 0) log('hasVR', feature.hasVR);
         }),
