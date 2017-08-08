@@ -34,6 +34,11 @@ handlers:
 #   upload: dist/index.html
 #   secure: always
 
+# html
+- url: /((no-webgl|no-webaudio|not-available)\.html)
+  static_files: dist/\1
+  upload: dist/((no-webgl|no-webaudio|not-available)\.html)
+
 - url: /(.*)
   script: auth.application
   secure: always
