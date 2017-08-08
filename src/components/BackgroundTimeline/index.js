@@ -17,7 +17,7 @@ import { h, Component } from 'preact';
 import viewer from '../../viewer';
 import settings from '../../settings';
 import { getRoomColorByIndex } from '../../theme/colors';
-import { Color } from '../../third_party/three';
+import { Color } from '../../third_party/threejs/three';
 
 import AudioTimeline from '../AudioTimeline';
 import createTweener from '../../utils/tween';

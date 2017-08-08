@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Group, Vector3 } from './third_party/three';
+import { Group, Vector3 } from './third_party/threejs/three';
 import { createInstancedMesh } from './utils/three';
 import viewer from './viewer';
 

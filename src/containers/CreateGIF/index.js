@@ -18,7 +18,7 @@ import download from 'downloadjs';
 import './style.scss';
 
 import deps from '../../deps';
-import * as THREE from '../../third_party/three';
+import * as THREE from '../../third_party/threejs/three';
 import viewer from '../../viewer';
 import settings from '../../settings';
 import audio from '../../audio';
@@ -135,7 +135,7 @@ export default class CreateGIF extends Component {
         ? (Math.min(4, window.navigator.hardwareConcurrency))
         : 2,
       quality: 1,
-      workerScript: '/public/third_party/gif.worker.js',
+      workerScript: '/public/third_party/gif/gif.worker.js',
       globalPalette: true,
       transparent: 0x00FFFF,
     });

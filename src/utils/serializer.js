@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 import { tempVector } from './three';
-import * as THREE from '../third_party/three';
+import * as THREE from '../third_party/threejs/three';
 import settings from '../settings';
 
 export const PERFORMANCE_ELEMENT_COUNT = 21;

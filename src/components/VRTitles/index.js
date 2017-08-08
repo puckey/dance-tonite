@@ -13,7 +13,7 @@
  */
 /** @jsx h */
 import { Component } from 'preact';
-import * as THREE from '../../third_party/three';
+import * as THREE from '../../third_party/threejs/three';
 import deps from '../../deps';
 import settings from '../../settings';
 import { textColor } from '../../theme/colors';

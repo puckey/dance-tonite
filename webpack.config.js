@@ -120,7 +120,7 @@ const config = {
   resolve: {
     extensions: ['.js'],
     alias: {
-      THREE: path.resolve(__dirname, './src/third_party/three.js'),
+      THREE: path.resolve(__dirname, './src/third_party/threejs/three.js'),
     },
   },
   plugins: [
@@ -192,7 +192,7 @@ const config = {
     }),
     new webpack.NormalModuleReplacementPlugin(
       (/^three$/),
-      require.resolve('./src/third_party/three')
+      require.resolve('./src/third_party/threejs/three')
     ),
     extractSass,
   ],
