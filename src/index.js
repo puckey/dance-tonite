@@ -64,7 +64,8 @@ if (process.env.FLAVOR === 'cms') {
   if (feature.isMobile) {
     prepareMobile();
   }
-  document.getElementById('initial').remove();
+  const el = document.getElementById('initial');
+  el.parentNode && el.parentNode.removeChild(el);
   render(<Router />, document.body, root);
   analytics.mount();
 })();

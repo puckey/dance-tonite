@@ -140,7 +140,7 @@ const audio = Object.assign(emitter(), {
       this.loopCount = 0;
       const canPlay = () => {
         this.duration = duration;
-        gainNode.gain.value = ALMOST_ZERO;
+        gainNode.gain.setValueAtTime(ALMOST_ZERO, context.currentTime);
         audio.fadeIn();
         resolve(param.src);
       };
@@ -232,7 +232,7 @@ const audio = Object.assign(emitter(), {
     if (audioElement) {
       audioElement.play();
     }
-    if (!this.muted) {
+    if (!this.muted && gainNode.gain.value == ALMOST_ZERO) {
       audio.fadeIn();
     }
   },
@@ -302,7 +302,7 @@ const audio = Object.assign(emitter(), {
   rewind() {
     if (audioElement) {
       audioElement.currentTime = 0;
-      gainNode.gain.value = muted ? 0.001 : 1;
+      gainNode.gain.value = muted ? ALMOST_ZERO : 1;
     }
   },
 
@@ -310,7 +310,7 @@ const audio = Object.assign(emitter(), {
     if (scheduledTime) {
       gainNode.gain.cancelScheduledValues(scheduledTime);
     }
-    gainNode.gain.value = 0.001;
+    gainNode.gain.value = ALMOST_ZERO;
     if (audioElement) {
       audioElement.muted = true;
     }
