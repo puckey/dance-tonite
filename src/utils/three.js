@@ -29,6 +29,7 @@ export const createInstancedMesh = ({
     count,
     true,
     true,
+    true,
   );
   for (let i = 0; i < count; i++) {
     instancedMesh.setScaleAt(i, tempVector(1, 1, 1));
