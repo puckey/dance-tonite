@@ -193,7 +193,7 @@ const viewer = Object.assign(emitter(), {
     document.body.appendChild(containerEl);
 
     viewer.vrEffect = vrEffect = new THREE.VREffect(renderer);
-    viewer.vrEffect.setLogging(true);
+    viewer.vrEffect.setLogging(settings.logging);
 
     let defaultVRRes = 1.0;
     // if (feature.isMobile) {

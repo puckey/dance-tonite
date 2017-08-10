@@ -51,4 +51,6 @@ export default {
   stats: /fps/.test(window.location.hash) || queryData.fps, // URL#fps or URL?fps=1
 
   assetsURL: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/',
+
+  logging: (queryData.log === undefined) ? false : queryData.log, // URL?log=1
 };

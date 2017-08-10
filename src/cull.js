@@ -10,7 +10,7 @@ let resAutoAdjust = false;
 let resIncreaseEnabled = true;
 let resIncreaseCount = 0;
 const resIncreaseDelta = 0.05;
-const logging = true;
+const logging = settings.logging;
 
 document.addEventListener('visibilitychange', () => {
   hidden = document.hidden;
