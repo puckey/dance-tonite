@@ -219,7 +219,7 @@ const audio = Object.assign(emitter(), {
     if (audioElement) {
       audioElement.play();
     }
-    if (!this.muted && gainNode.gain.value == ALMOST_ZERO) {
+    if (!muted && gainNode.gain.value < 1) {
       audio.fadeIn();
     }
   },
