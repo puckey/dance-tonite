@@ -39,6 +39,7 @@
     "parse-bmfont-ascii": "^1.0.6",
     "preact": "^8.1.0",
     "preact-portal": "^1.1.2",
+    "spectorjs": "^0.2.3",
     "three-bmfont-text": "^2.2.1",
     "three-effectcomposer-es6": "0.0.4",
     "throttle-debounce": "^1.0.1",
