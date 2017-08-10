@@ -258,9 +258,6 @@ const viewer = Object.assign(emitter(), {
   },
 
   toggleVR: () => {
-
-    if (SPECTOR_ON) spector.captureCanvas(renderer.domElement);
-
     if (vrEffect.isPresenting) {
       viewer.exitPresent();
     } else {
