@@ -196,9 +196,9 @@ const viewer = Object.assign(emitter(), {
     viewer.vrEffect.setLogging(true);
 
     let defaultVRRes = 1.0;
-    if (feature.isMobile) {
-      defaultVRRes = 0.85;
-    }
+    // if (feature.isMobile) {
+    //   defaultVRRes = 0.85;
+    // }
     const vrRes = queryData.res || defaultVRRes;
     viewer.vrEffect.setVRResolutionRatio(vrRes);
 
