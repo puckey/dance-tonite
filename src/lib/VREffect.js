@@ -479,12 +479,11 @@ module.exports = function( THREE ){
 
 				return;
 
-			} else {
-
-				// Regular render mode if not HMD
-				renderer.render( scene, camera, renderTarget, forceClear );
-	
 			}
+
+			// Regular render mode if not HMD
+			
+			renderer.render( scene, camera, renderTarget, forceClear );
 	
 		};
 
