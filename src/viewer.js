@@ -21,6 +21,15 @@ import { backgroundColor } from './theme/colors';
 import { queryData } from './utils/url';
 import nosleep from './utils/nosleep';
 
+let spector;
+const SPECTOR_ON = true;
+
+if (SPECTOR_ON) {
+  const SPECTOR = require("spectorjs");
+
+  spector = new SPECTOR.Spector();
+  spector.displayUI();
+}
 const orthographicDistance = 4;
 // TODO: remove me:
 // const times = [0];
@@ -138,6 +147,8 @@ const viewer = Object.assign(emitter(), {
   },
   isOrthographic: true,
   animate: (timestamp, staticTime) => {
+    if (SPECTOR_ON) spector.onFrameStart();
+
     const dt = clock.getDelta();
     if (viewer.animating) {
       vrEffect.requestAnimationFrame(viewer.animate);
@@ -174,6 +185,7 @@ const viewer = Object.assign(emitter(), {
 
     viewer.emit('render', dt);
     if (settings.stats) stats(renderer);
+    if (SPECTOR_ON) spector.onFrameEnd();
   },
   prepare: () => {
     clock = new THREE.Clock();
@@ -191,6 +203,8 @@ const viewer = Object.assign(emitter(), {
     containerEl.className = 'viewer';
     containerEl.appendChild(renderer.domElement);
     document.body.appendChild(containerEl);
+
+    document.body.style.position = "relative";
 
     viewer.vrEffect = vrEffect = new THREE.VREffect(renderer);
     viewer.vrEffect.setLogging(true);
@@ -244,6 +258,9 @@ const viewer = Object.assign(emitter(), {
   },
 
   toggleVR: () => {
+
+    if (SPECTOR_ON) spector.captureCanvas(renderer.domElement);
+
     if (vrEffect.isPresenting) {
       viewer.exitPresent();
     } else {
