@@ -319,6 +319,11 @@ module.exports = function( THREE ){
 
 				}
 
+				// do one clear for both eyes
+				if ( renderer.autoClear || forceClear ) renderer.clear();
+				const rendererAutoClear = renderer.autoClear;
+				renderer.autoClear = false;
+
 				// When rendering we don't care what the recommended size is, only what the actual size
 				// of the backbuffer is.
 				var size = renderer.getSize();
@@ -365,7 +370,6 @@ module.exports = function( THREE ){
 
 				}
 
-				if ( renderer.autoClear || forceClear ) renderer.clear();
 
 				if ( camera.parent === null ) camera.updateMatrixWorld();
 
@@ -426,7 +430,7 @@ module.exports = function( THREE ){
 					renderer.setScissor( renderRectL.x + FOVReductionBorderRW, renderRectL.y + FOVReductionBorderRH, renderRectL.width - FOVReductionBorderRW * 2, renderRectL.height - FOVReductionBorderRH * 2 );
 
 				}
-				renderer.render( scene, cameraL, renderTarget, forceClear );
+				renderer.render( scene, cameraL, renderTarget );
 
 				// render right eye
 				if ( renderTarget ) {
@@ -443,7 +447,7 @@ module.exports = function( THREE ){
 					renderer.setScissor( renderRectR.x + FOVReductionBorderLW, renderRectR.y + FOVReductionBorderLH, renderRectR.width - FOVReductionBorderLW * 2, renderRectR.height - FOVReductionBorderLH * 2 );
 
 				}
-				renderer.render( scene, cameraR, renderTarget, forceClear );
+				renderer.render( scene, cameraR, renderTarget );
 				
 				if ( renderTarget ) {
 
@@ -471,13 +475,17 @@ module.exports = function( THREE ){
 
 				}
 
+				renderer.autoClear = rendererAutoClear;
+
 				return;
 
-			}
+			} else {
 
-			// Regular render mode if not HMD
-			renderer.render( scene, camera, renderTarget, forceClear );
-			
+				// Regular render mode if not HMD
+				renderer.render( scene, camera, renderTarget, forceClear );
+	
+			}
+	
 		};
 
 		this.dispose = function () {
