@@ -14,7 +14,7 @@
 import emitter from 'mitt';
 import Props from './props';
 import viewer from './viewer';
-import * as THREE from './third_party/threejs/three';
+import * as THREE from '../third_party/threejs/three';
 import { textColor } from './theme/colors';
 import deps from './deps';
 

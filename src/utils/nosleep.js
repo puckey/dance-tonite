@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import NoSleep from '../third_party/no-sleep';
+import NoSleep from '../../third_party/no-sleep';
 
 let noSleep;
 const logging = false;

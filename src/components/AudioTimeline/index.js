@@ -16,7 +16,7 @@ import { Component } from 'preact';
 
 import viewer from '../../viewer';
 import audio from '../../audio';
-import createTimeline from '../../third_party/puckey_utils/timeline';
+import createTimeline from '../../../third_party/puckey_utils/timeline';
 
 export default class AudioTimeline extends Component {
   constructor() {

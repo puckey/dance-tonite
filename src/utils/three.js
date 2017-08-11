@@ -11,10 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as THREE from '../third_party/threejs/three';
+import * as THREE from '../../third_party/threejs/three';
 import windowSize from '../utils/windowSize';
 
-require('../third_party/threejs/OBJLoader')(THREE);
+require('../../third_party/threejs/OBJLoader')(THREE);
 
 const VECTOR = new THREE.Vector3();
 const QUATERNION = new THREE.Quaternion();

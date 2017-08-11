@@ -13,11 +13,11 @@
  */
 import emitter from 'mitt';
 
-import * as THREE from './third_party/threejs/three';
-import installVREffect from './third_party/threejs/VREffect';
-import installVRControls from './third_party/threejs/VRControls';
-import installVRController from './third_party/VRController/VRController';
-import stats from './third_party/stats/stats';
+import * as THREE from '../third_party/threejs/three';
+import installVREffect from '../third_party/threejs/VREffect';
+import installVRControls from '../third_party/threejs/VRControls';
+import installVRController from '../third_party/VRController/VRController';
+import stats from '../third_party/stats/stats';
 import { tempVector } from './utils/three';
 import settings from './settings';
 import InstancedItem from './instanced-item';

@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Color } from '../third_party/threejs/three';
+import { Color } from '../../third_party/threejs/three';
 import layout from '../room/layout';
 
 const green = new Color(0x55b848);

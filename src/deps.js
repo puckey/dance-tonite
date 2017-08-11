@@ -31,7 +31,7 @@ const packs = [
     prepare: () => (
       new Promise((resolve) => {
         require.ensure([], function (require) {
-          deps.GIF = require('./third_party/gifjs/gif');
+          deps.GIF = require('../third_party/gifjs/gif');
           resolve();
         });
       })

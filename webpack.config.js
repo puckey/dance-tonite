@@ -120,7 +120,7 @@ const config = {
   resolve: {
     extensions: ['.js'],
     alias: {
-      THREE: path.resolve(__dirname, './src/third_party/threejs/three.js'),
+      THREE: path.resolve(__dirname, './third_party/threejs/three.js'),
     },
   },
   plugins: [
@@ -128,6 +128,7 @@ const config = {
     new CleanWebpackPlugin(['dist']),
     new CopyWebpackPlugin([
       { from: 'public', to: '../dist/public' },
+      { from: '../third_party/gifworker', to: '../dist/public/third_party/gifworker' },
       { from: 'templates/_redirects', to: '../dist/' },
       { from: 'templates/no-webgl.html', to: '../dist' },
       { from: 'templates/not-available.html', to: '../dist' },
@@ -192,7 +193,7 @@ const config = {
     }),
     new webpack.NormalModuleReplacementPlugin(
       (/^three$/),
-      require.resolve('./src/third_party/threejs/three')
+      require.resolve('./third_party/threejs/three')
     ),
     extractSass,
   ],

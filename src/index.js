@@ -16,7 +16,7 @@ import 'babel-polyfill';
 import { h, render } from 'preact';
 
 import './theme/index.scss';
-import * as THREE from './third_party/threejs/three';
+import * as THREE from '../third_party/threejs/three';
 import router from './router';
 import props from './props';
 import Router from './containers/Router';

@@ -15,7 +15,7 @@ import { serializeMatrix, count } from './utils/serializer';
 
 import audio from './audio';
 import viewer from './viewer';
-import { Matrix4 } from './third_party/threejs/three';
+import { Matrix4 } from '../third_party/threejs/three';
 import layout from './room/layout';
 
 let stopped = false;

@@ -18,7 +18,7 @@ import classNames from 'classnames';
 import './style.scss';
 import keyframes from './keyframes';
 
-import createTimeline from '../../third_party/puckey_utils/timeline';
+import createTimeline from '../../../third_party/puckey_utils/timeline';
 import audio from '../../audio';
 import viewer from '../../viewer';
 import VRTitles from '../VRTitles';
