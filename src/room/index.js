@@ -373,12 +373,12 @@ Room.reset = () => {
       ),
       head: new InstancedItem(
         'heads',
-        layout.roomCount * 20,
+        layout.roomCount * 10,
         props.head,
       ),
       hand: new InstancedItem(
         'hands',
-        layout.roomCount * 20 * 2,
+        layout.roomCount * 10 * 2,
         props.hand,
       ),
     };
@@ -386,7 +386,7 @@ Room.reset = () => {
     if (settings.useShadow) {
       items.shadow = new InstancedItem(
         'shadows',
-        layout.roomCount * (20 + 20 * 2),
+        layout.roomCount * 30,
         props.shadow,
       );
     }
