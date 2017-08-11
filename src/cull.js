@@ -19,10 +19,11 @@ let frames = 0;
 let fps = 60;
 let hidden = false;
 let cullDistance = settings.cullDistance;
+let resAutoAdjust = false;
 let resIncreaseEnabled = true;
 let resIncreaseCount = 0;
 const resIncreaseDelta = 0.05;
-const logging = true;
+const logging = settings.logging;
 
 document.addEventListener('visibilitychange', () => {
   hidden = document.hidden;
@@ -58,7 +59,7 @@ export default {
       }
 
       // if we're in VR and doing resolution increases
-      if (viewer.vrEffect.isPresenting) {
+      if (viewer.vrEffect.isPresenting && resAutoAdjust) {
         const currentRenderRatio = viewer.vrEffect.getVRResolutionRatio();
 
         // if the fps is between 55 and 60, don't do anything

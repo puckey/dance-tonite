@@ -32,8 +32,8 @@ const content = {
   descriptionTwitter: 'An ever-changing VR collaboration by LCD Soundsystem and their fans.',
   descriptionFacebook: 'An ever-changing VR collaboration by LCD Soundsystem and their fans. Produced by Jonathan Puckey, Moniker, and the Google Data Arts Team.',
   sharedDescription: 'Check out my dance in this ever-changing VR collaboration by LCD Soundsystem and their fans.',
-  image: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/sharing/share_image_2.png',
-  imageFacebook: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/sharing/share_image_2.png',
+  image: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/sharing/share_small.png',
+  imageFacebook: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/sharing/share.png',
 };
 
 const extractSass = new ExtractTextPlugin({
