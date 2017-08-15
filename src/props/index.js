@@ -1,14 +1,15 @@
 import * as THREE from '../lib/three';
 import { loadModel } from '../utils/three';
 import settings from '../settings';
+import feature from '../utils/feature';
 
 import { recordCostumeColor, orbColor, controllerButtonColor } from '../theme/colors';
 
-import wallUrl from './models/first-wall.obj';
-import roomUrl from './models/space-bigger-holes.obj';
+import wallUrl from './models/first-wall-vr.obj';
+import roomUrl from './models/space-vr.obj';
 import isometricWallUrl from './models/first-wall-isometric.obj';
 import isometricRoomUrl from './models/space-isometric.obj';
-import roomTextureUrl from './models/bake/VR_AOMap.png';
+import roomTextureUrl from './models/bake/VR_AOMap.jpg';
 import isometricRoomTextureUrl from './models/bake/ISO_AOMap.png';
 import shadowTextureUrl from './shadow.png';
 
@@ -24,10 +25,11 @@ const {
 } = THREE;
 
 const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor });
+const enableRoomTexturesInVR = feature.isMobile ? false : true;
 
 const props = {
   perspectiveWall: [wallUrl],
-  perspectiveRoom: [roomUrl, roomTextureUrl, true],
+  perspectiveRoom: [roomUrl, enableRoomTexturesInVR ? roomTextureUrl : undefined, true],
   orthographicWall: [isometricWallUrl],
   orthographicRoom: [isometricRoomUrl, isometricRoomTextureUrl],
   hand: (function createHand() {

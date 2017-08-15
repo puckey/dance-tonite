@@ -4,26 +4,43 @@ threadsafe: true
 
 handlers:
 
+# service worker
+- url: /service-worker.js
+  static_files: dist/service-worker.js
+  expiration: 0m
+  upload: dist/service-worker.js
+
 # Fonts, images, media
 - url: /(.+\.(woff|obj|gif|ico|jpe?g|png|svgz?|ogg|mp3))
   static_files: dist/\1
   upload: dist/(.+\.(woff|obj|gif|ico|jpe?g|png|svgz?|ogg|mp3))
+  application_readable: true
 
 # CSS, Javascript, text and other file types
-- url: /(.+\.(css|js|xml|txt|json|md))
+- url: /(.+\.(css|js|xml|txt|json|md|map))
   static_files: dist/\1
-  upload: dist/(.+\.(css|js|xml|txt|json|md))
+  upload: dist/(.+\.(css|js|xml|txt|json|md|map))
+  application_readable: true
 
-# if a shared link 
-- url: /([0-9]+)/([A-Za-z0-9-_]{6})\/?
-  static_files: dist/performance.html
-  upload: dist/performance.html
-  secure: always
+# # if a shared link 
+# - url: /([0-9]+)/([A-Za-z0-9-_]{6})\/?
+#   static_files: dist/performance.html
+#   upload: dist/performance.html
+#   secure: always
 
-# all other requests, get index.html
+# # all other requests, get index.html
+# - url: /(.*)
+#   static_files: dist/index.html
+#   upload: dist/index.html
+#   secure: always
+
+# html
+- url: /((no-webgl|no-webaudio|not-available)\.html)
+  static_files: dist/\1
+  upload: dist/((no-webgl|no-webaudio|not-available)\.html)
+
 - url: /(.*)
-  static_files: dist/index.html
-  upload: dist/index.html
+  script: auth.application
   secure: always
 
 skip_files:

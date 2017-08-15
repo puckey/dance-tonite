@@ -11,6 +11,8 @@ import './style.scss';
 
 const getRatio = event => event.clientX / windowSize.width;
 
+const updateRate = 200;
+
 export default class ProgressBar extends Component {
   constructor() {
     super();
@@ -22,6 +24,7 @@ export default class ProgressBar extends Component {
     this.onClick = this.onClick.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.tick = this.tick.bind(this);
+    this.lastUpdate = Date.now();
   }
 
   componentDidMount() {
@@ -56,9 +59,25 @@ export default class ProgressBar extends Component {
 
   tick() {
     if (audio.progress === undefined) return;
-    const ratio = this.moveRatio || (audio.progress / settings.totalLoopCount);
-    const targetRatio = this.targetRatio = this.targetRatio * 0.8 + ratio * 0.2;
-    this.progressEl.style.transform = `scaleX(${targetRatio})`;
+
+    // don't update progress bar if we're in VR but don't have external display
+    if (!viewer.vrEffect.isPresenting || feature.hasExternalDisplay) {
+      let newRatio;
+      // if they're mousing over the progress bar
+      if (this.moveRatio) {
+        newRatio = this.targetRatio = this.targetRatio * 0.8 + this.moveRatio * 0.2;
+      }
+      // else if it's time to update the progress bar
+      //  css transform causes re-layout which is expensive
+      else if (Date.now() - this.lastUpdate > updateRate) {
+        newRatio = (audio.progress / settings.totalLoopCount);
+      }
+
+      if (newRatio) {
+        this.progressEl.style.transform = `scaleX(${newRatio})`;
+        this.lastUpdate = Date.now();
+      }
+    }
   }
 
   render() {

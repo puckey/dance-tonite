@@ -15,12 +15,12 @@ const isProd = NODE_ENV === 'production';
 
 const content = {
   title: 'Dance Tonite',
-  description: 'An interactive VR experience by LCD Soundsystem and their fans.',
-  descriptionTwitter: 'Step into Dance Tonite, an ever-changing VR collaboration by @LCDSoundsystem and their fans: https://tonite.dance',
-  descriptionFacebook: 'Step into Dance Tonite, an ever-changing VR collaboration by LCD Soundsystem and their fans. Produced by Jonathan Puckey, Moniker, and the Google Data Arts Team.',
-  sharedDescription: 'Check out my moves in this VR experience by LCD Soundsystem and their fans.',
-  image: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/sharing/social.png',
-  imageFacebook: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/sharing/facebook.png',
+  description: 'An ever-changing VR collaboration by LCD Soundsystem and their fans.',
+  descriptionTwitter: 'An ever-changing VR collaboration by LCD Soundsystem and their fans.',
+  descriptionFacebook: 'An ever-changing VR collaboration by LCD Soundsystem and their fans. Produced by Jonathan Puckey, Moniker, and the Google Data Arts Team.',
+  sharedDescription: 'Check out my dance in this ever-changing VR collaboration by LCD Soundsystem and their fans.',
+  image: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/sharing/share_small.png',
+  imageFacebook: 'https://storage.googleapis.com/you-move-me.appspot.com/assets/sharing/share.png',
 };
 
 const extractSass = new ExtractTextPlugin({
@@ -164,7 +164,7 @@ const config = {
             appId: 305769256550344,
             title: content.title,
             description: content.sharedDescription,
-            image: content.image,
+            image: content.imageFacebook,
           },
         },
         htmlSettings
@@ -203,6 +203,31 @@ if (!isProd) {
   );
 }
 
+if (isProd) {
+  const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
+  config.plugins.push(
+    new SWPrecacheWebpackPlugin({
+      dontCacheBustUrlsMatching: /\.\w{8}\./,
+      filename: 'service-worker.js',
+      minify: true,
+      navigateFallback: 'index.html',
+      staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/],
+      runtimeCaching: [{
+        urlPattern: /playlist\.json$/,
+        handler: 'networkFirst',
+      }, {
+        urlPattern: /\/recordings\//,
+        handler: 'cacheFirst',
+        options: {
+          cache: {
+            maxEntries: 120,
+            name: 'recordings',
+          },
+        },
+      }],
+    })
+  );
+}
 
 if (process.env.ANALYZE_BUNDLE) {
   config.plugins.push(

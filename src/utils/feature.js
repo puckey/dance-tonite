@@ -117,7 +117,7 @@ const isSamsungInternet = /SamsungBrowser/i.test(userAgent);
 const isTablet = (isAndroid && !/mobile/i.test(userAgent)) // https://stackoverflow.com/questions/5341637/how-do-detect-android-tablets-in-general-useragent
   || /ipad/i.test(userAgent);
 const vrPolyfill = isMobile && !isTablet && !isAndroid && (navigator.getVRDisplays === undefined);
-
+const isMSEdge = /Edge/i.test(userAgent);
 
 const feature = {
   isIOs,
@@ -125,7 +125,8 @@ const feature = {
   isTablet,
   isAndroid,
   isSamsungInternet,
-  isChrome: /chrome/i.test(userAgent),
+  isMSEdge,
+  isChrome: /chrome/i.test(userAgent) && !isMSEdge,
   vrPolyfill,
   hasWebGL: checkHasWebGL(),
   hasWebVR,

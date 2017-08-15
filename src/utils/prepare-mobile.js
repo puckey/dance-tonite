@@ -1,7 +1,11 @@
 import feature from './feature';
+import nosleep from './nosleep';
 
 export default () => {
   document.body.classList.add('mod-mobile');
+
+  // create the no-sleep video element
+  nosleep.create();
 
   if (!feature.isIOs) return;
 

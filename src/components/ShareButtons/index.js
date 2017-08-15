@@ -29,7 +29,7 @@ export default class Submission extends Component {
     this.setState({
       link,
       deepLink: `https://tonite.dance${link}`,
-      description: `Check out my dance in room ${roomId} of @LCDSoundsystem’s Dance Tonite: `,
+      description: `I'm in room ${roomId} of @LCDSoundsystem’s Dance Tonite `,
     });
   }
 
@@ -39,7 +39,6 @@ export default class Submission extends Component {
 
   share(service) {
     const description = service === 'twitter' ? this.state.description : '';
-    // if (service === 'twitter') description = description.replace('LCD Soundsystem', '@LCDSoundsystem');
     window.open(
       `${this.shareURL[service]}${description}${this.state.deepLink}`,
       '',

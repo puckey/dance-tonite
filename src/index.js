@@ -51,7 +51,17 @@ if (process.env.FLAVOR === 'cms') {
   if (feature.isMobile) {
     prepareMobile();
   }
-  document.getElementById('initial').remove();
+  const el = document.getElementById('initial');
+  el.parentNode && el.parentNode.removeChild(el);
   render(<Router />, document.body, root);
   analytics.mount();
 })();
+
+// if we're in production mode, use service worker
+if (process.env.NODE_ENV === 'production') {
+  window.addEventListener('load', () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  });
+}

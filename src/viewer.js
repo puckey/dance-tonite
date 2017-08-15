@@ -18,6 +18,8 @@ import windowSize from './utils/windowSize';
 import audio from './audio';
 import Room from './room';
 import { backgroundColor } from './theme/colors';
+import { queryData } from './utils/url';
+import nosleep from './utils/nosleep';
 
 const orthographicDistance = 4;
 // TODO: remove me:
@@ -158,7 +160,7 @@ const viewer = Object.assign(emitter(), {
 
     zoomCamera(
       audio.progress > 21
-        ? Math.min(2, audio.progress - 21) * 0.5
+        ? Math.min(3, audio.progress - 21) * 0.33333
         : 0
     );
 
@@ -191,12 +193,28 @@ const viewer = Object.assign(emitter(), {
     document.body.appendChild(containerEl);
 
     viewer.vrEffect = vrEffect = new THREE.VREffect(renderer);
+    viewer.vrEffect.setLogging(settings.logging);
+
+    let defaultVRRes = 1.0;
+    // if (feature.isMobile) {
+    //   defaultVRRes = 0.85;
+    // }
+    const vrRes = queryData.res || defaultVRRes;
+    viewer.vrEffect.setVRResolutionRatio(vrRes);
+
+    const defaultVRFOV = feature.isMobile ? 0.9 : 1.0;
+    const vrFOV = queryData.fov || defaultVRFOV;
+    viewer.vrEffect.setFOVRenderRatio(vrFOV);
+
     viewer.controls = controls = new THREE.VRControls(cameras.default);
     controls.standing = true;
 
     window.addEventListener('vrdisplaypresentchange', () => {
       viewer.emit('vr-present-change', vrEffect.isPresenting);
-      if (!vrEffect.isPresenting) viewer.switchCamera('orthographic');
+      if (!vrEffect.isPresenting) {
+        viewer.switchCamera('orthographic');
+        nosleep.enable();
+      }
     }, false);
 
     windowSize.on('resize', onResize, false);
@@ -210,6 +228,15 @@ const viewer = Object.assign(emitter(), {
 
   enterPresent() {
     if (vrEffect.isPresenting) return;
+    if (feature.isMobile) {
+      if (feature.vrPolyfill) {
+        // the wake lock feature of webvr polyfill is broken. use nosleep instead
+        vrEffect.getVRDisplay().wakelock_ = { request: () => {}, release: () => {} };
+        nosleep.enable();
+      } else {
+        nosleep.disable();
+      }
+    }
     vrEffect.requestPresent();
     setTimeout(() => {
       viewer.switchCamera('default');
