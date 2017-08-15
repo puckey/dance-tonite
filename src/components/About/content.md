@@ -6,9 +6,11 @@
   <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
 </div>
 
-Dance Tonite features VR motion capture recordings of users dancing to “Tonite” by LCD Soundsystem. The performance can be experienced in three different ways, all through the web. Without VR, you are in the audience. On Daydream View, you are on stage watching the experience unfold around you. In room-scale VR, you are a performer.
+Dance Tonite is an ever-changing VR collaboration by LCD Soundsystem and their fans featuring the band’s new song, “Tonite.” In it, you go from room to room experiencing a series of dance performances created entirely by fans. Using a new technology called WebVR, the experience is accessible from a single URL and works across platforms, giving the user a different role in the experience depending on their device. 
 
-Each room is made from a single person’s choreography. The entire experience evolves over time with every new user contribution.  
+With Daydream View or other handheld VR headsets, you are on stage watching the experience unfold around you. With room-scale VR such as the HTC VIVE or Oculus Rift (which enable your physical movements to be reflected in your virtual environment), you are a performer. And without VR, you are in the audience getting a bird’s eye view perspective. 
+
+Dance Tonite was created by artists Jonathan Puckey and Moniker in collaboration with the Data Arts Team, a specialized team within Google exploring the ongoing dialog between people and emerging technologies. 
 
 Take a look at the <a class="gallery-link">gallery of featured user contributions</a>.
 
