@@ -44,8 +44,15 @@
             );
         } catch(e) { return false; }
       }
+
+      function supportsWebAudio() {
+        return !!(window.AudioContext || window.webkitAudioContext);
+      }
+
       if (!supportsWebGL()) {
         window.location = '/no-webgl.html';
+      } else if (!supportsWebAudio()) {
+        window.location = '/no-webaudio.html';
       }
 
       function checkLocale(){
