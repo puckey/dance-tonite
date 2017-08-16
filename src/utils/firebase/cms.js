@@ -41,6 +41,12 @@ const getRecording = (id) => getConnection().then(
   () => connection.contactServer(`${connection.serverURL}getRecording`, { id }, true)
 );
 
+// banRecording:
+// cms.banRecording('EamZtQ').then((data) => { console.log('recording banned!', data); });
+const banRecording = (id) => getConnection().then(
+  () => connection.contactServer(`${connection.serverURL}banRecording`, { id }, true)
+);
+
 // getAvailableRecordings:
 // cms.getAvailableRecordings(1).then((data) => { console.log('getAvailableRecordings', data); });
 const getAvailableRecordings = (room) => getConnection().then(
@@ -79,6 +85,7 @@ export default {
   publishDraftPlaylist,
   getUnmoderatedRecordings,
   getRecording,
+  banRecording,
   getAllRecordings,
   getAvailableRecordings,
   updateRecording,
