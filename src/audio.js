@@ -345,7 +345,7 @@ const audio = Object.assign(emitter(), {
     if (immediate) {
       filter.frequency.value = FILTER_HIGH;
     } else {
-      audio.fade(2, FILTER_LOW, filter.frequency);
+      audio.fade(2, FILTER_HIGH, filter.frequency);
     }
     await audio.fade(1, 1);
 
@@ -368,6 +368,7 @@ const audio = Object.assign(emitter(), {
       _property.cancelScheduledValues(scheduledTime);
     }
     scheduledTime = context.currentTime;
+    gainNode.gain.setValueAtTime(_property.value, context.currentTime);
     _property.exponentialRampToValueAtTime(
       targetValue,
       scheduledTime + fadeDuration
