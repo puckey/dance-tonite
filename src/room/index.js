@@ -91,6 +91,7 @@ export default class Room {
     this.random = Math.random();
     this.costumeColor = getCostumeColor(colorIndex);
     const roomColor = this.roomColor = getRoomColor(colorIndex);
+    this.currentRoomColor = this.roomColor;
     this.position = layout.getPosition(
       index,
       new THREE.Vector3(),
@@ -148,8 +149,7 @@ export default class Room {
   }
 
   changeColor(color) {
-    items.room.changeColor(this.index, color);
-    items.wall.changeColor(this.index, color);
+    this.currentRoomColor = color;
   }
 
   getHeadPosition(index, applyMatrix = true) {
@@ -185,9 +185,9 @@ export default class Room {
     }
 
     if (this.type !== 'PLANE') {
-      items.room.add([this.roomPosition, null], this.roomColor);
+      items.room.add([this.roomPosition, null], this.currentRoomColor);
       if (this.single || this.wall || layout.hasWall(this.index)) {
-        items.wall.add([this.roomPosition, null], this.roomColor);
+        items.wall.add([this.roomPosition, null], this.currentRoomColor);
       }
     }
 
