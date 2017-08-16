@@ -32,7 +32,9 @@ export default class Submissions extends Component {
     this.submit = this.submit.bind(this);
     this.updateTitle = debounce(300, this.updateTitle);
     this.toggleDelete = this.toggleDelete.bind(this);
+    this.toggleBan = this.toggleBan.bind(this);
     this.performDelete = this.performDelete.bind(this);
+    this.performBan = this.performBan.bind(this);
   }
 
   componentDidMount() {
@@ -105,12 +107,29 @@ export default class Submissions extends Component {
     }
   }
 
+  toggleBan(event) {
+    this.setState({ banOverlay: !this.state.banOverlay });
+    if (event) {
+      event.stopPropagation();
+    }
+  }
+
   performDelete() {
     const { recording } = this.state;
     recording.room = -recording.room;
     this.setState({
       recording,
     }, this.submit);
+  }
+
+  performBan() {
+    this.setState({
+      banning: true,
+      banOverlay: false,
+    }, async () => {
+      await cms.banRecording(this.state.item.id);
+      window.location = '/submissions';
+    });
   }
 
   async asyncMount() {
@@ -170,7 +189,7 @@ export default class Submissions extends Component {
 
   render(
     { room, goHome },
-    { items, item, recording, error, loading, deleteOverlay },
+    { items, item, recording, error, loading, deleteOverlay, banOverlay, banning },
     { presenting }
   ) {
     return (
@@ -182,6 +201,18 @@ export default class Submissions extends Component {
           inbox
           close
         />
+        { banning &&
+          <Overlay>
+            <p>Banning recording. Please wait...</p>
+          </Overlay>
+        }
+        { banOverlay &&
+          <Overlay onClose={this.toggleBan}>
+            <p>Ban {recording.title || recording.id}?</p>
+            <p><a onClick={this.performBan}><span>Yes, ban this recording</span></a></p>
+            <p><a onClick={this.toggleDtoggleBanelete}><span>No, I changed my mind</span></a></p>
+          </Overlay>
+        }
         { deleteOverlay &&
           <Overlay onClose={this.toggleDelete}>
             <p>Delete {recording.title || recording.id}?</p>
@@ -230,6 +261,10 @@ export default class Submissions extends Component {
                 />
               </div>
               <div className="submit-buttons">
+                <a
+                  className="submit-button"
+                  onClick={this.toggleBan}
+                >Ban</a>
                 <a
                   className="submit-button"
                   onClick={this.toggleDelete}
