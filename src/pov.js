@@ -31,8 +31,8 @@ export default function create({ rooms, orb, offset = 0 }) {
     if (feature.isMobile && (hoverPerformance || hoverOrb)) {
       hoverPerformance = null;
       hoverOrb = false;
-      viewer.switchCamera('orthographic');
       InstancedItem.group.remove(viewer.camera);
+      viewer.switchCamera('orthographic');
       inPOV = false;
       return;
     }
