@@ -108,12 +108,7 @@ export default class Room {
 
     const type = layout.getType(index);
     this.type = type;
-    if (type !== 'PLANE') {
-      items.room.add([position, null], roomColor);
-      if (single || wall || layout.hasWall(index)) {
-        items.wall.add([position, null], roomColor);
-      }
-    } else {
+    if (type === 'PLANE') {
       this.dropTimes = [];
       for (let i = 0; i < 20; i++) {
         this.dropTimes.push(Math.random() * 0.2);

@@ -81,6 +81,10 @@ class InstancedItem {
   }
 
   add(pose, color, scale) {
+    // don't add if we've already used our allocated memory
+    if (this.perspectiveMesh.geometry.maxInstancedCount >= this.perspectiveMesh.numInstances)
+      return;
+
     const index = this.perspectiveMesh.geometry.maxInstancedCount++;
     const { orthographicMesh } = this;
     if (orthographicMesh) {
