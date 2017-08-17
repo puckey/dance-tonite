@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /** @jsx h */
 import { h, Component } from 'preact';
 import download from 'downloadjs';
@@ -5,7 +18,7 @@ import download from 'downloadjs';
 import './style.scss';
 
 import deps from '../../deps';
-import * as THREE from '../../lib/three';
+import * as THREE from '../../../third_party/threejs/three';
 import viewer from '../../viewer';
 import settings from '../../settings';
 import audio from '../../audio';
@@ -122,7 +135,7 @@ export default class CreateGIF extends Component {
         ? (Math.min(4, window.navigator.hardwareConcurrency))
         : 2,
       quality: 1,
-      workerScript: '/public/gif.worker.js',
+      workerScript: '/public/third_party/gifworker/gif.worker.js',
       globalPalette: true,
       transparent: 0x00FFFF,
     });

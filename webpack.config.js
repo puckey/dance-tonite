@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /* eslint global-require: 0 */
 const webpack = require('webpack');
 const path = require('path');
@@ -107,7 +120,7 @@ const config = {
   resolve: {
     extensions: ['.js'],
     alias: {
-      THREE: path.resolve(__dirname, './src/lib/three.js'),
+      THREE: path.resolve(__dirname, './third_party/threejs/three.js'),
     },
   },
   plugins: [
@@ -115,6 +128,7 @@ const config = {
     new CleanWebpackPlugin(['dist']),
     new CopyWebpackPlugin([
       { from: 'public', to: '../dist/public' },
+      { from: '../third_party/gifworker', to: '../dist/public/third_party/gifworker' },
       { from: 'templates/_redirects', to: '../dist/' },
       { from: 'templates/no-webgl.html', to: '../dist' },
       { from: 'templates/no-webaudio.html', to: '../dist' },
@@ -180,7 +194,7 @@ const config = {
     }),
     new webpack.NormalModuleReplacementPlugin(
       (/^three$/),
-      require.resolve('./src/lib/three')
+      require.resolve('./third_party/threejs/three')
     ),
     extractSass,
   ],
