@@ -78,7 +78,6 @@ export default class Room {
       showBackWall = false,
       showRoom = true,
       morph = true,
-      isGiffing = false,
     } = params;
     this.morph = !!morph;
     this._worldPosition = new THREE.Vector3();
@@ -115,7 +114,6 @@ export default class Room {
       }
       this.riseTime = settings.colorTimes[layout.getSynthIndex(this.index)];
     }
-    Room.isGiffing = isGiffing;
   }
 
   load(callback) {
@@ -399,7 +397,7 @@ Room.reset = () => {
   // Move an extra invisible object3d with a texture to the end of scene's children
   // array in order to solve a texture glitch as described in:
   // https://github.com/puckey/you-move-me/issues/129
-  if (!Room.isGiffing) viewer.scene.add(debugMesh);
+  viewer.scene.add(debugMesh);
 };
 
 Room.shouldUseShadow = () => !!settings.useShadow && !viewer.vrEffect.isPresenting;
