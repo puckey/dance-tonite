@@ -50,7 +50,8 @@ export default class Playlist extends Component {
             recording,
             index,
             colorIndex: pathRoomId - 1,
-            wall: true,
+            showFrontWall: true,
+            showBackWall: true,
           });
           rooms.push(room);
         }
@@ -102,6 +103,9 @@ export default class Playlist extends Component {
             ? entry.id
             : entry,
         index: i,
+        showFrontWall: layout.hasFrontWall(i),
+        showBackWall: layout.hasBackWall(i),
+        showRoom: layout.hasRoom(i),
         pathRecording: isPathRecording,
       });
       rooms.push(room);

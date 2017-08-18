@@ -74,7 +74,9 @@ export default class Room {
       index,
       colorIndex = params.index,
       single = false,
-      wall = false,
+      showFrontWall = false,
+      showBackWall = false,
+      showRoom = true,
       morph = true,
       isGiffing = false,
     } = params;
@@ -83,38 +85,34 @@ export default class Room {
     this.index = params.single ? 0 : index;
     this.insideMegaGrid = layout.insideMegaGrid(this.index);
     this.single = single;
-    this.wall = wall;
+    this.showFrontWall = showFrontWall;
+    this.showBackWall = showBackWall;
+    this.showRoom = showRoom;
     const frames = this.frames = new Frames(id, recording);
     this.firstFrame = frames.getFrame(0);
     this.lastFrame = frames.getFrame((settings.loopDuration * 2) - 0.001);
     this.frame = frames.getFrame();
     this.random = Math.random();
     this.costumeColor = getCostumeColor(colorIndex);
-    const roomColor = this.roomColor = getRoomColor(colorIndex);
-    this.currentRoomColor = this.roomColor;
+    this.currentRoomColor = this.roomColor = getRoomColor(colorIndex);
     this.position = layout.getPosition(
       index,
       new THREE.Vector3(),
       single
     );
-
     const position = tempVector()
       .add(this.position)
       .add(roomOffset);
     position.y -= 1;
 
     this.roomPosition = position.clone();
-    this.roomColor = roomColor;
+    this.roomPose = [this.roomPosition, null];
 
-    const type = layout.getType(index);
-    this.type = type;
-    if (type === 'PLANE') {
+    if (this.insideMegaGrid) {
       this.dropTimes = [];
       for (let i = 0; i < 20; i++) {
         this.dropTimes.push(Math.random() * 0.2);
       }
-    }
-    if (this.insideMegaGrid) {
       this.riseTime = settings.colorTimes[layout.getSynthIndex(this.index)];
     }
     Room.isGiffing = isGiffing;
@@ -179,11 +177,17 @@ export default class Room {
       return;
     }
 
-    if (this.type !== 'PLANE') {
-      items.room.add([this.roomPosition, null], this.currentRoomColor);
-      if (this.single || this.wall || layout.hasWall(this.index)) {
-        items.wall.add([this.roomPosition, null], this.currentRoomColor);
-      }
+    const { currentRoomColor, roomPose } = this;
+    if (this.showRoom) {
+      items.room.add(roomPose, currentRoomColor);
+    }
+
+    if (this.showFrontWall) {
+      items.frontWall.add(roomPose, currentRoomColor);
+    }
+
+    if (this.showBackWall) {
+      items.backWall.add(roomPose, currentRoomColor);
     }
 
     // In orthographic mode, scale up the meshes:
@@ -332,7 +336,8 @@ export default class Room {
 Room.clear = () => {
   if (!items) return;
   items.room.empty();
-  items.wall.empty();
+  items.frontWall.empty();
+  items.backWall.empty();
   items.hand.empty();
   items.head.empty();
   if (settings.useShadow) {
@@ -359,12 +364,16 @@ Room.reset = () => {
         props.perspectiveRoom,
         props.orthographicRoom,
       ),
-      wall: new InstancedItem(
-        'walls',
+      frontWall: new InstancedItem(
+        'front-walls',
         layout.roomCount,
         props.perspectiveWall,
         props.orthographicWall,
-  // if (!Room.isGiffing) viewer.scene.add(roomsGroup);
+      ),
+      backWall: new InstancedItem(
+        'back-walls',
+        layout.roomCount,
+        props.perspectiveBackWall,
       ),
       head: new InstancedItem(
         'heads',

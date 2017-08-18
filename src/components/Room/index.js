@@ -108,6 +108,7 @@ export default class RoomComponent extends Component {
       id,
       index: roomId - 1,
       single: true,
+      showFrontWall: true,
       recording: record ? recording : null,
       morph,
     });
