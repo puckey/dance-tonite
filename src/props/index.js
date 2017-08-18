@@ -19,6 +19,7 @@ import feature from '../utils/feature';
 import { recordCostumeColor, orbColor, controllerButtonColor } from '../theme/colors';
 
 import wallUrl from './models/first-wall-vr.obj';
+import backWallUrl from './models/back-wall-vr.obj';
 import roomUrl from './models/space-vr.obj';
 import isometricWallUrl from './models/first-wall-isometric.obj';
 import isometricRoomUrl from './models/space-isometric.obj';
@@ -38,10 +39,11 @@ const {
 } = THREE;
 
 const controllerMaterial = new MeshLambertMaterial({ color: recordCostumeColor });
-const enableRoomTexturesInVR = feature.isMobile ? false : true;
+const enableRoomTexturesInVR = !feature.isMobile;
 
 const props = {
   perspectiveWall: [wallUrl],
+  perspectiveBackWall: [backWallUrl],
   perspectiveRoom: [roomUrl, enableRoomTexturesInVR ? roomTextureUrl : undefined, true],
   orthographicWall: [isometricWallUrl],
   orthographicRoom: [isometricRoomUrl, isometricRoomTextureUrl],

@@ -18,14 +18,14 @@ const { roomWidth, roomHeight, roomDepth, roomOffset } = settings;
 const ph = { type: 'PLANE', timeline: false, megagrid: true };
 const plh = { type: 'PLANE', megagrid: true };
 const em = { type: 'EMPTY' };
-const ho = { type: 'HORIZONTAL' };
-const hw = { type: 'HORIZONTAL', wall: true };
-
+const ho = { type: 'HORIZONTAL', room: true };
+const hfw = Object.assign({ frontWall: true }, ho);
+const hbw = Object.assign({ backWall: true }, ho);
 let rooms = [
   [0, 0, -3, em],
   [0, 0, -2, em],
   [0, 0, -1, em],
-  [0, 0, 0, hw],
+  [0, 0, 0, hfw],
   [0, 0, 1, ho],
   [0, 0, 2, ho],
   [0, 0, 3, ho],
@@ -43,7 +43,7 @@ let rooms = [
   [0, 0, 15, ho],
   [0, 0, 16, ho],
   [0, 0, 17, ho],
-  [0, 0, 18, ho],
+  [0, 0, 18, hbw],
   [-3, 0, 19, ph, 3], [-2, 0, 19, ph, 4], [-1, 0, 19, ph, 5], [0, 0, 19, plh, 8], [1, 0, 19, ph, 5], [2, 0, 19, ph, 4], [3, 0, 19, ph, 3],
   [-3, 0, 20, ph, 2], [-2, 0, 20, ph, 3], [-1, 0, 20, ph, 2], [0, 0, 20, plh, 1], [1, 0, 20, ph, 2], [2, 0, 20, ph, 3], [3, 0, 20, ph, 2],
   [-3, 0, 21, ph, 3], [-2, 0, 21, ph, 6], [-1, 0, 21, ph, 1], [0, 0, 21, plh, 0], [1, 0, 21, ph, 1], [2, 0, 21, ph, 6], [3, 0, 21, ph, 3],
@@ -76,6 +76,8 @@ const timelineLayout = rooms.filter(([,,, { timeline }]) => timeline !== false);
 
 const playlistLayout = layout.filter(([,,, { megagrid }]) => !megagrid);
 
+const getRoomType = index => layout[index][3];
+
 export default {
   getPosition(position, roomPosition, single) {
     let x = 0;
@@ -99,20 +101,24 @@ export default {
       : tempVector(x, y, z);
   },
 
-  hasWall(index) {
-    return !!layout[index][3].wall;
+  hasFrontWall(index) {
+    return !!getRoomType(index).frontWall;
+  },
+
+  hasBackWall(index) {
+    return !!getRoomType(index).backWall;
+  },
+
+  hasRoom(index) {
+    return !!getRoomType(index).room;
   },
 
   isEven(index) {
     return index % 2 === 0;
   },
 
-  getType(index) {
-    return layout[index][3].type;
-  },
-
   insideMegaGrid(index) {
-    return !!layout[index][3].megagrid;
+    return !!getRoomType(index).megagrid;
   },
 
   getSynthIndex(index) {
