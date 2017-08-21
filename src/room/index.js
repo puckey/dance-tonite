@@ -243,7 +243,7 @@ export default class Room {
       if (!morphDuration) {
         const [position] = frame.getPose(0, limbIndex, offset, applyMatrix);
         const distance = Math.min(2, position.distanceTo(LAST_POSE[0])) * 0.5;
-        morphDuration = this.morphDuration = Math.max(0.01, distance * 0.2);
+        morphDuration = this.morphDuration = Math.max(0.01, distance * 0.3);
       }
       const overlapRatio = Math.min(morphDuration, frame.loopRatio)
           * (1 / this.morphDuration);
