@@ -3,7 +3,7 @@
 </div>
 
 <div class="about-video-container">
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/WdL_IsD646I" frameborder="0" allowfullscreen></iframe>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/9cG675fJlEo" frameborder="0" allowfullscreen></iframe>
 </div>
 
 Dance Tonite is an ever-changing VR collaboration by LCD Soundsystem and their fans featuring the band’s new song, “Tonite.” In it, you go from room to room experiencing a series of dance performances created entirely by fans. Using a new technology called WebVR, the experience is accessible from a single URL and works across platforms, giving the user a different role in the experience depending on their device. 
