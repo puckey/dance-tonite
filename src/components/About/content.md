@@ -6,18 +6,18 @@
   <iframe width="560" height="315" src="https://www.youtube.com/embed/9cG675fJlEo" frameborder="0" allowfullscreen></iframe>
 </div>
 
-Dance Tonite is an ever-changing VR collaboration by LCD Soundsystem and their fans featuring the band’s new song, “Tonite.” In it, you go from room to room experiencing a series of dance performances created entirely by fans. Using a new technology called WebVR, the experience is accessible from a single URL and works across platforms, giving the user a different role in the experience depending on their device. 
+In Dance Tonite, you go from room to room experiencing a series of dance performances created entirely by fans. Using a new technology called WebVR, the experience is accessible from a single URL and works across platforms, giving the user a different role in the experience depending on their device. 
 
 With Daydream View or other handheld VR headsets, you are on stage watching the experience unfold around you. With room-scale VR such as the HTC VIVE or Oculus Rift (which enable your physical movements to be reflected in your virtual environment), you are a performer. And without VR, you are in the audience getting a bird’s eye view perspective. 
 
-Dance Tonite was created by artists Jonathan Puckey and Moniker in collaboration with the Data Arts Team, a specialized team within Google exploring the ongoing dialog between people and emerging technologies. 
+Dance Tonite was created by artists Jonathan Puckey and Moniker in collaboration with the Data Arts Team, a specialized team within Google exploring the ongoing dialog between artists and emerging technologies. 
 
 Take a look at the <a class="gallery-link">gallery of featured user contributions</a>.
 
 ## Technology
 Dance Tonite previews one of the most exciting developments in Chrome, WebVR, allowing anyone to take part in the experience. It’s built for the Web—no apps or downloads required.
 
-To learn more about how this was made, read the technical deep dive or view the [open source project code](https://github.com/puckey/dance-tonite).
+To learn more about how this was made, read the technical deep dive or view the open source [project code](https://github.com/puckey/dance-tonite).
 
 <div class="column-wrapper">
   <div>
@@ -46,13 +46,13 @@ To learn more about how this was made, read the technical deep dive or view the 
   </div>
 
   <div>
-    <h3><a href="http://webpack.js.org">Webpack</a></h3>
-    Highly configurable open-source module bundler for JavaScript applications. Webpack takes modules with dependencies and generates static assets representing those modules.
+    <h3><a href="https://preactjs.com/">Preact</a></h3>
+    Fast and tiny open-source JavaScript library for building user interfaces. Preact allows developers to create large web applications that use data which can change over time, without reloading the page.
   </div>
 
   <div>
-    <h3><a href="https://preactjs.com/">Preact</a></h3>
-    Fast and tiny open-source JavaScript library for building user interfaces. Preact allows developers to create large web applications that use data which can change over time, without reloading the page.
+    <h3><a href="https://developers.google.com/web/fundamentals/getting-started/primers/service-workers">Service Workers</a></h3>
+    A browser feature that brings 'native app' functionality to the web, for rich offline experiences, periodic background syncs, and push notifications.
   </div>
 
   <div>
