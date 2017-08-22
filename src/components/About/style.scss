@@ -13,6 +13,8 @@
  */
 @import '../../theme/theme';
 
+$video-ratio: 16 / 9;
+
 .about {
   position: relative;
   top: 0;
@@ -237,8 +239,7 @@ p + .about-video-container {
 .about-video-container {
   position: relative;
   width: 50%;
-  padding-top: 25px;
-  padding-bottom: 28.125%;
+  padding-bottom: 50% / $video-ratio;
   height: 0;
   margin: 0 auto 2rem;
   background: $background-color;
@@ -253,9 +254,13 @@ p + .about-video-container {
   }
 
 
-  @media screen and (max-width: $min-width) {
+  @media screen and (max-width: $min-width) and (min-width: $mobile-wrapper-width * (1 / 0.9)) {
+    width: $mobile-wrapper-width;
+    padding-bottom: $mobile-wrapper-width / $video-ratio;
+  }
+
+  @media screen and (max-width: $mobile-wrapper-width * (1 / 0.9)) {
     width: 90vw;
-    max-width: $mobile-wrapper-width;
-    padding-bottom: 50.625%;
+    padding-bottom: 90vw / $video-ratio;
   }
 }
