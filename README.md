@@ -4,7 +4,7 @@ Dance Tonite is an ever-changing VR collaboration by LCD Soundsystem and their f
 
 View the live site: [tonite.dance](https://tonite.dance)
 
-Read the technical case study: LINK HERE
+Read the [technical case study](https://developers.google.com/web/showcase/2017/dance-tonite).
 
 ## Installing
 
