@@ -23,10 +23,17 @@ handlers:
   expiration: 0m
   upload: dist/service-worker.js
 
-# Fonts, images, media
-- url: /(.+\.(woff|obj|gif|ico|jpe?g|png|svgz?|ogg|mp3))
+# obj files
+- url: /(.+\.(obj))
   static_files: dist/\1
-  upload: dist/(.+\.(woff|obj|gif|ico|jpe?g|png|svgz?|ogg|mp3))
+  upload: dist/(.+\.(obj))
+  application_readable: true
+  mime_type: text/plain
+
+# Fonts, images, media
+- url: /(.+\.(woff|gif|ico|jpe?g|png|svgz?|ogg|mp3))
+  static_files: dist/\1
+  upload: dist/(.+\.(woff|gif|ico|jpe?g|png|svgz?|ogg|mp3))
   application_readable: true
 
 # CSS, Javascript, text and other file types
