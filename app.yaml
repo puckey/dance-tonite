@@ -35,25 +35,16 @@ handlers:
   upload: dist/(.+\.(css|js|xml|txt|json|md|map))
   application_readable: true
 
-# # if a shared link 
-# - url: /([0-9]+)/([A-Za-z0-9-_]{6})\/?
-#   static_files: dist/performance.html
-#   upload: dist/performance.html
-#   secure: always
+# if a shared link 
+- url: /([0-9]+)/([A-Za-z0-9-_]{6})\/?
+  static_files: dist/performance.html
+  upload: dist/performance.html
+  secure: always
 
-# # all other requests, get index.html
-# - url: /(.*)
-#   static_files: dist/index.html
-#   upload: dist/index.html
-#   secure: always
-
-# html
-- url: /((no-webgl|no-webaudio|not-available)\.html)
-  static_files: dist/\1
-  upload: dist/((no-webgl|no-webaudio|not-available)\.html)
-
+# all other requests, get index.html
 - url: /(.*)
-  script: auth.application
+  static_files: dist/index.html
+  upload: dist/index.html
   secure: always
 
 skip_files:
