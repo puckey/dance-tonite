@@ -6,7 +6,7 @@
   <iframe width="560" height="315" src="https://www.youtube.com/embed/9cG675fJlEo" frameborder="0" allowfullscreen></iframe>
 </div>
 
-In Dance Tonite, you go from room to room experiencing a series of dance performances created entirely by fans. Using a new technology called WebVR, the experience is accessible from a single URL and works across platforms, giving the user a different role in the experience depending on their device. 
+Dance Tonite features the new song by LCD Soundsystem, "Tonite." In it, you go from room to room experiencing a series of dance performances created entirely by fans. Using a new technology called WebVR, the experience is accessible from a single URL and works across platforms, giving the user a different role in the experience depending on their device. 
 
 With Daydream View or other handheld VR headsets, you are on stage watching the experience unfold around you. With room-scale VR such as the HTC VIVE or Oculus Rift (which enable your physical movements to be reflected in your virtual environment), you are a performer. And without VR, you are in the audience getting a bird’s eye view perspective. 
 
