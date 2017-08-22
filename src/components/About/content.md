@@ -87,7 +87,7 @@ Anyone can add to the experience using the “Add performance” link on the hom
 
 ### Why is everything so minimalistic?
 Room-scale VR systems are essentially powerful motion-capture tools found in our homes and workspaces. Inspired by the rich motion data they capture, we wanted to explore how little visual information is necessary to convey a wide range of motion and humanity. 
-<br />
+
 As a creation tool, a minimal aesthetic ensures that the creativity and variety in the piece comes from people’s unique performances rather than special effects. 
 
 ### Why don’t I see my dance on the website?
