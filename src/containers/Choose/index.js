@@ -81,6 +81,12 @@ export default class Choose extends Component {
       );
     let item = items.find(recording => recording.id === activeId);
 
+    items.forEach(recording => {
+      const days = Math.floor(recording.days_featured);
+      const hours = Math.floor(recording.days_featured % 1 * 24);
+      recording.title = `${recording.title} - ${days}d ${hours}h`;
+    });
+
     // If the active item was not to be found in the available recordings,
     // retrieve it from the cms using getRecording and add it to the items array
     // manually:
