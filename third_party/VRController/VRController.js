@@ -404,7 +404,7 @@ THREE.VRController.update = function(){
 		//  paranoid. Best to just verify the pose object is really there.
 
 		gamepad = gamepads[ i ];
-		if( gamepad      !== null &&
+		if( gamepad !== undefined && gamepad !== null &&
 			gamepad.pose !== undefined &&
 			gamepad.pose !== null ){
 
