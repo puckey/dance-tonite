@@ -30,6 +30,7 @@ import getFontSize from '../../utils/font-size';
 import windowSize from '../../utils/windowSize';
 import feature from '../../utils/feature';
 import settings from '../../settings';
+import countryCodeToEmoji from '../../utils/countryCodeToEmoji';
 
 export default class Gallery extends Component {
   constructor() {
@@ -78,10 +79,10 @@ export default class Gallery extends Component {
       .filter(({ room }) => room > 0);
 
     const items = recordings
-      .map(({ title, id }, index) => ({
+      .map(({ title, id, country_code }, index) => ({
         index,
         id,
-        title: `- ${title || 'Unnamed'}`,
+        title: `- ${title || 'Unnamed'} ${countryCodeToEmoji(country_code)}`,
       }));
     const item = recordingId ? items.find(it => it.id === recordingId) : items[0];
     this.setState({

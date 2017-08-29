@@ -159,7 +159,9 @@ const viewer = Object.assign(emitter(), {
       viewer.daydreamController.update();
     }
 
-    controls.update();
+    if (vrEffect.isPresenting) {
+      controls.update();
+    }
     audio.tick(staticTime);
     Room.clear();
     viewer.emit('tick', dt);
