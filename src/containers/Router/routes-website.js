@@ -13,11 +13,11 @@
  */
 import RecordFlow from '../RecordFlow';
 import PlaybackFlow from '../PlaybackFlow';
-import Gallery from '../Gallery';
+import GalleryFlow from '../GalleryFlow';
 
 export default {
   '/': PlaybackFlow,
-  '/gallery/:id?': Gallery,
+  '/gallery/:id?/:roomId?/:gif?': GalleryFlow,
   '/record/:roomId/:hideHead?': RecordFlow,
   '/:roomId/:id': PlaybackFlow,
 };

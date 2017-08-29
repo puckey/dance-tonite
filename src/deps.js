@@ -26,17 +26,6 @@ const packs = [
       })
     ),
   },
-  {
-    test: () => feature.has6DOF,
-    prepare: () => (
-      new Promise((resolve) => {
-        require.ensure([], function (require) {
-          deps.GIF = require('../third_party/gifjs/gif');
-          resolve();
-        });
-      })
-    ),
-  },
 ];
 
 const deps = {

@@ -17,14 +17,13 @@ import storage from '../../storage';
 
 import './style.scss';
 
-import Menu from '../../components/Menu';
 import Room from '../../components/Room';
-import Container from '../../components/Container';
 import Error from '../../components/Error';
 import Align from '../../components/Align';
 import Title from '../../components/Title';
 import PaginatedList from '../../components/PaginatedList';
 import Spinner from '../../components/Spinner';
+import ButtonItem from '../../components/ButtonItem';
 
 import router from '../../router';
 import getFontSize from '../../utils/font-size';
@@ -38,6 +37,7 @@ export default class Gallery extends Component {
     this.state = { };
     this.performSelect = this.performSelect.bind(this);
     this.onWindowResize = this.onWindowResize.bind(this);
+    this.gotoGIF = this.gotoGIF.bind(this);
   }
 
   componentDidMount() {
@@ -93,6 +93,11 @@ export default class Gallery extends Component {
     });
   }
 
+  gotoGIF() {
+    const { recording } = this.state;
+    router.navigate(`/gallery/${recording.id}/${recording.room}/gif`);
+  }
+
   async performSelect(item) {
     router.navigate(`/gallery/${this.state.recordings[item.index].id}`);
   }
@@ -102,8 +107,7 @@ export default class Gallery extends Component {
     { items, item, recording, error, loading }
   ) {
     return (
-      <Container>
-        <Menu close mute about />
+      <div>
         <Title>{feature.isMobile ? 'Gallery' : 'Featured Performances'}</Title>
         <Align type="bottom-left" margin>
           <PaginatedList
@@ -125,6 +129,19 @@ export default class Gallery extends Component {
           />
           : null
         }
+        {
+          (recording && !feature.isMobile)
+          ? (
+            <Align type="bottom-right" margin>
+              <ButtonItem
+                text={'Create GIF'}
+                onClick={this.gotoGIF}
+                underline
+              />
+            </Align>
+          )
+          : null
+        }
         { (error || loading)
           ? <Align type="center">
             { error
@@ -136,7 +153,7 @@ export default class Gallery extends Component {
           </Align>
           : null
         }
-      </Container>
+      </div>
     );
   }
 }

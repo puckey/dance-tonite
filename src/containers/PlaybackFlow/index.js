@@ -22,8 +22,6 @@ import Submission from '../Submission';
 import CreateGIF from '../CreateGIF';
 
 import recording from '../../recording';
-import router from '../../router';
-import viewer from '../../viewer';
 import feature from '../../utils/feature';
 
 import analytics from '../../utils/analytics';
@@ -77,8 +75,12 @@ export default class PlaybackFlow extends Component {
     const { presenting } = this.context;
     return process.env.FLAVOR === 'cms'
       ? <CMSMenu
-        vr audio mute
-        submissions inbox publish
+        vr
+        audio
+        mute
+        submissions
+        inbox
+        publish
       />
       : (presenting && feature.vrPolyfill)
         ? <Menu
@@ -110,7 +112,7 @@ export default class PlaybackFlow extends Component {
               ? <CreateGIF
                 {...props}
                 inContextOfRecording={fromRecording}
-                goto={this.setMode}
+                goBack={this.performGotoSubmission}
               />
               : <Submission
                 {...props}

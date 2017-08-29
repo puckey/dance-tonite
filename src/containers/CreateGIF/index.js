@@ -14,10 +14,10 @@
 /** @jsx h */
 import { h, Component } from 'preact';
 import download from 'downloadjs';
+import GIF from '../../../third_party/gifjs/gif';
 
 import './style.scss';
 
-import deps from '../../deps';
 import * as THREE from '../../../third_party/threejs/three';
 import viewer from '../../viewer';
 import settings from '../../settings';
@@ -51,7 +51,6 @@ export default class CreateGIF extends Component {
       progress: 'Loading performance…',
     };
 
-    this.gotoSubmission = this.gotoSubmission.bind(this);
     this.setEncodeProgress = this.setEncodeProgress.bind(this);
     this.setFrameProgress = this.setFrameProgress.bind(this);
     this.downloadGif = this.downloadGif.bind(this);
@@ -98,10 +97,6 @@ export default class CreateGIF extends Component {
     download(this.state.gifData, 'performance.gif', 'image/gif');
   }
 
-  gotoSubmission() {
-    this.props.goto('submission');
-  }
-
   async asyncMount() {
     audio.reset();
     const renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -129,8 +124,7 @@ export default class CreateGIF extends Component {
 
     const scene = this.scene = viewer.createScene();
     this.setState({ scene });
-
-    this.gif = new deps.GIF({
+    this.gif = new GIF({
       workers: window.navigator.hardwareConcurrency
         ? (Math.min(4, window.navigator.hardwareConcurrency))
         : 2,
@@ -252,8 +246,8 @@ export default class CreateGIF extends Component {
         </Align>
         <Align type="bottom-right">
           <ButtonItem
-            text={gifData ? 'Go back to your submission' : 'Cancel'}
-            onClick={this.gotoSubmission}
+            text={gifData ? 'Go back' : 'Cancel'}
+            onClick={this.props.goBack}
             underline
           />
         </Align>
