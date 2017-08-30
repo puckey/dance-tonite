@@ -416,35 +416,41 @@ module.exports = function( THREE ){
 				}
 
 				// render left eye
+				var leftEyeFOVReductionBorderWidth = renderRectL.width * (1 - fovRenderRatio) * 0.5;
+				var leftEyeFOVReductionBorderHeight = renderRectL.height * (1 - fovRenderRatio) * 0.5;
+				var leftEyeScissor = [ renderRectL.x + leftEyeFOVReductionBorderWidth, 
+										 renderRectL.y + leftEyeFOVReductionBorderHeight, 
+										 renderRectL.width - leftEyeFOVReductionBorderWidth * 2, 
+										 renderRectL.height - leftEyeFOVReductionBorderHeight * 2]
 				if ( renderTarget ) {
 					
-					renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
-					renderer.setScissor( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
+					renderTarget.viewport.set( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
+					renderTarget.scissor.set( leftEyeScissor[0], leftEyeScissor[1], leftEyeScissor[2], leftEyeScissor[3] );
 
 				} else {
 
-					const FOVReductionBorderRW = renderRectL.width * (1 - fovRenderRatio) * 0.5;
-					const FOVReductionBorderRH = renderRectL.height * (1 - fovRenderRatio) * 0.5;
-
 					renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
-					renderer.setScissor( renderRectL.x + FOVReductionBorderRW, renderRectL.y + FOVReductionBorderRH, renderRectL.width - FOVReductionBorderRW * 2, renderRectL.height - FOVReductionBorderRH * 2 );
+					renderer.setScissor( leftEyeScissor[0], leftEyeScissor[1], leftEyeScissor[2], leftEyeScissor[3] );
 
 				}
 				renderer.render( scene, cameraL, renderTarget );
 
 				// render right eye
+				var rightEyeFOVReductionBorderWidth = renderRectR.width * (1 - fovRenderRatio) * 0.5;
+				var rightEyeFOVReductionBorderHeight = renderRectR.height * (1 - fovRenderRatio) * 0.5;
+				var rightEyeScissor = [ renderRectR.x + rightEyeFOVReductionBorderWidth, 
+										 renderRectR.y + rightEyeFOVReductionBorderHeight, 
+										 renderRectR.width - rightEyeFOVReductionBorderWidth * 2, 
+										 renderRectR.height - rightEyeFOVReductionBorderHeight * 2]
 				if ( renderTarget ) {
 
 					renderTarget.viewport.set( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
-					renderTarget.scissor.set( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
+					renderTarget.scissor.set( rightEyeScissor[0], rightEyeScissor[1], rightEyeScissor[2], rightEyeScissor[3] );
 
 				} else {
 
-					const FOVReductionBorderLW = renderRectL.width * (1 - fovRenderRatio) * 0.5;
-					const FOVReductionBorderLH = renderRectL.height * (1 - fovRenderRatio) * 0.5;
-
 					renderer.setViewport( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
-					renderer.setScissor( renderRectR.x + FOVReductionBorderLW, renderRectR.y + FOVReductionBorderLH, renderRectR.width - FOVReductionBorderLW * 2, renderRectR.height - FOVReductionBorderLH * 2 );
+					renderer.setScissor( rightEyeScissor[0], rightEyeScissor[1], rightEyeScissor[2], rightEyeScissor[3] );
 
 				}
 				renderer.render( scene, cameraR, renderTarget );
