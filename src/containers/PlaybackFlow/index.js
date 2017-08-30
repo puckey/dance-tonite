@@ -53,14 +53,8 @@ export default class PlaybackFlow extends Component {
   }
 
   performGotoFullExperience() {
-    if (recording.exists()) {
-      recording.destroy();
-    }
-    this.setState({
-      mode: 'playback',
-      fromRecording: false,
-    });
-    analytics.recordSectionChange('Playback');
+    const { roomId, id } = this.props;
+    window.location = `/${roomId}/${id}/`;
   }
 
   performGotoSubmission() {
