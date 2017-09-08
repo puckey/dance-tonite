@@ -171,9 +171,13 @@ export default class Submissions extends Component {
           recording.location
             ? countryCodeToEmoji(recording.location.country_code)
             : ''
-        }`,
+        } ${ 
+          recording.days_featured <= 0 ? '' 
+            : Math.floor(recording.days_featured) + 'd' + Math.floor(recording.days_featured % 1 * 24)+'h'
+        }`
       })
     );
+
     if (!this.mounted) return;
     if (error) {
       this.setState({ error });
