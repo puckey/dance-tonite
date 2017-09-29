@@ -114,7 +114,7 @@ export default {
   },
 
   isEven(index) {
-    return index % 2 === 0;
+    return layout[index][2] % 2 === 0;
   },
 
   insideMegaGrid(index) {
