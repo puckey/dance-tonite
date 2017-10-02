@@ -15,7 +15,7 @@ Dance Tonite was created by artists Jonathan Puckey and Moniker in collaboration
 Take a look at the <a class="gallery-link">gallery of featured user contributions</a>.
 
 ## Technology
-Dance Tonite previews one of the most exciting developments in Chrome, WebVR, allowing anyone to take part in the experience. It’s built for the Web—no apps or downloads required.
+Dance Tonite previews one of the most exciting developments in Chrome, WebVR, allowing anyone to take part in the experience. It’s built for the Web — no apps or downloads required.
 
 To learn more about how this was made, read the [technical deep dive](https://developers.google.com/web/showcase/2017/dance-tonite) or view the open source [project code](https://github.com/puckey/dance-tonite).
 
