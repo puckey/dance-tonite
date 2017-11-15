@@ -50,7 +50,7 @@ export default class Router extends Component {
     // If we are on a mobile device, we need a touch event in order
     // to play the audio:
     this.state = {
-      needsFillPool: feature.isMobile,
+      needsFillPool: feature.isMobile || feature.isSafari,
       presenting: viewer.vrEffect.isPresenting,
     };
     this.setNotFound = this.setNotFound.bind(this);
