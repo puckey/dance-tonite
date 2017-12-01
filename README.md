@@ -17,6 +17,12 @@ Read the [technical case study](https://developers.google.com/web/showcase/2017/
 ## Building
 
     Build website: npm run build
+    
+## Deploying
+
+- Install [gcloud sdk](https://cloud.google.com/sdk/downloads)
+- To deploy to [staging](https://testing-dot-you-move-me.appspot.com): `npm run deploy`
+- If all okay, deploy to live with: `npm run deploy-app-engine`
 
 ## Recording
 - To record a specific room, add the number behind the record url: `/record/1/head=yes/` up to `/record/21/head=yes/`.
