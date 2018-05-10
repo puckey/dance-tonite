@@ -47,10 +47,10 @@ const convertParams = (params) => {
 export default class Router extends Component {
   constructor() {
     super();
-    // If we are on a mobile device, we need a touch event in order
+    // For all devices we need a touch event in order
     // to play the audio:
     this.state = {
-      needsFillPool: feature.isMobile || feature.isSafari,
+      needsFillPool: true,
       presenting: viewer.vrEffect.isPresenting,
     };
     this.setNotFound = this.setNotFound.bind(this);
