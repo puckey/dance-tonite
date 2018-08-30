@@ -66,9 +66,8 @@ export default class Tutorial extends Component {
   }
 
   async performAddPerformance() {
-    if (!viewer.vrEffect.isPresenting) {
-      await viewer.vrEffect.requestPresent();
-    }
+    await viewer.enterPresent();
+
     // Wait for the VR overlay to cover the screen:
     await sleep(500);
     this.props.goto('record');
