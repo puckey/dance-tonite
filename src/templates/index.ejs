@@ -8,8 +8,8 @@
     <meta name="description" content="An interactive VR experience by LCD Soundsystem and their fans">
     <!-- Origin Trial Token, feature = WebVR (For Chrome M62+), origin = https://puckey.studio, expires = 2018-08-31 -->
     <meta http-equiv="origin-trial" data-feature="WebVR (For Chrome M62+)" data-expires="2018-08-31" content="Ak7gRFW/WfsyuelPCNEAwBfkogt/j0nAq1pqI57PkvTfW5tVgUsS40A6TDaQkxgas7maIzWSQFoXlylcxTNGugMAAABleyJvcmlnaW4iOiJodHRwczovL3B1Y2tleS5zdHVkaW86NDQzIiwiZmVhdHVyZSI6IldlYlZSMS4xTTYyIiwiZXhwaXJ5IjoxNTM1NzAxNDEzLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
-    <!-- Origin Trial Token, feature = WebVR (For Chrome M62+), origin = https://tonite.dance, expires = 2018-08-31 -->
-    <meta http-equiv="origin-trial" data-feature="WebVR (For Chrome M62+)" data-expires="2018-08-31" content="Am/HAoXdr+VRQWelDg4MjaZh3wB37iloOHxd77QJ4vSygjkyc0Oqti/E/wFVC4/0wbN3Kp6VwHVLK6q0XsNlZQ8AAABReyJvcmlnaW4iOiJodHRwczovL3Rvbml0ZS5kYW5jZTo0NDMiLCJmZWF0dXJlIjoiV2ViVlIxLjFNNjIiLCJleHBpcnkiOjE1MzU3MDE0MTN9">
+    <!-- Origin Trial Token, feature = WebVR (For Chrome M62+), origin = https://tonite.dance, expires = 2018-09-11 -->
+    <meta http-equiv="origin-trial" data-feature="WebVR (For Chrome M62+)" data-expires="2018-09-11" content="AvIetTE9uehQSPxBisIWYSD87vrgxyF9ufWlqa9C0qlDmZbppcNlCGsUibQ1mYhyg/WNzCTjrV6LEIarq1hgTgUAAABReyJvcmlnaW4iOiJodHRwczovL3Rvbml0ZS5kYW5jZTo0NDMiLCJmZWF0dXJlIjoiV2ViVlIxLjFNNjIiLCJleHBpcnkiOjE1MzY2MjQwMDB9">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Dance Tonite">
@@ -55,7 +55,7 @@
 
       function checkLocale(){
         var request = new XMLHttpRequest();
-        request.open('GET', 'https://freegeoip.net/json/', true);
+        request.open('GET', 'http://api.ipstack.com/?access_key=76c911337b4d3b227864b58035ca6978&output=json&legacy=1', true);
 
         request.onload = function() {
           if (request.status >= 200 && request.status < 400) {
