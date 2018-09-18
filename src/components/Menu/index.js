@@ -125,9 +125,9 @@ export default class Menu extends Component {
             goto={this.props.goto}
             onClose={this.toggleNoVROverlay}
           >
-            <p>Headset required to watch in VR.</p>
-            <a href="https://webvr.info" target="_blank" rel="noopener noreferrer">
-              <span>Learn more</span>
+            <p>Sorry, VR is temporarily unavailable for this device while we update WebVR to WebXR.</p>
+            In the meantime, <a href="https://webvr.info" target="_blank" rel="noopener noreferrer">
+              <span>learn about VR on the web</span>
             </a> or <a onClick={this.toggleNoVROverlay}>
               <span>continue watching without VR</span>
             </a>.

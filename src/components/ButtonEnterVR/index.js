@@ -30,7 +30,7 @@ export default function ButtonEnterVR({ label, onClick }, { presenting }) {
           ? presenting
             ? 'Exit VR'
             : 'Enter VR'
-          : 'VR not found'
+          : 'VR unavailable'
         )
       }
       onClick={onClick}
